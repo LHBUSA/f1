@@ -122,6 +122,8 @@
 
   // PBEcast renderer
   let lastOrder = {};
+  let manifest = null;
+  if (cast) fetch('/data/live-manifest.json').then((r) => (r.ok ? r.json() : null)).then((m) => (manifest = m)).catch(() => {});
   function renderCast(s) {
     const state = $('[data-cast-state]');
     const tower = $('[data-cast-tower]');
@@ -148,7 +150,8 @@
         .map((r) => {
           const changed = lastOrder[r.id] && lastOrder[r.id] !== r.pos ? ' class="changed"' : '';
           const st = r.status === 'retired' ? '<span class="st-ret">OUT</span>' : r.status === 'disqualified' ? '<span class="st-dsq">DSQ</span>' : r.status && r.status !== 'classified' && r.status !== 'running' ? esc(r.status) : '';
-          return `<tr${changed}><td class="pos">${r.pos ?? '—'}</td><td><div class="drv" data-col="${esc(r.color || '')}"><span class="tbar tc-${esc((r.color || '').toLowerCase())}"></span><span>${r.slug ? `<a href="/drivers/${esc(r.slug)}">${esc(r.name)}</a>` : esc(r.name)} <span class="code">${esc(r.team || '')}</span></span></div></td><td class="num gap">${esc(r.gap || '')}</td><td class="num">${r.laps ?? ''}</td><td class="num">${r.pits ?? ''}</td><td class="num ${r.fastest ? 'purple' : ''}">${esc(r.best || '')}</td><td>${st}</td></tr>`;
+          const m = manifest?.drivers?.[r.id];
+          return `<tr${changed}><td class="pos">${r.pos ?? '—'}</td><td><div class="drv tc-${esc((r.color || '').toLowerCase())}"><span class="tbar"></span><span>${m ? `<a href="/drivers/${esc(m.s)}">${esc(m.n)}</a>` : esc(r.name)} <span class="code">${esc(m?.c || '')}</span><span class="fine"> ${esc(r.team || '')}</span></span></div></td><td class="num gap">${esc(r.gap || '')}</td><td class="num">${r.laps ?? ''}</td><td class="num">${r.pits ?? ''}</td><td class="num ${r.fastest ? 'purple' : ''}">${esc(r.best || '')}</td><td>${st}</td></tr>`;
         })
         .join('');
       lastOrder = Object.fromEntries(s.tower.map((r) => [r.id, r.pos]));

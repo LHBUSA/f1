@@ -35,6 +35,11 @@ export function loadContext() {
   try { media = JSON.parse(fs.readFileSync(path.resolve('data/derived/media.json'), 'utf8')); } catch {}
   ctx.mediaOk = (url) => media[url] !== false; // unverified URLs are treated as ok only if not proven broken
   ctx.media = media;
+  // Drop media proven unavailable so nothing renders as a broken image.
+  for (const d of ctx.drivers) {
+    if (d.headshot_url && media[d.headshot_url] === false) d.headshot_url = null;
+    if (d.flag_url && media[d.flag_url] === false) d.flag_url = null;
+  }
 
   // circuit_id on events is canonicalized in derive (wd-*); apply the same mapping to normalized events.
   const venueToCanon = {};

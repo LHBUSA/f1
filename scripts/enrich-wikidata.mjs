@@ -147,6 +147,8 @@ const out = {
   rejected_crosswalks: rejected,
 };
 fs.writeFileSync('data/normalized/wikidata.json', JSON.stringify(out));
+fs.mkdirSync('data/fragments', { recursive: true });
+fs.writeFileSync('data/fragments/wikidata.json', JSON.stringify(out));
 console.log('rejected', JSON.stringify(rejected));
 console.log(`wikidata races ${races.data.results.bindings.length}, circuits ${Object.keys(circuits).length}, events matched ${matched}/${events.length}, venues crosswalked ${Object.keys(venueXwalk).length}`);
 for (const [k, x] of Object.entries(venueXwalk)) console.log(k, x.wikidata_id, circuits[x.wikidata_id]?.name, x.votes + '/' + x.total, circuits[x.wikidata_id]?.lat, circuits[x.wikidata_id]?.length_km);
