@@ -1,9 +1,7 @@
 .cache/
 node_modules/
 dist/
-data/normalized/
-data/derived/
-data/raw/
+data/
 *.log
 .env*
 .wrangler/

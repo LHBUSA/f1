@@ -2,6 +2,7 @@
 // Never writes back to normalized tables. Every metric carries sample size, population, confidence, version, as-of.
 import fs from 'node:fs';
 import path from 'node:path';
+import { slugify } from '../src/core/normalize.mjs';
 
 export const DNA_VERSION = 'f1-dna-1.0.0';
 const IN = path.resolve('data/normalized');
@@ -34,7 +35,39 @@ try { wikidata = load('wikidata'); } catch {}
     // Prefer the most recently captured ESPN venue's descriptive fields (current layout).
     if ((c.length_km && !m.length_km) || c.captured_at > m.captured_at) Object.assign(m, { name: c.name, length_km: c.length_km || m.length_km, turns: c.turns || m.turns, layout_type: c.layout_type || m.layout_type, locality: c.locality || m.locality, captured_at: c.captured_at });
   }
-  for (const e of events) if (e.circuit_id && canon[e.circuit_id]) e.circuit_id = canon[e.circuit_id];
+  // Per-event circuit. ESPN venue ids are per GRAND PRIX and the venue document describes the GP's CURRENT
+  // venue (e.g. every Spanish GP 1995–2024 points at today's Madring), so history comes from Wikidata's
+  // per-edition race → circuit link. ESPN venue is a fallback only from 2000 on; older unknowns stay null.
+  const evCircuit = Object.fromEntries((wikidata?.event_crosswalk || []).filter((x) => x.wikidata_circuit).map((x) => [x.event_id, x.wikidata_circuit]));
+  const circuitAttribution = { wikidata_race: 0, espn_venue_fallback: 0, unknown: 0 };
+  for (const e of events) {
+    // A cancelled event keeps the venue it was scheduled at (Wikidata may describe a relocated edition).
+    const wd = e.status === 'canceled' && e.circuit_id && canon[e.circuit_id] ? null : evCircuit[e.id];
+    if (wd) {
+      const cid = `wd-${wd}`;
+      if (!merged[cid]) {
+        const w = wikidata.circuits[wd] || {};
+        merged[cid] = { id: cid, espn_venue_ids: [], espn_id: null, name: w.name || wd, slug: slugify(w.name || wd), wikidata_id: wd, wikidata_name: w.name || null, lat: w.lat ?? null, lon: w.lon ?? null, opened: w.opened ?? null, locality: w.locality || null, country: w.country || null, wikidata_country: w.country || null, flag_url: null, layout_type: null, length_km: null, turns: null, source: 'wikidata', source_id: wd, source_url: `https://www.wikidata.org/wiki/${wd}`, source_updated_at: null, ingested_at: new Date().toISOString() };
+        // Wikidata lengths are layout-ambiguous for historic circuits; not displayed.
+      }
+      e.circuit_id = cid;
+      e.circuit_source = 'wikidata_race';
+      circuitAttribution.wikidata_race++;
+    } else if (e.circuit_id && (e.season >= 2000 || e.status === 'canceled') && canon[e.circuit_id]) {
+      e.circuit_id = canon[e.circuit_id];
+      e.circuit_source = 'espn_venue';
+      circuitAttribution.espn_venue_fallback++;
+    } else {
+      e.circuit_id = null;
+      e.circuit_source = null;
+      circuitAttribution.unknown++;
+    }
+  }
+  // Keep only circuits that host at least one event.
+  const usedIds = new Set(events.map((e) => e.circuit_id).filter(Boolean));
+  for (const k of Object.keys(merged)) if (!usedIds.has(k)) delete merged[k];
+  fs.writeFileSync(path.join(OUT, 'circuit_attribution.json'), JSON.stringify(circuitAttribution));
+  fs.writeFileSync(path.join(OUT, 'event_circuits.json'), JSON.stringify(Object.fromEntries(events.map((e) => [e.id, { circuit_id: e.circuit_id, source: e.circuit_source }]))));
   circuits.length = 0;
   const used = new Set();
   for (const m of Object.values(merged)) {

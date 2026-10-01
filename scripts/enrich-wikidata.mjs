@@ -76,7 +76,7 @@ for (const e of events) {
   const ok = cands.filter((c) => !c.date || Math.abs(Date.parse(c.date) - Date.parse(raceDay)) <= 3 * 86400e3);
   if (ok.length !== 1) continue;
   matched++;
-  eventXwalk.push({ event_id: e.id, wikidata_race: ok[0].race });
+  eventXwalk.push({ event_id: e.id, wikidata_race: ok[0].race, wikidata_circuit: ok[0].circuit || null });
   if (ok[0].circuit && e.circuit_id) {
     const vv = (votes[e.circuit_id] ||= {});
     vv[ok[0].circuit] = (vv[ok[0].circuit] || 0) + 1;

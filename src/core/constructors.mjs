@@ -78,9 +78,9 @@ function resolveId(name, season) {
     if (bySeason) return { id: bySeason[0], how: 'lineage_season' };
   }
   const slug = slugify(name);
-  if (SINGLE[slug]) return { id: slug, how: 'single' };
+  if (SINGLE[slug] && season >= SINGLE[slug][0] && season <= SINGLE[slug][1]) return { id: slug, how: 'single' };
   // Never let a fallback id collide with a curated entity outside its seasons.
-  if (LINEAGE_MEMBER_IDS.has(slug) || HISTORIC.some((h) => h[3] === slug)) return { id: `${slug}-${Math.floor(season / 10) * 10}s`, how: 'unresolved' };
+  if (SINGLE[slug] || LINEAGE_MEMBER_IDS.has(slug) || HISTORIC.some((h) => h[3] === slug)) return { id: `${slug}-${Math.floor(season / 10) * 10}s`, how: 'unresolved' };
   return { id: slug, how: 'name' };
 }
 

@@ -51,7 +51,7 @@ export function sessionTable(ctx, ev, type) {
       return `<tr class="${posCls}"><td class="pos">${pos}</td><td>${driverCell(ctx, r.driver_id, r.constructor_id, ev.season)}</td><td class="team-cell">${teamLink(ctx, r.constructor_id)}</td><td class="num ${r.position === 1 ? 'purple' : ''}">${fmtMs(r.best_lap_ms)}</td><td class="num">${r.position === 1 ? '' : esc(r.gap_text || '')}</td><td class="num">${r.laps ?? '—'}</td></tr>`;
     })
     .join('');
-  const note = type === 'race' && rows.some((r) => r.points_scope === 'weekend_incl_sprint') ? '<p class="fine">Points shown are the source’s weekend totals (sprint points included).</p>' : '';
+  const note = type === 'race' && rows.some((r) => r.points_scope === 'weekend_incl_sprint') ? '<p class="fine">Points shown are weekend totals (sprint points included).</p>' : '';
   return `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${note}`;
 }
 

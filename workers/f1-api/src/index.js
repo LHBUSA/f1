@@ -2,7 +2,6 @@
 // and the current-season ingest cron. Source: ESPN (live + results), MET Norway (forecasts).
 import { extractSeason, extractDrivers, extractVenues } from '../../../src/core/extract.mjs';
 
-const ESPN_SITE = 'https://site.api.espn.com/apis/site/v2/sports/racing/f1';
 const ESPN_CORE = 'https://sports.core.api.espn.com/v2/sports/racing/leagues/f1';
 const UA = 'PropBetEdge-F1/1.0 (+https://f1.propbetedge.ai)';
 const SESSION_LABEL = { FP1: 'Practice 1', FP2: 'Practice 2', FP3: 'Practice 3', Qual: 'Qualifying', SS: 'Sprint Qualifying', SR: 'Sprint', Race: 'Grand Prix' };
@@ -60,10 +59,10 @@ export default {
 // ---------------- Weather (MET Norway, CC BY 4.0) ----------------
 async function weather(slug, url, env, ctx) {
   const meta = await env.DATA.get('meta/circuits.json');
-  if (!meta) return json({ error: 'no circuit index' }, 503);
+  if (!meta) return json({ circuit: slug, days: [], note: 'no circuit index' });
   const circuits = await meta.json();
   const c = circuits[slug];
-  if (!c || c.lat == null) return json({ error: 'unknown circuit' }, 404);
+  if (!c || c.lat == null) return json({ circuit: slug, days: [], note: 'no coordinates for this circuit' });
   const lat = Number(c.lat).toFixed(3);
   const lon = Number(c.lon).toFixed(3);
   const cacheKey = new Request(`https://f1-api.propbetedge.ai/cache/weather/${lat},${lon}`);
@@ -71,7 +70,7 @@ async function weather(slug, url, env, ctx) {
   let fc = await cache.match(cacheKey);
   if (!fc) {
     const r = await fetch(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`, { headers: { 'User-Agent': UA } });
-    if (!r.ok) return json({ error: `met.no ${r.status}` }, 502);
+    if (!r.ok) return json({ circuit: slug, days: [], note: `forecast source unavailable (${r.status})` }, 200, { 'cache-control': 'no-store' });
     fc = new Response(await r.text(), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' } });
     ctx.waitUntil(cache.put(cacheKey, fc.clone()));
   }
@@ -177,7 +176,7 @@ export class LiveHub {
     const ttl = this.snapshot?.state === 'live' ? 8000 : 60000;
     if (age > ttl) {
       this.inflight ||= this.refresh().finally(() => (this.inflight = null));
-      try { await this.inflight; } catch (e) { if (!this.snapshot) return json({ state: 'unavailable', error: String(e?.message || e) }, 503); }
+      try { await this.inflight; } catch (e) { if (!this.snapshot) return json({ state: 'unavailable', error: String(e?.message || e).slice(0, 120), tower: [], feed: [] }); }
     }
     return json(this.snapshot);
   }
@@ -186,20 +185,43 @@ export class LiveHub {
     if (!r.ok) throw new Error(`ESPN ${r.status}`);
     return r.json();
   }
+  // Core API only: site.api.espn.com rejects our honestly-identified User-Agent (403 = access barrier; not evaded).
+  async cachedJson(key, url, ttlMs) {
+    const hit = await this.state.storage.get(key);
+    if (hit && Date.now() - hit.at < ttlMs) return hit.data;
+    const data = await this.get(url);
+    await this.state.storage.put(key, { at: Date.now(), data });
+    return data;
+  }
   async refresh() {
-    const sb = await this.get(`${ESPN_SITE}/scoreboard`);
     const now = Date.now();
+    const year = new Date(now).getUTCFullYear();
+    const list = await this.cachedJson(`events-${year}`, `${ESPN_CORE}/events?dates=${year}&limit=100`, 3600e3);
+    const ids = (list.items || []).map((i) => i.$ref.match(/events\/(\d+)/)?.[1]).filter(Boolean);
+    // Event docs are small; cache 30 min, except the active weekend which is re-read every refresh.
+    const evs = [];
+    for (const id of ids) evs.push(await this.cachedJson(`event-${id}`, `${ESPN_CORE}/events/${id}`, 1800e3));
+    const active = evs.filter((e) => now >= Date.parse(e.date) - 2 * 3600e3 && now <= Date.parse(e.endDate || e.date) + 8 * 3600e3);
     let liveEv = null;
     let liveComp = null;
     let recentPost = null;
     let next = null;
-    for (const ev of sb.events || []) {
+    for (const e0 of active) {
+      const ev = await this.get(`${ESPN_CORE}/events/${e0.id}`);
       for (const c of ev.competitions || []) {
-        const st = c.status?.type?.state;
         const t = Date.parse(c.date);
-        if (st === 'in') { liveEv = ev; liveComp = c; }
-        else if (st === 'post' && now - t < 6 * 3600e3 && (!recentPost || t > Date.parse(recentPost.c.date))) recentPost = { ev, c };
-        else if (st === 'pre' && t > now && (!next || t < Date.parse(next.start))) next = { event: ev.name, label: SESSION_LABEL[c.type?.abbreviation] || c.type?.abbreviation, start: c.date };
+        if (t > now + 3600e3) continue;
+        const st = await this.get(c.status.$ref.replace('http:', 'https:')).catch(() => null);
+        c._status = st;
+        const state = st?.type?.state;
+        if (state === 'in') { liveEv = ev; liveComp = c; }
+        else if (state === 'post' && now - t < 8 * 3600e3 && (!recentPost || t > Date.parse(recentPost.c.date))) recentPost = { ev, c };
+      }
+    }
+    for (const ev of evs) {
+      for (const c of ev.competitions || []) {
+        const t = Date.parse(c.date);
+        if (t > now && (!next || t < Date.parse(next.start))) next = { event: ev.name, label: SESSION_LABEL[c.type?.abbreviation] || c.type?.abbreviation, start: c.date };
       }
     }
     const prev = this.snapshot;
@@ -213,16 +235,20 @@ export class LiveHub {
     }
     snap.next = next;
     snap.checked_at = new Date().toISOString();
-    snap.source = 'ESPN';
+    snap.source = 'PropSports';
     this.snapshot = snap;
     await this.state.storage.put('snapshot', snap);
   }
   async session(ev, c, state, prev) {
     const base = `${ESPN_CORE}/events/${ev.id}/competitions/${c.id}`;
-    const [statusDoc, comps, compStats] = await Promise.all([this.get(`${base}/status`).catch(() => null), this.get(`${base}/competitors?limit=50`), this.get(`${base}/statistics`).catch(() => null)]);
+    const [statusDoc, comps, compStats] = await Promise.all([c._status ? Promise.resolve(c._status) : this.get(`${base}/status`).catch(() => null), this.get(`${base}/competitors?limit=50`), this.get(`${base}/statistics`).catch(() => null)]);
     const lapsTotal = (compStats?.categories || []).flatMap((x) => x.stats || []).find((x) => x.name === 'laps')?.value || null;
     const items = comps.items || [];
-    const names = Object.fromEntries((c.competitors || []).map((x) => [String(x.id), x.athlete?.displayName || x.athlete?.fullName]));
+    const names = {};
+    await Promise.all(items.map(async (it) => {
+      const a = await this.cachedJson(`athlete-${it.id}`, `https://sports.core.api.espn.com/v2/sports/racing/athletes/${it.id}`, 7 * 86400e3).catch(() => null);
+      if (a) names[String(it.id)] = a.displayName || a.fullName;
+    }));
     const stats = await Promise.all(items.map((it) => (it.statistics?.$ref ? this.get(it.statistics.$ref.replace('http:', 'https:')).catch(() => null) : null)));
     const statuses = await Promise.all(items.map((it) => (it.status?.$ref ? this.get(it.status.$ref.replace('http:', 'https:')).catch(() => null) : null)));
     const sm = (d) => Object.fromEntries((d?.splits?.categories || []).flatMap((cat) => cat.stats.map((s) => [s.name, s]))) || {};

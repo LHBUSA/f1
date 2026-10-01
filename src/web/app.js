@@ -94,7 +94,7 @@
       .then((r) => (r.ok ? r.json() : null))
       .then((w) => {
         if (!w?.days?.length) return;
-        el.innerHTML = `<span class="kicker">Forecast</span> ` + w.days.map((d) => `${esc(fmtLocal(new Date(d.date + 'T12:00:00Z'), 'date'))}: ${Math.round(d.t_max)}°C, ${d.precip_mm.toFixed(1)} mm${d.wind_ms != null ? `, wind ${Math.round(d.wind_ms)} m/s` : ''}`).join(' · ') + ` <span class="muted">· MET Norway (CC BY 4.0)</span>`;
+        el.innerHTML = `<span class="kicker">Forecast</span> ` + w.days.map((d) => `${esc(fmtLocal(new Date(d.date + 'T12:00:00Z'), 'date'))}: ${Math.round(d.t_max)}°C, ${d.precip_mm.toFixed(1)} mm${d.wind_ms != null ? `, wind ${Math.round(d.wind_ms)} m/s` : ''}`).join(' · ') + ` <span class="muted">· Forecast data: MET Norway, CC BY 4.0</span>`;
       })
       .catch(() => {});
   }

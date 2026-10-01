@@ -42,9 +42,12 @@ export function loadContext() {
   }
 
   // circuit_id on events is canonicalized in derive (wd-*); apply the same mapping to normalized events.
-  const venueToCanon = {};
-  for (const c of ctx.circuits) for (const v of c.espn_venue_ids) venueToCanon[`espn-venue-${v}`] = c.id;
-  for (const e of ctx.events) if (venueToCanon[e.circuit_id]) e.circuit_id = venueToCanon[e.circuit_id];
+  // Per-event circuit attribution is decided in derive (Wikidata per-edition link, ESPN venue fallback ≥2000).
+  const evc = Dv('event_circuits');
+  for (const e of ctx.events) {
+    e.circuit_id = evc[e.id]?.circuit_id ?? null;
+    e.circuit_source = evc[e.id]?.source ?? null;
+  }
 
   ctx.currentSeason = ctx.meta.current_season;
   ctx.eventById = Object.fromEntries(ctx.events.map((e) => [e.id, e]));
@@ -96,7 +99,8 @@ export function loadContext() {
     if (!ctx.matchups[`${x}|${y}`]) return null;
     return `/matchup/${ctx.driverById[x].slug}/${ctx.driverById[y].slug}`;
   };
-  ctx.circuitName = (id) => ctx.circuitById[id]?.wikidata_name || ctx.circuitById[id]?.name || '—';
+  // ESPN's venue name where the circuit is an ESPN venue, else the Wikidata label.
+  ctx.circuitName = (id) => (ctx.circuitById[id]?.espn_venue_ids?.length ? ctx.circuitById[id].name : ctx.circuitById[id]?.wikidata_name || ctx.circuitById[id]?.name) || '—';
   return ctx;
 }
 

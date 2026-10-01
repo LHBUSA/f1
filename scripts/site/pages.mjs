@@ -298,7 +298,7 @@ export function driverPage(ctx, d) {
     <div class="team-stripe"></div></div></div></section>
   <section class="section"><div class="wrap"><div class="stats">
     <div class="stat-box"><span>Starts</span><b>${car?.starts ?? 0}</b></div><div class="stat-box"><span>Wins</span><b>${car?.wins ?? 0}</b></div><div class="stat-box"><span>Podiums</span><b>${car?.podiums ?? 0}</b></div><div class="stat-box"><span>Poles</span><b>${car?.poles ?? 0}</b></div><div class="stat-box"><span>Points</span><b>${fmtPts(car?.points ?? 0)}</b></div><div class="stat-box"><span>Titles</span><b>${car?.championships.length ?? 0}</b>${car?.championships.length ? `<span>${car.championships.join(', ')}</span>` : ''}</div>
-  </div><p class="fine">Career totals from published race classifications in the source (${ctx.coverage.earliest_season}–${ctx.currentSeason}). Poles use the qualifying classification where published, otherwise grid position 1. ${esc(car?.points_note || '')}</p></div></section>
+  </div><p class="fine">Career totals from published race classifications (${ctx.coverage.earliest_season}–${ctx.currentSeason}). Poles use the qualifying classification where published, otherwise grid position 1. ${esc(car?.points_note || '')}</p></div></section>
   ${dnaC || dnaK ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Driver DNA</span><h2>Profile</h2></div><a class="more" href="/methodology#driver-dna">Methodology</a></div>
     <div class="tabs" role="tablist">${dnaC ? `<button class="tab" role="tab" type="button" aria-selected="true" aria-controls="dna-cur" id="dt-cur">${esc(dnaC.window)}</button>` : ''}${dnaK ? `<button class="tab" role="tab" type="button" aria-selected="${dnaC ? 'false' : 'true'}" aria-controls="dna-car" id="dt-car">Career</button>` : ''}</div>
     ${dnaC ? `<div class="tabpanel" role="tabpanel" id="dna-cur" aria-labelledby="dt-cur">${dnaPanel(dnaC, { color: color || 'ff4d2e' })}</div>` : ''}
@@ -376,7 +376,7 @@ export function circuitsIndex(ctx) {
   const rest = ctx.circuits.filter((c) => !curIds.has(c.id)).sort((a, b) => (ctx.circuitDna[b.id]?.races_held || 0) - (ctx.circuitDna[a.id]?.races_held || 0));
   const card = (c) => {
     const dna = ctx.circuitDna[c.id];
-    return `<a class="card card-link" href="/circuits/${c.slug}"><span class="kicker">${flag(c.flag_url, c.country)} ${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h3>${esc(c.wikidata_name || c.name)}</h3><p class="fine">${c.length_km ? c.length_km.toFixed(3) + ' km' : ''}${c.turns ? ` · ${c.turns} turns` : ''}${dna?.races_held ? ` · ${dna.races_held} GPs` : ''}${dna?.speed_class ? ` · ${dna.speed_class}-speed` : ''}${c.layout_type ? ` · ${esc(c.layout_type)}` : ''}</p></a>`;
+    return `<a class="card card-link" href="/circuits/${c.slug}"><span class="kicker">${flag(c.flag_url, c.country)} ${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h3>${esc(ctx.circuitName(c.id))}</h3><p class="fine">${c.length_km ? c.length_km.toFixed(3) + ' km' : ''}${c.turns ? ` · ${c.turns} turns` : ''}${dna?.races_held ? ` · ${dna.races_held} GPs` : ''}${dna?.speed_class ? ` · ${dna.speed_class}-speed` : ''}${c.layout_type ? ` · ${esc(c.layout_type)}` : ''}</p></a>`;
   };
   const body = `${crumbs([['/', 'Home'], ['/circuits', 'Circuits']])}
   <section class="hero"><div class="wrap"><span class="eyebrow">Circuit DNA</span><h1>Circuits</h1><p class="sub">${cur.length} venues on the ${season} calendar and ${ctx.circuits.length} championship circuits since ${ctx.coverage.earliest_season}.</p></div></section>
@@ -404,10 +404,10 @@ export function circuitPage(ctx, c, outline) {
     })
     .join('');
   const tops = (arr, kind) => arr.map((x) => `<li>${kind === 'd' ? `<a href="${ctx.driverUrl(x.id)}">${esc(ctx.driverById[x.id]?.full_name)}</a>` : teamLink(ctx, x.id)} — ${x.wins}</li>`).join('');
-  const bc = [['/', 'Home'], ['/circuits', 'Circuits'], [`/circuits/${c.slug}`, c.wikidata_name || c.name]];
+  const bc = [['/', 'Home'], ['/circuits', 'Circuits'], [`/circuits/${c.slug}`, ctx.circuitName(c.id)]];
   const body = `${crumbs(bc)}
-  <section class="hero"><div class="wrap"><span class="eyebrow">${flag(c.flag_url, c.country)} ${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h1>${esc(c.wikidata_name || c.name)}</h1>
-  <div class="hero-meta">${c.length_km ? `<span><b>Length</b>${c.length_km.toFixed(3)} km</span>` : ''}${c.turns ? `<span><b>Turns</b>${c.turns}</span>` : ''}${dna?.race_laps ? `<span><b>Race laps</b>${dna.race_laps}</span>` : ''}${dna?.race_distance_km ? `<span><b>Distance</b>${dna.race_distance_km} km</span>` : ''}${c.layout_type ? `<span><b>Layout</b>${esc(c.layout_type)}</span>` : ''}${c.lat != null ? `<span><b>Coordinates</b>${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</span>` : ''}${c.opened ? `<span><b>Opened</b>${c.opened}</span>` : ''}${dna?.races_held ? `<span><b>Grands Prix</b>${dna.races_held} (${dna.first_season}–${dna.last_season})</span>` : ''}</div>
+  <section class="hero"><div class="wrap"><span class="eyebrow">${flag(c.flag_url, c.country)} ${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h1>${esc(ctx.circuitName(c.id))}</h1>
+  <div class="hero-meta">${c.length_km ? `<span><b>Latest layout</b>${c.length_km.toFixed(3)} km${c.turns ? `, ${c.turns} turns` : ''}</span>` : ''}${dna?.race_laps ? `<span><b>Race laps</b>${dna.race_laps}</span>` : ''}${dna?.race_distance_km ? `<span><b>Distance</b>${dna.race_distance_km} km</span>` : ''}${c.layout_type ? `<span><b>Layout</b>${esc(c.layout_type)}</span>` : ''}${c.lat != null ? `<span><b>Coordinates</b>${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</span>` : ''}${c.opened ? `<span><b>Opened</b>${c.opened}</span>` : ''}${dna?.races_held ? `<span><b>Grands Prix</b>${dna.races_held} (${dna.first_season}–${dna.last_season})</span>` : ''}</div>
   ${next ? `<p class="section"><a class="more" href="${ctx.raceUrl(next.id)}">${next.season} ${esc(next.name)} hub</a></p>` : ''}</div></section>
   <section class="section"><div class="wrap"><div class="split">
     <div class="card"><div class="section-head"><div><span class="eyebrow">Circuit DNA</span><h2>Profile</h2></div><a class="more" href="/methodology#circuit-dna">Methodology</a></div>${dims || '<div class="empty">Not enough recent races to profile.</div>'}${dna ? `<div class="unavail">${Object.keys(dna.unavailable).map((k) => `<span title="${esc(dna.unavailable[k])}">${esc(k.replace(/_/g, ' '))}: not sourced</span>`).join('')}</div>` : ''}</div>
@@ -419,10 +419,10 @@ export function circuitPage(ctx, c, outline) {
   ${winRows ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Winners</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Winner</th><th>Team</th><th>Pole</th></tr></thead><tbody>${winRows}</tbody></table></div></div></section>` : ''}`;
   return {
     path: `/circuits/${c.slug}`,
-    title: `${c.wikidata_name || c.name} – F1 Circuit DNA, Winners & Facts`,
-    description: `${c.wikidata_name || c.name} (${[c.locality, c.country].filter(Boolean).join(', ')}): ${c.length_km ? c.length_km.toFixed(3) + ' km, ' : ''}${c.turns ? c.turns + ' turns, ' : ''}Circuit DNA, pole conversion, overtaking, winners and Formula 1 history.`,
+    title: `${ctx.circuitName(c.id)} – F1 Circuit DNA, Winners & Facts`,
+    description: `${ctx.circuitName(c.id)} (${[c.locality, c.country].filter(Boolean).join(', ')}): ${c.length_km ? c.length_km.toFixed(3) + ' km, ' : ''}${c.turns ? c.turns + ' turns, ' : ''}Circuit DNA, pole conversion, overtaking, winners and Formula 1 history.`,
     body,
-    jsonLd: [{ '@context': 'https://schema.org', '@type': 'SportsActivityLocation', name: c.wikidata_name || c.name, address: [c.locality, c.country].filter(Boolean).join(', '), ...(c.lat != null ? { geo: { '@type': 'GeoCoordinates', latitude: c.lat, longitude: c.lon } } : {}), url: SITE + `/circuits/${c.slug}` }, jsonLdBreadcrumb(bc)],
+    jsonLd: [{ '@context': 'https://schema.org', '@type': 'SportsActivityLocation', name: ctx.circuitName(c.id), address: [c.locality, c.country].filter(Boolean).join(', '), ...(c.lat != null ? { geo: { '@type': 'GeoCoordinates', latitude: c.lat, longitude: c.lon } } : {}), url: SITE + `/circuits/${c.slug}` }, jsonLdBreadcrumb(bc)],
     section: '/circuits',
     noindex: (dna?.races_held || 0) < 1,
   };
@@ -544,7 +544,7 @@ export function matchupPage(ctx, key) {
 }
 
 // ---------------- PBECAST ----------------
-export function pbecast(ctx, outlines) {
+export function pbecast(ctx) {
   const ev = ctx.nextEvent;
   const body = `${crumbs([['/', 'Home'], ['/pbecast', 'PBEcast']])}
   <section class="hero"><div class="wrap"><span class="eyebrow">PBEcast F1</span><h1>Live race intelligence</h1><p class="sub">Timing tower, session state and an event feed built from the live source. Car positions are never simulated: when the source publishes no coordinates, PBEcast shows order, gaps and lap progress instead.</p></div></section>
@@ -552,7 +552,7 @@ export function pbecast(ctx, outlines) {
     <div class="card"><div class="cast-status" data-cast-status><span class="pill" data-cast-state>Connecting…</span><span data-cast-title>${ev ? esc(ev.name) : ''}</span><span class="flagchip" data-cast-flag hidden></span><span class="muted" data-cast-lap></span></div><div class="lapbar" data-cast-lapbar hidden><span class="w-0"></span></div><p class="fine" data-cast-updated></p></div>
     <div class="cast section">
       <div class="grid">
-        <div class="card"><span class="kicker">Track</span><div data-cast-track>${outlines || ''}</div><p class="fine">No licensed car-position feed: the track shows layout only. Order, gaps and laps come from the live classification.</p></div>
+        <div class="card"><span class="kicker">Race progress</span><div class="cast-progress" data-cast-progress><p class="muted">Lap progress and the interval view appear during a live session.</p></div><p class="fine">No licensed car-position or circuit-geometry feed is used, so PBEcast never draws cars on a track map. Progress, order and gaps come from the live classification.</p></div>
         <div class="card"><span class="kicker">Event feed</span><ul class="feed" data-cast-feed><li><span class="t">—</span><span class="muted">Events appear here during a live session: position changes, pit stops, retirements, fastest laps and flag changes detected from consecutive source updates.</span></li></ul></div>
       </div>
       <div class="card"><span class="kicker">Timing tower</span><div class="table-wrap"><table class="tower"><thead><tr><th class="pos">Pos</th><th>Driver</th><th class="num">Gap</th><th class="num">Laps</th><th class="num">Pits</th><th class="num">Best</th><th>Status</th></tr></thead><tbody data-cast-tower><tr><td colspan="7" class="muted">Loading live classification…</td></tr></tbody></table></div><p class="fine">Tyre compound, tyre age and per-stop timing are not published by the source and are never estimated.</p></div>

@@ -44,15 +44,6 @@ function emit(p) {
   if (!p.noindex) sitemap.push(p.path);
 }
 
-// Track outlines (OpenStreetMap, ODbL) if prepared.
-let outlines = {};
-try { outlines = JSON.parse(fs.readFileSync('data/derived/outlines.json', 'utf8')); } catch {}
-const outlineSvg = (c) => {
-  const o = outlines[c?.id];
-  if (!o) return '';
-  return `<div class="card"><span class="kicker">Layout</span><svg class="track" viewBox="${o.viewBox}" role="img" aria-label="${esc(c.wikidata_name || c.name)} layout"><path class="outline" d="${o.d}"/><path class="inner" d="${o.d}"/></svg><p class="fine">Track geometry © OpenStreetMap contributors (ODbL). Simplified.</p></div>`;
-};
-
 emit(P.home(ctx));
 const seasons = Object.keys(ctx.eventsBySeason).map(Number);
 emit(P.racesIndex(ctx, ctx.currentSeason, true));
@@ -63,13 +54,12 @@ for (const d of ctx.drivers) if (ctx.careers[d.id]?.entries) emit(P.driverPage(c
 emit(P.teamsIndex(ctx));
 for (const c of ctx.constructors) emit(P.teamPage(ctx, c, lineageChain));
 emit(P.circuitsIndex(ctx));
-for (const c of ctx.circuits) emit(P.circuitPage(ctx, c, outlineSvg(c)));
+for (const c of ctx.circuits) emit(P.circuitPage(ctx, c, ''));
 emit(P.standingsPage(ctx, ctx.currentSeason));
 for (const y of seasons) if (y !== ctx.currentSeason && ctx.standingsBy[`${y}|driver`]) emit(P.standingsPage(ctx, y));
 emit(P.matchupsIndex(ctx));
 for (const k of Object.keys(ctx.matchups)) emit(P.matchupPage(ctx, k));
-const nextCircuit = ctx.nextEvent ? ctx.circuitById[ctx.nextEvent.circuit_id] : null;
-emit(P.pbecast(ctx, nextCircuit && outlines[nextCircuit.id] ? outlineSvg(nextCircuit).replace(/^<div class="card"><span class="kicker">Layout<\/span>/, '<div>') : ''));
+emit(P.pbecast(ctx));
 emit(P.newsIndex(ctx));
 for (const r of ctx.recaps) emit(P.newsArticle(ctx, r));
 emit(methodology(ctx));
@@ -99,13 +89,10 @@ function methodology(ctx) {
   const body = `<section class="section"><div class="wrap prose">
   <span class="eyebrow">Methodology · ${esc(r.version)}</span><h1>How PropBetEdge F1 works</h1>
   <p>Source truth and derived intelligence are kept apart. Normalized tables hold only what a source published, each record with <code>source</code>, <code>source_id</code>, <code>source_url</code>, <code>source_updated_at</code> and <code>ingested_at</code>. DNA, Circuit Fit, matchups and progression are calculated from those tables and versioned separately.</p>
-  <h2>Sources</h2>
-  <ul><li><b>ESPN</b> — seasons, events, sessions (practice, qualifying with Q1/Q2/Q3, sprint qualifying, sprint, race), classifications, grid, status, laps completed, laps led, pit-stop counts, fastest laps, points, standings, driver identity and headshots, venue length/turns/layout. Every response is archived by URL and SHA-256 before parsing.</li>
-  <li><b>Wikidata</b> (CC0) — circuit coordinates, opening year and identity crosswalk, matched race-by-race with an identity guard (names must share a distinctive token; ambiguous matches are rejected).</li>
-  <li><b>MET Norway</b> (CC BY 4.0) — weekend weather forecasts for upcoming events only.</li></ul>
-  <p>Not used: Formula1.com, FIA documents, OpenF1 and Jolpica/Ergast all restrict commercial use. Paid feeds are not used.</p>
+  <h2>Data</h2>
+  <p>All results, sessions, standings, driver and circuit data come from <a href="https://propsports.proptechusa.ai" rel="noopener">PropSports</a>. Every record keeps its provenance internally and is archived before parsing. No paid timing feeds are used.</p>
   <h2>What is not available</h2>
-  <p>The source publishes no per-lap timing, sector times, tyre compounds, stints, pit-stop durations, car positions, telemetry, race-control messages or historical weather. Those tables exist in the model but are empty, and every feature that would need them is shown as “not sourced” rather than estimated. PBEcast never simulates car positions.</p>
+  <p>The data feed carries no per-lap timing, sector times, tyre compounds, stints, pit-stop durations, car positions, telemetry, race-control messages or historical weather. Those tables exist in the model but are empty, and every feature that would need them is shown as “not sourced” rather than estimated. PBEcast never simulates car positions.</p>
   <h2 id="driver-dna">Driver DNA</h2>
   <p>Two windows: current (${esc(Object.values(ctx.dnaCur)[0]?.window || '')}) and career. Each dimension reports a percentile within the population of drivers meeting its minimum sample in the same window, the sample size, a confidence tier (low under 8, medium 8–19, high 20+) and the raw metrics.</p>
   <ul>
@@ -123,9 +110,11 @@ function methodology(ctx) {
   <h2>Circuit Fit</h2>
   <p>A weighted average of relevant Driver and Constructor DNA percentiles, with weights set by the circuit’s profile (e.g. qualifying is weighted up where track position matters). It is descriptive — not a prediction, probability or betting signal.</p>
   <h2>Points</h2>
-  <p>The source publishes race-row points as the weekend total (sprint included). Pre-1991 seasons used dropped scores, so race-by-race sums can differ from official totals; official standings are always authoritative and progression charts are hidden where sums disagree.</p>
+  <p>Race-row points are published as the weekend total (sprint included). Pre-1991 seasons used dropped scores, so race-by-race sums can differ from official totals; official standings are always authoritative and progression charts are hidden where sums disagree.</p>
   <h2>Identity</h2>
-  <p>Drivers are keyed by source ID and never merged by name. Constructors are split by name <i>and</i> season range (e.g. the 1958–94 Team Lotus, the 2010–11 Lotus Racing and the 2012–15 Lotus F1 are different entities) and grouped into franchise lineages for navigation only.</p>
+  <p>Each car carries a team name, but historical entries are back-labelled with later names (e.g. “AlphaTauri” for 2006–19 Toro Rosso, “Alpine” for 2002–10 Renault), so the season decides the entity. Where a car’s team is missing entirely (every 2024–25 Kick Sauber entry), the car is assigned to the only constructor from that season’s official standings with no labelled car in the session, and the row is flagged as inferred.</p>
+  <p>Circuits are attributed per race edition, so historic Grands Prix are linked to the circuit actually used that year. Layout length and turns describe the latest published layout and are not applied to historic layouts.</p>
+  <p>Drivers are keyed by a stable ID and never merged by name. Constructors are split by name <i>and</i> season range (e.g. the 1958–94 Team Lotus, the 2010–11 Lotus Racing and the 2012–15 Lotus F1 are different entities) and grouped into franchise lineages for navigation only.</p>
   </div></section>`;
   return { path: '/methodology', title: 'Methodology & Sources', description: 'How PropBetEdge F1 sources, normalizes and models Formula 1 data: Driver DNA, Constructor DNA, Circuit DNA and Circuit Fit methods, sources and limitations.', body };
 }

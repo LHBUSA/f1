@@ -36,6 +36,33 @@ export function assemble({ fragments, drivers, venues, ingestedAt }) {
   for (const r of [...results, ...entries]) r.constructor_id = r.constructor_name_raw ? resolveConstructor(r.constructor_name_raw, r.season, r.team_color) : null;
   for (const s of standings) if (s.kind === 'constructor') s.subject_id = s.name_raw ? resolveConstructor(s.name_raw, s.season) : null;
 
+  // Unlabelled entries: the source sometimes omits the team on a car (e.g. every 2024–25 Kick Sauber entry).
+  // Deduction, flagged: if a session's unlabelled cars can only belong to the single constructor from that
+  // season's official constructor standings that has no labelled car in the session, assign it.
+  const officialBySeason = {};
+  for (const s of standings) if (s.kind === 'constructor' && s.subject_id) (officialBySeason[s.season] ||= new Set()).add(s.subject_id);
+  const bySession = {};
+  for (const r of results) (bySession[r.session_id] ||= []).push(r);
+  let inferred = 0;
+  for (const rows of Object.values(bySession)) {
+    const unl = rows.filter((r) => !r.constructor_id && r.status !== 'practice_only');
+    if (!unl.length) continue;
+    const official = officialBySeason[unl[0].season];
+    if (!official) continue;
+    const present = new Set(rows.filter((r) => r.constructor_id).map((r) => r.constructor_id));
+    const missing = [...official].filter((c) => !present.has(c));
+    if (missing.length !== 1 || unl.length > 3) continue;
+    for (const r of unl) {
+      r.constructor_id = missing[0];
+      r.constructor_inferred = true;
+      inferred++;
+    }
+  }
+  // Propagate the same car-number → team within a season to sessions where the deduction was ambiguous.
+  const carTeam = {};
+  for (const r of results) if (r.constructor_inferred) carTeam[`${r.season}|${r.driver_id}`] = r.constructor_id;
+  for (const r of results) if (!r.constructor_id && carTeam[`${r.season}|${r.driver_id}`] && r.status !== 'practice_only') { r.constructor_id = carTeam[`${r.season}|${r.driver_id}`]; r.constructor_inferred = true; inferred++; }
+
   // ESPN race-row points are WEEKEND totals at sprint events (sprint included): label them.
   const sprintEvents = new Set(sessions.filter((s) => s.type === 'sprint').map((s) => s.event_id));
   for (const r of results) if (r.session_type === 'race') r.points_scope = sprintEvents.has(r.event_id) ? 'weekend_incl_sprint' : 'race';
@@ -115,6 +142,8 @@ export function assemble({ fragments, drivers, venues, ingestedAt }) {
     classifications: results.length,
     classifications_by_type: count(results, (r) => r.session_type),
     practice_only_race_entries: results.filter((r) => r.status === 'practice_only').length,
+    constructor_inferred_rows: inferred,
+    constructor_missing_rows: results.filter((r) => !r.constructor_id && r.status !== 'practice_only').length,
     entries_upcoming: entries.length,
     drivers: ds.length,
     constructors: constructors.length,
