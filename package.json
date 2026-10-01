@@ -1,0 +1,15 @@
+{
+  "name": "propbetedge-f1",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PropBetEdge F1 intelligence: ESPN-sourced canonical F1 graph, DNA, Circuit Fit, teammate battles, PBEcast.",
+  "scripts": {
+    "backfill": "node scripts/backfill-espn.mjs",
+    "normalize": "node scripts/normalize.mjs",
+    "enrich": "node scripts/enrich-wikidata.mjs",
+    "derive": "node scripts/derive.mjs",
+    "pipeline": "node scripts/normalize.mjs && node scripts/enrich-wikidata.mjs && node scripts/derive.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

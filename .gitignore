@@ -1,0 +1,11 @@
+.cache/
+node_modules/
+dist/
+data/normalized/
+data/derived/
+data/raw/
+*.log
+.env*
+.wrangler/
+test-results/
+.vercel/
