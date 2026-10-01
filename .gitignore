@@ -7,3 +7,5 @@ data/
 .wrangler/
 test-results/
 .vercel/
+
+.vercel
