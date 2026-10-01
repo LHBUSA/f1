@@ -157,7 +157,7 @@ ${body}
   <div class="wrap footer-grid">
     <div>
       <a class="brand brand-sm" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-pbe">PROPBETEDGE</span><span class="brand-f1">F1</span></a>
-      <p class="fine">Formula 1 intelligence built only from sourced data. Data: <a href="https://propsports.proptechusa.ai" rel="noopener">PropSports</a>. DNA, Circuit Fit and matchups are PropBetEdge calculations — descriptive, not predictions. Not affiliated with Formula 1, the FIA or any team.</p>
+      <p class="fine">Formula 1 intelligence built only from sourced data. DATA · <a href="https://propsports.proptechusa.ai" rel="noopener">PropSports</a>. DNA, Circuit Fit and matchups are PropBetEdge calculations — descriptive, not predictions. Not affiliated with Formula 1, the FIA or any team.</p>
       <p class="fine"><a href="/methodology">Methodology &amp; sources</a> · <a href="/data-coverage">Data coverage</a></p>
     </div>
     <nav aria-label="PropBetEdge network" class="network">${NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}<a href="${DISCORD}" rel="noopener">Discord</a></nav>
