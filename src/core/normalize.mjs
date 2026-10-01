@@ -90,7 +90,14 @@ const STATUS_MAP = {
   STATUS_DNPQ: 'did_not_prequalify',
   STATUS_EXCLUDED: 'excluded',
   STATUS_WITHDRAWN: 'withdrawn',
+  STATUS_NOT_STARTED: 'did_not_start',
+  STATUS_NOT_QUALIFIED: 'did_not_qualify',
+  STATUS_DID_NOT_APPEAR: 'did_not_appear',
+  STATUS_NOT_CLASSIFIED: 'not_classified',
+  STATUS_FREE_PRACTICE: 'practice_only', // listed on the race entry because they drove a practice session only
 };
+// Race/sprint statuses meaning the car took the start.
+export const STARTED_STATUSES = new Set(['classified', 'retired', 'disqualified', 'not_classified']);
 
 export function normStatus(name) {
   if (!name) return null;
@@ -222,6 +229,7 @@ export function normalizeEvent(ev, lookup, constructorOf, ingestedAt) {
         q2_ms: isQualiLike ? parseTimeMs(s.qual2TimeMS?.d) : null,
         q3_ms: isQualiLike ? parseTimeMs(s.qual3TimeMS?.d) : null,
         winner: !!cp.winner,
+        race_participant: isPointsSession ? normStatus(statusName) !== 'practice_only' : null,
         ...prov(cp.$ref || ev.url, (statsDoc || ev).capturedAt, `${c.id}/${aid}`, ingestedAt),
       };
       if (!statsDoc && !statusD) {

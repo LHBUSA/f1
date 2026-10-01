@@ -9,7 +9,19 @@
     "normalize": "node scripts/normalize.mjs",
     "enrich": "node scripts/enrich-wikidata.mjs",
     "derive": "node scripts/derive.mjs",
-    "pipeline": "node scripts/normalize.mjs && node scripts/enrich-wikidata.mjs && node scripts/derive.mjs"
+    "pipeline": "node scripts/normalize.mjs && node scripts/enrich-wikidata.mjs && node scripts/derive.mjs",
+    "build": "node scripts/build-site.mjs",
+    "serve": "node scripts/serve.mjs",
+    "qa:browser": "node scripts/qa-browser.mjs"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "playwright": "^1.63.0",
+    "wrangler": "^4.146.0"
+  }
 }

@@ -19,6 +19,34 @@ const standings = load('standings');
 let wikidata = null;
 try { wikidata = load('wikidata'); } catch {}
 
+// Canonical circuits: ESPN venue ids that crosswalk to the same Wikidata circuit are one circuit.
+{
+  const xw = wikidata?.venue_crosswalk || {};
+  const canon = {};
+  const merged = {};
+  for (const c of circuits) {
+    const wd = xw[c.id]?.wikidata_id;
+    const cid = wd ? `wd-${wd}` : c.id;
+    canon[c.id] = cid;
+    const wdc = wd ? wikidata.circuits[wd] : null;
+    const m = (merged[cid] ||= { ...c, id: cid, espn_venue_ids: [], name: c.name, wikidata_id: wd || null, wikidata_name: wdc?.name || null, lat: wdc?.lat ?? null, lon: wdc?.lon ?? null, opened: wdc?.opened ?? null, wikidata_country: wdc?.country || null });
+    m.espn_venue_ids.push(c.espn_id);
+    // Prefer the most recently captured ESPN venue's descriptive fields (current layout).
+    if ((c.length_km && !m.length_km) || c.captured_at > m.captured_at) Object.assign(m, { name: c.name, length_km: c.length_km || m.length_km, turns: c.turns || m.turns, layout_type: c.layout_type || m.layout_type, locality: c.locality || m.locality, captured_at: c.captured_at });
+  }
+  for (const e of events) if (e.circuit_id && canon[e.circuit_id]) e.circuit_id = canon[e.circuit_id];
+  circuits.length = 0;
+  const used = new Set();
+  for (const m of Object.values(merged)) {
+    let slug = m.slug;
+    if (used.has(slug)) slug = `${slug}-${m.espn_venue_ids[0]}`;
+    used.add(slug);
+    m.slug = slug;
+    circuits.push(m);
+  }
+}
+fs.writeFileSync(path.join(OUT, 'circuits.json'), JSON.stringify(circuits));
+
 const asOf = new Date().toISOString();
 const currentSeason = Math.max(...events.map((e) => e.season));
 const eventById = Object.fromEntries(events.map((e) => [e.id, e]));
@@ -47,7 +75,8 @@ const std = (a) => {
 };
 const r3 = (x) => (x == null || Number.isNaN(x) ? null : Math.round(x * 1000) / 1000);
 const confidenceOf = (n, lo = 8, hi = 20) => (n >= hi ? 'high' : n >= lo ? 'medium' : 'low');
-const STARTED = (r) => r && !['did_not_start', 'did_not_qualify', 'did_not_prequalify', 'withdrawn', 'excluded'].includes(r.status);
+const STARTED_STATUSES = new Set(['classified', 'retired', 'disqualified', 'not_classified']);
+const STARTED = (r) => !!r && (STARTED_STATUSES.has(r.status) || (r.status == null && (r.laps || 0) > 0));
 const CLASSIFIED = (r) => r && r.status === 'classified';
 
 function percentileRank(value, population, higherIsBetter = true) {
@@ -66,9 +95,10 @@ function percentileRank(value, population, higherIsBetter = true) {
 const eventSession = (eid, type) => (sessionsByEvent[eid] || []).find((s) => s.type === type);
 const completedEvents = events.filter((e) => e.status === 'completed' && e.round).sort((a, b) => a.start_utc.localeCompare(b.start_utc));
 
+// Race entrants only: practice-only drivers listed on the race entry are excluded.
 function raceRows(eid) {
   const s = eventSession(eid, 'race');
-  return s ? resultsBySession[s.id] || [] : [];
+  return s ? (resultsBySession[s.id] || []).filter((r) => r.race_participant !== false && r.status !== 'practice_only') : [];
 }
 function qualiRows(eid) {
   const s = eventSession(eid, 'qualifying');

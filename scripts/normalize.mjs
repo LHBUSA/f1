@@ -3,8 +3,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { CACHE_DIR, cached, get, CORE, pool } from './lib/espn.mjs';
-import { normalizeEvent, normalizeDriver, normalizeVenue, slugify } from '../src/core/normalize.mjs';
-import { resolveConstructor, CONSTRUCTORS, unresolved } from '../src/core/constructors.mjs';
+import { normalizeEvent, normalizeDriver, normalizeVenue, slugify, STARTED_STATUSES } from '../src/core/normalize.mjs';
+import { resolveConstructor, CONSTRUCTORS, unresolved, seasonRelabels } from '../src/core/constructors.mjs';
 
 const OUT = path.resolve('data/normalized');
 fs.mkdirSync(OUT, { recursive: true });
@@ -52,18 +52,18 @@ for (const [, list] of bySeason) {
 events.sort((a, b) => a.start_utc.localeCompare(b.start_utc));
 
 // Drivers: every athlete referenced by a classification or entry.
-const athleteDir = path.join(CACHE_DIR, 'sports.core.api.espn.com/v2/sports/racing/athletes');
 const driverIds = new Set([...results, ...entries].map((r) => r.driver_id));
 const drivers = [];
 const missingAthletes = [];
-for (const id of driverIds) {
-  const file = path.join(athleteDir, id.replace('espn-', '') + '.json');
-  if (!fs.existsSync(file)) {
+await pool([...driverIds], 6, async (id) => {
+  const doc = await get(`https://sports.core.api.espn.com/v2/sports/racing/athletes/${id.replace('espn-', '')}`).catch(() => null);
+  if (!doc) {
     missingAthletes.push(id);
-    continue;
+    return;
   }
-  drivers.push(normalizeDriver(JSON.parse(fs.readFileSync(file, 'utf8')), ingestedAt));
-}
+  drivers.push(normalizeDriver(doc, ingestedAt));
+});
+drivers.sort((a, b) => a.id.localeCompare(b.id));
 // Slug uniqueness: never merge people by name — disambiguate by birth year, then id.
 const slugCount = {};
 for (const d of drivers) slugCount[d.slug] = (slugCount[d.slug] || 0) + 1;
@@ -98,7 +98,7 @@ for (const r of [...results, ...entries]) {
   const x = dcs.get(k);
   x.entries++;
   if (r.car_number) x.car_numbers.add(r.car_number);
-  if (r.session_type === 'race' && r.status && !['did_not_start', 'did_not_qualify', 'did_not_prequalify', 'withdrawn'].includes(r.status)) x.race_starts++;
+  if (r.session_type === 'race' && STARTED_STATUSES.has(r.status)) x.race_starts++;
 }
 const driverConstructorSeasons = [...dcs.values()].map((x) => ({ ...x, car_numbers: [...x.car_numbers] }));
 
@@ -208,6 +208,7 @@ const coverage = {
   first_season_with_q123: Math.min(...results.filter((r) => r.q1_ms).map((r) => r.season)),
   missing_athletes: missingAthletes.length,
   unresolved_constructor_names: unresolved(),
+  constructor_relabels: seasonRelabels(),
   identity_review: identityReview,
   unsupported_tables: {
     lap: 'no licensed lap-by-lap source (ESPN exposes no per-lap timing)',

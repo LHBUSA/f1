@@ -1,0 +1,158 @@
+// Static site build: data/normalized + data/derived → dist/
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { loadContext } from './site/context.mjs';
+import { layout, esc, SITE, fmtDate } from './site/lib.mjs';
+import * as P from './site/pages.mjs';
+import { lineageChain } from '../src/core/constructors.mjs';
+
+const DIST = path.resolve('dist');
+const t0 = Date.now();
+fs.rmSync(DIST, { recursive: true, force: true });
+fs.mkdirSync(path.join(DIST, 'assets/fonts'), { recursive: true });
+
+const ctx = loadContext();
+ctx.recaps = P.buildRecaps(ctx);
+
+// ---------- assets ----------
+const colors = new Set();
+for (const c of ctx.constructors) for (const v of Object.values(c.colors || {})) colors.add(String(v).toLowerCase());
+let css = fs.readFileSync('src/web/styles.css', 'utf8');
+css += '\n' + [...colors].map((c) => `.tc-${c.replace(/[^0-9a-f]/g, '')}{--tc:#${c}}`).join('');
+css += '\n' + Array.from({ length: 101 }, (_, i) => `.w-${i}{width:${i}%}`).join('');
+const cssHash = crypto.createHash('sha256').update(css).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/app.${cssHash}.css`), css);
+const js = fs.readFileSync('src/web/app.js', 'utf8');
+const jsHash = crypto.createHash('sha256').update(js).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/app.${jsHash}.js`), js);
+for (const f of ['barlow-condensed-latin-500-normal', 'barlow-condensed-latin-600-normal', 'barlow-condensed-latin-700-normal', 'barlow-condensed-latin-800-normal']) fs.copyFileSync(`node_modules/@fontsource/barlow-condensed/files/${f}.woff2`, path.join(DIST, `assets/fonts/${f}.woff2`));
+for (const f of ['barlow-latin-400-normal', 'barlow-latin-500-normal', 'barlow-latin-600-normal']) fs.copyFileSync(`node_modules/@fontsource/barlow/files/${f}.woff2`, path.join(DIST, `assets/fonts/${f}.woff2`));
+for (const f of fs.readdirSync('public')) fs.copyFileSync(path.join('public', f), path.join(DIST, f));
+const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js` };
+
+// ---------- page writer ----------
+const sitemap = [];
+let pages = 0;
+function emit(p) {
+  const html = layout({ ...p, assets });
+  const rel = p.path === '/' ? 'index.html' : p.path.replace(/^\//, '') + '.html';
+  const file = path.join(DIST, rel);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, html);
+  pages++;
+  if (!p.noindex) sitemap.push(p.path);
+}
+
+// Track outlines (OpenStreetMap, ODbL) if prepared.
+let outlines = {};
+try { outlines = JSON.parse(fs.readFileSync('data/derived/outlines.json', 'utf8')); } catch {}
+const outlineSvg = (c) => {
+  const o = outlines[c?.id];
+  if (!o) return '';
+  return `<div class="card"><span class="kicker">Layout</span><svg class="track" viewBox="${o.viewBox}" role="img" aria-label="${esc(c.wikidata_name || c.name)} layout"><path class="outline" d="${o.d}"/><path class="inner" d="${o.d}"/></svg><p class="fine">Track geometry © OpenStreetMap contributors (ODbL). Simplified.</p></div>`;
+};
+
+emit(P.home(ctx));
+const seasons = Object.keys(ctx.eventsBySeason).map(Number);
+emit(P.racesIndex(ctx, ctx.currentSeason, true));
+for (const y of seasons) if (y !== ctx.currentSeason) emit(P.racesIndex(ctx, y, false));
+for (const ev of ctx.events) emit(P.racePage(ctx, ev));
+emit(P.driversIndex(ctx));
+for (const d of ctx.drivers) if (ctx.careers[d.id]?.entries) emit(P.driverPage(ctx, d));
+emit(P.teamsIndex(ctx));
+for (const c of ctx.constructors) emit(P.teamPage(ctx, c, lineageChain));
+emit(P.circuitsIndex(ctx));
+for (const c of ctx.circuits) emit(P.circuitPage(ctx, c, outlineSvg(c)));
+emit(P.standingsPage(ctx, ctx.currentSeason));
+for (const y of seasons) if (y !== ctx.currentSeason && ctx.standingsBy[`${y}|driver`]) emit(P.standingsPage(ctx, y));
+emit(P.matchupsIndex(ctx));
+for (const k of Object.keys(ctx.matchups)) emit(P.matchupPage(ctx, k));
+const nextCircuit = ctx.nextEvent ? ctx.circuitById[ctx.nextEvent.circuit_id] : null;
+emit(P.pbecast(ctx, nextCircuit && outlines[nextCircuit.id] ? outlineSvg(nextCircuit).replace(/^<div class="card"><span class="kicker">Layout<\/span>/, '<div>') : ''));
+emit(P.newsIndex(ctx));
+for (const r of ctx.recaps) emit(P.newsArticle(ctx, r));
+emit(methodology(ctx));
+emit(coveragePage(ctx));
+
+// 404 (not in sitemap)
+const nf = layout({ path: '/404', title: 'Page not found', description: 'Page not found.', noindex: true, assets, body: `<section class="hero"><div class="wrap"><span class="eyebrow">404</span><h1>Off the racing line</h1><p class="sub">That page doesn’t exist. Try the <a class="more" href="/races">calendar</a>, <a class="more" href="/drivers">drivers</a> or <a class="more" href="/standings">standings</a>.</p></div></section>` });
+fs.writeFileSync(path.join(DIST, '404.html'), nf);
+
+// sitemap + robots
+const today = new Date().toISOString().slice(0, 10);
+fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `<url><loc>${SITE}${p === '/' ? '/' : p}</loc><lastmod>${today}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\n`);
+// Small public manifest for the client (live tower name/colour lookups).
+const manifest = {
+  season: ctx.currentSeason,
+  drivers: Object.fromEntries(ctx.drivers.filter((d) => ctx.currentGrid.some((g) => g.driver_id === d.id) || (ctx.careers[d.id]?.last_season || 0) >= ctx.currentSeason - 1).map((d) => [d.espn_id, { n: d.full_name, c: d.code, s: d.slug }])),
+  teams: Object.fromEntries(ctx.constructors.filter((c) => c.last_season >= ctx.currentSeason - 1).map((c) => [c.id, { n: c.name, col: ctx.colorOf(c.id, ctx.currentSeason) }])),
+};
+fs.writeFileSync(path.join(DIST, 'assets/manifest.json'), JSON.stringify(manifest));
+console.log(`built ${pages} pages (${sitemap.length} indexable) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+
+// ---------- static content pages ----------
+function methodology(ctx) {
+  const r = ctx.dnaReport;
+  const body = `<section class="section"><div class="wrap prose">
+  <span class="eyebrow">Methodology · ${esc(r.version)}</span><h1>How PropBetEdge F1 works</h1>
+  <p>Source truth and derived intelligence are kept apart. Normalized tables hold only what a source published, each record with <code>source</code>, <code>source_id</code>, <code>source_url</code>, <code>source_updated_at</code> and <code>ingested_at</code>. DNA, Circuit Fit, matchups and progression are calculated from those tables and versioned separately.</p>
+  <h2>Sources</h2>
+  <ul><li><b>ESPN</b> — seasons, events, sessions (practice, qualifying with Q1/Q2/Q3, sprint qualifying, sprint, race), classifications, grid, status, laps completed, laps led, pit-stop counts, fastest laps, points, standings, driver identity and headshots, venue length/turns/layout. Every response is archived by URL and SHA-256 before parsing.</li>
+  <li><b>Wikidata</b> (CC0) — circuit coordinates, opening year and identity crosswalk, matched race-by-race with an identity guard (names must share a distinctive token; ambiguous matches are rejected).</li>
+  <li><b>MET Norway</b> (CC BY 4.0) — weekend weather forecasts for upcoming events only.</li></ul>
+  <p>Not used: Formula1.com, FIA documents, OpenF1 and Jolpica/Ergast all restrict commercial use. Paid feeds are not used.</p>
+  <h2>What is not available</h2>
+  <p>The source publishes no per-lap timing, sector times, tyre compounds, stints, pit-stop durations, car positions, telemetry, race-control messages or historical weather. Those tables exist in the model but are empty, and every feature that would need them is shown as “not sourced” rather than estimated. PBEcast never simulates car positions.</p>
+  <h2 id="driver-dna">Driver DNA</h2>
+  <p>Two windows: current (${esc(Object.values(ctx.dnaCur)[0]?.window || '')}) and career. Each dimension reports a percentile within the population of drivers meeting its minimum sample in the same window, the sample size, a confidence tier (low under 8, medium 8–19, high 20+) and the raw metrics.</p>
+  <ul>
+  <li><b>Qualifying Pace</b> — median teammate qualifying gap (%) from the deepest knockout session both set a time in; gaps over 5% excluded as non-representative. Falls back to qualifying head-to-head where times are unavailable.</li>
+  <li><b>Race Result vs Teammate</b> — share of races finishing ahead of the teammate (a one-car retirement counts for the finisher).</li>
+  <li><b>Positions Gained</b> — grid-to-finish gain above the historical expectation for that grid slot.</li>
+  <li><b>Finishing</b> — classification rate minus the teammate’s (same machinery).</li>
+  <li><b>Consistency</b> — spread of teammate qualifying gaps.</li>
+  <li><b>Team Points Share</b> — share of team points in scoring weekends.</li>
+  <li><b>Street / High-Speed / Low-Speed</b> — teammate qualifying gap on those circuit classes relative to the driver’s overall gap. Speed classes are terciles of pole-lap average speed (lap length ÷ fastest qualifying lap), not corner telemetry.</li></ul>
+  <h2 id="constructor-dna">Constructor DNA</h2>
+  <p>Per season: qualifying speed (team best lap vs session best), race results (points per weekend), finishing reliability, race gains, high/low-speed and street relative pace, and driver pairing balance. The driver effect (intra-team gap) is reported separately from the car effect (team best vs field).</p>
+  <h2 id="circuit-dna">Circuit DNA</h2>
+  <p>From the last 10 seasons at each circuit: track-position importance (grid↔finish rank correlation and pole conversion), position change, pole-lap speed, attrition and observed pit stops per car (2014+). Braking, tyre stress, DRS, safety-car and weather volatility are not sourced.</p>
+  <h2>Circuit Fit</h2>
+  <p>A weighted average of relevant Driver and Constructor DNA percentiles, with weights set by the circuit’s profile (e.g. qualifying is weighted up where track position matters). It is descriptive — not a prediction, probability or betting signal.</p>
+  <h2>Points</h2>
+  <p>The source publishes race-row points as the weekend total (sprint included). Pre-1991 seasons used dropped scores, so race-by-race sums can differ from official totals; official standings are always authoritative and progression charts are hidden where sums disagree.</p>
+  <h2>Identity</h2>
+  <p>Drivers are keyed by source ID and never merged by name. Constructors are split by name <i>and</i> season range (e.g. the 1958–94 Team Lotus, the 2010–11 Lotus Racing and the 2012–15 Lotus F1 are different entities) and grouped into franchise lineages for navigation only.</p>
+  </div></section>`;
+  return { path: '/methodology', title: 'Methodology & Sources', description: 'How PropBetEdge F1 sources, normalizes and models Formula 1 data: Driver DNA, Constructor DNA, Circuit DNA and Circuit Fit methods, sources and limitations.', body };
+}
+
+function coveragePage(ctx) {
+  const c = ctx.coverage;
+  const r = ctx.dnaReport;
+  const rows = [
+    ['Seasons', `${c.seasons} (${c.earliest_season}–${c.latest_season})`],
+    ['Events', `${c.events} (${c.events_completed} completed)`],
+    ['Sessions', c.sessions],
+    ['Classifications', c.classifications],
+    ['Drivers', c.drivers],
+    ['Constructors', c.constructors],
+    ['Circuits (canonical)', ctx.circuits.length],
+    ['Practice/qualifying sessions from', c.first_season_with_sessions],
+    ['Q1/Q2/Q3 times from', c.first_season_with_q123],
+    ['Pit-stop counts from', c.first_season_with_pit_counts],
+    ['Lap-level data', 'Not available (no licensed source)'],
+    ['Telemetry', 'Not available'],
+    ['Driver DNA (current window)', `${r.driver_dna_current_qualifying} drivers, avg ${r.driver_dna_current_avg_populated} of ${r.driver_dna_dimensions_defined} dimensions`],
+    ['Driver DNA (career)', `${r.driver_dna_career_qualifying} drivers, avg ${r.driver_dna_career_avg_populated} dimensions`],
+    ['Constructor DNA', `${r.constructor_dna_seasons} seasons, ${r.constructor_dna_current_teams} current teams`],
+    ['Circuit DNA', `${r.circuit_dna_with_recent_profile} circuits profiled of ${r.circuit_dna_circuits}`],
+    ['Circuit Fit', `${r.circuit_fit_events} events, ${r.circuit_fit_driver_rows} driver rows`],
+    ['Teammate pairings', r.teammate_pairs],
+  ];
+  const body = `<section class="section"><div class="wrap prose"><span class="eyebrow">Generated ${esc(fmtDate(c.generated_at))}</span><h1>Data coverage</h1><div class="table-wrap"><table><tbody>${rows.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td>${esc(String(v))}</td></tr>`).join('')}</tbody></table></div>
+  ${c.unresolved_constructor_names?.length ? `<p class="fine">Constructors keyed by source name (no editorial lineage): ${c.unresolved_constructor_names.length}.</p>` : ''}</div></section>`;
+  return { path: '/data-coverage', title: 'Data Coverage', description: 'PropBetEdge F1 data coverage: seasons, events, sessions, classifications, DNA coverage and known gaps.', body, noindex: false };
+}
