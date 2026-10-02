@@ -140,8 +140,9 @@ export function personPageV2(ctx, prof) {
   const curHtml = cur.length ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${ctx.currentSeason}</span><h2>Current role${cur.length > 1 ? 's' : ''}</h2></div></div>
   <ul class="cur-roles">${cur.map((e) => `<li><b>${esc(e.title)}</b><span>${orgLink(ctx, e)}${e.driverId && driverLink(ctx, e.driverId) ? ` · ${driverLink(ctx, e.driverId)}` : ''}${reported(e)}</span><small>${e.effective_from ? `Since ${esc(fmtPartial(e.effective_from))}` : `Verified for the ${ctx.currentSeason} season`}</small></li>`).join('')}</ul></div></section>` : '';
   const summary = summaryOf(ctx, prof);
-  const body = `${crumbs(bc)}
-  <section class="hero ${teamClass(team ? ctx.colorOf(team.id, ctx.currentSeason) : null)}"><div class="wrap person-hero">${face(prof, 120)}<div><span class="eyebrow">${team ? esc(team.name) : 'Formula 1'}${lead ? ` · ${esc(lead.title)}` : ''}</span><h1>${esc(prof.name)}</h1>${lead ? `<p class="lede">${esc(lead.title)}${team ? ` · ${esc(team.name)}` : ''}</p>` : ''}
+  const tc = teamClass(team ? ctx.colorOf(team.id, ctx.currentSeason) : null);
+  const body = `${crumbs(bc)}<div class="${tc}">
+  <section class="hero"><div class="wrap person-hero">${face(prof, 120)}<div><span class="eyebrow">${team ? esc(team.name) : 'Formula 1'}${lead ? ` · ${esc(lead.title)}` : ''}</span><h1>${esc(prof.name)}</h1>${lead ? `<p class="lede">${esc(lead.title)}${team ? ` · ${esc(team.name)}` : ''}</p>` : ''}
   ${meta.length ? `<div class="hero-meta">${meta.map(([k, v]) => `<span><b>${k}</b>${v}</span>`).join('')}</div>` : ''}<div class="team-stripe"></div></div></div></section>
   ${summary ? `<section class="section psum"><div class="wrap"><p class="sub">${esc(summary)}</p></div></section>` : ''}
   ${curHtml}
@@ -153,7 +154,7 @@ export function personPageV2(ctx, prof) {
   ${backgroundHtml(prof)}
   <section class="section"><div class="wrap"><p class="fine">Identity and role facts come from team and FIA publications, established motorsport reporting and open identity data, each recorded with its source in the PropBetEdge registry. Private and family details are never recorded. “reported” = confirmed by independent reporting, not yet by the team.</p>
   ${prof.photo ? `<p class="fine">Photo: <a href="${esc(prof.photo.sourceUrl)}" rel="noopener">${esc(prof.photo.photographer)}</a>, <a href="${esc(prof.photo.licenseUrl)}" rel="noopener license">${esc(prof.photo.license)}</a>${prof.photo.modified ? ' · cropped' : ''}</p>` : ''}
-  <p><a class="more" href="/people">All F1 people →</a></p></div></section>`;
+  <p><a class="more" href="/people">All F1 people</a></p></div></section></div>`;
   const description = summary.length > 40 ? (summary.length > 300 ? `${summary.slice(0, 297).replace(/\s+\S*$/, '')}…` : summary) : `${prof.name}: Formula 1 role record, career timeline and team history.`;
   return {
     path: `/people/${prof.slug}`,

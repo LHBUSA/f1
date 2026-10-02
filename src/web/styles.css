@@ -694,7 +694,7 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 .dprof .fine{margin-top:10px}.crew{margin-top:22px}.crew h3{font-size:13px;letter-spacing:.14em;color:var(--muted);margin:0 0 10px}
 .plinks{font-size:14px;line-height:1.8}.plinks small{color:var(--muted)}
 .more-row{margin:14px 0 6px}
-.pdir-ctl{display:grid;gap:12px;margin-bottom:16px}
+.pdir-ctl{display:grid;gap:12px;margin-bottom:16px}.pdir-ctl[hidden]{display:none}
 .pdir-groups{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font:inherit;font-size:13px;font-weight:600;padding:6px 11px;border-radius:999px;border:1px solid var(--ctl-line);background:var(--panel);color:var(--ink2);cursor:pointer;min-height:34px}
 .chip span{color:var(--muted);font-weight:400;margin-left:2px}.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}.chip[aria-pressed=true] span{color:var(--bg)}
