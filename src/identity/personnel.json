@@ -8637,7 +8637,13 @@
       "display": false,
       "conflicts": [
         "F1.com: joined Red Bull in 2015; RN365: joined late 2014, initially with Kvyat"
-      ]
+      ],
+      "disputed": {
+        "from": [
+          "2014",
+          "2015"
+        ]
+      }
     },
     {
       "personId": "gianpiero-lambiase",
@@ -8828,7 +8834,13 @@
       "display": false,
       "conflicts": [
         "The Race table gives McLaren 1997-2004; he joined Red Bull for 2006, so end year 2004/2005 unconfirmed"
-      ]
+      ],
+      "disputed": {
+        "to": [
+          "2004",
+          "2005"
+        ]
+      }
     },
     {
       "personId": "adrian-newey",
@@ -9201,7 +9213,13 @@
       "display": false,
       "conflicts": [
         "F1.com counts tenure from 2016 (race debut); BBC/Haas say he led the team about 10 years, i.e. from its 2014 founding"
-      ]
+      ],
+      "disputed": {
+        "from": [
+          "2014",
+          "2016"
+        ]
+      }
     },
     {
       "personId": "marcus-dudley",

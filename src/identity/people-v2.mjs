@@ -80,7 +80,7 @@ export function careerTimeline(reg, personId) {
       ongoing: r.current === true && !r.effectiveTo && !(r.effectiveFrom && dateStart(r.effectiveFrom) > TODAY()),
       upcoming: !!(r.effectiveFrom && dateStart(r.effectiveFrom) > TODAY() && !r.effectiveTo),
       observedSeasons: ranged ? [] : [r.season],
-      ranged, confidence: r.confidence, history: !!r.history, sources: r.sources, conflicts: r.conflicts || [],
+      ranged, confidence: r.confidence, history: !!r.history, sources: r.sources, conflicts: r.conflicts || [], disputed: r.disputed || null,
     });
   }
   const ranges = items.filter((x) => x.ranged);
@@ -118,8 +118,10 @@ export function careerTimeline(reg, personId) {
 export function periodLabel(e) {
   if (e.upcoming) return `From ${fmtPartial(e.from)} (announced)`;
   if (!e.ranged) return `${e.observedSeasons.join(', ')} season${e.observedSeasons.length > 1 ? 's' : ''}`;
-  const f = e.from ? fmtPartial(e.from) : 'Start date not verified';
-  const t = e.ongoing ? 'present' : e.to ? fmtPartial(e.to) : 'end date not verified';
+  // a recorded source conflict on a date shows every candidate; we never pick one
+  const alt = (k) => e.disputed?.[k]?.length ? e.disputed[k].map(fmtPartial).join(' or ') : null;
+  const f = alt('from') || (e.from ? fmtPartial(e.from) : 'Start date not verified');
+  const t = e.ongoing ? 'present' : alt('to') || (e.to ? fmtPartial(e.to) : 'end date not verified');
   return f === t ? f : `${f} – ${t}`;
 }
 

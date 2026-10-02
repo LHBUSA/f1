@@ -196,6 +196,7 @@
   });
   // ---------- page module: /people directory filters (the server-rendered list is complete without JS) ----------
   F1.register('people', {
+    selector: '[data-pdir-ctl]',
     mount(root) {
       const ctl = $('[data-pdir-ctl]', root);
       const list = $('[data-pdir]', root);
@@ -209,6 +210,7 @@
       const params = new URLSearchParams(location.search);
       let group = params.get('group') || '';
       if (params.get('team') && [...team.options].some((o) => o.value === params.get('team'))) team.value = params.get('team');
+      if (params.get('q')) q.value = params.get('q');
       const apply = () => {
         const term = q.value.trim().toLowerCase();
         let n = 0;
@@ -220,6 +222,10 @@
         for (const c of chips) c.setAttribute('aria-pressed', String(c.dataset.g === group));
         count.textContent = `${n} ${n === 1 ? 'person' : 'people'}`;
         if (empty) empty.hidden = n > 0;
+        // keep the filter in the URL so Back/Forward and shared links restore it (history.state kept for nav.js)
+        const u = new URL(location.href);
+        for (const [k, v] of [['group', group], ['team', team.value], ['q', q.value.trim()]]) { if (v) u.searchParams.set(k, v); else u.searchParams.delete(k); }
+        if (u.href !== location.href) try { history.replaceState(history.state, '', u.href); } catch {}
       };
       const onChip = (e) => { const b = e.target.closest('[data-g]'); if (!b) return; group = b.dataset.g; apply(); };
       ctl.addEventListener('click', onChip);

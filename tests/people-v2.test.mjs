@@ -203,3 +203,10 @@ test('internal links on people pages, the directory and canary driver pages reso
   }
   assert.deepEqual([...new Set(bad)], []);
 });
+
+test('a disputed date shows every candidate, never one picked side', () => {
+  const steiner = careerTimeline(reg, 'guenther-steiner').entries.find((e) => e.constructorId === 'haas' && /principal/i.test(e.title));
+  assert.match(steiner.period, /2014 or 2016/);
+  assert.match(careerTimeline(reg, 'adrian-newey').entries.find((e) => e.constructorId === 'mclaren').period, /2004 or 2005/);
+  assert.match(careerTimeline(reg, 'gianpiero-lambiase').entries.find((e) => e.disputed).period, /^2014 or 2015 – /);
+});

@@ -719,7 +719,7 @@ function peopleSection(ctx, c, season, P, lineup) {
   ${garageRow}
   <p class="more-row"><a class="more" href="/people?team=${esc(c.id)}">All ${esc(c.name)} people</a></p>
   <p class="fine">Current ${season} roles from team, FIA and reputable motorsport sources; “reported” = confirmed by independent media, not yet by the team. Roles we cannot verify are left out; nobody is credited with designing a specific part.</p>
-  ${P.photoCredits.length ? `<details class="credits"><summary>Photo credits</summary><ul>${P.photoCredits.map((p) => `<li>${esc(p.name)}: <a href="${esc(p.sourceUrl)}" rel="noopener">${esc(p.photographer)}</a>, <a href="${esc(p.licenseUrl)}" rel="noopener license">${esc(p.license)}</a>${p.modified ? ' · cropped' : ''}</li>`).join('')}</ul></details>` : ''}
+  ${P.photoCredits.length ? `<details class="credits"><summary>Photo credits</summary><ul>${P.photoCredits.map((p) => `<li>${esc(p.name)}: <a href="${esc(p.sourceUrl)}" rel="noopener">${esc(p.photographer)}</a>${/commons\.wikimedia\.org/.test(p.sourceUrl || '') ? ' / Wikimedia Commons / ' : ', '}<a href="${esc(p.licenseUrl)}" rel="noopener license">${esc(p.license)}</a>${p.modified ? ' · cropped' : ''}</li>`).join('')}</ul></details>` : ''}
   </div></section>`;
 }
 

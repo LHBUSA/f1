@@ -53,7 +53,7 @@ function timelineHtml(ctx, prof) {
   const g = [...gaps];
   for (const e of entries) {
     while (g.length && g.at(-1).from > byStart(e)) { const x = g.pop(); items.push(`<li class="ctl-gap"><span>${x.from === x.to ? x.from : `${x.from}–${x.to}`}</span><b>No verified role on record</b></li>`); }
-    items.push(`<li class="ctl-item${e.ongoing ? ' is-cur' : ''}"><span class="ctl-when">${esc(e.period)}</span><b>${esc(e.title)}</b><small>${orgLink(ctx, e)}${e.driverId && driverLink(ctx, e.driverId) ? ` · ${driverLink(ctx, e.driverId)}` : ''}${reported(e)}${e.ranged ? '' : ' <span class="tag" title="Role confirmed for this season only; earlier and later seasons are not implied">season record</span>'}</small></li>`);
+    items.push(`<li class="ctl-item${e.ongoing ? ' is-cur' : ''}"><span class="ctl-when">${esc(e.period)}</span><b>${esc(e.title)}</b><small>${orgLink(ctx, e)}${e.disputed ? ' <span class="tag" title="Sources disagree on this date; every candidate is shown">disputed</span>' : ''}${e.driverId && driverLink(ctx, e.driverId) ? ` · ${driverLink(ctx, e.driverId)}` : ''}${reported(e)}${e.ranged ? '' : ' <span class="tag" title="Role confirmed for this season only; earlier and later seasons are not implied">season record</span>'}</small></li>`);
   }
   return `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Career</span><h2>Career timeline</h2></div></div>
   <ol class="ctl">${items.join('')}</ol>
@@ -156,7 +156,7 @@ export function personPageV2(ctx, prof) {
   ${ownershipHtml(ctx, prof)}
   ${backgroundHtml(prof)}
   <section class="section"><div class="wrap"><p class="fine">Identity and role facts come from team and FIA publications, established motorsport reporting and open identity data, each recorded with its source in the PropBetEdge registry. Private and family details are never recorded. “reported” = confirmed by independent reporting, not yet by the team.</p>
-  ${prof.photo ? `<p class="fine">Photo: <a href="${esc(prof.photo.sourceUrl)}" rel="noopener">${esc(prof.photo.photographer)}</a>, <a href="${esc(prof.photo.licenseUrl)}" rel="noopener license">${esc(prof.photo.license)}</a>${prof.photo.modified ? ' · cropped' : ''}</p>` : ''}
+  ${prof.photo ? `<p class="fine">Photo: <a href="${esc(prof.photo.sourceUrl)}" rel="noopener">${esc(prof.photo.photographer)}</a>${/commons\.wikimedia\.org/.test(prof.photo.sourceUrl || '') ? ' / Wikimedia Commons / ' : ', '}<a href="${esc(prof.photo.licenseUrl)}" rel="noopener license">${esc(prof.photo.license)}</a>${prof.photo.modified ? ' · cropped' : ''}</p>` : ''}
   <p><a class="more" href="/people">All F1 people</a></p></div></section></div>`;
   const description = summary.length > 40 ? (summary.length > 300 ? `${summary.slice(0, 297).replace(/\s+\S*$/, '')}…` : summary) : `${prof.name}: Formula 1 role record, career timeline and team history.`;
   return {
