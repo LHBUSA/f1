@@ -607,7 +607,6 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
   .tm-drv small{display:none}.tm-arrow{display:none}
 }
 .nav-progress{position:fixed;left:0;top:0;height:2px;width:0;background:var(--accent,#ff4d2e);z-index:1000;opacity:0;transition:width 1.2s ease-out,opacity .2s}.nav-progress[data-on='1']{width:80%;opacity:1}@media (prefers-reduced-motion: reduce){.nav-progress{transition:none}}::view-transition-old(root),::view-transition-new(root){animation-duration:120ms}
-/* TEMP (remove when PBEcast v3 merges): frozen PBEcast UI keeps its accepted colours */body.bg-cast{--muted:#8a93a8;--faint:#5d667b}
 
 /* rail progress: 03 / 11 + thin segments; the active segment fills during the idle interval (autoplay only) */
 .rail-progress{display:none;align-items:center;gap:14px;margin-top:2px}
@@ -640,3 +639,11 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 @media(max-width:480px){.pc-row{grid-template-columns:24px 4px 34px minmax(0,1fr) 22px auto auto}body[data-pc-tier=all_access] .pc-row{grid-template-columns:22px 4px 32px 34px 22px repeat(2,minmax(0,1fr)) auto}body[data-pc-tier=all_access] .pc-row .pc-num:nth-of-type(n){display:block}body[data-pc-tier=all_access] .pc-row .pc-num:nth-child(8),body[data-pc-tier=all_access] .pc-row .pc-num:nth-child(9){display:none}}
 .pc-driver{display:block}
 .pc-driver .pc-fhead b{font:700 18px var(--display);letter-spacing:.02em}
+
+/* PBEcast v3 phase 2-4: tower treatments, replay clock + jumps, graph seek */
+.pc-row.is-leader .pc-pos{color:var(--gold,#ffcf5c)}
+.pc-row.is-out{opacity:.55}.pc-row.is-out .pc-code{text-decoration:line-through;text-decoration-color:#ffffff55}
+.pc-row[aria-pressed=true]{background:#ffffff14;box-shadow:inset 3px 0 0 var(--tc,#fff)}
+.pc-clock{font:700 13px var(--display);letter-spacing:.06em;font-variant-numeric:tabular-nums;color:var(--ink2);padding:0 6px}
+.pc-jump{margin-top:8px}
+[data-pc-graph]{cursor:pointer}

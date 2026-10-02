@@ -174,7 +174,8 @@ function renderTower(T) {
   const rows = f ? [...f.cars].filter((c) => ID.drivers[c.id]).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99)) : S.tower;
   body.replaceChildren(...rows.map((c, i) => {
     const d = ID.drivers[c.id || c.driver_id], t = TEAM(c.id || c.driver_id);
-    const b = el('button', `pc-row tc-${(t?.color || '').toLowerCase()}`); b.type = 'button';
+    const out = c.status && !['running', 'classified'].includes(c.status);
+    const b = el('button', `pc-row tc-${(t?.color || '').toLowerCase()}${c.pos === 1 ? ' is-leader' : ''}${out ? ' is-out' : ''}`); b.type = 'button';
     b.setAttribute('aria-pressed', String(d?.code === S.selected)); b.dataset.code = d?.code || '';
     const start = startPos(c.id || c.driver_id), mv = start != null && c.pos != null ? start - c.pos : null;
     b.append(el('span', 'pc-pos', String(c.pos ?? '–')), el('span', 'pc-stripe'), Object.assign(el('span', 'pc-team', t?.short || ''), { title: t?.name || '' }), el('span', 'pc-code', d?.code || '?'),
@@ -249,7 +250,7 @@ function tick(now) {
   const dt = now - lastFrame; lastFrame = now;
   if (S.mode === 'replay' && S.playing && S.model) { S.T = Math.min(S.model.end, S.T + dt * S.speed); if (S.T >= S.model.end) S.playing = false; syncScrubber(); }
   const T = S.mode === 'live' ? Date.now() : S.T;
-  drawCars(T); renderHeader(T);
+  drawCars(T); renderHeader(T); renderClock(T);
   if (!tick.n || now - tick.n > 1000) { tick.n = now; renderTower(T); renderFeed(S.mode === 'replay' ? T : 0); renderGraph(T); renderFocus(T); }
   requestAnimationFrame(tick);
 }
@@ -263,6 +264,8 @@ function bindReplay() {
   $('[data-pc-scrub]')?.addEventListener('change', persistT);
   $('[data-pc-lapjump]')?.addEventListener('change', (e) => { const lap = Number(e.target.value); const f = S.model.frames.find((x) => x.lap >= lap); if (f) { S.T = f.ms; syncScrubber(); } });
   const jumpLap = (dir) => { if (!S.model) return; const cur = lapAt(S.model, S.T) || 0; const target = Math.max(1, cur + dir); const f = S.model.frames.find((x) => x.lap >= target); if (f) { S.T = f.ms; syncScrubber(); persistT(); const sel = $('[data-pc-lapjump]'); if (sel) sel.value = String(f.lap); } };
+  $('[data-pc-reset]')?.addEventListener('click', () => { if (!S.model) return; S.playing = false; S.T = S.model.start; $('[data-pc-play]').textContent = 'Play'; syncScrubber(); persistT(); });
+  $('[data-pc-jumpto]')?.addEventListener('change', (e) => { const t = Number(e.target.value); if (S.model && Number.isFinite(t)) { S.T = Math.min(S.model.end, Math.max(S.model.start, t)); syncScrubber(); persistT(); } e.target.selectedIndex = 0; });
   $('[data-pc-lapprev]')?.addEventListener('click', () => jumpLap(-1));
   $('[data-pc-lapnext]')?.addEventListener('click', () => jumpLap(1));
   document.addEventListener('keydown', (e) => {
@@ -272,6 +275,17 @@ function bindReplay() {
     else if (e.key === ']' || e.key === '[') jumpLap(e.key === ']' ? 1 : -1);
   });
 }
+
+// graph -> replay: clicking a lap column moves replay to the first frame of that lap
+document.addEventListener('click', (e) => {
+  const c = e.target.closest?.('[data-pc-graph]');
+  if (!c || !S.model || S.mode !== 'replay') return;
+  const H = positionHistory(S.model), maxLap = Math.max(1, ...Object.values(H).flatMap((a) => a.map((p) => p.lap)));
+  const r = c.getBoundingClientRect(), L0 = 34, R0 = 40;
+  const lap = Math.round(1 + ((e.clientX - r.left - L0) / Math.max(1, r.width - L0 - R0)) * (maxLap - 1));
+  const f = S.model.frames.find((x) => x.lap >= Math.max(1, Math.min(maxLap, lap)));
+  if (f) { S.T = f.ms; syncScrubber(); persistT(); }
+});
 
 // ---------- selection ----------
 document.addEventListener('click', (e) => {
@@ -303,7 +317,9 @@ function renderFocus(T) {
   const rows = f ? [...f.cars].filter((c) => ID.drivers[c.id]).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99)) : S.tower.map((r) => ({ ...r, id: r.driver_id }));
   const i = rows.findIndex((c) => (c.id || c.driver_id) === d.id), c = rows[i];
   const p = S.model && c ? progressAt(S.model, d.id, T, { live: S.mode === 'live' }) : null;
-  const status = c?.status && c.status !== 'running' ? ({ retired: 'Retired', disqualified: 'Disqualified', dns: 'Did not start', not_classified: 'Not classified' }[c.status] || c.status) : !p ? '—' : p.state === 'held' ? 'Held · timing gap' : p.state === 'unplaced' ? (f?.lap ? 'In pit / garage' : 'Awaiting first crossing') : p.state === 'out' ? 'Out' : S.mode === 'live' ? 'Running · live' : 'Running';
+  const m = S.model?.cars.get(d.id), lastX = m && [...m.crossings].reverse().find((x) => x.ms <= T);
+  const observedNow = lastX && T - lastX.ms < 2500;
+  const status = c?.status && !['running', 'classified'].includes(c.status) ? ({ retired: 'Retired', disqualified: 'Disqualified', dns: 'Did not start', not_classified: 'Not classified' }[c.status] || c.status) : !p ? '—' : p.state === 'held' ? 'Held · timing gap' : p.state === 'unplaced' ? (f?.lap ? 'Not placed · pit / garage' : 'Awaiting first crossing') : p.state === 'out' ? 'Out' : observedNow ? 'Observed line crossing' : 'Interpolated between crossings';
   const start = startPos(d.id), mv = start != null && c?.pos != null ? start - c.pos : null;
   const stat = (k, v, cls = '') => { const s = el('div', `pc-fs ${cls}`); s.append(el('span', null, k), el('b', null, v)); return s; };
   const ahead = rows[i - 1], behind = rows[i + 1];
@@ -315,6 +331,7 @@ function renderFocus(T) {
     stat('Interval ahead', S.entitled ? (i > 0 && c?.gap_ms != null && ahead?.gap_ms != null ? fmtGap(c.gap_ms - ahead.gap_ms) : '—') : lockTxt, S.entitled ? '' : 'locked'),
     stat('Interval behind', S.entitled ? (behind?.gap_ms != null && c?.gap_ms != null ? fmtGap(behind.gap_ms - c.gap_ms) : '—') : lockTxt, S.entitled ? '' : 'locked'),
     stat('Best lap', S.entitled ? fmtLap(c?.best_ms) || '—' : lockTxt, S.entitled ? '' : 'locked'),
+    stat('Pit stops', S.entitled ? (c?.pits != null ? String(c.pits) : '—') : lockTxt, S.entitled ? '' : 'locked'),
     stat('Since start', mv ? `${mv > 0 ? '↑' : '↓'} ${Math.abs(mv)}` : mv === 0 ? 'No change' : '—', mv > 0 ? 'up' : mv < 0 ? 'down' : ''),
     stat('Status', status),
   ];
@@ -395,9 +412,33 @@ async function openReplay(id) {
   S.T = Number.isFinite(want) ? Math.min(S.model.end, Math.max(S.model.start, want)) : S.model.start;
   const cov = r.body.coverage || {};
   $('[data-pc-coverage]').textContent = `${cov.frames || 0} frames · longest recording silence ${cov.longest_silence_s ?? 0}s${cov.silences_over_60s ? ` · ${cov.silences_over_60s} gap${cov.silences_over_60s > 1 ? 's' : ''} over 60s (cars held, not interpolated)` : ''}`;
+  buildJumps();
   const laps = [...new Set(S.model.frames.map((f) => f.lap).filter(Boolean))];
   $('[data-pc-lapjump]').replaceChildren(...laps.map((l) => Object.assign(el('option', null, `Lap ${l}`), { value: l })));
   syncScrubber();
+}
+
+// replay jump points: ONLY events we hold (recording start/end, flag changes and retirements from our timing record)
+function buildJumps() {
+  const sel = $('[data-pc-jumpto]');
+  if (!sel || !S.model) return;
+  const opts = [['Session start (first recorded frame)', S.model.start]];
+  for (const e of S.events || []) {
+    const t = Date.parse(e.t);
+    if (!Number.isFinite(t)) continue;
+    if (/flag|safety|red/i.test(e.type) && e.status !== 'cleared') opts.push([`${e.type.replace(/_/g, ' ')}${e.lap ? ` · lap ${e.lap}` : ''}`, t]);
+    else if (/retire|dnf|dsq/i.test(e.type)) opts.push([`Retirement${(e.driver_ids || []).length ? ` · ${(e.driver_ids || []).map((id) => ID.drivers[id]?.code).filter(Boolean).join(' ')}` : ''}${e.lap ? ` · lap ${e.lap}` : ''}`, t]);
+  }
+  opts.push(['End of recording', S.model.end]);
+  sel.replaceChildren(el('option', null, 'Jump to…'), ...opts.sort((a, b) => a[1] - b[1]).map(([l, t]) => Object.assign(el('option', null, l), { value: String(t) })));
+}
+
+// session clock: elapsed recorded time + lap state
+function renderClock(T) {
+  const c = $('[data-pc-clock]');
+  if (!c || S.mode !== 'replay' || !S.model) return;
+  const s = Math.max(0, Math.round((T - S.model.start) / 1000)), lap = lapAt(S.model, T);
+  c.textContent = `${Math.floor(s / 3600) ? `${Math.floor(s / 3600)}:` : ''}${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}${lap ? ` · lap ${lap}` : ''}`;
 }
 
 // ---------- sign-in + CTAs ----------

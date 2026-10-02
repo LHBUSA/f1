@@ -50,13 +50,38 @@ for (const [w, h] of [[390, 844], [768, 1000], [1024, 900], [1440, 900]]) {
   const before = await pg.evaluate(() => window.__pbecast?.T);
   await pg.click('[data-pc-lapnext]'); await pg.waitForTimeout(400);
   r.lapNextAdvances = (await pg.evaluate(() => window.__pbecast?.T)) > before;
+  // speeds / play / reset / jump list / graph seek / URL persistence
+  await pg.click('[data-pc-speed="4"]'); await pg.click('[data-pc-play]');
+  const t1 = await pg.evaluate(() => window.__pbecast?.T); await pg.waitForTimeout(1500);
+  const t2 = await pg.evaluate(() => window.__pbecast?.T); await pg.click('[data-pc-play]');
+  r.play4x = Math.round((t2 - t1) / 1500 * 10) / 10; // ~4 (real seconds -> replay seconds)
+  await pg.click('[data-pc-reset]'); await pg.waitForTimeout(300);
+  r.resetToStart = await pg.evaluate(() => Math.abs(window.__pbecast?.T - Date.parse(new URL(location.href).searchParams.get('t'))) < 1000);
+  r.jumpOptions = await pg.$$eval('[data-pc-jumpto] option', (o) => o.map((x) => x.textContent).slice(1));
+  const g = await pg.$('[data-pc-graph]'); const gb = g && await g.boundingBox();
+  if (gb) { const tb = await pg.evaluate(() => window.__pbecast?.T); await pg.mouse.click(gb.x + gb.width * 0.6, gb.y + gb.height / 2); await pg.waitForTimeout(300); r.graphSeek = (await pg.evaluate(() => window.__pbecast?.T)) !== tb; }
+  r.urlHasT = await pg.evaluate(() => new URL(location.href).searchParams.has('t') && new URL(location.href).searchParams.has('session'));
+  r.clock = await pg.$eval('[data-pc-clock]', (e) => e.textContent);
   r.errors = errs;
   report.push({ w, ...r });
   await pg.screenshot({ path: `${out}/pbecast-${w}.png`, fullPage: false });
   const trk = await pg.$('.pc-track'); if (trk) await trk.screenshot({ path: `${out}/pbecast-track-${w}.png` });
   await ctx.close();
 }
-await b.close();
 for (const r of report) console.log(JSON.stringify(r));
-const bad = report.filter((r) => !r.cars || !r.focus || r.overflow || r.errors.length || !r.lapNextAdvances || !r.selectedRow);
+// free (anonymous) pass: real membership endpoint (no session) -> no premium values anywhere on the page
+{
+  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctx.route('**/v1/f1/replay', (r) => r.fulfill({ json: { sessions: [{ id: SID, event_id: '2026-bahrain-grand-prix-in-malaysia', type: 'race', frames: frames.length }] } }));
+  await ctx.route('**/v1/f1/live', (r) => r.fulfill({ json: { state: 'idle' } }));
+  const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', (e) => errs.push(String(e)));
+  let premiumCalls = 0; pg.on('request', (q) => { if (/\/pbe\/f1\/replay\//.test(q.url())) premiumCalls++; });
+  await pg.goto(`${base}/pbecast/2026-bahrain-grand-prix-in-malaysia`, { waitUntil: 'networkidle' }); await pg.waitForTimeout(1200);
+  const fr = await pg.evaluate(() => ({ tier: document.body.dataset.pcTier, rows: document.querySelectorAll('.pc-row').length, premiumVisible: [...document.querySelectorAll('[data-pc-premium]')].some((n) => !n.hidden), lockVisible: [...document.querySelectorAll('[data-pc-locked]')].some((n) => !n.hidden) }));
+  report.push({ w: 'free', ...fr, premiumCalls, errors: errs });
+  await ctx.close();
+}
+for (const r of report) if (r.w === 'free') console.log(JSON.stringify(r));
+await b.close();
+const bad = report.filter((r) => r.w === 'free' ? (r.tier !== 'free' || r.premiumVisible || !r.lockVisible || r.errors.length) : (!r.cars || !r.focus || r.overflow || r.errors.length || !r.lapNextAdvances || !r.selectedRow || r.play4x < 3 || !r.resetToStart || !r.urlHasT || r.graphSeek === false || !r.jumpOptions?.length));
 console.log(bad.length ? `PBECAST VISUAL QA FAIL (${bad.map((r) => r.w)})` : 'PBECAST VISUAL QA PASS');
