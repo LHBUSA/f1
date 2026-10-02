@@ -1,0 +1,46 @@
+{
+  "_doc": "Canonical car-photo registry (season-keyed: constructor -> season -> photos). A photo renders publicly only when approvedForPublicUse is true. Derivatives (background removal, crop, resize) keep the ORIGINAL photographer, licence and attribution; the derivative never carries a PropBetEdge copyright. Rights proof = the Commons file page + licence metadata + SHA-1 of the downloaded original.",
+  "version": "f1-car-photos@1",
+  "photos": [
+    {
+      "id": "2026-mercedes-w17-russell-shanghai-quali-liauzh",
+      "season": 2026,
+      "constructorId": "mercedes",
+      "constructorName": "Mercedes",
+      "carModel": "Mercedes-AMG F1 W17 E Performance",
+      "carModelSource": "Wikimedia Commons file titles/categories for the 2026 car (several photographers); to be confirmed against an official Mercedes source before display as a chassis fact",
+      "driverId": "george-russell",
+      "event": "2026 Chinese Grand Prix, qualifying",
+      "capturedAt": "2026-03-14T15:32:41",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/11/2026_Chinese_GP_-_Mercedes_-_George_Russell_-_Qualifying.jpg",
+      "localAssetPath": "assets-src/cars/originals/2026-mercedes-w17-russell-liauzh.jpg",
+      "originalSha1": "18e6d5b96e4d0028fcaf329115095d4678f7e4c7",
+      "originalSize": [4885, 2748],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2026_Chinese_GP_-_Mercedes_-_George_Russell_-_Qualifying.jpg",
+      "photographer": "Liauzh",
+      "creditLine": "Own work",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Photo: Liauzh, CC BY 4.0, via Wikimedia Commons (background removed and cropped by PropBetEdge)",
+      "acquisitionDate": "2026-10-02",
+      "rightsStatus": "licensed_cc_by_4.0",
+      "rightsNotes": "CC BY 4.0 permits commercial use and adaptation with attribution and an indication of changes. No Commons restriction templates on the file. Sponsor marks are part of the photographed livery and are not removed or altered; trademarks are not licensed to PropBetEdge and are shown only as they appear on the car.",
+      "approvedForPublicUse": false,
+      "approvalNote": "Candidate. Rights proof is complete; awaiting owner visual approval of the Mercedes canary before public rendering.",
+      "derivatives": {
+        "changes": ["background removed (rembg isnet-general-use segmentation; no pixels generated)", "isolated fragments removed (largest connected component kept)", "cropped to the car", "resized"],
+        "master": "assets-src/cars/derived/2026-mercedes-w17-cutout-master.png",
+        "files": {
+          "640": { "webp": "assets-src/cars/derived/2026-mercedes-w17-640.webp", "avif": "assets-src/cars/derived/2026-mercedes-w17-640.avif" },
+          "960": { "webp": "assets-src/cars/derived/2026-mercedes-w17-960.webp", "avif": "assets-src/cars/derived/2026-mercedes-w17-960.avif" },
+          "1280": { "webp": "assets-src/cars/derived/2026-mercedes-w17-1280.webp", "avif": "assets-src/cars/derived/2026-mercedes-w17-1280.avif" },
+          "1920": { "webp": "assets-src/cars/derived/2026-mercedes-w17-1920.webp", "avif": "assets-src/cars/derived/2026-mercedes-w17-1920.avif" }
+        },
+        "aspect": [4770, 1263],
+        "facing": "left",
+        "knownArtifacts": ["a faint line continues behind the rear floor at the right edge (segmentation kept a sliver of track line connected to the car)"]
+      }
+    }
+  ]
+}
