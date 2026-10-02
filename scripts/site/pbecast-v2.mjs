@@ -41,7 +41,8 @@ export function pbecastEventPage(X, ev) {
   <div class="pc-replaycol">
     <h2>Replay &amp; position history</h2><p class="fine" data-pc-recorded>Checking recordings…</p>
     <div data-pc-premium hidden>
-      <div class="pc-controls"><label class="sr" for="pc-sessions">Session</label><select id="pc-sessions" data-pc-sessions></select><button type="button" data-pc-play>Play</button><span class="pc-speeds">${[0.5, 1, 2, 4].map((s) => `<button type="button" data-pc-speed="${s}" aria-pressed="${s === 1}">${s}×</button>`).join('')}</span><label class="sr" for="pc-lap">Jump to lap</label><select id="pc-lap" data-pc-lapjump></select></div>
+      <div class="pc-controls"><label class="sr" for="pc-sessions">Session</label><select id="pc-sessions" data-pc-sessions></select><button type="button" data-pc-play>Play</button><span class="pc-speeds">${[0.5, 1, 2, 4].map((s) => `<button type="button" data-pc-speed="${s}" aria-pressed="${s === 1}">${s}×</button>`).join('')}</span><span class="pc-lapnav"><button type="button" data-pc-lapprev aria-label="Previous lap">‹ Lap</button><label class="sr" for="pc-lap">Jump to lap</label><select id="pc-lap" data-pc-lapjump></select><button type="button" data-pc-lapnext aria-label="Next lap">Lap ›</button></span></div>
+      <p class="fine pc-keys">Keys: Space play/pause · ← → 10 s · [ ] lap</p>
       <label class="sr" for="pc-scrub">Replay position</label><input id="pc-scrub" type="range" min="0" max="1000" value="0" data-pc-scrub>
       <p class="fine" data-pc-coverage></p>
       <div class="pc-graphbox"><canvas data-pc-graph aria-label="Position by lap for every driver" role="img"></canvas></div>

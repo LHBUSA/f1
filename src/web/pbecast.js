@@ -62,6 +62,40 @@ function fit() {
   for (const c of track.corners || []) { const [x, y] = view.P(c.x, c.y); g.fillStyle = 'rgba(198,204,217,.5)'; if (c.n) g.fillText(`T${c.n}`, x + 6 * dpr, y - 6 * dpr); else { g.beginPath(); g.arc(x, y, 1.6 * dpr, 0, 7); g.fill(); } }
 }
 
+// Car glyph (top-down, facing +x in local space): team-colour body, black tyres, wings, dark cockpit.
+function carGlyph(g, x, y, ang, color, sc, { held, sel, leader }) {
+  g.save(); g.translate(x, y); g.rotate(ang); g.scale(sc, sc);
+  g.globalAlpha = held ? 0.45 : 1;
+  if (sel) { g.shadowColor = color; g.shadowBlur = 10; }
+  g.fillStyle = '#0b0d12';
+  for (const [tx, ty] of [[6.5, 4.6], [6.5, -4.6], [-6.5, 4.8], [-6.5, -4.8]]) g.fillRect(tx - 2.2, ty - 1.4, 4.4, 2.8);
+  g.fillStyle = color;
+  g.beginPath(); g.moveTo(11, 0); g.lineTo(5, 1.6); g.lineTo(1, 3.6); g.lineTo(-7, 3.4); g.lineTo(-9, 1.8); g.lineTo(-9, -1.8); g.lineTo(-7, -3.4); g.lineTo(1, -3.6); g.lineTo(5, -1.6); g.closePath(); g.fill();
+  g.shadowBlur = 0;
+  g.fillRect(9.4, -5.2, 1.6, 10.4);            // front wing
+  g.fillRect(-11, -4.6, 2, 9.2);               // rear wing
+  g.fillStyle = 'rgba(8,10,14,.85)'; g.beginPath(); g.ellipse(-0.6, 0, 2.3, 1.4, 0, 0, 7); g.fill();
+  g.lineWidth = (sel ? 1.4 : 0.8); g.strokeStyle = sel ? '#ffffff' : held ? 'rgba(255,207,92,.9)' : 'rgba(0,0,0,.6)';
+  if (held) g.setLineDash([2, 1.5]);
+  g.beginPath(); g.moveTo(11, 0); g.lineTo(5, 1.6); g.lineTo(1, 3.6); g.lineTo(-7, 3.4); g.lineTo(-9, 1.8); g.lineTo(-9, -1.8); g.lineTo(-7, -3.4); g.lineTo(1, -3.6); g.lineTo(5, -1.6); g.closePath(); g.stroke(); g.setLineDash([]);
+  g.restore();
+  if (sel) { g.save(); g.globalAlpha = 0.9; g.strokeStyle = '#ffffff'; g.lineWidth = 1.5 * view.dpr; g.beginPath(); g.arc(x, y, 15 * view.dpr, 0, 7); g.stroke(); g.restore(); }
+}
+
+// Display easing (visual only): cars glide to the timing-derived target instead of jumping when live timing corrects.
+// The model position (progressAt) is untouched and is what the QA hook reports; scrubs/lap jumps snap.
+const disp = new Map();
+let lastDrawT = null, lastDrawAt = 0;
+function eased(id, target, T) {
+  const now = performance.now(), dt = Math.min(250, now - lastDrawAt || 16);
+  const jumped = lastDrawT != null && Math.abs(T - lastDrawT) > 5000 * (S.speed || 1) + 2000;
+  const cur = disp.get(id);
+  if (cur == null || jumped || Math.abs(target - cur) > 0.25) { disp.set(id, target); return target; }
+  const tau = S.mode === 'live' ? 600 : 90;
+  const v = cur + (target - cur) * (1 - Math.exp(-dt / tau));
+  disp.set(id, v); return v;
+}
+
 function drawCars(T) {
   if (!ctx || !layer) return;
   ctx.clearRect(0, 0, cv.width, cv.height);
@@ -69,7 +103,7 @@ function drawCars(T) {
   const f = S.model ? frameAt(S.model, T) : null;
   const flag = f?.flag ? String(f.flag).toUpperCase() : '';
   cv.dataset.flag = /RED/.test(flag) ? 'red' : /SAFETY|SC|VSC|YELLOW/.test(flag) ? 'caution' : '';
-  if (!f) return;
+  if (!f) { lastDrawT = T; lastDrawAt = performance.now(); return; }
   const dpr = view.dpr, placed = [];
   const order = [...f.cars].filter((c) => ID.drivers[c.id]).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99));
   const unplaced = [];
@@ -82,40 +116,55 @@ function drawCars(T) {
   }
   // opening lap: running order at the line, spaced back, until each car's first observed crossing
   unplaced.forEach((c, i) => placed.push({ c, frac: -((i + 1) * 14) / L, held: true, grid: true }));
+  // screen placement on the eased fraction; bunched cars spread into lanes, labels alternate sides
   const drawn = [];
   for (const it of placed) {
-    const a = along(it.frac);
+    const fr = it.grid ? it.frac : eased(it.c.id, it.frac, T);
+    const a = along(fr), a2 = along(fr + 0.0015);
     let [x, y] = view.P(a.x, a.y);
-    const near = drawn.filter((d) => Math.hypot(d.x - x, d.y - y) < 20 * dpr).length;
-    if (near) { const side = near % 2 ? 1 : -1, k = Math.ceil(near / 2) * 15 * dpr * side; x += a.nx * k; y -= a.ny * k; }
-    drawn.push({ x, y, it });
+    const [x2, y2] = view.P(a2.x, a2.y);
+    const ang = Math.atan2(y2 - y, x2 - x);
+    const near = drawn.filter((d) => Math.hypot(d.x - x, d.y - y) < 16 * dpr).length;
+    let lane = 0;
+    if (near) { lane = (near % 2 ? 1 : -1) * Math.ceil(near / 2); x += a.nx * lane * 9 * dpr; y -= a.ny * lane * 9 * dpr; }
+    drawn.push({ x, y, ang, lane, nx: a.nx, ny: a.ny, it });
   }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   for (const d of drawn) {
     const t = TEAM(d.it.c.id), sel = ID.drivers[d.it.c.id]?.code === S.selected || d.it.c.id === S.selected;
+    const color = `#${t?.color || '888'}`;
     if (!d.it.grid && !d.it.held) { // short trail along the track behind the car
-      ctx.strokeStyle = `#${t?.color || '888'}55`; ctx.lineWidth = 3 * dpr; ctx.beginPath();
-      for (let k = 0; k <= 6; k++) { const b = along(d.it.frac - (k * 0.004)); const [bx, by] = view.P(b.x, b.y); k ? ctx.lineTo(bx, by) : ctx.moveTo(bx, by); }
+      ctx.strokeStyle = `${color}44`; ctx.lineWidth = 3 * dpr; ctx.beginPath();
+      const fr = disp.get(d.it.c.id) ?? d.it.frac;
+      for (let k = 0; k <= 6; k++) { const bb = along(fr - (k * 0.004)); const [bx, by] = view.P(bb.x, bb.y); k ? ctx.lineTo(bx, by) : ctx.moveTo(bx, by); }
       ctx.stroke();
     }
-    const w = 30 * dpr, h = 15 * dpr;
-    if (sel) { ctx.shadowColor = `#${t?.color || 'fff'}`; ctx.shadowBlur = 14 * dpr; }
-    ctx.fillStyle = `#${t?.color || '888'}`; ctx.globalAlpha = d.it.held ? 0.45 : 1;
-    ctx.beginPath(); ctx.roundRect(d.x - w / 2, d.y - h / 2, w, h, 4 * dpr); ctx.fill(); ctx.shadowBlur = 0;
-    if (d.it.held) ctx.setLineDash([3 * dpr, 2 * dpr]);
-    ctx.lineWidth = sel ? 2 * dpr : 1 * dpr; ctx.strokeStyle = sel ? '#ffffff' : d.it.held ? 'rgba(255,207,92,.8)' : 'rgba(255,255,255,.35)'; ctx.stroke(); ctx.setLineDash([]);
-    // an OBSERVED crossing (real recorded event) within the last 2 s gets a brief ring at the timing line
-    if (d.it.crossedAgo != null && d.it.crossedAgo < 2000) { ctx.globalAlpha = 1 - d.it.crossedAgo / 2000; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5 * dpr; ctx.beginPath(); ctx.arc(d.x, d.y, 16 * dpr, 0, 7); ctx.stroke(); }
-    ctx.fillStyle = `#${t?.text || 'fff'}`; ctx.font = `700 ${10.5 * dpr}px "Barlow Condensed", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(ID.drivers[d.it.c.id]?.code || '', d.x, d.y + 0.5 * dpr);
-    if (d.it.c.pos === 1) { ctx.fillStyle = '#ffcf5c'; ctx.font = `800 ${9 * dpr}px "Barlow Condensed", sans-serif`; ctx.fillText('P1', d.x, d.y - h * 0.95); }
-    ctx.globalAlpha = 1; ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
+    carGlyph(ctx, d.x, d.y, d.ang, color, (sel ? 1.4 : 1.12) * dpr, { held: d.it.held, sel, leader: d.it.c.pos === 1 });
+    // an OBSERVED crossing (real recorded event) within the last 2 s gets a brief ring
+    if (d.it.crossedAgo != null && d.it.crossedAgo < 2000) { ctx.globalAlpha = 0.7 * (1 - d.it.crossedAgo / 2000); ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1 * dpr; ctx.beginPath(); ctx.arc(d.x, d.y, 13 * dpr, 0, 7); ctx.stroke(); ctx.globalAlpha = 1; }
+    // driver code tag, offset off the racing line (side alternates with the lane so bunched tags do not stack)
+    const side = d.lane < 0 ? -1 : 1, off = (14 + Math.abs(d.lane) * 4) * dpr;
+    const lx = d.x + d.nx * off * side, ly = d.y - d.ny * off * side;
+    const code = ID.drivers[d.it.c.id]?.code || '';
+    ctx.font = `700 ${(sel ? 11 : 9.5) * dpr}px "Barlow Condensed", sans-serif`;
+    const tw = ctx.measureText(code).width + 8 * dpr, th = (sel ? 15 : 13) * dpr;
+    ctx.globalAlpha = d.it.held ? 0.6 : 1;
+    ctx.fillStyle = 'rgba(8,10,14,.82)'; ctx.beginPath(); ctx.roundRect(lx - tw / 2, ly - th / 2, tw, th, 3 * dpr); ctx.fill();
+    ctx.fillStyle = color; ctx.fillRect(lx - tw / 2, ly - th / 2, 2 * dpr, th);
+    ctx.fillStyle = sel ? '#ffffff' : '#e6e9ef'; ctx.fillText(code, lx + 1 * dpr, ly + 0.5 * dpr);
+    if (d.it.c.pos === 1) { ctx.fillStyle = '#ffcf5c'; ctx.font = `800 ${8.5 * dpr}px "Barlow Condensed", sans-serif`; ctx.fillText('P1', lx, ly - th * 0.95); }
+    ctx.globalAlpha = 1;
   }
+  ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
+  lastDrawT = T; lastDrawAt = performance.now();
   S.hit = drawn.map((d) => ({ x: d.x / dpr, y: d.y / dpr, id: d.it.c.id }));
-  // QA hook: the exact race state on screen (track fraction + state per car), comparable across widths
+  // QA hook: the exact race state on screen (MODEL track fraction + state per car), comparable across widths
   window.__pbecast = { T, mode: S.mode, session: S.session, cars: drawn.map((d) => ({ id: d.it.c.id, frac: Math.round(d.it.frac * 1e6) / 1e6, held: !!d.it.held, grid: !!d.it.grid })).sort((a, b) => a.id.localeCompare(b.id)), unplaced: placed.length - drawn.length };
 }
 
 // ---------- tower ----------
+// position at the first recorded frame of the session (for "gained / lost since the start"; only from our frames)
+function startPos(id) { const f0 = S.model?.frames?.[0]; return f0 ? f0.cars?.find((c) => c.id === id)?.pos ?? null : null; }
 const fmtGap = (ms) => (ms == null ? '' : ms >= 60000 ? `+${Math.floor(ms / 60000)}:${((ms % 60000) / 1000).toFixed(3).padStart(6, '0')}` : `+${(ms / 1000).toFixed(3)}`);
 const fmtLap = (ms) => (ms ? `${Math.floor(ms / 60000)}:${((ms % 60000) / 1000).toFixed(3).padStart(6, '0')}` : '');
 function renderTower(T) {
@@ -127,7 +176,9 @@ function renderTower(T) {
     const d = ID.drivers[c.id || c.driver_id], t = TEAM(c.id || c.driver_id);
     const b = el('button', `pc-row tc-${(t?.color || '').toLowerCase()}`); b.type = 'button';
     b.setAttribute('aria-pressed', String(d?.code === S.selected)); b.dataset.code = d?.code || '';
-    b.append(el('span', 'pc-pos', String(c.pos ?? '–')), el('span', 'pc-stripe'), Object.assign(el('span', 'pc-team', t?.short || ''), { title: t?.name || '' }), el('span', 'pc-code', d?.code || '?'));
+    const start = startPos(c.id || c.driver_id), mv = start != null && c.pos != null ? start - c.pos : null;
+    b.append(el('span', 'pc-pos', String(c.pos ?? '–')), el('span', 'pc-stripe'), Object.assign(el('span', 'pc-team', t?.short || ''), { title: t?.name || '' }), el('span', 'pc-code', d?.code || '?'),
+      Object.assign(el('span', `pc-mv ${mv > 0 ? 'up' : mv < 0 ? 'down' : ''}`, mv ? `${mv > 0 ? '↑' : '↓'}${Math.abs(mv)}` : ''), { title: mv ? `${mv > 0 ? 'Gained' : 'Lost'} ${Math.abs(mv)} since the start of this session` : '' }));
     const status = c.status && c.status !== 'running' ? { retired: 'OUT', disqualified: 'DSQ', dns: 'DNS', not_classified: 'NC' }[c.status] || c.status.toUpperCase() : '';
     if (S.entitled) {
       const prev = rows[i - 1];
@@ -199,7 +250,7 @@ function tick(now) {
   if (S.mode === 'replay' && S.playing && S.model) { S.T = Math.min(S.model.end, S.T + dt * S.speed); if (S.T >= S.model.end) S.playing = false; syncScrubber(); }
   const T = S.mode === 'live' ? Date.now() : S.T;
   drawCars(T); renderHeader(T);
-  if (!tick.n || now - tick.n > 1000) { tick.n = now; renderTower(T); renderFeed(S.mode === 'replay' ? T : 0); renderGraph(T); }
+  if (!tick.n || now - tick.n > 1000) { tick.n = now; renderTower(T); renderFeed(S.mode === 'replay' ? T : 0); renderGraph(T); renderFocus(T); }
   requestAnimationFrame(tick);
 }
 
@@ -211,6 +262,15 @@ function bindReplay() {
   $('[data-pc-scrub]')?.addEventListener('input', (e) => { S.T = S.model.start + (Number(e.target.value) / 1000) * (S.model.end - S.model.start); persistT(); });
   $('[data-pc-scrub]')?.addEventListener('change', persistT);
   $('[data-pc-lapjump]')?.addEventListener('change', (e) => { const lap = Number(e.target.value); const f = S.model.frames.find((x) => x.lap >= lap); if (f) { S.T = f.ms; syncScrubber(); } });
+  const jumpLap = (dir) => { if (!S.model) return; const cur = lapAt(S.model, S.T) || 0; const target = Math.max(1, cur + dir); const f = S.model.frames.find((x) => x.lap >= target); if (f) { S.T = f.ms; syncScrubber(); persistT(); const sel = $('[data-pc-lapjump]'); if (sel) sel.value = String(f.lap); } };
+  $('[data-pc-lapprev]')?.addEventListener('click', () => jumpLap(-1));
+  $('[data-pc-lapnext]')?.addEventListener('click', () => jumpLap(1));
+  document.addEventListener('keydown', (e) => {
+    if (S.mode !== 'replay' || !S.model || /input|select|textarea/i.test(e.target.tagName)) return;
+    if (e.key === ' ') { e.preventDefault(); $('[data-pc-play]')?.click(); }
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); S.T = Math.min(S.model.end, Math.max(S.model.start, S.T + (e.key === 'ArrowRight' ? 10000 : -10000))); syncScrubber(); persistT(); }
+    else if (e.key === ']' || e.key === '[') jumpLap(e.key === ']' ? 1 : -1);
+  });
 }
 
 // ---------- selection ----------
@@ -227,7 +287,41 @@ function persistT() { if (S.mode !== 'replay' || !S.model) return; const u = new
 function persistSel() {
   const u = new URL(location.href); if (S.selected) u.searchParams.set('driver', S.selected); else u.searchParams.delete('driver'); history.replaceState(null, '', u);
   const d = Object.values(ID.drivers).find((x) => x.code === S.selected), t = d && ID.teams[d.team], card = $('[data-pc-driver]');
-  if (card) { card.hidden = !d; if (d) card.replaceChildren(Object.assign(el('span', `pc-dbadge tc-${t.color.toLowerCase()}`, t.short), {}), el('b', null, d.name), el('span', 'muted', ` #${d.number || '–'} · ${t.name}`), Object.assign(el('a', 'more', 'Driver DNA'), { href: `/drivers/${d.id}` })); }
+  if (card) card.hidden = !d;
+  renderFocus(S.mode === 'live' ? Date.now() : S.T);
+  renderTower(S.mode === 'live' ? Date.now() : S.T);
+}
+
+// driver focus card: sourced/derived fields only (gaps, intervals and best lap only arrive with All Access)
+function renderFocus(T) {
+  const card = $('[data-pc-driver]');
+  const d = Object.values(ID.drivers).find((x) => x.code === S.selected), t = d && ID.teams[d.team];
+  if (!card) return;
+  card.hidden = !d;
+  if (!d) return;
+  const f = S.model ? frameAt(S.model, T) : null;
+  const rows = f ? [...f.cars].filter((c) => ID.drivers[c.id]).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99)) : S.tower.map((r) => ({ ...r, id: r.driver_id }));
+  const i = rows.findIndex((c) => (c.id || c.driver_id) === d.id), c = rows[i];
+  const p = S.model && c ? progressAt(S.model, d.id, T, { live: S.mode === 'live' }) : null;
+  const status = c?.status && c.status !== 'running' ? ({ retired: 'Retired', disqualified: 'Disqualified', dns: 'Did not start', not_classified: 'Not classified' }[c.status] || c.status) : !p ? '—' : p.state === 'held' ? 'Held · timing gap' : p.state === 'unplaced' ? (f?.lap ? 'In pit / garage' : 'Awaiting first crossing') : p.state === 'out' ? 'Out' : S.mode === 'live' ? 'Running · live' : 'Running';
+  const start = startPos(d.id), mv = start != null && c?.pos != null ? start - c.pos : null;
+  const stat = (k, v, cls = '') => { const s = el('div', `pc-fs ${cls}`); s.append(el('span', null, k), el('b', null, v)); return s; };
+  const ahead = rows[i - 1], behind = rows[i + 1];
+  const lockTxt = 'All Access';
+  const stats = [
+    stat('Position', c?.pos ? `P${c.pos}` : '—'),
+    stat('Laps', c?.laps != null ? String(c.laps) : '—'),
+    stat('Gap to leader', S.entitled ? (i === 0 ? 'Leader' : c?.gap_laps ? `+${c.gap_laps} lap${c.gap_laps > 1 ? 's' : ''}` : fmtGap(c?.gap_ms) || '—') : lockTxt, S.entitled ? '' : 'locked'),
+    stat('Interval ahead', S.entitled ? (i > 0 && c?.gap_ms != null && ahead?.gap_ms != null ? fmtGap(c.gap_ms - ahead.gap_ms) : '—') : lockTxt, S.entitled ? '' : 'locked'),
+    stat('Interval behind', S.entitled ? (behind?.gap_ms != null && c?.gap_ms != null ? fmtGap(behind.gap_ms - c.gap_ms) : '—') : lockTxt, S.entitled ? '' : 'locked'),
+    stat('Best lap', S.entitled ? fmtLap(c?.best_ms) || '—' : lockTxt, S.entitled ? '' : 'locked'),
+    stat('Since start', mv ? `${mv > 0 ? '↑' : '↓'} ${Math.abs(mv)}` : mv === 0 ? 'No change' : '—', mv > 0 ? 'up' : mv < 0 ? 'down' : ''),
+    stat('Status', status),
+  ];
+  const head = el('div', 'pc-fhead');
+  head.append(el('span', `pc-dbadge tc-${(t?.color || '').toLowerCase()}`, t?.short || ''), el('b', null, d.name), el('span', 'muted', ` #${d.number || '–'} · ${t?.name || ''}`), Object.assign(el('a', 'more', 'Driver DNA'), { href: `/drivers/${d.id}` }));
+  const grid = el('div', 'pc-fgrid'); grid.append(...stats);
+  card.replaceChildren(head, grid);
 }
 
 // ---------- data loading ----------

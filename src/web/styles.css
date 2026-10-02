@@ -626,3 +626,17 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .rail{transition:opacity .22s}
 @media (prefers-reduced-motion: reduce){.rail-progress.timing .rail-seg[aria-current=true] i::after{animation:none}.rail,.rail.wrapping{transition:none}}
 @media(max-width:600px){.rail-segs{max-width:none}.rail-cur{display:none}}
+/* PBEcast v3: focus card, tower movement, lap nav */
+.pc-driver{margin-top:10px;padding:12px 14px;border:1px solid var(--line2);border-radius:10px;background:var(--panel)}
+.pc-fhead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:10px}.pc-fhead .more{margin-left:auto}
+.pc-fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.pc-fs{display:flex;flex-direction:column;gap:2px;padding:6px 8px;border:1px solid var(--line);border-radius:6px}
+.pc-fs span{font:600 10px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}.pc-fs b{font:700 16px var(--display);letter-spacing:.02em}
+.pc-fs.locked b{font-size:11px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}.pc-fs.up b{color:#3ddc84}.pc-fs.down b{color:#ff6b6b}
+.pc-mv{font:700 11px var(--display);min-width:22px;text-align:right;color:var(--faint)}.pc-mv.up{color:#3ddc84}.pc-mv.down{color:#ff6b6b}
+.pc-lapnav{display:inline-flex;align-items:center;gap:4px}.pc-keys{margin:4px 0 0}
+.pc-row{grid-template-columns:26px 4px 40px minmax(0,1fr) 24px auto auto}
+body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 24px repeat(4,minmax(0,1fr)) auto}
+@media(max-width:480px){.pc-row{grid-template-columns:24px 4px 34px minmax(0,1fr) 22px auto auto}body[data-pc-tier=all_access] .pc-row{grid-template-columns:22px 4px 32px 34px 22px repeat(2,minmax(0,1fr)) auto}body[data-pc-tier=all_access] .pc-row .pc-num:nth-of-type(n){display:block}body[data-pc-tier=all_access] .pc-row .pc-num:nth-child(8),body[data-pc-tier=all_access] .pc-row .pc-num:nth-child(9){display:none}}
+.pc-driver{display:block}
+.pc-driver .pc-fhead b{font:700 18px var(--display);letter-spacing:.02em}
