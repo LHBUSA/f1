@@ -8,7 +8,7 @@
 
 :root{
   --bg:#06070a;--bg2:#0a0c11;--panel:#0e1118;--panel2:#131722;--panel3:#191e2b;--line:#1f2534;--line2:#2a3144;
-  --ink:#eef1f6;--ink2:#c6ccd9;--muted:#8a93a8;--faint:#5d667b;
+  --ink:#eef1f6;--ink2:#c6ccd9;--muted:#a3acbf;--faint:#848da2;--ctl-line:#626c85;
   --accent:#ff4d2e;--accent2:#ff7a45;--live:#ff2d55;--cyan:#38d6ff;--purple:#b46bff;--green:#2fe08a;--yellow:#ffd23f;--gold:#ffcf5c;--silver:#c9d1dd;--bronze:#d9935a;
   --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--sans:Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;
   --wrap:1320px;--r:10px;--tc:#5d667b
@@ -471,7 +471,7 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 @media(max-width:600px){.machine-strip{grid-template-columns:1fr 1fr}.machine-strip>div{border-bottom:1px solid var(--line,rgba(255,255,255,.1))}}
 .pgroup-race,.pgroup-garage{grid-column:1/-1}.pgroup-race .pairs{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}.pgroup-garage .fine{margin:0}
 .pgroup-garage .people{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
-.car-id span,.pgroup h3{color:color-mix(in srgb,var(--tc) 60%,#fff)}
+.car-id span,.pgroup h3{color:color-mix(in srgb,var(--tc) 55%,#fff)}
 
 /* ---- Car Explorer: technical-inspection markers on the real car (no glow, no gauges) ---- */
 .car-stage{position:relative}
@@ -489,14 +489,14 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .xp{padding-top:4px}.xp-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}.xp-hint{margin:0;font-size:13px;color:var(--muted)}
 .xp-chips{display:none;gap:6px;margin:10px 0 0;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.xp-chips::-webkit-scrollbar{display:none}
 .xp.xp-on .xp-chips{display:flex}
-.xp-chip{flex:none;font:inherit;font-size:12px;letter-spacing:.04em;color:var(--muted);background:transparent;border:1px solid var(--line,rgba(255,255,255,.12));border-radius:999px;padding:6px 11px;cursor:pointer}
-.xp-chip:hover,.xp-chip:focus-visible{color:inherit;border-color:rgba(255,255,255,.35)}
+.xp-chip{flex:none;font:inherit;font-size:12px;letter-spacing:.04em;color:var(--ink2);background:transparent;border:1px solid var(--ctl-line);border-radius:999px;padding:6px 11px;cursor:pointer}
+.xp-chip:hover,.xp-chip:focus-visible{color:var(--ink);border-color:#8f99b0}
 .xp-chip[aria-pressed=true]{color:#fff;border-color:color-mix(in srgb,var(--tc) 70%,#fff);background:color-mix(in srgb,var(--tc) 22%,transparent)}
 .xp-panel{margin-top:14px;padding:16px 18px;border:1px solid var(--line,rgba(255,255,255,.12));border-left:3px solid var(--tc);border-radius:10px;background:rgba(10,12,17,.6)}
 .xp.xp-on .xp-panel[hidden]{display:none}
 .xp-panel:focus{outline:none}
 .xp-panel h3{margin:0 0 10px;font-size:18px;letter-spacing:.02em}.xp-panel h3 small{display:block;font-size:12px;font-weight:400;color:var(--muted);letter-spacing:.04em;margin-top:2px}
-.xp-panel h4{margin:0 0 6px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--tc) 60%,#fff)}
+.xp-panel h4{margin:0 0 6px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--tc) 55%,#fff)}
 .xp-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px 28px}
 .xp-facts{margin:0;display:grid;gap:6px}.xp-facts>div{display:grid;grid-template-columns:minmax(110px,34%) 1fr;gap:10px;font-size:13px}.xp-facts dt{color:var(--faint)}.xp-facts dd{margin:0}
 .xp-facts .src,.xp-gen .src,.xp-block>.src{margin-left:6px}
@@ -510,7 +510,7 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .hs span{display:flex;flex-direction:column;gap:3px;max-width:240px;white-space:normal;width:max-content;text-align:left}.hs span b{font-weight:600}.hs span i{font-style:normal;font-weight:400;letter-spacing:0;text-transform:none;font-size:11px;color:#b9bfcc;line-height:1.35}
 .hs[aria-pressed=true]:not(:hover):not(:focus-visible) span i{display:none}
 /* ---- People v2: garage-wall rows, driver chains, faces ---- */
-.prow{margin-top:18px}.prow h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 8px;color:color-mix(in srgb,var(--tc) 60%,#fff)}
+.prow{margin-top:18px}.prow h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 8px;color:color-mix(in srgb,var(--tc) 55%,#fff)}
 .pcards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:8px}
 .pcard{position:relative;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line,rgba(255,255,255,.1));border-radius:8px;background:rgba(10,12,17,.45)}
 .pc-link{display:flex;align-items:center;gap:10px;min-width:0;flex:1;color:inherit;text-decoration:none}.pc-link:hover b{text-decoration:underline}
@@ -552,7 +552,7 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .grid-rail::before{content:"";position:absolute;inset:20% 0 0;background:radial-gradient(60% 70% at 50% 55%,color-mix(in srgb,var(--rail-accent,transparent) 16%,transparent),transparent 70%);transition:background .4s;pointer-events:none}
 .rail-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .rail-nav{display:flex;gap:8px}
-.rail-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--panel);color:inherit;font-size:22px;line-height:1;cursor:pointer}
+.rail-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--ctl-line);background:var(--panel);color:inherit;font-size:22px;line-height:1;cursor:pointer}
 .rail-btn:hover,.rail-btn:focus-visible{border-color:#ffffff66}
 .rail{--card:clamp(280px,86vw,560px);--lead:max(16px,calc((100% - var(--wrap)) / 2 + 16px));position:relative;list-style:none;margin:6px 0 0;padding:6px calc(100% - var(--lead) - var(--card)) 14px var(--lead);scroll-padding-left:var(--lead);display:grid;grid-auto-flow:column;grid-auto-columns:var(--card);gap:clamp(10px,2vw,28px);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
 .rail::-webkit-scrollbar{display:none}
@@ -607,3 +607,4 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
   .tm-drv small{display:none}.tm-arrow{display:none}
 }
 .nav-progress{position:fixed;left:0;top:0;height:2px;width:0;background:var(--accent,#ff4d2e);z-index:1000;opacity:0;transition:width 1.2s ease-out,opacity .2s}.nav-progress[data-on='1']{width:80%;opacity:1}@media (prefers-reduced-motion: reduce){.nav-progress{transition:none}}::view-transition-old(root),::view-transition-new(root){animation-duration:120ms}
+/* TEMP (remove when PBEcast v3 merges): frozen PBEcast UI keeps its accepted colours */body.bg-cast{--muted:#8a93a8;--faint:#5d667b}
