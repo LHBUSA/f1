@@ -89,7 +89,11 @@ fs.writeFileSync(path.join(DIST, `assets/explorer.${xpHash}.js`), xpJs);
 const rlJs = fs.readFileSync('src/web/rail.js', 'utf8');
 const rlHash = crypto.createHash('sha256').update(rlJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/rail.${rlHash}.js`), rlJs);
-const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js` };
+// soft-navigation router (every page except PBEcast)
+const nvJs = fs.readFileSync('src/web/nav.js', 'utf8');
+const nvHash = crypto.createHash('sha256').update(nvJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/nav.${nvHash}.js`), nvJs);
+const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, nav: `/assets/nav.${nvHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];

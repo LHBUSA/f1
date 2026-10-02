@@ -1,11 +1,39 @@
 // PropBetEdge F1 client. Progressive enhancement only: every page is complete without it.
+// Page behaviour is organised as MODULES (window.F1.register): each mounts on a root and returns a cleanup, so the
+// soft-navigation router (nav.js) can unmount before swapping <main> and remount after - no duplicate timers or
+// listeners. Shell behaviour (menu, live pill, analytics) runs once per document.
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const API = 'https://propsports.proptechusa.ai/v1/f1'; // the PropSports F1 contract; no other data host
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
-  // Menu
+  // ---------- module registry ----------
+  const F1 = (window.F1 ||= {});
+  F1.modules ||= {};
+  F1.mounted ||= {};
+  F1.register = (name, mod) => {
+    F1.modules[name] = mod;
+    F1.mount(name, document);
+  };
+  F1.mount = (name, root) => {
+    const mod = F1.modules[name];
+    if (!mod || F1.mounted[name]) return;
+    if (mod.selector && !root.querySelector(mod.selector)) return;
+    try { F1.mounted[name] = mod.mount(root) || (() => {}); } catch (e) { console.warn('F1 module mount failed', name, e); }
+  };
+  F1.mountAll = (root = document) => { for (const name of Object.keys(F1.modules)) F1.mount(name, root); };
+  F1.unmountAll = () => { for (const [name, cleanup] of Object.entries(F1.mounted)) { try { cleanup(); } catch {} delete F1.mounted[name]; } };
+
+  const fmtLocal = (d, mode) => {
+    try {
+      const opts = mode === 'date' ? { weekday: 'short', day: 'numeric', month: 'short' } : { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
+      return new Intl.DateTimeFormat(undefined, opts).format(d);
+    } catch { return d.toUTCString(); }
+  };
+  F1.fmtLocal = fmtLocal;
+
+  // ---------- shell (once per document) ----------
   const mb = $('[data-menu]');
   if (mb) mb.addEventListener('click', () => {
     const nav = $('#primary-nav');
@@ -13,95 +41,8 @@
     mb.setAttribute('aria-expanded', String(open));
   });
 
-  // Local time
-  const fmtLocal = (d, mode) => {
-    try {
-      const opts = mode === 'date' ? { weekday: 'short', day: 'numeric', month: 'short' } : { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
-      return new Intl.DateTimeFormat(undefined, opts).format(d);
-    } catch { return d.toUTCString(); }
-  };
-  for (const t of $$('time[data-local]')) {
-    const d = new Date(t.getAttribute('datetime'));
-    if (!Number.isNaN(+d)) t.textContent = fmtLocal(d, t.dataset.local);
-  }
-
-  // Countdown
-  for (const el of $$('[data-countdown]')) {
-    const target = Date.parse(el.dataset.countdown);
-    const tick = () => {
-      let s = Math.max(0, Math.floor((target - Date.now()) / 1000));
-      const d = Math.floor(s / 86400); s -= d * 86400;
-      const h = Math.floor(s / 3600); s -= h * 3600;
-      const m = Math.floor(s / 60); s -= m * 60;
-      $('[data-d]', el).textContent = d; $('[data-h]', el).textContent = String(h).padStart(2, '0');
-      $('[data-m]', el).textContent = String(m).padStart(2, '0'); $('[data-s]', el).textContent = String(s).padStart(2, '0');
-    };
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  // Tabs
-  for (const list of $$('[role="tablist"]')) {
-    const tabs = $$('[role="tab"]', list);
-    tabs.forEach((tab, i) => {
-      tab.addEventListener('click', () => select(tab));
-      tab.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-          const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
-          n.focus(); select(n);
-        }
-      });
-    });
-    function select(tab) {
-      for (const t of tabs) {
-        const on = t === tab;
-        t.setAttribute('aria-selected', String(on));
-        t.tabIndex = on ? 0 : -1;
-        const p = document.getElementById(t.getAttribute('aria-controls'));
-        if (p) p.hidden = !on;
-      }
-    }
-  }
-
-  // Headshot fallback: never show a broken image.
-  for (const img of $$('img[data-fallback]')) {
-    const swap = () => {
-      const span = img.parentElement;
-      span.classList.add('avatar-initials');
-      span.textContent = img.dataset.fallback;
-    };
-    if (img.complete && img.naturalWidth === 0) swap();
-    else img.addEventListener('error', swap, { once: true });
-  }
-  for (const img of $$('img.flag')) img.addEventListener('error', () => img.remove(), { once: true });
-
-  // List filter
-  for (const input of $$('[data-filter]')) {
-    const items = $$(input.dataset.filter);
-    input.addEventListener('input', () => {
-      const q = input.value.trim().toLowerCase();
-      for (const a of items) a.hidden = q && !(a.dataset.name || a.textContent.toLowerCase()).includes(q);
-    });
-  }
-
-  // Weather (MET Norway via f1-api; forecast range only)
-  for (const el of $$('[data-weather]')) {
-    const slug = el.dataset.weather;
-    if (!slug) continue;
-    const from = Date.parse(el.dataset.weatherFrom);
-    if (from - Date.now() > 9 * 86400e3) continue;
-    fetch(`${API}/weather?circuit=${encodeURIComponent(slug)}&from=${encodeURIComponent(el.dataset.weatherFrom)}&to=${encodeURIComponent(el.dataset.weatherTo)}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((w) => {
-        if (!w?.days?.length) return;
-        el.innerHTML = `<span class="kicker">Forecast</span> ` + w.days.map((d) => `${esc(fmtLocal(new Date(d.date + 'T12:00:00Z'), 'date'))}: ${Math.round(d.t_max)}°C, ${d.precip_mm.toFixed(1)} mm${d.wind_ms != null ? `, wind ${Math.round(d.wind_ms)} m/s` : ''}`).join(' · ') + (w.licence_credit ? ` <span class="muted">· ${esc(w.licence_credit)}</span>` : '');
-      })
-      .catch(() => {});
-  }
-
-  // Live pill (all pages)
+  // Live pill (header) + legacy cast block if the current page has one (looked up each tick: survives soft nav)
   const pill = $('[data-live-pill]');
-  const cast = $('[data-pbecast]');
   async function live() {
     try {
       const r = await fetch(`${API}/live`, { cache: 'no-store' });
@@ -115,16 +56,16 @@
       pill.hidden = false;
       $('[data-live-text]', pill).textContent = `LIVE · ${s.session?.label || ''}`;
     } else if (pill) pill.hidden = true;
-    if (cast) renderCast(s);
+    if ($('[data-pbecast]')) renderCast(s);
     setTimeout(pillLoop, s?.state === 'live' ? 10000 : 60000);
   }
-  if (pill || cast) pillLoop();
+  if (!F1.pillStarted && (pill || $('[data-pbecast]'))) { F1.pillStarted = true; pillLoop(); }
 
-  // PBEcast renderer
   let lastOrder = {};
   function renderCast(s) {
     const state = $('[data-cast-state]');
     const tower = $('[data-cast-tower]');
+    if (!state || !tower) return;
     if (!s) {
       state.textContent = 'Live source unavailable';
       tower.innerHTML = '<tr><td colspan="7" class="muted">The live source could not be reached. Nothing is shown rather than stale or simulated data.</td></tr>';
@@ -165,7 +106,8 @@
   }
 
   // Analytics: single network GA4 property, production host only.
-  if (location.hostname === 'f1.propbetedge.ai' && navigator.doNotTrack !== '1') {
+  if (!F1.gaStarted && location.hostname === 'f1.propbetedge.ai' && navigator.doNotTrack !== '1') {
+    F1.gaStarted = true;
     const GA = 'G-BRS48R8PG9';
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
@@ -177,4 +119,79 @@
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA;
     document.head.append(s);
   }
+
+  // ---------- page module: core behaviour inside <main> ----------
+  F1.register('core', {
+    mount(root) {
+      const timers = [];
+      for (const t of $$('time[data-local]', root)) {
+        const d = new Date(t.getAttribute('datetime'));
+        if (!Number.isNaN(+d)) t.textContent = fmtLocal(d, t.dataset.local);
+      }
+      for (const el of $$('[data-countdown]', root)) {
+        const target = Date.parse(el.dataset.countdown);
+        const tick = () => {
+          let s = Math.max(0, Math.floor((target - Date.now()) / 1000));
+          const d = Math.floor(s / 86400); s -= d * 86400;
+          const h = Math.floor(s / 3600); s -= h * 3600;
+          const m = Math.floor(s / 60); s -= m * 60;
+          $('[data-d]', el).textContent = d; $('[data-h]', el).textContent = String(h).padStart(2, '0');
+          $('[data-m]', el).textContent = String(m).padStart(2, '0'); $('[data-s]', el).textContent = String(s).padStart(2, '0');
+        };
+        tick();
+        timers.push(setInterval(tick, 1000));
+      }
+      for (const list of $$('[role="tablist"]', root)) {
+        const tabs = $$('[role="tab"]', list);
+        const select = (tab) => {
+          for (const t of tabs) {
+            const on = t === tab;
+            t.setAttribute('aria-selected', String(on));
+            t.tabIndex = on ? 0 : -1;
+            const p = document.getElementById(t.getAttribute('aria-controls'));
+            if (p) p.hidden = !on;
+          }
+        };
+        tabs.forEach((tab, i) => {
+          tab.addEventListener('click', () => select(tab));
+          tab.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+              const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+              n.focus(); select(n);
+            }
+          });
+        });
+      }
+      // Headshot fallback: never show a broken image.
+      for (const img of $$('img[data-fallback]', root)) {
+        const swap = () => { const span = img.parentElement; span.classList.add('avatar-initials'); span.textContent = img.dataset.fallback; };
+        if (img.complete && img.naturalWidth === 0) swap();
+        else img.addEventListener('error', swap, { once: true });
+      }
+      for (const img of $$('img.flag', root)) img.addEventListener('error', () => img.remove(), { once: true });
+      for (const input of $$('[data-filter]', root)) {
+        const items = $$(input.dataset.filter, root);
+        input.addEventListener('input', () => {
+          const q = input.value.trim().toLowerCase();
+          for (const a of items) a.hidden = q && !(a.dataset.name || a.textContent.toLowerCase()).includes(q);
+        });
+      }
+      // Weather (MET Norway via f1-api; forecast range only)
+      const ctl = new AbortController();
+      for (const el of $$('[data-weather]', root)) {
+        const slug = el.dataset.weather;
+        if (!slug) continue;
+        const from = Date.parse(el.dataset.weatherFrom);
+        if (from - Date.now() > 9 * 86400e3) continue;
+        fetch(`${API}/weather?circuit=${encodeURIComponent(slug)}&from=${encodeURIComponent(el.dataset.weatherFrom)}&to=${encodeURIComponent(el.dataset.weatherTo)}`, { signal: ctl.signal })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((w) => {
+            if (!w?.days?.length) return;
+            el.innerHTML = `<span class="kicker">Forecast</span> ` + w.days.map((d) => `${esc(fmtLocal(new Date(d.date + 'T12:00:00Z'), 'date'))}: ${Math.round(d.t_max)}°C, ${d.precip_mm.toFixed(1)} mm${d.wind_ms != null ? `, wind ${Math.round(d.wind_ms)} m/s` : ''}`).join(' · ') + (w.licence_credit ? ` <span class="muted">· ${esc(w.licence_credit)}</span>` : '');
+          })
+          .catch(() => {});
+      }
+      return () => { timers.forEach(clearInterval); ctl.abort(); };
+    },
+  });
 })();

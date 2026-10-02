@@ -606,3 +606,4 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
   .tm-row{grid-template-columns:minmax(150px,220px) minmax(0,1fr) 120px minmax(0,1fr);grid-template-areas:"team a gap b";padding:10px 2px}
   .tm-drv small{display:none}.tm-arrow{display:none}
 }
+.nav-progress{position:fixed;left:0;top:0;height:2px;width:0;background:var(--accent,#ff4d2e);z-index:1000;opacity:0;transition:width 1.2s ease-out,opacity .2s}.nav-progress[data-on='1']{width:80%;opacity:1}@media (prefers-reduced-motion: reduce){.nav-progress{transition:none}}::view-transition-old(root),::view-transition-new(root){animation-duration:120ms}
