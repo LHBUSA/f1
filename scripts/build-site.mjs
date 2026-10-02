@@ -13,6 +13,7 @@ import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
 import { loadCarPhotos, carPhotoFor, imageObject } from '../src/identity/car-photos.mjs';
 import { loadPeople, teamPeople, teamMachine, personProfiles } from '../src/identity/people.mjs';
 import { loadExplorer, explorerFor } from '../src/identity/explorer.mjs';
+import { powertrainFor } from '../src/identity/powertrain.mjs';
 
 const DIST = path.resolve('dist');
 const t0 = Date.now();
@@ -46,6 +47,7 @@ for (const [cid, l] of Object.entries(teamLogos)) {
 ctx.currentTeamIds = Object.keys(teamIdent);
 ctx.logoFor = (cid) => logoOk[cid] || (teamIdent[cid] ? { fallback: true, short: teamIdent[cid].short } : null);
 ctx.explorerFor = (o) => explorerFor(explorerReg, o);
+ctx.powertrainFor = (cid, season) => { const m = teamMachine(peopleReg, cid, season); return m ? powertrainFor({ machine: m, tech: explorerReg.tech, teamName: ctx.conById[cid]?.name || cid }) : null; };
 const carCandidates = process.env.F1_CAR_CANDIDATES === '1' || process.env.VERCEL_ENV === 'preview';
 ctx.carPhotoFor = (cid, season) => carPhotoFor(carReg, cid, season, { includeCandidates: carCandidates });
 fs.mkdirSync(path.join(DIST, 'media/cars'), { recursive: true });
@@ -121,6 +123,14 @@ for (const d of ctx.drivers) if (ctx.careers[d.id]?.entries) emit(P.driverPage(c
 emit(P.teamsIndex(ctx));
 for (const c of ctx.constructors) emit(P.teamPage(ctx, c, lineageChain));
 for (const prof of Object.values(personProfiles(peopleReg))) emit(P.personPage(ctx, prof));
+// /power-units: one column per 2026 manufacturer (from the canonical machine registry)
+{
+  const byMaker = {};
+  for (const cid of ctx.currentTeamIds) { const pt = ctx.powertrainFor(cid, ctx.currentSeason); if (!pt?.makerKey) continue; (byMaker[pt.makerKey] ||= { pts: [], teams: [] }); byMaker[pt.makerKey].pts.push(pt); byMaker[pt.makerKey].teams.push({ id: cid, name: ctx.conById[cid]?.name || cid, rel: pt.relationship }); }
+  const LABEL = { mercedes: 'Mercedes', ferrari: 'Ferrari', 'red-bull-ford': 'Red Bull Ford', honda: 'Honda', audi: 'Audi' };
+  const rows = Object.entries(byMaker).map(([k, v]) => ({ key: k, label: LABEL[k] || k, teams: v.teams, pt: v.pts.find((p) => p.relationship === 'works') || v.pts[0] }));
+  emit(P.powerUnitsPage(ctx, rows));
+}
 // cleared personnel photos (square crops made by scripts/people-photos.mjs)
 if (fs.existsSync('assets-src/people')) { fs.mkdirSync(path.join(DIST, 'media/people'), { recursive: true }); for (const f of fs.readdirSync('assets-src/people').filter((x) => /\.(webp|avif)$/.test(x))) fs.copyFileSync(path.join('assets-src/people', f), path.join(DIST, 'media/people', f)); }
 emit(P.circuitsIndex(ctx));

@@ -311,6 +311,7 @@ export function driverPage(ctx, d) {
   <section class="section"><div class="wrap"><div class="stats">
     <div class="stat-box"><span>Starts</span><b>${car?.starts ?? 0}</b></div><div class="stat-box"><span>Wins</span><b>${car?.wins ?? 0}</b></div><div class="stat-box"><span>Podiums</span><b>${car?.podiums ?? 0}</b></div><div class="stat-box"><span>Poles</span><b>${car?.poles ?? 0}</b></div><div class="stat-box"><span>Points</span><b>${fmtPts(car?.points ?? 0)}</b></div><div class="stat-box"><span>Titles</span><b>${car?.championships.length ?? 0}</b>${car?.championships.length ? `<span>${car.championships.join(', ')}</span>` : ''}</div>
   </div><p class="fine">Career totals from published race classifications (${ctx.coverage.earliest_season}–${ctx.currentSeason}). Poles use the qualifying classification where published, otherwise grid position 1. ${esc(car?.points_note || '')}</p></div></section>
+  ${onGrid ? `<section class="section"><div class="wrap">${currentMachineCard(ctx, lt.constructor_id, ctx.currentSeason)}</div></section>` : ''}
   ${dnaC || dnaK ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Driver DNA</span><h2>Profile</h2></div><a class="more" href="/methodology#driver-dna">Methodology</a></div>
     <div class="tabs" role="tablist">${dnaC ? `<button class="tab" role="tab" type="button" aria-selected="true" aria-controls="dna-cur" id="dt-cur">${esc(dnaC.window)}</button>` : ''}${dnaK ? `<button class="tab" role="tab" type="button" aria-selected="${dnaC ? 'false' : 'true'}" aria-controls="dna-car" id="dt-car">Career</button>` : ''}</div>
     ${dnaC ? `<div class="tabpanel" role="tabpanel" id="dna-cur" aria-labelledby="dt-cur">${dnaPanel(dnaC, { color: color || 'ff4d2e' })}</div>` : ''}
@@ -369,14 +370,16 @@ export function teamPage(ctx, c, lineageChain) {
   const lastRace = c.last_season === season ? ctx.results.filter((r) => r.session_type === 'race' && r.constructor_id === c.id && ctx.eventById?.[r.event_id]?.season === season).sort((x, y) => ctx.eventById[y.event_id].round - ctx.eventById[x.event_id].round)[0] : null;
   const lineup = lastRace ? ctx.results.filter((r) => r.session_type === 'race' && r.constructor_id === c.id && r.event_id === lastRace.event_id).map((r) => ({ id: r.driver_id, slug: ctx.driverById[r.driver_id]?.slug, name: ctx.driverById[r.driver_id]?.full_name || ctx.driverById[r.driver_id]?.last_name, number: ctx.driverById[r.driver_id]?.espn_number || null })) : [];
   const xp = photo ? ctx.explorerFor?.({ photo, machine, people, lineup, season, carLabel: machine?.carModel?.value || null }) : null;
+  if (xp) { const pc = xp.comps.find((x) => x.id === 'power-unit'); if (pc?.links?.powerUnit) pc.links.pt = ctx.powertrainFor?.(c.id, season); }
   const car = photo ? `<figure class="team-car">${machine?.carModel || ctx.logoFor?.(c.id) ? `<div class="car-id">${teamMark(ctx.logoFor?.(c.id), 22, 'car-mark')}<span>${season} car</span>${machine?.carModel ? `<b>${esc(machine.carModel.value)}</b>` : ''}</div>` : ''}<div class="car-stage"><picture><source type="image/avif" srcset="${[640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.avif ${w}w`).join(', ')}" sizes="(min-width:1024px) 46vw, 100vw"><img src="/media/cars/${photo.id}-1280.webp" srcset="${[640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.webp ${w}w`).join(', ')}" sizes="(min-width:1024px) 46vw, 100vw" width="1280" height="${Math.round((1280 * photo.derivatives.aspect[1]) / photo.derivatives.aspect[0])}" alt="${esc(`${season} ${c.name}${photo.carModel ? ` ${photo.carModel}` : ''}${photo.event ? `, ${photo.event}` : ''}`)}" fetchpriority="high" decoding="async"></picture>${explorerHotspots(xp)}</div><figcaption><a href="${esc(photo.sourceUrl)}" rel="noopener">Photo: ${esc(photo.photographer)}</a>, <a href="${esc(photo.licenseUrl)}" rel="noopener license">${esc(photo.license)}</a> · background removed${photo.approvedForPublicUse ? '' : ' · PREVIEW CANDIDATE'}</figcaption></figure>` : '';
   const body = `${crumbs(bc)}
   <section class="hero ${teamClass(color)}${car ? ' has-car' : ''}"><div class="wrap"><span class="eyebrow">${c.first_season}–${c.last_season === season ? 'present' : c.last_season}</span><h1 class="team-h1">${c.last_season === season ? teamMark(ctx.logoFor?.(c.id), 52, 'hero-mark') : ''}<span>${esc(c.name)}</span></h1>
   <div class="hero-meta">${c.source_names.length ? `<span><b>Source labels</b>${esc(c.source_names.join(', '))}</span>` : ''}${titles.length ? `<span><b>Constructors' titles</b>${titles.length} (${titles.join(', ')})</span>` : ''}</div><div class="team-stripe"></div>${car}
   ${chain.length > 1 ? `<div class="section"><span class="kicker">Franchise lineage</span><div class="lineage">${chain.map((id, i) => `${i ? '<i>→</i>' : ''}${id === c.id ? `<span class="cur">${esc(ctx.conById[id].name)}</span>` : `<a href="/teams/${id}">${esc(ctx.conById[id].name)}</a>`}`).join('')}</div><p class="fine">Lineage is PropBetEdge editorial grouping of the same entrant across renames; each name keeps its own record.</p></div>` : ''}</div></section>
-  ${xp ? `<div class="${teamClass(color)}">${explorerSection(ctx, xp)}</div>` : ''}
   <section class="section"><div class="wrap"><div class="stats"><div class="stat-box"><span>Grands Prix</span><b>${races}</b></div><div class="stat-box"><span>Wins</span><b>${wins}</b></div><div class="stat-box"><span>Podiums</span><b>${podiums}</b></div><div class="stat-box"><span>Titles</span><b>${titles.length}</b></div></div></div></section>
   <div class="${teamClass(color)}">${machineStrip(ctx, c, season, machine, people, lineup)}
+  ${powertrainSection(ctx, c, season, c.last_season === season ? ctx.powertrainFor?.(c.id, season) : null)}
+  ${xp ? explorerSection(ctx, xp) : ''}
   ${peopleSection(ctx, c, season, people, lineup)}</div>
   ${dna ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Constructor DNA · ${lastSeason}</span><h2>Car profile</h2></div><a class="more" href="/methodology#constructor-dna">Methodology</a></div>${dnaPanel(dna, { color: color || 'ff4d2e', title: 'Constructor DNA', note: 'Driver Pairing Balance isolates the driver effect; the other dimensions describe the car/team.' })}</div></section>` : ''}
   ${pair ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Teammate battle ${lastSeason}</h2></div><div class="grid g2">${battleCard(ctx, pair, lastSeason)}</div></div></section>` : ''}
@@ -755,21 +758,11 @@ function explorerLinks(ctx, c) {
   const L = c.links || {};
   const parts = [];
   if (L.drivers?.length) parts.push(`<div class="xp-block"><h4>Drivers &amp; race engineers</h4><ul class="xp-drivers">${L.drivers.map((d) => `<li><a href="${ctx.driverUrl(d.id)}">${d.number ? `<span class="num">#${esc(d.number)}</span>` : ''}${esc(d.name)}</a><span class="arrow" aria-hidden="true">→</span>${d.engineers.length ? `<span>Race engineer${d.engineers.length > 1 ? 's' : ''}: <b>${d.engineers.map((e) => esc(e.name)).join(' · ')}</b>${d.engineers[0].confidence === 'medium' ? ' <small>reported</small>' : ''}</span>` : '<span class="muted">Race engineer not verified</span>'}</li>`).join('')}</ul></div>`);
-  if (L.powerUnit) {
-    const pu = L.powerUnit, mf = pu.makerFacts;
-    const rows = [
-      ['Manufacturer', pu.manufacturer],
-      ['Designation', pu.designation || 'Not confirmed by a first-party source'],
-      ['Season', String(pu.season)],
-      ['Supply', pu.relationship === 'works' ? 'Works (in-house) power unit' : pu.relationship === 'customer' ? 'Customer supply' : null],
-      ['Regulations', '2026 power-unit regulations (new generation)'],
-      ...(mf?.architecture?.length ? [['Architecture', mf.architecture.join('; ')]] : []),
-      ...(mf?.fuelPartner ? [['Fuel partner', mf.fuelPartner]] : []),
-      ...(mf?.lubricantPartner ? [['Lubricants', mf.lubricantPartner]] : []),
-      ['Power output', mf?.outputPublished?.value ? `${mf.outputPublished.value} (manufacturer-published)` : 'Not officially published'],
-    ].filter((r) => r[1]);
-    parts.push(`<div class="xp-block"><h4>Power unit</h4><dl class="xp-facts">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>${srcLink(pu.sources)}${pu.leadership?.length ? `<p class="xp-people"><small>Power-unit leadership</small><br>${pu.leadership.slice(0, 3).map((r) => `<b>${esc(r.name)}</b> <small>${esc(r.role)}</small>`).join(' · ')}</p>` : ''}</div>`);
+  if (L.powerUnit && L.pt) {
+    const pt = L.pt;
+    parts.push(`<div class="xp-block xp-pt"><h4>${esc(pt.designation || `${pt.manufacturer} power unit`)} · ${pt.relationship === 'works' ? 'works' : pt.relationship === 'customer' ? `customer supply (${esc(pt.manufacturer)})` : esc(pt.manufacturer)}</h4>${ptSchematic(pt)}<div class="pt-cards pt-cards-sm">${ptCards(pt)}</div>${ptOutput(pt)}${pt.leadership?.length ? `<p class="xp-people"><small>Power-unit leadership</small><br>${pt.leadership.slice(0, 3).map((r) => `<b>${esc(r.name)}</b> <small>${esc(r.role)}</small>`).join(' · ')}</p>` : ''}<p><a class="more" href="#powertrain">Full powertrain</a> <a class="more" href="/power-units">Compare power units</a></p></div>`);
   }
+
   if (L.tyres) {
     const t = L.tyres.spec || {};
     const w = t.widthChange && typeof t.widthChange === 'object' ? t.widthChange : null;
@@ -793,7 +786,7 @@ function explorerLinks(ctx, c) {
 
 function explorerSection(ctx, xp) {
   if (!xp) return '';
-  return `<section class="section xp" data-explorer aria-label="Car Explorer"><div class="wrap">
+  return `<section class="section xp" id="explorer" data-explorer aria-label="Car Explorer"><div class="wrap">
   <div class="xp-head"><span class="eyebrow">Car Explorer · ${xp.season}</span><p class="xp-hint">Select a part on the car${xp.carLabel ? ` of the ${esc(xp.carLabel)}` : ''}.</p></div>
   <div class="xp-chips" role="toolbar" aria-label="Car components">${xp.comps.map((c) => `<button type="button" class="xp-chip" data-c="${c.id}" aria-pressed="false" aria-controls="xp-${c.id}">${esc(c.label)}</button>`).join('')}</div>
   ${xp.comps.map((c) => `<article class="xp-panel" id="xp-${c.id}" data-c="${c.id}" tabindex="-1">
@@ -845,4 +838,82 @@ function carRail(ctx) {
   <ul class="rail" data-rail tabindex="0" aria-label="${season} cars, in championship order. Use left and right arrows to browse.">${cards}</ul>
   <div class="wrap rail-progress" data-rail-progress><span class="rail-count" aria-live="polite"><b data-rail-idx>01</b> / ${String(ids.length).padStart(2, '0')} <span class="rail-cur" data-rail-name>${esc(ctx.conById[ids[0]]?.name || '')}</span></span><span class="rail-segs">${ids.map((cid, i) => `<button type="button" class="rail-seg" data-rail-go="${i}" aria-label="Go to ${esc(ctx.conById[cid]?.name || cid)}"${i === 0 ? ' aria-current="true"' : ''}><i></i></button>`).join('')}</span></div>
   <p class="wrap fine rail-credit">Real ${season} cars, backgrounds removed. Photo credits on each team page.</p></section>`;
+}
+
+// ---- THE POWERTRAIN (team pages), Power Unit explorer panel, /power-units, driver "current machine" ----
+const PT_TAG = { team: 'Team-published', 'team-rule': 'Team-published · rule limit', maker: 'Manufacturer-published', fia: 'FIA regulation' };
+const ptTag = (cls) => `<span class="pt-tag pt-${cls}">${PT_TAG[cls] || cls}</span>`;
+
+function ptSchematic(pt) {
+  const m = pt.metrics, v = (k, d = '—') => esc(m[k]?.value || d);
+  // original PBE schematic: turbo -> ICE -> gearbox -> wheels; MGU-K <-> energy store (electrical path dashed)
+  return `<svg class="pt-svg" viewBox="0 0 640 220" role="img" aria-label="Power-unit architecture schematic: turbocharged V6 engine and MGU-K hybrid driving an eight-speed gearbox">
+  <g fill="none" stroke-width="1.5">
+    <rect x="20" y="20" width="120" height="56" rx="8" stroke="#ff7a45"/><rect x="190" y="20" width="170" height="56" rx="8" stroke="#ff7a45"/><rect x="420" y="20" width="200" height="56" rx="8" stroke="#a3acbf"/>
+    <rect x="190" y="140" width="170" height="56" rx="8" stroke="#38d6ff"/><rect x="420" y="140" width="200" height="56" rx="8" stroke="#38d6ff"/>
+    <path d="M140 48h50M360 48h60" stroke="#ff7a45"/><path d="M275 76v64" stroke="#a3acbf"/><path d="M360 168h60" stroke="#38d6ff" stroke-dasharray="5 4"/>
+  </g>
+  <g font-family="Barlow Condensed, Arial Narrow, sans-serif" fill="#eef1f6" text-anchor="middle">
+    <text x="80" y="44" font-size="15" font-weight="700">TURBO</text><text x="80" y="64" font-size="11" fill="#a3acbf">${v('turbo', 'Turbocharged')}</text>
+    <text x="275" y="44" font-size="15" font-weight="700">${v('displacement', '')} ${m.layout ? 'V6' : 'ICE'}</text><text x="275" y="64" font-size="11" fill="#a3acbf">${v('rpm', 'Combustion')}</text>
+    <text x="520" y="44" font-size="15" font-weight="700">GEARBOX</text><text x="520" y="64" font-size="11" fill="#a3acbf">${v('gears', 'Sequential')}</text>
+    <text x="275" y="164" font-size="15" font-weight="700">MGU-K</text><text x="275" y="184" font-size="11" fill="#a3acbf">${v('mguk', 'Motor-generator')}</text>
+    <text x="520" y="164" font-size="15" font-weight="700">ENERGY STORE</text><text x="520" y="184" font-size="11" fill="#a3acbf">${v('es', 'Battery')}</text>
+    <text x="300" y="112" font-size="10" fill="#848da2" text-anchor="start">crank / drivetrain</text>
+  </g></svg>`;
+}
+
+function ptCards(pt) {
+  return pt.groups.filter((g) => g.items.length || g.team.length).map((g) => `<div class="pt-card"><h4>${g.title}</h4><dl>${g.items.map((it) => `<div><dt>${esc(it.label)}</dt><dd>${esc(it.value)} ${ptTag(it.cls)}</dd></div>`).join('')}${g.team.filter((t) => !g.items.some((i) => t.value.includes(i.value))).map((t) => `<div><dt>${esc(t.label)}</dt><dd>${esc(t.value)} ${ptTag('team')}</dd></div>`).join('')}</dl></div>`).join('');
+}
+
+function ptOutput(pt) {
+  return `<div class="pt-output"><div><span class="kicker">Total output</span><b>${pt.output ? esc(pt.output.value) : 'Not officially published'}</b>${pt.output ? `<small>${pt.output.cls === 'team' ? 'Published by the team' : `Published by ${esc(pt.output.by)}`}${pt.output.engine ? ` for the ${esc(pt.output.engine)}` : ''} · not independently measured</small>` : '<small>No total figure has been published for this engine. We do not estimate it.</small>'}</div>${pt.fiaSplit ? `<div><span class="kicker">2026 architecture (FIA)</span><b>ICE ${esc(pt.fiaSplit.ice)} · MGU-K ${esc(pt.fiaSplit.mguk)}</b><small>${esc(pt.fiaSplit.note)}</small></div>` : ''}</div>`;
+}
+
+function powertrainSection(ctx, c, season, pt) {
+  if (!pt) return '';
+  const rel = pt.relationship === 'works' ? 'Works power unit' : pt.relationship === 'customer' ? `Customer supply · ${esc(pt.manufacturer)}` : esc(pt.manufacturer);
+  const m = pt.metrics;
+  const head = [m.displacement && m.layout && `${m.displacement.value} ${m.layout.value}`, m.rpm?.value, m.mguk && `MGU-K ${m.mguk.value}`, m.mgukrpm?.value, m.injection?.value, m.es?.value, m.gears?.value].filter(Boolean);
+  return `<section class="section pt" id="powertrain"><div class="wrap"><div class="section-head"><div><span class="eyebrow">The powertrain · ${season}</span><h2>${esc(pt.designation || `${pt.manufacturer} power unit`)}</h2><p class="pt-sub">${rel} · <a href="/power-units">Compare 2026 power units →</a></p></div></div>
+  ${head.length ? `<p class="pt-headline">${head.map((h) => `<span>${esc(h)}</span>`).join('')}</p>` : ''}
+  <div class="pt-grid"><div class="pt-schem">${ptSchematic(pt)}</div>${ptOutput(pt)}</div>
+  <div class="pt-cards">${ptCards(pt)}</div>
+  <p class="fine">Values are labelled by source: team-published, manufacturer-published, or FIA regulation (a 2026 limit, not a measured figure for this engine). Torque, boost pressure, gear ratios, operating rpm and thermal efficiency are not publicly disclosed.</p>
+  </div></section>`;
+}
+
+export function powerUnitsPage(ctx, rows) {
+  const season = ctx.currentSeason;
+  const cols = rows.map((r) => r.pt);
+  const row = (label, f) => `<tr><th scope="row">${label}</th>${cols.map((pt, i) => `<td>${f(pt, rows[i])}</td>`).join('')}</tr>`;
+  const metric = (k) => (pt) => (pt.metrics[k] ? `${esc(pt.metrics[k].value)} ${ptTag(pt.metrics[k].cls)}` : '<span class="muted">Not publicly disclosed</span>');
+  const teams = (r, rel) => r.teams.filter((t) => t.rel === rel).map((t) => `<a href="/teams/${t.id}">${esc(t.name)}</a>`).join(', ') || '—';
+  const body = `${crumbs([['/', 'Home'], ['/teams', 'Teams'], ['/power-units', 'Power units']])}
+  <section class="hero"><div class="wrap"><span class="eyebrow">${season} power units</span><h1>Power units</h1><p class="sub">Every ${season} Formula 1 power unit side by side, from published facts only. Most limits are set by the FIA and are identical by rule; what differs is the manufacturer, the designation, the teams supplied and what each maker has chosen to disclose. Equal limits do not mean equal performance.</p></div></section>
+  <section class="section"><div class="wrap"><div class="table-wrap"><table class="pu-table"><thead><tr><th></th>${rows.map((r) => `<th scope="col">${esc(r.label)}</th>`).join('')}</tr></thead><tbody>
+  ${row('Designation', (pt) => esc(pt.designation || 'Not confirmed first-party'))}
+  ${row('Works team', (pt, r) => teams(r, 'works'))}
+  ${row('Customer teams', (pt, r) => teams(r, 'customer'))}
+  ${row('Displacement / layout', (pt) => [pt.metrics.displacement?.value, pt.metrics.layout?.value].filter(Boolean).map(esc).join(' · ') || '—')}
+  ${row('ICE speed limit', metric('rpm'))}
+  ${row('Direct injection', metric('injection'))}
+  ${row('Fuel energy flow', metric('fuelflow'))}
+  ${row('MGU-H', metric('mguh'))}
+  ${row('MGU-K power', metric('mguk'))}
+  ${row('MGU-K speed', metric('mgukrpm'))}
+  ${row('Energy store window', metric('es'))}
+  ${row('Fuel', (pt) => esc(pt.fuel || '—'))}
+  ${row('Lubricants', (pt) => esc(pt.lube || '—'))}
+  ${row('Published total output', (pt) => (pt.output ? `${esc(pt.output.value)} <small class="muted">(${esc(pt.output.by)})</small>` : '<span class="muted">Not officially published</span>'))}
+  ${row('Power-unit leadership', (pt) => pt.leadership.slice(0, 2).map((l) => `${esc(l.name)} <small class="muted">${esc(l.role)}</small>`).join('<br>') || '—')}
+  </tbody></table></div><p class="fine">Labels: team-published, manufacturer-published, FIA regulation. A regulation value is a limit that applies to every engine, not a measured figure. A manufacturer's published output is shown only for its own engine.</p></div></section>`;
+  return { path: '/power-units', title: `${season} F1 Power Units Compared: Mercedes, Ferrari, Honda, Audi, Red Bull Ford`, description: `${season} Formula 1 power units side by side from published facts: designations, works and customer teams, ICE and MGU-K limits, energy store, fuels, lubricants and published output where a maker has disclosed it.`, section: '/teams', body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/teams', 'Teams'], ['/power-units', 'Power units']])] };
+}
+
+function currentMachineCard(ctx, cid, season) {
+  const machine = ctx.machineFor?.(cid, season), pt = ctx.powertrainFor?.(cid, season);
+  if (!machine?.carModel && !pt) return '';
+  return `<div class="card cur-machine"><span class="eyebrow">Current machine · ${season}</span><b>${esc(machine?.carModel?.value || ctx.conById[cid]?.name || '')}</b>${pt ? `<span class="muted">${esc(pt.designation || `${pt.manufacturer} power unit`)}</span>` : ''}<p><a class="more" href="/teams/${cid}#explorer">Explore car</a> <a class="more" href="/teams/${cid}#powertrain">Explore power unit</a></p></div>`;
 }
