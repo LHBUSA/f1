@@ -121,7 +121,8 @@ h1{overflow-wrap:anywhere}
 .sess .st{grid-column:1/-1}
 
 /* timing tower / tables */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:var(--r);background:var(--panel)}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(90deg,var(--panel) 40%,transparent) left/28px 100% no-repeat local,linear-gradient(270deg,var(--panel) 40%,transparent) right/28px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(255,255,255,.14),transparent) left/10px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(255,255,255,.14),transparent) right/10px 100% no-repeat scroll,var(--panel)}
+.table-wrap::-webkit-scrollbar{display:none}
 table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
 th{font-family:var(--display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--muted);text-align:left;padding:10px 10px;border-bottom:1px solid var(--line2);white-space:nowrap;background:var(--bg2);position:sticky;top:0}
 td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -351,7 +352,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .ncard-cast b{font-family:var(--display);font-size:22px}
 
 /* ---------- intelligence ---------- */
-.itabs{display:flex;gap:6px;overflow-x:auto;padding-top:4px;padding-bottom:4px;scrollbar-width:none}
+.itabs{display:flex;gap:6px;overflow-x:auto;padding-top:4px;padding-bottom:4px;scrollbar-width:none}.itabs::-webkit-scrollbar{display:none}
 .itabs a{white-space:nowrap;padding:6px 12px;border:1px solid var(--line);border-radius:999px;font:600 13px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);text-decoration:none;background:var(--panel)}
 .itabs a[aria-current]{border-color:var(--accent);color:#fff;background:#ff4d2e22}
 .ipanel{border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(135deg,#ff4d2e14,transparent 40%),var(--panel);padding:16px}
