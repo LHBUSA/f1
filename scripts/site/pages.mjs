@@ -681,14 +681,14 @@ function peopleSection(ctx, c, season, P, lineup) {
   if (!P) return '';
   // compact by design: top roles per group (full history stays in the registry for future engineer profiles)
   const groups = [['Leadership', P.leadership.slice(0, 3)], ['Technical', P.technical.slice(0, 4)], ['Power unit', P.powerUnit.slice(0, 2)]].filter(([, rs]) => rs.length);
-  const pairs = lineup.map((d) => ({ d, eng: P.driverEngineers.find((r) => r.driverId === d.slug) }));
+  const pairs = lineup.map((d) => { const es = P.driverEngineers.filter((r) => r.driverId === d.slug).sort((a, b) => /^senior/i.test(a.role) - /^senior/i.test(b.role)); return { d, eng: es[0], all: es }; });
   if (!groups.length && !pairs.some((x) => x.eng) && !P.raceEngineering.length) return '';
   const garage = P.garageOps.length
     ? `<ul class="people">${P.garageOps.map(personCard).join('')}</ul>`
     : `<p class="fine">${esc(P.garage?.note || 'Individual mechanic roster not publicly disclosed; not verified by PropBetEdge.')}</p>`;
   return `<section class="section people-sec"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${season} organisation</span><h2>The people behind the machine</h2></div></div>
   <div class="people-grid">
-    <div class="pgroup pgroup-race"><h3>Driver ↔ race engineer</h3><ul class="pairs">${pairs.map(({ d, eng }) => `<li><a class="drv" href="${ctx.driverUrl(d.id)}">${esc(d.name)}</a><span class="arrow" aria-hidden="true">→</span>${eng ? `<span class="eng"><small>Race engineer${eng.confidence === 'medium' ? ' · reported' : ''}</small><b>${esc(eng.name)}</b></span>${srcLink(eng.sources)}` : '<span class="eng none"><small>Race engineer</small><b>Not verified</b></span>'}</li>`).join('')}</ul></div>
+    <div class="pgroup pgroup-race"><h3>Driver ↔ race engineer</h3><ul class="pairs">${pairs.map(({ d, eng, all }) => `<li><a class="drv" href="${ctx.driverUrl(d.id)}">${esc(d.name)}</a><span class="arrow" aria-hidden="true">→</span>${eng ? `<span class="eng"><small>Race engineer${all.length > 1 ? 's' : ''}${eng.confidence === 'medium' ? ' · reported' : ''}</small><b>${all.map((e) => esc(e.name) + (all.length > 1 && /^senior/i.test(e.role) ? ' <i>(senior)</i>' : '')).join(' · ')}</b></span>${srcLink(eng.sources)}` : '<span class="eng none"><small>Race engineer</small><b>Not verified</b></span>'}</li>`).join('')}</ul></div>
     ${groups.map(([g, rs]) => `<div class="pgroup"><h3>${g}</h3><ul class="people">${rs.map(personCard).join('')}</ul></div>`).join('')}
     ${P.raceEngineering.length ? `<div class="pgroup"><h3>Race engineering</h3><ul class="people">${P.raceEngineering.slice(0, 3).map(personCard).join('')}</ul></div>` : ''}
     <div class="pgroup pgroup-garage"><h3>Garage / operations</h3>${garage}</div>
