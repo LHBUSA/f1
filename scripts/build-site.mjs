@@ -11,9 +11,11 @@ import { articlePage } from '../src/news/render.mjs';
 import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
 import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
 import { loadCarPhotos, carPhotoFor, imageObject } from '../src/identity/car-photos.mjs';
-import { loadPeople, teamPeople, teamMachine, personProfiles } from '../src/identity/people.mjs';
+import { loadPeople, teamPeople, teamMachine } from '../src/identity/people.mjs';
 import { loadExplorer, explorerFor } from '../src/identity/explorer.mjs';
 import { powertrainFor } from '../src/identity/powertrain.mjs';
+import { loadOwnership, ownershipForTeam, personProfileV2 } from '../src/identity/people-v2.mjs';
+import { driverProfileHtml } from './site/people.mjs';
 
 const DIST = path.resolve('dist');
 const t0 = Date.now();
@@ -30,7 +32,15 @@ ctx.newsModule = homeModule(newsPub, X);
 // car photos: approved only; F1_CAR_CANDIDATES=1 / Vercel preview builds also render reviewed candidates, labelled
 const carReg = loadCarPhotos();
 const peopleReg = loadPeople();
-ctx.peopleFor = (cid, season) => teamPeople(peopleReg, cid, season);
+const ownReg = loadOwnership();
+ctx.peopleFor = (cid, season) => ({ ...teamPeople(peopleReg, cid, season), ownership: ownershipForTeam(ownReg, cid) });
+// People Intelligence V2: one profile per person with a visible role or a recorded ownership relationship
+const personIds = new Set([...peopleReg.roles.map((r) => r.personId), ...(ownReg.records || []).map((o) => o.entity?.personId).filter(Boolean)]);
+const profilesV2 = {};
+for (const pid of personIds) { const p = personProfileV2(peopleReg, ownReg, ctx, pid); if (p) profilesV2[pid] = p; }
+ctx.hasProfile = (pid) => !!profilesV2[pid];
+ctx.hasHistory = (pid) => !!profilesV2[pid]?.timeline.entries.some((e) => e.ranged);
+ctx.driverProfileHtml = (d) => driverProfileHtml(ctx, d, peopleReg);
 ctx.machineFor = (cid, season) => teamMachine(peopleReg, cid, season);
 const explorerReg = loadExplorer();
 // team marks: one canonical registry for hero, car label, cards and tables. A mark whose file cannot be copied at
@@ -122,7 +132,6 @@ emit(P.driversIndex(ctx));
 for (const d of ctx.drivers) if (ctx.careers[d.id]?.entries) emit(P.driverPage(ctx, d));
 emit(P.teamsIndex(ctx));
 for (const c of ctx.constructors) emit(P.teamPage(ctx, c, lineageChain));
-for (const prof of Object.values(personProfiles(peopleReg))) emit(P.personPage(ctx, prof));
 // /power-units: one column per 2026 manufacturer (from the canonical machine registry)
 {
   const byMaker = {};
@@ -131,6 +140,8 @@ for (const prof of Object.values(personProfiles(peopleReg))) emit(P.personPage(c
   const rows = Object.entries(byMaker).map(([k, v]) => ({ key: k, label: LABEL[k] || k, teams: v.teams, pt: v.pts.find((p) => p.relationship === 'works') || v.pts[0] }));
   emit(P.powerUnitsPage(ctx, rows));
 }
+for (const prof of Object.values(profilesV2)) emit(P.personPage(ctx, prof));
+emit(P.peopleIndex(ctx, profilesV2, P.teamsByStanding(ctx)));
 // cleared personnel photos (square crops made by scripts/people-photos.mjs)
 if (fs.existsSync('assets-src/people')) { fs.mkdirSync(path.join(DIST, 'media/people'), { recursive: true }); for (const f of fs.readdirSync('assets-src/people').filter((x) => /\.(webp|avif)$/.test(x))) fs.copyFileSync(path.join('assets-src/people', f), path.join(DIST, 'media/people', f)); }
 emit(P.circuitsIndex(ctx));

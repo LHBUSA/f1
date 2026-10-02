@@ -194,4 +194,41 @@
       return () => { timers.forEach(clearInterval); ctl.abort(); };
     },
   });
+  // ---------- page module: /people directory filters (the server-rendered list is complete without JS) ----------
+  F1.register('people', {
+    mount(root) {
+      const ctl = $('[data-pdir-ctl]', root);
+      const list = $('[data-pdir]', root);
+      if (!ctl || !list) return null;
+      const items = $$('.pdir-item', list);
+      const chips = $$('[data-g]', ctl);
+      const team = $('[data-pdir-team]', ctl);
+      const q = $('[data-pdir-q]', ctl);
+      const count = $('[data-pdir-count]', ctl);
+      const empty = $('[data-pdir-empty]', root);
+      const params = new URLSearchParams(location.search);
+      let group = params.get('group') || '';
+      if (params.get('team') && [...team.options].some((o) => o.value === params.get('team'))) team.value = params.get('team');
+      const apply = () => {
+        const term = q.value.trim().toLowerCase();
+        let n = 0;
+        for (const li of items) {
+          const show = (!group || li.dataset.groups.split(' ').includes(group)) && (!team.value || li.dataset.team === team.value) && (!term || li.dataset.name.includes(term));
+          li.hidden = !show;
+          if (show) n++;
+        }
+        for (const c of chips) c.setAttribute('aria-pressed', String(c.dataset.g === group));
+        count.textContent = `${n} ${n === 1 ? 'person' : 'people'}`;
+        if (empty) empty.hidden = n > 0;
+      };
+      const onChip = (e) => { const b = e.target.closest('[data-g]'); if (!b) return; group = b.dataset.g; apply(); };
+      ctl.addEventListener('click', onChip);
+      team.addEventListener('change', apply);
+      q.addEventListener('input', apply);
+      ctl.addEventListener('submit', (e) => e.preventDefault());
+      ctl.hidden = false;
+      apply();
+      return () => { ctl.removeEventListener('click', onChip); team.removeEventListener('change', apply); q.removeEventListener('input', apply); };
+    },
+  });
 })();

@@ -312,6 +312,7 @@ export function driverPage(ctx, d) {
     <div class="stat-box"><span>Starts</span><b>${car?.starts ?? 0}</b></div><div class="stat-box"><span>Wins</span><b>${car?.wins ?? 0}</b></div><div class="stat-box"><span>Podiums</span><b>${car?.podiums ?? 0}</b></div><div class="stat-box"><span>Poles</span><b>${car?.poles ?? 0}</b></div><div class="stat-box"><span>Points</span><b>${fmtPts(car?.points ?? 0)}</b></div><div class="stat-box"><span>Titles</span><b>${car?.championships.length ?? 0}</b>${car?.championships.length ? `<span>${car.championships.join(', ')}</span>` : ''}</div>
   </div><p class="fine">Career totals from published race classifications (${ctx.coverage.earliest_season}–${ctx.currentSeason}). Poles use the qualifying classification where published, otherwise grid position 1. ${esc(car?.points_note || '')}</p></div></section>
   ${onGrid ? `<section class="section"><div class="wrap">${currentMachineCard(ctx, lt.constructor_id, ctx.currentSeason)}</div></section>` : ''}
+  ${ctx.driverProfileHtml ? ctx.driverProfileHtml(d) : ''}
   ${dnaC || dnaK ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Driver DNA</span><h2>Profile</h2></div><a class="more" href="/methodology#driver-dna">Methodology</a></div>
     <div class="tabs" role="tablist">${dnaC ? `<button class="tab" role="tab" type="button" aria-selected="true" aria-controls="dna-cur" id="dt-cur">${esc(dnaC.window)}</button>` : ''}${dnaK ? `<button class="tab" role="tab" type="button" aria-selected="${dnaC ? 'false' : 'true'}" aria-controls="dna-car" id="dt-car">Career</button>` : ''}</div>
     ${dnaC ? `<div class="tabpanel" role="tabpanel" id="dna-cur" aria-labelledby="dt-cur">${dnaPanel(dnaC, { color: color || 'ff4d2e' })}</div>` : ''}
@@ -713,36 +714,17 @@ function peopleSection(ctx, c, season, P, lineup) {
   const garageRow = `<div class="prow"><h3>Garage / mechanics</h3>${P.garageOps.length ? `<ul class="pcards">${P.garageOps.slice(0, 6).map((r) => personCard(r, ctx)).join('')}</ul>` : ''}<p class="fine">${P.garageOps.length ? 'Individual car-crew roster beyond the roles shown is not publicly verified.' : esc(P.garage?.note || 'Individual mechanic roster not publicly verified by PropBetEdge.')}</p></div>`;
   return `<section class="section people-sec"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${season} organisation</span><h2>The people behind the machine</h2></div></div>
   <div class="prow"><h3>Driver → engineering → garage</h3><div class="chains">${chains.map(({ d, ch }) => `<article class="chain"><header><a href="${ctx.driverUrl(d.id)}">${d.number ? `<span class="num">#${esc(d.number)}</span>` : ''}${esc(d.name)}</a><small>${esc(c.name)} · ${season}</small></header><ol>${chainStep('Race engineer', ch.raceEngineers)}${chainStep('Performance engineer', ch.performanceEngineers)}${chainStep('Number one mechanic', ch.mechanics)}<li class="step none"><small>Car crew</small><b>Individual roster not publicly verified</b></li></ol></article>`).join('')}</div></div>
-  ${rows.map(([h, rs]) => `<div class="prow"><h3>${h}</h3><ul class="pcards">${rs.map((r) => personCard(r, ctx)).join('')}</ul></div>`).join('')}
+  ${P.ownership?.length ? `<div class="prow"><h3>Ownership</h3><ul class="pcards">${P.ownership.map((o) => `<li class="pcard">${o.entity.personId && ctx.hasProfile?.(o.entity.personId) ? `<a class="pc-link" href="/people/${esc(o.entity.personId)}">` : '<span class="pc-link">'}<span class="who"><b>${esc(o.entity.name)}</b><small>${esc(o.relationship.replace(/^./, (x) => x.toUpperCase()))}${o.valid_from ? ` · since ${esc(String(o.valid_from).slice(0, 4))}` : ''}${o.percentage != null ? ` · ${esc(String(o.percentage))}%` : ''}</small>${o.entity.personId && ctx.hasProfile?.(o.entity.personId) ? '<em>View full profile →</em>' : ''}</span>${o.entity.personId && ctx.hasProfile?.(o.entity.personId) ? '</a>' : '</span>'}${o.confidence === 'medium' ? '<span class="tag">reported</span>' : ''}</li>`).join('')}</ul><p class="fine">Owners and shareholders as publicly recorded; job titles are not ownership.</p></div>` : ''}
+  ${rows.map(([h, rs]) => `<div class="prow"><h3>${h}</h3><ul class="pcards">${rs.map((r) => personCard(r, ctx, ctx.hasHistory?.(r.slug) ? 'View full profile →' : '')).join('')}</ul></div>`).join('')}
   ${garageRow}
+  <p class="more-row"><a class="more" href="/people?team=${esc(c.id)}">All ${esc(c.name)} people →</a></p>
   <p class="fine">Current ${season} roles from team, FIA and reputable motorsport sources; “reported” = confirmed by independent media, not yet by the team. Roles we cannot verify are left out; nobody is credited with designing a specific part.</p>
   ${P.photoCredits.length ? `<details class="credits"><summary>Photo credits</summary><ul>${P.photoCredits.map((p) => `<li>${esc(p.name)}: <a href="${esc(p.sourceUrl)}" rel="noopener">${esc(p.photographer)}</a>, <a href="${esc(p.licenseUrl)}" rel="noopener license">${esc(p.license)}</a>${p.modified ? ' · cropped' : ''}</li>`).join('')}</ul></details>` : ''}
   </div></section>`;
 }
 
-export function personPage(ctx, prof) {
-  const cur = prof.roles.filter((r) => r.current === true && r.season === ctx.currentSeason);
-  const lead = cur[0] || prof.roles[0];
-  const team = ctx.conById[lead.constructorId];
-  const drivers = [...new Set(prof.roles.filter((r) => r.driverId).map((r) => r.driverId))];
-  const driverBySlug = (s) => ctx.drivers.find((d) => d.slug === s);
-  const bc = [['/', 'Home'], ['/teams', 'Teams'], ...(team ? [[`/teams/${team.id}`, team.name]] : []), [`/people/${prof.slug}`, prof.name]];
-  const roleLi = (r) => { const t = ctx.conById[r.constructorId]; const d = r.driverId && driverBySlug(r.driverId); return `<li><b>${esc(r.role)}</b> · ${t ? `<a href="/teams/${t.id}">${esc(t.name)}</a>` : esc(r.constructorId)} · ${r.season}${d ? ` · <a href="/drivers/${d.slug}">${esc(d.full_name)}</a>` : ''}${r.confidence === 'medium' ? ' <span class="tag">reported</span>' : ''}${srcLink(r.sources)}</li>`; };
-  const body = `${crumbs(bc)}
-  <section class="hero ${teamClass(team ? ctx.colorOf(team.id, ctx.currentSeason) : null)}"><div class="wrap person-hero">${personFace(prof, 120)}<div><span class="eyebrow">${team ? esc(team.name) : 'Formula 1'} · ${lead.season}</span><h1>${esc(prof.name)}</h1><p class="lede">${esc(lead.role)}</p><div class="team-stripe"></div></div></div></section>
-  <section class="section"><div class="wrap"><div class="section-head"><h2>Current role${cur.length > 1 ? 's' : ''}</h2></div><ul class="role-list">${(cur.length ? cur : prof.roles.slice(0, 1)).map(roleLi).join('')}</ul>
-  ${drivers.length ? `<h3>Drivers worked with</h3><p>${drivers.map((s) => { const d = driverBySlug(s); return d ? `<a href="/drivers/${d.slug}">${esc(d.full_name)}</a>` : esc(s); }).join(' · ')}</p>` : ''}
-  <p class="fine">Roles are recorded per season with sources and effective dates. Career timeline, earlier teams and cars are added as they are verified.</p>
-  ${prof.photo ? `<p class="fine">Photo: <a href="${esc(prof.photo.sourceUrl)}" rel="noopener">${esc(prof.photo.photographer)}</a>, <a href="${esc(prof.photo.licenseUrl)}" rel="noopener license">${esc(prof.photo.license)}</a>${prof.photo.modified ? ' · cropped' : ''}</p>` : ''}</div></section>`;
-  return {
-    path: `/people/${prof.slug}`,
-    title: `${prof.name} – ${lead.role}${team ? `, ${team.name}` : ''} | F1 ${lead.season}`,
-    description: `${prof.name} is ${/^[aeiou]/i.test(lead.role) ? 'an' : 'a'} ${lead.role}${team ? ` at ${team.name}` : ''} in the ${lead.season} Formula 1 season${drivers.length ? `, working with ${drivers.map((s) => driverBySlug(s)?.full_name || s).join(' and ')}` : ''}. Sourced role record.`,
-    section: 'teams',
-    body,
-    jsonLd: [jsonLdBreadcrumb(bc), { '@context': 'https://schema.org', '@type': 'Person', name: prof.name, jobTitle: lead.role, ...(team ? { worksFor: { '@type': 'SportsTeam', name: team.name, url: `${SITE}/teams/${team.id}` } } : {}), url: `${SITE}/people/${prof.slug}` }],
-  };
-}
+// /people/:slug is rendered by scripts/site/people.mjs (People Intelligence V2)
+export { personPageV2 as personPage, peopleIndex } from './people.mjs';
 
 // ---- CAR EXPLORER (server-rendered panels; src/web/explorer.js only switches them; complete without JS) ----
 const factRow = (f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}${srcLink(f.sources)}</dd></div>`;

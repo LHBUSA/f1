@@ -21,7 +21,7 @@ const resolveSources = (ids, table) => (ids || []).map((id) => ({ id, ...table[i
 // roles for one constructor in one season, grouped; never another season's roles on the current page
 export function teamPeople(reg, constructorId, season) {
   const roles = reg.roles
-    .filter((r) => r.constructorId === constructorId && r.season === season && r.display && r.current === true && !r.effectiveTo && (r.sources || []).length)
+    .filter((r) => r.constructorId === constructorId && r.season === season && r.display && !r.history && r.current === true && !r.effectiveTo && (r.sources || []).length)
     .map((r) => ({ ...r, name: reg.people[r.personId]?.name, slug: r.personId, photo: photoFor(reg, r.personId), sources: resolveSources(r.sources, reg.sources) }))
     .filter((r) => r.name && r.sources.length);
   const group = (g) => roles.filter((r) => r.roleGroup === g && !r.driverId).sort((a, b) => (a.rank || 9) - (b.rank || 9));
