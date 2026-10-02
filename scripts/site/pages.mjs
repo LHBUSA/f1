@@ -1,4 +1,4 @@
-import { esc, fmtPts, fmtMs, ordinal, teamClass, headshot, flag, crumbs, jsonLdBreadcrumb, lineChart, fmtDate, timeTag, pct, SITE, fmtNum } from './lib.mjs';
+import { esc, fmtPts, fmtMs, ordinal, teamClass, headshot, flag, crumbs, jsonLdBreadcrumb, lineChart, fmtDate, timeTag, pct, SITE, fmtNum, teamMark } from './lib.mjs';
 import { driverCell, teamLink, sessionTable, standingsTable, dnaPanel, battleCard, fitList, sessionList, statusPill } from './components.mjs';
 import { SESSION_LABEL } from '../../src/core/normalize.mjs';
 
@@ -112,7 +112,7 @@ function teamCard(ctx, cid, season) {
   const st = (ctx.standingsBy[`${season}|constructor`] || []).find((s) => s.subject_id === cid);
   const ds = ctx.currentGrid.filter((g) => g.constructor_id === cid);
   const dna = ctx.conDna[season]?.[cid];
-  return `<a class="card card-link dcard ${teamClass(color)}" href="/teams/${cid}"><span class="bignum">${st ? st.position : '–'}</span><div><span class="nm">${esc(c?.name)}<small>${st ? fmtPts(st.points) + ' pts' : ''}${dna?.dimensions.qualifying_speed?.raw?.median_gap_to_pole_pct != null ? ` · ${dna.dimensions.qualifying_speed.raw.median_gap_to_pole_pct.toFixed(2)}% to pole` : ''}</small></span><span class="stat">${ds.map((g) => esc(ctx.driverById[g.driver_id]?.last_name)).join(' · ')}</span></div></a>`;
+  return `<a class="card card-link dcard ${teamClass(color)}" href="/teams/${cid}"><span class="bignum">${st ? st.position : '–'}</span><div><span class="nm">${season === ctx.currentSeason ? teamMark(ctx.logoFor?.(cid), 18) : ''}${esc(c?.name)}<small>${st ? fmtPts(st.points) + ' pts' : ''}${dna?.dimensions.qualifying_speed?.raw?.median_gap_to_pole_pct != null ? ` · ${dna.dimensions.qualifying_speed.raw.median_gap_to_pole_pct.toFixed(2)}% to pole` : ''}</small></span><span class="stat">${ds.map((g) => esc(ctx.driverById[g.driver_id]?.last_name)).join(' · ')}</span></div></a>`;
 }
 
 // ---------------- RACES ----------------
@@ -189,7 +189,7 @@ export function racePage(ctx, ev) {
       const [a, b] = rs.sort((x, y) => x.position - y.position);
       let d = null;
       for (const k of ['q3_ms', 'q2_ms', 'q1_ms']) if (a[k] && b[k]) { d = ((b[k] - a[k]) / a[k]) * 100; break; }
-      return `<tr><td>${teamLink(ctx, cid)}</td><td>${driverCell(ctx, a.driver_id, cid, ev.season)}</td><td class="num">${d != null ? '+' + d.toFixed(3) + '%' : '—'}</td><td>${driverCell(ctx, b.driver_id, cid, ev.season)}</td></tr>`;
+      return `<tr><td>${teamLink(ctx, cid, ev.season)}</td><td>${driverCell(ctx, a.driver_id, cid, ev.season)}</td><td class="num">${d != null ? '+' + d.toFixed(3) + '%' : '—'}</td><td>${driverCell(ctx, b.driver_id, cid, ev.season)}</td></tr>`;
     })
     .join('');
   const fit = ctx.fit[ev.id];
@@ -278,7 +278,7 @@ export function driverPage(ctx, d) {
   const recentRows = recent
     .map((x) => {
       const ev = ctx.eventById[x.event_id];
-      return `<tr><td>${ev.season}</td><td><a href="${ctx.raceUrl(ev.id)}">${esc(ev.name)}</a></td><td>${teamLink(ctx, x.constructor_id)}</td><td class="num">${x.quali_pos ?? '—'}</td><td class="num">${x.grid || '—'}</td><td class="num">${x.classified ? x.finish : `<span class="st-ret">${x.status === 'retired' ? 'DNF' : esc(x.status || '—')}</span>`}</td><td class="num">${x.points ? fmtPts(x.points) : ''}</td></tr>`;
+      return `<tr><td>${ev.season}</td><td><a href="${ctx.raceUrl(ev.id)}">${esc(ev.name)}</a></td><td>${teamLink(ctx, x.constructor_id, ev.season)}</td><td class="num">${x.quali_pos ?? '—'}</td><td class="num">${x.grid || '—'}</td><td class="num">${x.classified ? x.finish : `<span class="st-ret">${x.status === 'retired' ? 'DNF' : esc(x.status || '—')}</span>`}</td><td class="num">${x.points ? fmtPts(x.points) : ''}</td></tr>`;
     })
     .join('');
   const mates = (ctx.teammatesByDriver[d.id] || []).sort((a, b) => b.seasons.at(-1) - a.seasons.at(-1)).slice(0, 12);
@@ -363,9 +363,9 @@ export function teamPage(ctx, c, lineageChain) {
   const lastRace = c.last_season === season ? ctx.results.filter((r) => r.session_type === 'race' && r.constructor_id === c.id && ctx.eventById?.[r.event_id]?.season === season).sort((x, y) => ctx.eventById[y.event_id].round - ctx.eventById[x.event_id].round)[0] : null;
   const lineup = lastRace ? ctx.results.filter((r) => r.session_type === 'race' && r.constructor_id === c.id && r.event_id === lastRace.event_id).map((r) => ({ id: r.driver_id, slug: ctx.driverById[r.driver_id]?.slug, name: ctx.driverById[r.driver_id]?.full_name || ctx.driverById[r.driver_id]?.last_name, number: ctx.driverById[r.driver_id]?.espn_number || null })) : [];
   const xp = photo ? ctx.explorerFor?.({ photo, machine, people, lineup, season, carLabel: machine?.carModel?.value || null }) : null;
-  const car = photo ? `<figure class="team-car">${machine?.carModel ? `<div class="car-id"><span>${season} car</span><b>${esc(machine.carModel.value)}</b></div>` : ''}<div class="car-stage"><picture><source type="image/avif" srcset="${[640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.avif ${w}w`).join(', ')}" sizes="(min-width:1024px) 46vw, 100vw"><img src="/media/cars/${photo.id}-1280.webp" srcset="${[640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.webp ${w}w`).join(', ')}" sizes="(min-width:1024px) 46vw, 100vw" width="1280" height="${Math.round((1280 * photo.derivatives.aspect[1]) / photo.derivatives.aspect[0])}" alt="${esc(`${season} ${c.name}${photo.carModel ? ` ${photo.carModel}` : ''}${photo.event ? `, ${photo.event}` : ''}`)}" fetchpriority="high" decoding="async"></picture>${explorerHotspots(xp)}</div><figcaption><a href="${esc(photo.sourceUrl)}" rel="noopener">Photo: ${esc(photo.photographer)}</a>, <a href="${esc(photo.licenseUrl)}" rel="noopener license">${esc(photo.license)}</a> · background removed${photo.approvedForPublicUse ? '' : ' · PREVIEW CANDIDATE'}</figcaption></figure>` : '';
+  const car = photo ? `<figure class="team-car">${machine?.carModel || ctx.logoFor?.(c.id) ? `<div class="car-id">${teamMark(ctx.logoFor?.(c.id), 22, 'car-mark')}<span>${season} car</span>${machine?.carModel ? `<b>${esc(machine.carModel.value)}</b>` : ''}</div>` : ''}<div class="car-stage"><picture><source type="image/avif" srcset="${[640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.avif ${w}w`).join(', ')}" sizes="(min-width:1024px) 46vw, 100vw"><img src="/media/cars/${photo.id}-1280.webp" srcset="${[640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.webp ${w}w`).join(', ')}" sizes="(min-width:1024px) 46vw, 100vw" width="1280" height="${Math.round((1280 * photo.derivatives.aspect[1]) / photo.derivatives.aspect[0])}" alt="${esc(`${season} ${c.name}${photo.carModel ? ` ${photo.carModel}` : ''}${photo.event ? `, ${photo.event}` : ''}`)}" fetchpriority="high" decoding="async"></picture>${explorerHotspots(xp)}</div><figcaption><a href="${esc(photo.sourceUrl)}" rel="noopener">Photo: ${esc(photo.photographer)}</a>, <a href="${esc(photo.licenseUrl)}" rel="noopener license">${esc(photo.license)}</a> · background removed${photo.approvedForPublicUse ? '' : ' · PREVIEW CANDIDATE'}</figcaption></figure>` : '';
   const body = `${crumbs(bc)}
-  <section class="hero ${teamClass(color)}${car ? ' has-car' : ''}"><div class="wrap"><span class="eyebrow">${c.first_season}–${c.last_season === season ? 'present' : c.last_season}</span><h1>${esc(c.name)}</h1>
+  <section class="hero ${teamClass(color)}${car ? ' has-car' : ''}"><div class="wrap"><span class="eyebrow">${c.first_season}–${c.last_season === season ? 'present' : c.last_season}</span><h1 class="team-h1">${c.last_season === season ? teamMark(ctx.logoFor?.(c.id), 52, 'hero-mark') : ''}<span>${esc(c.name)}</span></h1>
   <div class="hero-meta">${c.source_names.length ? `<span><b>Source labels</b>${esc(c.source_names.join(', '))}</span>` : ''}${titles.length ? `<span><b>Constructors' titles</b>${titles.length} (${titles.join(', ')})</span>` : ''}</div><div class="team-stripe"></div>${car}
   ${chain.length > 1 ? `<div class="section"><span class="kicker">Franchise lineage</span><div class="lineage">${chain.map((id, i) => `${i ? '<i>→</i>' : ''}${id === c.id ? `<span class="cur">${esc(ctx.conById[id].name)}</span>` : `<a href="/teams/${id}">${esc(ctx.conById[id].name)}</a>`}`).join('')}</div><p class="fine">Lineage is PropBetEdge editorial grouping of the same entrant across renames; each name keeps its own record.</p></div>` : ''}</div></section>
   ${xp ? `<div class="${teamClass(color)}">${explorerSection(ctx, xp)}</div>` : ''}
@@ -475,7 +475,7 @@ export function standingsPage(ctx, season) {
     .map((t) => ({ t, s: t.by_season[season] }))
     .sort((a, b) => Math.abs(b.s.a.points - b.s.b.points) - Math.abs(a.s.a.points - a.s.b.points))
     .slice(0, 12)
-    .map(({ t, s }) => `<tr><td>${teamLink(ctx, t.constructors.at(-1))}</td><td>${driverCell(ctx, t.a, t.constructors.at(-1), season)}</td><td class="num">${fmtPts(s.a.points)}</td><td class="num">${fmtPts(s.b.points)}</td><td>${driverCell(ctx, t.b, t.constructors.at(-1), season)}</td><td class="num">${s.quali_h2h[0]}–${s.quali_h2h[1]}</td></tr>`)
+    .map(({ t, s }) => `<tr><td>${teamLink(ctx, t.constructors.at(-1), season)}</td><td>${driverCell(ctx, t.a, t.constructors.at(-1), season)}</td><td class="num">${fmtPts(s.a.points)}</td><td class="num">${fmtPts(s.b.points)}</td><td>${driverCell(ctx, t.b, t.constructors.at(-1), season)}</td><td class="num">${s.quali_h2h[0]}–${s.quali_h2h[1]}</td></tr>`)
     .join('');
   const bc = [['/', 'Home'], ['/standings', 'Standings'], ...(isCur ? [] : [[path, String(season)]])];
   const body = `${crumbs(bc)}

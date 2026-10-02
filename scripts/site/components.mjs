@@ -1,4 +1,4 @@
-import { esc, fmtPts, fmtMs, ordinal, teamClass, headshot, flag, pctBar, confBadge, dnaRadar, fmtNum, pct, timeTag, fmtDate } from './lib.mjs';
+import { esc, fmtPts, fmtMs, ordinal, teamClass, headshot, flag, pctBar, confBadge, dnaRadar, fmtNum, pct, timeTag, fmtDate, teamMark } from './lib.mjs';
 import { SESSION_LABEL } from '../../src/core/normalize.mjs';
 
 export function driverCell(ctx, did, cid, season, opts = {}) {
@@ -8,7 +8,7 @@ export function driverCell(ctx, did, cid, season, opts = {}) {
   const url = ctx.driverUrl(did);
   return `<div class="drv ${teamClass(color)}"><span class="tbar"></span>${opts.avatar ? headshot(d, 'sm', ctx.mediaOk, color) : ''}<span>${url ? `<a href="${url}">${esc(name)}</a>` : esc(name)}${opts.code !== false && d?.code ? ` <span class="code">${esc(d.code)}</span>` : ''}</span></div>`;
 }
-export const teamLink = (ctx, cid) => (cid && ctx.conById[cid] ? `<a href="${ctx.teamUrl(cid)}">${esc(ctx.conById[cid].name)}</a>` : esc(cid || '—'));
+export const teamLink = (ctx, cid, season) => (cid && ctx.conById[cid] ? `<a class="tlink" href="${ctx.teamUrl(cid)}">${season === ctx.currentSeason ? teamMark(ctx.logoFor?.(cid), 16) : ''}${esc(ctx.conById[cid].name)}</a>` : esc(cid || '—'));
 
 export function statusText(r) {
   if (!r.status) return '—';
@@ -42,13 +42,13 @@ export function sessionTable(ctx, ev, type) {
       const pos = isRace && r.status !== 'classified' ? '—' : r.position ?? '—';
       if (isRace) {
         const delta = r.status === 'classified' && r.grid && r.position ? r.grid - r.position : null;
-        return `<tr class="${posCls}"><td class="pos">${pos}</td><td>${driverCell(ctx, r.driver_id, r.constructor_id, ev.season)}</td><td class="team-cell">${teamLink(ctx, r.constructor_id)}</td><td class="num">${r.grid || (r.grid === 0 ? 'PL' : '—')}</td><td class="num ${delta > 0 ? 'gain' : delta < 0 ? 'loss' : ''}">${delta == null ? '' : delta > 0 ? '+' + delta : delta}</td><td class="num">${r.laps ?? '—'}</td><td>${statusText(r)}${Number.isFinite(fastest) && r.fastest_lap_ms === fastest ? ` <span class="fl" title="Fastest lap ${esc(r.fastest_lap_text)}">FL</span>` : ''}</td><td class="num">${r.pit_stops ?? '—'}</td><td class="num">${r.points ? fmtPts(r.points) : ''}</td></tr>`;
+        return `<tr class="${posCls}"><td class="pos">${pos}</td><td>${driverCell(ctx, r.driver_id, r.constructor_id, ev.season)}</td><td class="team-cell">${teamLink(ctx, r.constructor_id, ev.season)}</td><td class="num">${r.grid || (r.grid === 0 ? 'PL' : '—')}</td><td class="num ${delta > 0 ? 'gain' : delta < 0 ? 'loss' : ''}">${delta == null ? '' : delta > 0 ? '+' + delta : delta}</td><td class="num">${r.laps ?? '—'}</td><td>${statusText(r)}${Number.isFinite(fastest) && r.fastest_lap_ms === fastest ? ` <span class="fl" title="Fastest lap ${esc(r.fastest_lap_text)}">FL</span>` : ''}</td><td class="num">${r.pit_stops ?? '—'}</td><td class="num">${r.points ? fmtPts(r.points) : ''}</td></tr>`;
       }
       if (isQ) {
         const q = (k) => (r[k] ? `<span class="${r[k] === bestQ[k] ? 'purple' : ''}">${fmtMs(r[k])}</span>` : '—');
-        return `<tr class="${posCls}"><td class="pos">${pos}</td><td>${driverCell(ctx, r.driver_id, r.constructor_id, ev.season)}</td><td class="team-cell">${teamLink(ctx, r.constructor_id)}</td><td class="num">${q('q1_ms')}</td><td class="num">${q('q2_ms')}</td><td class="num">${q('q3_ms')}</td><td class="num">${r.laps ?? '—'}</td></tr>`;
+        return `<tr class="${posCls}"><td class="pos">${pos}</td><td>${driverCell(ctx, r.driver_id, r.constructor_id, ev.season)}</td><td class="team-cell">${teamLink(ctx, r.constructor_id, ev.season)}</td><td class="num">${q('q1_ms')}</td><td class="num">${q('q2_ms')}</td><td class="num">${q('q3_ms')}</td><td class="num">${r.laps ?? '—'}</td></tr>`;
       }
-      return `<tr class="${posCls}"><td class="pos">${pos}</td><td>${driverCell(ctx, r.driver_id, r.constructor_id, ev.season)}</td><td class="team-cell">${teamLink(ctx, r.constructor_id)}</td><td class="num ${r.position === 1 ? 'purple' : ''}">${fmtMs(r.best_lap_ms)}</td><td class="num">${r.position === 1 ? '' : esc(r.gap_text || '')}</td><td class="num">${r.laps ?? '—'}</td></tr>`;
+      return `<tr class="${posCls}"><td class="pos">${pos}</td><td>${driverCell(ctx, r.driver_id, r.constructor_id, ev.season)}</td><td class="team-cell">${teamLink(ctx, r.constructor_id, ev.season)}</td><td class="num ${r.position === 1 ? 'purple' : ''}">${fmtMs(r.best_lap_ms)}</td><td class="num">${r.position === 1 ? '' : esc(r.gap_text || '')}</td><td class="num">${r.laps ?? '—'}</td></tr>`;
     })
     .join('');
   const note = type === 'race' && rows.some((r) => r.points_scope === 'weekend_incl_sprint') ? '<p class="fine">Points shown are weekend totals (sprint points included).</p>' : '';
@@ -68,10 +68,10 @@ export function standingsTable(ctx, season, kind, limit = 99, opts = {}) {
       const tr = trend == null || season !== ctx.currentSeason ? '' : trend > 0 ? `<span class="gain">▲${trend}</span>` : trend < 0 ? `<span class="loss">▼${-trend}</span>` : '<span class="muted">–</span>';
       if (kind === 'driver') {
         const team = ctx.dcsByDriver[s.subject_id]?.filter((x) => x.season === season).sort((a, b) => b.entries - a.entries)[0]?.constructor_id;
-        return `<tr class="p${s.position}"><td class="pos">${s.position}</td><td>${driverCell(ctx, s.subject_id, team, season, { avatar: opts.avatar })}</td><td class="team-cell">${teamLink(ctx, team)}</td><td class="num">${s.wins ?? '—'}</td><td class="num"><b>${fmtPts(s.points)}</b></td><td class="num">${tr}</td></tr>`;
+        return `<tr class="p${s.position}"><td class="pos">${s.position}</td><td>${driverCell(ctx, s.subject_id, team, season, { avatar: opts.avatar })}</td><td class="team-cell">${teamLink(ctx, team, season)}</td><td class="num">${s.wins ?? '—'}</td><td class="num"><b>${fmtPts(s.points)}</b></td><td class="num">${tr}</td></tr>`;
       }
       const color = ctx.colorOf(s.subject_id, season);
-      return `<tr class="p${s.position}"><td class="pos">${s.position}</td><td><div class="drv ${teamClass(color)}"><span class="tbar"></span>${teamLink(ctx, s.subject_id)}</div></td><td class="num">${s.wins ?? '—'}</td><td class="num"><b>${fmtPts(s.points)}</b></td><td class="num">${tr}</td></tr>`;
+      return `<tr class="p${s.position}"><td class="pos">${s.position}</td><td><div class="drv ${teamClass(color)}"><span class="tbar"></span>${teamLink(ctx, s.subject_id, season)}</div></td><td class="num">${s.wins ?? '—'}</td><td class="num"><b>${fmtPts(s.points)}</b></td><td class="num">${tr}</td></tr>`;
     })
     .join('');
   return `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;

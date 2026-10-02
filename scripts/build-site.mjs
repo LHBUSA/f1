@@ -32,6 +32,11 @@ const peopleReg = loadPeople();
 ctx.peopleFor = (cid, season) => teamPeople(peopleReg, cid, season);
 ctx.machineFor = (cid, season) => teamMachine(peopleReg, cid, season);
 const explorerReg = loadExplorer();
+// team marks (approved files only)
+const teamLogos = JSON.parse(fs.readFileSync('src/identity/team-logos.json', 'utf8')).logos;
+ctx.logoFor = (cid) => (teamLogos[cid]?.status === 'approved' ? teamLogos[cid] : null);
+fs.mkdirSync(path.join(DIST, 'media/logos'), { recursive: true });
+for (const [cid, l] of Object.entries(teamLogos)) if (l.status === 'approved') fs.copyFileSync(l.derivative?.file || l.file, path.join(DIST, l.publicPath.slice(1)));
 ctx.explorerFor = (o) => explorerFor(explorerReg, o);
 const carCandidates = process.env.F1_CAR_CANDIDATES === '1' || process.env.VERCEL_ENV === 'preview';
 ctx.carPhotoFor = (cid, season) => carPhotoFor(carReg, cid, season, { includeCandidates: carCandidates });

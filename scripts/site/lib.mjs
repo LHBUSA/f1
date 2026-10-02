@@ -258,3 +258,11 @@ export function dnaRadar(dims, color = 'ff4d2e', size = 220) {
   const vb = [c - halfW, c - halfH, 2 * halfW, 2 * halfH].map((v) => +v.toFixed(1));
   return `<svg class="radar" viewBox="${vb.join(' ')}" width="${vb[2]}" height="${vb[3]}" role="img" aria-label="DNA percentile profile">${rings}${spokes}<polygon points="${vals}" fill="#${color}" fill-opacity=".22" stroke="#${color}" stroke-width="2"/>${labels}</svg>`;
 }
+
+// Team mark (identification only; approved rights-clean files in src/identity/team-logos.json). Reserved width/height
+// from the file's aspect ratio so the layout never shifts; dark-ink marks sit on a light chip, nothing is recoloured.
+export function teamMark(logo, h = 18, cls = '') {
+  if (!logo) return '';
+  const w = Math.round(h * logo.aspect);
+  return `<span class="tmark tmark-${logo.bg || 'none'}${cls ? ` ${cls}` : ''}"><img src="${logo.publicPath}" width="${w}" height="${h}" alt="" decoding="async"></span>`;
+}

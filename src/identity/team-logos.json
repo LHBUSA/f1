@@ -1,0 +1,139 @@
+{
+  "_doc": "Team marks shown to IDENTIFY the team (nominative trademark use; no endorsement). Only files whose copyright status permits reuse (Commons PD-textlogo) are approved; trademarks remain with their owners. Files are never recoloured or cropped; dark-ink marks sit on a light chip (bg=light). Held teams fall back to the team name only.",
+  "version": "f1-team-logos@1",
+  "season": 2026,
+  "approvedBy": "owner request 2026-10-02 (show team logos next to team names)",
+  "logos": {
+    "mercedes": {
+      "status": "approved",
+      "file": "assets-src/logos/mercedes.svg",
+      "publicPath": "/media/logos/mercedes.svg",
+      "mime": "image/svg+xml",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_Petronas_F1_Team_logo_(2026).svg",
+      "sha1": "44d9623d2aa337f811ecbc201f9e3f2d855d52eb",
+      "author": "Mercedes-AMG Petronas F1 Team",
+      "copyrightStatus": "PD-textlogo (Commons {{PD-textlogo}})",
+      "trademarkNote": "{{tm}}. Registered trademark of its owner; the Commons copyright tag does not license the mark. Nominative use only (identify the team), no endorsement implied.",
+      "current2026Mark": {
+        "value": true,
+        "evidence": "Commons title '(2026)', uploaded 2026-03-08; en.wiki 'Mercedes-Benz in Formula One' infobox pageimage."
+      },
+      "bg": "light",
+      "aspect": 0.9058
+    },
+    "ferrari": {
+      "status": "held",
+      "reason": "Prancing-horse shield is non-free (fair use on en.wiki only). ferrari.com/media-centre is JS-rendered / 403 to our UA; no published third-party logo terms found.",
+      "copyrightStatus": "non-free (en.wiki only)"
+    },
+    "mclaren": {
+      "status": "approved",
+      "file": "assets-src/logos/mclaren.svg",
+      "publicPath": "/media/logos/mclaren.svg",
+      "mime": "image/svg+xml",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:McLaren_Speedmark_(white).svg",
+      "sha1": "79dbbecc132f390c3ce3c4dee298ace8f9e00527",
+      "author": "Ved havet",
+      "copyrightStatus": "PD-textlogo (Commons {{PD-textlogo}})",
+      "trademarkNote": "{{Trademark}}. Registered trademark of its owner; the Commons copyright tag does not license the mark. Nominative use only (identify the team), no endorsement implied.",
+      "current2026Mark": {
+        "value": true,
+        "evidence": "Speedmark is the current team symbol (since 2021); File:McLaren_logo_(2026).svg uploaded 2026-09-22 carries the same speedmark."
+      },
+      "bg": "none",
+      "aspect": 1.823
+    },
+    "red-bull": {
+      "status": "held",
+      "reason": "Current team mark is non-free. Red Bull Content Pool is registration-gated / JS-rendered; terms unreadable, treat as editorial_only/unverified.",
+      "copyrightStatus": "non-free (en.wiki only)"
+    },
+    "racing-bulls": {
+      "status": "held",
+      "reason": "No rights-clean file exists; official media page not verifiable.",
+      "copyrightStatus": "non-free (en.wiki only)"
+    },
+    "alpine": {
+      "status": "approved",
+      "file": "assets-src/logos/alpine.png",
+      "publicPath": "/media/logos/alpine.webp",
+      "mime": "image/png",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:BWT_Alpine_F1_Team_Logo.png",
+      "sha1": "a1922e82e1d7d5c94a46819d3a1aeeadacf753a4",
+      "author": "Unknown authorUnknown author",
+      "copyrightStatus": "PD-textlogo (Commons {{pd-textlogo}}, author {{Unknown}})",
+      "trademarkNote": "No tm tag on the file, mark is still trademarked. Registered trademark of its owner; the Commons copyright tag does not license the mark. Nominative use only (identify the team), no endorsement implied.",
+      "current2026Mark": {
+        "value": true,
+        "evidence": "Description 'New logo of the Alpine Formula 1 team, released in 2025'; current en.wiki Alpine F1 Team infobox pageimage. Includes BWT title lockup: confirm BWT is still 2026 title partner."
+      },
+      "bg": "none",
+      "derivative": {
+        "file": "assets-src/logos/alpine.webp",
+        "change": "resized + WebP (no recolour/crop)"
+      },
+      "aspect": 1.935
+    },
+    "haas": {
+      "status": "approved",
+      "file": "assets-src/logos/haas.svg",
+      "publicPath": "/media/logos/haas.svg",
+      "mime": "image/svg+xml",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:TGR_Haas_F1_Team_Logo_(2026).svg",
+      "sha1": "644ad4200addc16be40b7b9cc36a928054b22158",
+      "author": "Haas F1 Team",
+      "copyrightStatus": "PD-textlogo (Commons {{pd-textlogo}})",
+      "trademarkNote": "{{Trademark}}. Registered trademark of its owner; the Commons copyright tag does not license the mark. Nominative use only (identify the team), no endorsement implied.",
+      "current2026Mark": {
+        "value": true,
+        "evidence": "Description 'Logo of TGR Haas F1 Team (from Jan 2026)'; en.wiki Haas infobox pageimage."
+      },
+      "bg": "light",
+      "aspect": 1.0874
+    },
+    "audi": {
+      "status": "approved",
+      "file": "assets-src/logos/audi.svg",
+      "publicPath": "/media/logos/audi.svg",
+      "mime": "image/svg+xml",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Audif1.com_logo17_(cropped).svg",
+      "sha1": "289445e1347eadbbe5fe37b683eb65e4b81ceebb",
+      "author": "Audi Revolut F1 Team / Sauber Motorsports AG",
+      "copyrightStatus": "PD-textlogo (Commons {{PD-textlogo}})",
+      "trademarkNote": "{{Trademark}}. Registered trademark of its owner; the Commons copyright tag does not license the mark. Nominative use only (identify the team), no endorsement implied.",
+      "current2026Mark": {
+        "value": true,
+        "evidence": "Description 'Logo for the Revolut Audi F1 Team', dated 2025-12-15, extracted from audif1.com; en.wiki 'Audi in Formula One' infobox pageimage."
+      },
+      "bg": "none",
+      "aspect": 1.0826
+    },
+    "aston-martin": {
+      "status": "held",
+      "reason": "Wings mark is non-free; Commons copy has an unverifiable CC BY claim. astonmartinf1.com/en-GB/media returned 404.",
+      "copyrightStatus": "non-free (en.wiki); Commons CC BY 4.0 copy unreliable"
+    },
+    "williams": {
+      "status": "approved",
+      "file": "assets-src/logos/williams.svg",
+      "publicPath": "/media/logos/williams.svg",
+      "mime": "image/svg+xml",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Atlassian_Williams_F1_Team_logo.svg",
+      "sha1": "1853cff353c18cb8dc9c66c0a9357d6a8a958f10",
+      "author": "Atlassian Williams F1 Team",
+      "copyrightStatus": "PD-textlogo (Commons {{PD-textlogo}})",
+      "trademarkNote": "{{tm}}. Registered trademark of its owner; the Commons copyright tag does not license the mark. Nominative use only (identify the team), no endorsement implied.",
+      "current2026Mark": {
+        "value": true,
+        "evidence": "Atlassian Williams F1 Team is the 2026 identity; uploaded 2026-03-06; en.wiki Williams Racing infobox pageimage."
+      },
+      "bg": "light",
+      "aspect": 1.9455
+    },
+    "cadillac": {
+      "status": "held",
+      "reason": "Team lockup is non-free. If owner accepts the corporate crest for identification, cadillac__brand2021.svg is copyright-clean.",
+      "copyrightStatus": "non-free (en.wiki only); Commons CC0 copy unreliable"
+    }
+  }
+}

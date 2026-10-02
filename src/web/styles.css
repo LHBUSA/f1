@@ -529,3 +529,17 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .role-list .src{margin-left:8px}
 .hs-r span{left:auto;right:-6px;transform:none}.hs-l span{left:-6px;transform:none}
 @media (scripting: enabled){.xp:not(.xp-on) .xp-panel{display:none}.xp .xp-chips{display:flex}}
+
+/* team marks: identification only, never recoloured; dark-ink marks on a light chip */
+.tmark{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;line-height:0;flex:none}
+.tmark img{display:block;height:auto;max-height:100%}
+.tmark-light{background:#f3f4f6;border-radius:4px;padding:2px 4px}
+.tlink{display:inline-flex;align-items:center;gap:6px}
+.tlink .tmark-light{padding:1px 3px;border-radius:3px}
+.team-h1{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hero-mark.tmark-light{padding:6px 8px;border-radius:8px}
+.car-id{flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:8px}.car-id b{flex-basis:100%}
+.dcard .nm .tmark{margin-right:8px}
+@media(max-width:600px){.hero-mark img{width:auto;height:38px}}
+.team-car .tmark img{width:auto;height:22px;-webkit-mask-image:none;mask-image:none;filter:none}
+.team-car .tmark{pointer-events:none}
