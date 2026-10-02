@@ -59,3 +59,28 @@ test('team-spec fuel/lubricant fallback: real word boundaries, fuel cell/system/
   assert.equal(run([['Rear spoiler', 'Carbon']]).lube, null); // "oil" inside a word is not oil
   assert.equal(run([['Biofuel blend', 'Advanced sustainable']]).fuel, null); // nor is "fuel" inside a word
 });
+
+test('total output renders only for a genuine engine-specific total; empty, component-only and FIA-only render nothing', async () => {
+  const { ptOutput } = await import('../scripts/site/pages.mjs');
+  const run = (outputPublished, specs = []) => powertrainFor({ machine: { powerUnit: { makerKey: 'm', manufacturer: 'Maker', relationship: 'works', designation: 'X1' }, specs: specs.map(([label, value]) => ({ component: 'power-unit', label, value, officialOutput: true })) }, tech: { powerUnits: { m: { outputPublished: outputPublished ? { value: outputPublished } : undefined } }, general: { 'power-unit': [{ text: 'The ICE delivers about 400 kW and the MGU-K 350 kW (FIA 2026).' }] } }, teamName: 'Team' });
+  // null total -> no module (and FIA architecture alone never fills the gap)
+  const none = run(null);
+  assert.equal(none.output, null);
+  assert.ok(none.fiaSplit, 'fixture has the FIA architecture text');
+  assert.equal(ptOutput(none), '');
+  // component-only figures -> no module
+  for (const v of ['MGU-K 350 kW (470 hp) only; total output not published', 'MGU-K 350 kW (470 hp)', 'ICE about 400 kW']) {
+    assert.equal(run(v).output, null, v);
+    assert.equal(ptOutput(run(v)), '', v);
+  }
+  assert.equal(run(null, [['Published power output', 'MGU-K 350 kW (team quotes 470 hp)']]).output, null);
+  // genuine totals -> module renders with the figure, never the FIA split
+  const maker = ptOutput(run('>1000 bhp (combined, team-published)'));
+  assert.match(maker, /Total output/);
+  assert.match(maker, /&gt;1,000 bhp/);
+  assert.doesNotMatch(maker, /400 kW|architecture|Not officially published/i);
+  assert.match(ptOutput(run(null, [['Published power output', '>1000 bhp (team-published figure)']])), /&gt;1,000 bhp/);
+  // real registry: only the Red Bull Ford engine has a total; Audi's MGU-K figure never becomes one
+  for (const cid of TEAMS) assert.equal(!!pt(cid).output, ['red-bull', 'racing-bulls'].includes(cid), cid);
+  assert.equal(ptOutput(pt('audi')), '');
+});

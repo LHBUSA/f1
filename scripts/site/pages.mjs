@@ -849,8 +849,10 @@ function ptCards(pt) {
   return pt.groups.filter((g) => g.items.length || g.team.length).map((g) => `<div class="pt-card"><h4>${g.title}</h4><dl>${g.items.map((it) => `<div><dt>${esc(it.label)}</dt><dd>${esc(it.value)} ${ptTag(it.cls)}</dd></div>`).join('')}${g.team.filter((t) => !g.items.some((i) => t.value.includes(i.value))).map((t) => `<div><dt>${esc(t.label)}</dt><dd>${esc(t.value)} ${ptTag('team')}</dd></div>`).join('')}</dl></div>`).join('');
 }
 
-function ptOutput(pt) {
-  return `<div class="pt-output"><div><span class="kicker">Total output</span><b>${pt.output ? esc(pt.output.value) : 'Not officially published'}</b>${pt.output ? `<small>${pt.output.cls === 'team' ? 'Published by the team' : `Published by ${esc(pt.output.by)}`}${pt.output.engine ? ` for the ${esc(pt.output.engine)}` : ''} · not independently measured</small>` : '<small>No total figure has been published for this engine. We do not estimate it.</small>'}</div>${pt.fiaSplit ? `<div><span class="kicker">2026 architecture (FIA)</span><b>ICE ${esc(pt.fiaSplit.ice)} · MGU-K ${esc(pt.fiaSplit.mguk)}</b><small>${esc(pt.fiaSplit.note)}</small></div>` : ''}</div>`;
+// Total output renders ONLY for a published, engine-specific total; no empty state, never the FIA architecture split
+export function ptOutput(pt) {
+  if (!pt?.output) return '';
+  return `<div class="pt-output"><div><span class="kicker">Total output</span><b>${esc(pt.output.value)}</b><small>${pt.output.cls === 'team' ? 'Published by the team' : `Published by ${esc(pt.output.by)}`}${pt.output.engine ? ` for the ${esc(pt.output.engine)}` : ''} · not independently measured</small></div></div>`;
 }
 
 function powertrainSection(ctx, c, season, pt) {
@@ -860,7 +862,7 @@ function powertrainSection(ctx, c, season, pt) {
   const head = [m.displacement && m.layout && `${m.displacement.value} ${m.layout.value}`, m.rpm?.value, m.mguk && `MGU-K ${m.mguk.value}`, m.mgukrpm?.value, m.injection?.value, m.es?.value, m.gears?.value].filter(Boolean);
   return `<section class="section pt" id="powertrain"><div class="wrap"><div class="section-head"><div><span class="eyebrow">The powertrain · ${season}</span><h2>${esc(pt.designation || `${pt.manufacturer} power unit`)}</h2><p class="pt-sub">${rel} · <a href="/power-units">Compare 2026 power units →</a></p></div></div>
   ${head.length ? `<p class="pt-headline">${head.map((h) => `<span>${esc(h)}</span>`).join('')}</p>` : ''}
-  <div class="pt-grid"><div class="pt-schem">${ptSchematic(pt)}</div>${ptOutput(pt)}</div>
+  ${((out) => `<div class="pt-grid${out ? '' : ' pt-grid-solo'}"><div class="pt-schem">${ptSchematic(pt)}</div>${out}</div>`)(ptOutput(pt))}
   <div class="pt-cards">${ptCards(pt)}</div>
   <p class="fine">Values are labelled by source: team-published, manufacturer-published, or FIA regulation (a 2026 limit, not a measured figure for this engine). Torque, boost pressure, gear ratios, operating rpm and thermal efficiency are not publicly disclosed.</p>
   </div></section>`;
@@ -888,7 +890,7 @@ export function powerUnitsPage(ctx, rows) {
   ${row('Energy store window', metric('es'))}
   ${row('Fuel', (pt) => esc(pt.fuel || '—'))}
   ${row('Lubricants', (pt) => esc(pt.lube || '—'))}
-  ${row('Published total output', (pt) => (pt.output ? `${esc(pt.output.value)} <small class="muted">(${esc(pt.output.by)})</small>` : '<span class="muted">Not officially published</span>'))}
+  ${cols.some((pt) => pt.output) ? row('Published total output', (pt) => (pt.output ? `${esc(pt.output.value)} <small class="muted">(${esc(pt.output.by)})</small>` : '—')) : ''}
   ${row('Power-unit leadership', (pt) => pt.leadership.slice(0, 2).map((l) => `${esc(l.name)} <small class="muted">${esc(l.role)}</small>`).join('<br>') || '—')}
   </tbody></table></div><p class="fine">Labels: team-published, manufacturer-published, FIA regulation. A regulation value is a limit that applies to every engine, not a measured figure. A manufacturer's published output is shown only for its own engine.</p></div></section>`;
   return { path: '/power-units', title: `${season} F1 Power Units Compared: Mercedes, Ferrari, Honda, Audi, Red Bull Ford`, description: `${season} Formula 1 power units side by side from published facts: designations, works and customer teams, ICE and MGU-K limits, energy store, fuels, lubricants and published output where a maker has disclosed it.`, section: '/teams', body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/teams', 'Teams'], ['/power-units', 'Power units']])] };

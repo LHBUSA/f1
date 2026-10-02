@@ -45,8 +45,9 @@ export function powertrainFor({ machine, tech, teamName }) {
   }
   // published output: only this engine's manufacturer/team claim; otherwise explicitly not published
   // a TOTAL output claim only (an MGU-K hp figure is not total output)
-  const outSpec = teamSpecs.find((s) => s.officialOutput && /output/i.test(s.label));
-  const makerOut = mf?.outputPublished?.value && !/not published|only/i.test(mf.outputPublished.value) ? mf.outputPublished.value : null;
+  const isTotal = (v) => !!v && !/not published|\bonly\b/i.test(v) && (!/MGU|\bICE\b|\bERS\b|battery|energy store/i.test(v) || /total|combined|overall/i.test(v));
+  const outSpec = teamSpecs.find((s) => s.officialOutput && /output/i.test(s.label) && isTotal(s.value));
+  const makerOut = isTotal(mf?.outputPublished?.value) ? mf.outputPublished.value : null;
   const clean = (v) => v.replace(/\s*\((combined, )?team-published( figure)?\)/i, '').replace(/1000/, '1,000');
   const output = outSpec ? { value: clean(outSpec.value), cls: 'team', by: teamName } : makerOut ? { value: clean(makerOut), cls: 'maker', by: mf.outputPublished.sources?.[0]?.publisher || pu.manufacturer, engine: pu.designation } : null;
   const fiaSplit = fiaTexts.find((g) => /400\s*kW/i.test(g.text)) ? { ice: 'about 400 kW', mguk: '350 kW', note: 'FIA description of the 2026 architecture (roughly 50/50 ICE / electric); not a measured or published figure for this engine' } : null;
