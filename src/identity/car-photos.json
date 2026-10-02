@@ -7,15 +7,24 @@
       "season": 2026,
       "constructorId": "mercedes",
       "constructorName": "Mercedes",
-      "carModel": "Mercedes-AMG F1 W17 E Performance",
-      "carModelSource": "Wikimedia Commons file titles/categories for the 2026 car (several photographers); to be confirmed against an official Mercedes source before display as a chassis fact",
+      "carModel": "Mercedes-AMG F1 W17 E PERFORMANCE",
+      "carModelSource": {
+        "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins",
+        "publisher": "Mercedes-AMG PETRONAS F1 Team",
+        "published": "2026-02-02",
+        "retrieved": "2026-10-02",
+        "use": "car name only (fact); no prose or images reused"
+      },
       "driverId": "george-russell",
       "event": "2026 Chinese Grand Prix, qualifying",
       "capturedAt": "2026-03-14T15:32:41",
       "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/11/2026_Chinese_GP_-_Mercedes_-_George_Russell_-_Qualifying.jpg",
       "localAssetPath": "assets-src/cars/originals/2026-mercedes-w17-russell-liauzh.jpg",
       "originalSha1": "18e6d5b96e4d0028fcaf329115095d4678f7e4c7",
-      "originalSize": [4885, 2748],
+      "originalSize": [
+        4885,
+        2748
+      ],
       "sourceName": "Wikimedia Commons",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:2026_Chinese_GP_-_Mercedes_-_George_Russell_-_Qualifying.jpg",
       "photographer": "Liauzh",
@@ -29,17 +38,39 @@
       "approvedForPublicUse": false,
       "approvalNote": "Candidate. Rights proof is complete; awaiting owner visual approval of the Mercedes canary before public rendering.",
       "derivatives": {
-        "changes": ["background removed (rembg isnet-general-use segmentation; no pixels generated)", "isolated fragments removed (largest connected component kept)", "cropped to the car", "resized"],
+        "changes": [
+          "background removed (rembg isnet-general-use segmentation; no pixels generated)",
+          "isolated fragments removed (largest connected component kept); alpha below 40/255 cleared",
+          "cropped to the car",
+          "resized"
+        ],
         "master": "assets-src/cars/derived/2026-mercedes-w17-cutout-master.png",
         "files": {
-          "640": { "webp": "assets-src/cars/derived/2026-mercedes-w17-640.webp", "avif": "assets-src/cars/derived/2026-mercedes-w17-640.avif" },
-          "960": { "webp": "assets-src/cars/derived/2026-mercedes-w17-960.webp", "avif": "assets-src/cars/derived/2026-mercedes-w17-960.avif" },
-          "1280": { "webp": "assets-src/cars/derived/2026-mercedes-w17-1280.webp", "avif": "assets-src/cars/derived/2026-mercedes-w17-1280.avif" },
-          "1920": { "webp": "assets-src/cars/derived/2026-mercedes-w17-1920.webp", "avif": "assets-src/cars/derived/2026-mercedes-w17-1920.avif" }
+          "640": {
+            "webp": "assets-src/cars/derived/2026-mercedes-w17-640.webp",
+            "avif": "assets-src/cars/derived/2026-mercedes-w17-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2026-mercedes-w17-960.webp",
+            "avif": "assets-src/cars/derived/2026-mercedes-w17-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2026-mercedes-w17-1280.webp",
+            "avif": "assets-src/cars/derived/2026-mercedes-w17-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2026-mercedes-w17-1920.webp",
+            "avif": "assets-src/cars/derived/2026-mercedes-w17-1920.avif"
+          }
         },
-        "aspect": [4770, 1263],
+        "aspect": [
+          4767,
+          1258
+        ],
         "facing": "left",
-        "knownArtifacts": ["a faint line continues behind the rear floor at the right edge (segmentation kept a sliver of track line connected to the car)"]
+        "knownArtifacts": [
+          "a faint line continues behind the rear floor at the right edge (segmentation kept a sliver of track line connected to the car)"
+        ]
       }
     }
   ]
