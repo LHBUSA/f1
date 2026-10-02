@@ -470,3 +470,4 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 @media(max-width:600px){.machine-strip{grid-template-columns:1fr 1fr}.machine-strip>div{border-bottom:1px solid var(--line,rgba(255,255,255,.1))}}
 .pgroup-race,.pgroup-garage{grid-column:1/-1}.pgroup-race .pairs{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}.pgroup-garage .fine{margin:0}
 .pgroup-garage .people{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.car-id span,.pgroup h3{color:color-mix(in srgb,var(--tc) 60%,#fff)}
