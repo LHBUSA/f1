@@ -26,6 +26,7 @@ export function dateEnd(s) {
   if (p.length === 2) { const last = new Date(Date.UTC(Number(p[0]), Number(p[1]), 0)).getUTCDate(); return `${p[0]}-${p[1].padStart(2, '0')}-${String(last).padStart(2, '0')}`; }
   return `${p[0]}-${p[1].padStart(2, '0')}-${p[2].padStart(2, '0')}`;
 }
+export const TODAY = () => process.env.F1_TODAY || new Date().toISOString().slice(0, 10);
 const year = (s) => (s ? Number(String(s).slice(0, 4)) : null);
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export function fmtPartial(s) {
@@ -75,7 +76,9 @@ export function careerTimeline(reg, personId) {
       key: `${org}|${t.title.toLowerCase()}|${t.driverId || ''}`,
       title: t.title, roleGroup: r.roleGroup, constructorId: r.constructorId || null, organisation: r.organisation || null, driverId: t.driverId,
       from: r.effectiveFrom || null, to: r.effectiveTo || null,
-      ongoing: r.current === true && !r.effectiveTo,
+      // a start date still in the future is an announcement, not a current role
+      ongoing: r.current === true && !r.effectiveTo && !(r.effectiveFrom && dateStart(r.effectiveFrom) > TODAY()),
+      upcoming: !!(r.effectiveFrom && dateStart(r.effectiveFrom) > TODAY() && !r.effectiveTo),
       observedSeasons: ranged ? [] : [r.season],
       ranged, confidence: r.confidence, history: !!r.history, sources: r.sources, conflicts: r.conflicts || [],
     });
@@ -113,6 +116,7 @@ export function careerTimeline(reg, personId) {
 }
 
 export function periodLabel(e) {
+  if (e.upcoming) return `From ${fmtPartial(e.from)} (announced)`;
   if (!e.ranged) return `${e.observedSeasons.join(', ')} season${e.observedSeasons.length > 1 ? 's' : ''}`;
   const f = e.from ? fmtPartial(e.from) : 'Start date not verified';
   const t = e.ongoing ? 'present' : e.to ? fmtPartial(e.to) : 'end date not verified';
