@@ -67,7 +67,8 @@ export async function ingestCurrent(env, { force = false, trigger = false, reaso
     await put('fragments/drivers-current.json', drivers);
     await put('fragments/venues-current.json', venues);
   }
-  const deploy = complete && trigger ? await maybeDeploy(env, { version, newlySessions, reasonOverride }) : null;
+  const liveNow = frag.sessions.some((x) => x.state === 'live');
+  const deploy = complete && trigger ? await maybeDeploy(env, { version, newlySessions, reasonOverride, liveNow }) : null;
   const summary = { at: ingestedAt, season: year, fetched, budget_hit: fetched >= budget, dataset_version: version, events: frag.events.length, sessions: frag.sessions.length, results: frag.results.length, newly_completed: newlySessions.map((s) => s.id), deploy };
   await put('state/last-ingest.json', summary);
   return summary;
@@ -78,7 +79,12 @@ export async function ingestCurrent(env, { force = false, trigger = false, reaso
  *  { last_dataset_version, last_triggered_version, last_trigger: {at, version, reason, event_ids, session_ids, status, ok, attempt}, history[] }
  * A version is triggered once; a failed trigger is retried on later runs (max 3 attempts, ≥10 min apart).
  */
-async function maybeDeploy(env, { version, newlySessions, reasonOverride }) {
+// A plain dataset change (no session completed) rebuilds at most once per DATASET_CHANGE_MIN_MS and never while a
+// session is live: live timing changes the hash on every run (2026-10-02 FP2 fired 7 rebuilds). The completed session
+// that follows still triggers immediately, and the deferred change rides along with it.
+const DATASET_CHANGE_MIN_MS = 3 * 3600e3;
+
+async function maybeDeploy(env, { version, newlySessions, reasonOverride, liveNow = false }) {
   const ledgerObj = await env.DATA.get('state/deploy-ledger.json');
   const ledger = ledgerObj ? await ledgerObj.json() : { history: [] };
   const changed = version && version !== ledger.last_dataset_version;
@@ -88,7 +94,10 @@ async function maybeDeploy(env, { version, newlySessions, reasonOverride }) {
   const reason = reasonOverride || (newlySessions.length ? `session_completed:${newlySessions.map((s) => s.type).join(',')}` : 'dataset_changed');
   if (!env.DEPLOY_HOOK_URL) outcome = { action: 'no_hook_configured', version };
   else if (version === ledger.last_triggered_version && ledger.last_trigger?.ok) outcome = { action: 'already_triggered', version };
-  else if ((changed && (newlySessions.length || reasonOverride)) || pendingRetry || (changed && ledger.last_triggered_version && version !== ledger.last_triggered_version && !newlySessions.length && reason === 'dataset_changed')) {
+  else if (reason === 'dataset_changed' && !pendingRetry && (liveNow || (ledger.last_trigger && Date.now() - Date.parse(ledger.last_trigger.at) < DATASET_CHANGE_MIN_MS))) {
+    outcome = { action: liveNow ? 'deferred_session_live' : 'deferred_min_interval', version };
+  }
+  else if ((changed && (newlySessions.length || reasonOverride)) || pendingRetry || (ledger.last_triggered_version && version !== ledger.last_triggered_version && !newlySessions.length && reason === 'dataset_changed')) {
     const attempt = pendingRetry ? (ledger.last_trigger.attempt || 1) + 1 : 1;
     let status = 0;
     try {

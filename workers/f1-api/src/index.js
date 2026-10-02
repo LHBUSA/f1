@@ -78,6 +78,17 @@ export default {
         if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
         return respond(req, await ingestCurrent(env, { force: q.get('force') === '1', trigger: q.get('deploy') === '1' }), { cache: 'no-store' });
       }
+      if (p === '/admin/observations') {
+        if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
+        const sid = q.get('session');
+        if (!sid) {
+          const l = await env.DATA.list({ prefix: 'observations/', delimiter: '/' });
+          return respond(req, { sessions: l.delimitedPrefixes }, { cache: 'no-store' });
+        }
+        if (!/^d+$/.test(sid)) return err(req, 400, 'bad session');
+        const o = await env.DATA.get(`observations/espn-${sid}/${q.get('chunk') ? `chunk-${String(Number(q.get('chunk'))).padStart(5, '0')}` : 'index'}.json`);
+        return o ? respond(req, await o.json(), { cache: 'no-store' }) : err(req, 404, 'not found');
+      }
       if (p === '/admin/deploy-ledger') {
         if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
         const o = await env.DATA.get('state/deploy-ledger.json');

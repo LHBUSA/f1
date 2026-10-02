@@ -3,6 +3,10 @@
 const ESPN_CORE = 'https://sports.core.api.espn.com/v2/sports/racing/leagues/f1';
 const UA = 'PropBetEdge-F1/1.0 (+https://f1.propbetedge.ai)';
 const SESSION_LABEL = { FP1: 'Practice 1', FP2: 'Practice 2', FP3: 'Practice 3', Qual: 'Qualifying', SS: 'Sprint Qualifying', SR: 'Sprint', Race: 'Grand Prix' };
+const RECORD_MS = 10_000;
+const RECORDER_VERSION = 'f1-recorder@1';
+// numeric timing values kept per car per frame (as the source reports them; parsed, never estimated)
+const FRAME_STATS = ['lapsCompleted', 'behindTime', 'behindLaps', 'pitsTaken', 'fastestLap', 'fastestLapNum', 'totalTime', 'lapsLead', 'place', 'qual1TimeMS', 'qual2TimeMS', 'qual3TimeMS'];
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8' } });
 
 export class LiveHub {
@@ -14,6 +18,8 @@ export class LiveHub {
   }
   async fetch() {
     if (!this.snapshot) this.snapshot = (await this.state.storage.get('snapshot')) || null;
+    // the recorder runs on its own alarm; any request (the */10 cron included) re-arms it if it ever lapsed
+    if (!(await this.state.storage.getAlarm())) await this.state.storage.setAlarm(Date.now() + 1000);
     const age = this.snapshot ? Date.now() - Date.parse(this.snapshot.checked_at) : Infinity;
     const ttl = this.snapshot?.state === 'live' ? 8000 : 60000;
     if (age > ttl) {
@@ -21,6 +27,59 @@ export class LiveHub {
       try { await this.inflight; } catch (e) { if (!this.snapshot) return json({ state: 'unavailable', error: String(e?.message || e).slice(0, 120), tower: [], feed: [] }); }
     }
     return json(this.snapshot);
+  }
+  // Observation recorder. While a session is live the hub polls every RECORD_MS and archives each CHANGED source state
+  // as a frame (observation time, lap, flag, clock, every car's order/laps/gap/pits/best/status). Frames are the only
+  // input PBEcast replay and derived race progress may use; nothing is interpolated or invented here.
+  async alarm() {
+    let next = 15 * 60e3;
+    try {
+      await this.refresh();
+      const snap = this.snapshot;
+      if (snap?.state === 'live' || snap?.state === 'post') await this.record(snap);
+      if (snap?.state === 'live') next = RECORD_MS;
+      else if (snap?.next?.start && Date.parse(snap.next.start) - Date.now() < 45 * 60e3) next = 60e3;
+      else if (snap?.state === 'post') next = 5 * 60e3;
+    } catch (e) {
+      console.error('recorder', e?.message || e);
+      next = 60e3;
+    } finally {
+      await this.flush(false);
+      await this.state.storage.setAlarm(Date.now() + next);
+    }
+  }
+  async record(snap) {
+    const f = snap._frame;
+    if (!f) return;
+    const sig = JSON.stringify([f.state, f.lap, f.flag, f.status, f.cars]);
+    const buf = (await this.state.storage.get('obs-buf')) || null;
+    if (buf && buf.session !== f.session) {
+      await this.flush(true);
+      await this.state.storage.delete('obs-buf'); // the next session starts its own archive
+    }
+    const cur = (await this.state.storage.get('obs-buf')) || { session: f.session, meta: f.meta, frames: [], last_sig: null, seq: (await this.state.storage.get(`obs-seq-${f.session}`)) || 0, opened: Date.now() };
+    if (cur.last_sig === sig) return; // unchanged source state: no frame
+    cur.frames.push({ t: f.t, state: f.state, lap: f.lap, flag: f.flag, status: f.status, clock: f.clock, cars: f.cars });
+    cur.last_sig = sig;
+    await this.state.storage.put('obs-buf', cur);
+    if (f.state === 'post') await this.flush(true);
+  }
+  async flush(force) {
+    const cur = await this.state.storage.get('obs-buf');
+    if (!cur || !cur.frames.length) return;
+    if (!force && cur.frames.length < 30 && Date.now() - cur.opened < 60e3) return;
+    const seq = cur.seq + 1;
+    const dir = `observations/espn-${cur.session}`;
+    await this.env.DATA.put(`${dir}/chunk-${String(seq).padStart(5, '0')}.json`, JSON.stringify({ session: cur.session, meta: cur.meta, recorder: RECORDER_VERSION, frames: cur.frames }), { httpMetadata: { contentType: 'application/json' } });
+    const idxObj = await this.env.DATA.get(`${dir}/index.json`);
+    const idx = idxObj ? await idxObj.json() : { session: cur.session, meta: cur.meta, recorder: RECORDER_VERSION, chunks: 0, frames: 0, first_t: cur.frames[0].t };
+    idx.chunks = seq;
+    idx.frames += cur.frames.length;
+    idx.last_t = cur.frames.at(-1).t;
+    idx.last_state = cur.frames.at(-1).state;
+    await this.env.DATA.put(`${dir}/index.json`, JSON.stringify(idx), { httpMetadata: { contentType: 'application/json' } });
+    await this.state.storage.put(`obs-seq-${cur.session}`, seq);
+    await this.state.storage.put('obs-buf', { ...cur, seq, frames: [], opened: Date.now() });
   }
   async get(u) {
     const r = await fetch(u, { headers: { 'User-Agent': UA, Accept: 'application/json' } });
@@ -136,6 +195,16 @@ export class LiveHub {
         if (r.fastest && !o.fastest && r.best) add('fl', 'Fastest', `${r.name} ${r.best}`);
       }
     }
-    return { state, event: { id: ev.id, name: ev.name }, session, tower, feed: feed.slice(-150), updated_at: new Date().toISOString() };
+    const frame = {
+      t: new Date().toISOString(), session: String(c.id), state, lap, flag: session.flag, status: statusDoc?.type?.name || null, clock: statusDoc?.displayClock ?? null,
+      meta: { event_id: String(ev.id), event_name: ev.name, type: c.type?.abbreviation || null, start: c.date, laps_total: session.laps_total },
+      cars: items.map((it, i) => {
+        const st = sm(stats[i]);
+        const v = {};
+        for (const k of FRAME_STATS) if (st[k] && st[k].displayValue != null) v[k] = st[k].displayValue;
+        return [String(it.id), it.order ?? null, statuses[i]?.type?.name || null, v];
+      }).sort((a, b) => (a[1] ?? 999) - (b[1] ?? 999)),
+    };
+    return { state, event: { id: ev.id, name: ev.name }, session, tower, feed: feed.slice(-150), updated_at: new Date().toISOString(), _frame: frame };
   }
 }
