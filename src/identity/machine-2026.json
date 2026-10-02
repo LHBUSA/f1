@@ -344,6 +344,42 @@
       "publisher": "ESPN core API (2026 athlete)",
       "type": "espn",
       "date": null
+    },
+    "s-da13b0c37c": {
+      "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-02-02"
+    },
+    "s-0b61667637": {
+      "url": "https://www.astonmartinf1.com/en-GB/2026",
+      "publisher": "Aston Martin Aramco F1 Team",
+      "type": "first_party",
+      "date": null
+    },
+    "s-8f7807bcb4": {
+      "url": "https://www.planetf1.com/news/williams-fw48-f1-2026-car-weight",
+      "publisher": "PlanetF1",
+      "type": "media",
+      "date": "2026-02-04"
+    },
+    "s-3c913c847f": {
+      "url": "https://contenthub.audif1.com/en/publications/motorsport/2026-audi-revolut-f1-team-press-pack-2",
+      "publisher": "Audi Revolut F1 Team Content Hub (2026 Press Pack PDF)",
+      "type": "first_party",
+      "date": null
+    },
+    "s-18a0c41376": {
+      "url": "https://media.alpinecars.com/bwt-alpine-formula-one-team-2026-press-pack/?lang=eng",
+      "publisher": "Alpine global media website (BWT Alpine F1 Team 2026 Press Pack PDF, pp.13-14)",
+      "type": "first_party",
+      "date": "2026-01-23"
+    },
+    "s-70cde5d7c7": {
+      "url": "https://www.visacashapprb.com/int-en/cars/vcarb03",
+      "publisher": "Visa Cash App Racing Bulls",
+      "type": "first_party",
+      "date": null
     }
   },
   "teams": {
@@ -363,7 +399,8 @@
         "sources": [
           "merc-spec",
           "merc-launch-2026"
-        ]
+        ],
+        "makerKey": "mercedes"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -378,34 +415,34 @@
           "value": "Moulded carbon fibre and honeycomb composite structure",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
           "component": "bodywork",
           "label": "Bodywork",
-          "value": "Carbon fibre composite including engine cover, sidepods, floor, nose, front wing and rear wing",
+          "value": "Carbon fibre composite incl. engine cover, sidepods, floor, nose, front wing and rear wing",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "front_suspension",
+          "component": "front-suspension",
           "label": "Front suspension",
-          "value": "Carbon fibre wishbone and push rod-activated springs and dampers",
+          "value": "Carbon fibre wishbones; push-rod activated springs and dampers",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "rear_suspension",
+          "component": "rear-suspension",
           "label": "Rear suspension",
-          "value": "Carbon fibre wishbone and push rod-activated inboard springs and dampers",
+          "value": "Carbon fibre wishbones; push-rod activated inboard springs and dampers",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
@@ -414,34 +451,43 @@
           "value": "OZ forged magnesium",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "tyres",
+          "component": "front-tyre",
           "label": "Tyres",
           "value": "Pirelli",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
+          ]
+        },
+        {
+          "component": "rear-tyre",
+          "label": "Tyres",
+          "value": "Pirelli",
+          "scope": "car_specific",
+          "sources": [
+            "s-76b24b3ef6"
           ]
         },
         {
           "component": "brakes",
-          "label": "Brake system",
-          "value": "Carbone Industries carbon discs and pads with rear brake-by-wire",
+          "label": "Discs and pads",
+          "value": "Carbone Industrie carbon discs and pads; rear brake-by-wire",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
           "component": "brakes",
-          "label": "Brake calipers",
-          "value": "Brembo monobloc calipers in nickel-plated aluminium alloy (front and rear)",
+          "label": "Calipers",
+          "value": "Brembo monobloc, nickel-plated aluminium alloy, front and rear",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
@@ -450,7 +496,7 @@
           "value": "Power-assisted rack and pinion; carbon fibre steering wheel",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
@@ -459,133 +505,134 @@
           "value": "Motion Applied Technologies (MAT)",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
           "component": "cockpit",
           "label": "Safety structures",
-          "value": "Survival cell, front/side/rear impact structures, roll structures, titanium halo",
+          "value": "Survival cell; front, side and rear impact structures; roll structures; titanium halo",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
           "component": "electronics",
           "label": "Electronics",
-          "value": "FIA standard ECU and FIA homologated electronic and electrical system",
+          "value": "FIA standard ECU and FIA-homologated electronic/electrical system",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "fuel_system",
+          "component": "fuel-system",
           "label": "Fuel cell",
           "value": "ATL Kevlar-reinforced rubber bladder",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "gearbox",
+          "component": "transmission",
           "label": "Gearbox",
-          "value": "Eight forward, one reverse; carbon fibre main case; sequential semi-automatic hydraulic selection; carbon clutch",
+          "value": "8 forward + 1 reverse; carbon fibre main case; sequential semi-automatic hydraulic selection; carbon clutch",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
           "component": "dimensions",
-          "label": "Overall width / height",
-          "value": "1900 mm / 970 mm (length under 5505 mm)",
+          "label": "Overall width / height / length",
+          "value": "1900 mm / 970 mm / under 5505 mm",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
           "component": "dimensions",
-          "label": "Overall weight",
-          "value": "772 kg (as published by the team)",
-          "scope": "regulation",
+          "label": "Published car weight",
+          "value": "772 kg",
+          "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "power_unit",
+          "component": "power-unit",
           "label": "Power unit",
           "value": "Mercedes-AMG F1 M17 E PERFORMANCE",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "power_unit",
-          "label": "Internal combustion engine",
-          "value": "1.6 litre V6 (90°), 24 valves, max 15,000 rpm, direct injection max 350 bar",
+          "component": "power-unit",
+          "label": "ICE",
+          "value": "1.6 l V6 (90 deg), 24 valves, max 15,000 rpm, direct injection max 350 bar",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "power_unit",
-          "label": "Fuel flow",
+          "component": "power-unit",
+          "label": "Fuel energy flow",
           "value": "Max 3000 MJ/h",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "power_unit",
+          "component": "power-unit",
           "label": "MGU-K",
-          "value": "Max 350 kW, max 60,000 rpm, up to 9.0 MJ recovery per lap (circuit specific)",
+          "value": "Max 350 kW, max 60,000 rpm; team quotes up to 9.0 MJ recovery per lap (circuit specific)",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "power_unit",
+          "component": "power-unit",
           "label": "Energy store",
           "value": "Lithium-ion; max 4.0 MJ usable range on track",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "power_unit",
+          "component": "power-unit",
           "label": "Allocation",
-          "value": "Four ICE/TC/EXH and three MGU-K/ES/CE per driver per season",
+          "value": "4 ICE/TC/EXH and 3 MGU-K/ES/CE per driver per season",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "power_unit",
-          "label": "Minimum weight",
+          "component": "power-unit",
+          "label": "PU minimum weight",
           "value": "185 kg",
           "scope": "regulation",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6"
           ]
         },
         {
-          "component": "power_unit",
+          "component": "power-unit",
           "label": "Fuel / lubricants",
           "value": "PETRONAS Primax fuel; PETRONAS Syntium lubricants; PETRONAS Tutela fluids",
           "scope": "car_specific",
           "sources": [
-            "merc-spec"
+            "s-76b24b3ef6",
+            "s-da13b0c37c"
           ]
         }
       ]
@@ -605,7 +652,8 @@
           "s-44449c3cf6",
           "s-3e9248d176"
         ],
-        "designationHeld": "067/6 reported by media only (ferrari.com not reachable); held until first-party/FIA"
+        "designationHeld": "067/6 reported by media only (ferrari.com not reachable); held until first-party/FIA",
+        "makerKey": "ferrari"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -632,7 +680,8 @@
           "s-76b24b3ef6",
           "s-28a5cb26b4",
           "s-028a8b880d"
-        ]
+        ],
+        "makerKey": "mercedes"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -641,7 +690,287 @@
           "s-fb6af26d41"
         ]
       },
-      "specs": []
+      "specs": [
+        {
+          "component": "chassis",
+          "label": "Monocoque",
+          "value": "Carbon-fibre composite incorporating driver controls and fuel cell",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Safety structures",
+          "value": "Survival cell, front impact structure, side impact structures, integrated rear impact structure, front and rear roll structures, halo, headrest protection, safety seat",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "bodywork",
+          "label": "Bodywork",
+          "value": "Carbon-fibre composite incl. engine cover, sidepods, floor, nose, front wing and rear wing",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "front-wing",
+          "label": "Active flap",
+          "value": "Driver-operated front wing flap elements for Straight Mode / Cornering Mode",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "rear-wing",
+          "label": "Active flap",
+          "value": "Driver-operated rear wing flap elements for Straight Mode / Cornering Mode",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "front-suspension",
+          "label": "Front suspension",
+          "value": "Carbon-fibre/titanium legs; push-rod operating inboard torsion bar, spring and damper system",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "rear-suspension",
+          "label": "Rear suspension",
+          "value": "Carbon-fibre/titanium legs; push-rod operating inboard torsion bar, spring and damper system",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Published car weight",
+          "value": "772 kg (incl. driver, excl. fuel)",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Weight distribution",
+          "value": "44% to 46% on front axle",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "electronics",
+          "label": "Electronics",
+          "value": "Motion Applied: chassis control, PU control, data acquisition, sensors, data analysis",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Instruments",
+          "value": "Motion Applied steering wheel display",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Calipers",
+          "value": "AP Racing calipers with front/rear master cylinders",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Rear brake control",
+          "value": "Brake-by-wire rear brake control",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Discs and pads",
+          "value": "Carbon-carbon ventilated discs and pads",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Steering",
+          "value": "Power-assisted rack and pinion",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "front-tyre",
+          "label": "Tyres",
+          "value": "Pirelli P Zero F1",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "rear-tyre",
+          "label": "Tyres",
+          "value": "Pirelli P Zero F1",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "wheels",
+          "label": "Race wheels",
+          "value": "Enkei 18-inch magnesium",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "bodywork",
+          "label": "Paint",
+          "value": "AkzoNobel Sikkens",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "sidepod",
+          "label": "Cooling systems",
+          "value": "Charge air, engine oil, gearbox oil, hydraulic oil, water and ERS cooling",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "chassis",
+          "label": "Additive manufacturing",
+          "value": "Stratasys",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Power unit",
+          "value": "Mercedes-AMG F1 M17 E PERFORMANCE",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "PU minimum weight",
+          "value": "185 kg",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "PU components",
+          "value": "ICE, MGU-K, turbocharger, energy store, PU control electronics",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "ICE",
+          "value": "1.6 l, six cylinders, 90 deg vee, 24 valves",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Fuel energy flow",
+          "value": "Max 3000 MJ/h (above 10,500 rpm)",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Injection / pressure charging",
+          "value": "Direct injection max 350 bar, one injector per cylinder; single-stage compressor and turbine on common shaft; turbine max 150,000 rpm",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Energy store",
+          "value": "Lithium-ion, min 35 kg; max 4 MJ storage",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "MGU-K",
+          "value": "Crankshaft-coupled; max 60,000 rpm; max 350 kW; team quotes 9 MJ per lap recovery/deployment",
+          "scope": "regulation",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "transmission",
+          "label": "Gearbox",
+          "value": "Carbon-fibre composite casing; longitudinal gear cluster; 8 forward + 1 reverse; electro-hydraulic seamless shift",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        },
+        {
+          "component": "transmission",
+          "label": "Differential / clutch",
+          "value": "Limited-slip friction clutch epicyclic differential; electro-hydraulic carbon multi-plate clutch",
+          "scope": "car_specific",
+          "sources": [
+            "s-d1683a913e"
+          ]
+        }
+      ]
     },
     "red-bull": {
       "carModel": {
@@ -660,7 +989,8 @@
           "s-739fc8c274",
           "s-61c852ea4b",
           "s-70e8319b42"
-        ]
+        ],
+        "makerKey": "red-bull-ford"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -670,7 +1000,54 @@
           "s-73b8177d94"
         ]
       },
-      "specs": []
+      "specs": [
+        {
+          "component": "power-unit",
+          "label": "Power unit",
+          "value": "Red Bull Ford Powertrains DM01",
+          "scope": "car_specific",
+          "sources": [
+            "s-73b8177d94"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "ICE",
+          "value": "6 cylinders, 1.6 l, 15,000 rpm, 4 valves per cylinder (24 total), 90 deg vee",
+          "scope": "regulation",
+          "sources": [
+            "s-73b8177d94"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Published power output",
+          "value": ">1000 bhp (team-published figure)",
+          "scope": "car_specific",
+          "sources": [
+            "s-73b8177d94"
+          ],
+          "officialOutput": true
+        },
+        {
+          "component": "power-unit",
+          "label": "Oil",
+          "value": "Mobil 1",
+          "scope": "car_specific",
+          "sources": [
+            "s-73b8177d94"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "PU minimum weight",
+          "value": "185 kg (page labels it 'chassis weight'; matches the 185 kg PU minimum)",
+          "scope": "regulation",
+          "sources": [
+            "s-73b8177d94"
+          ]
+        }
+      ]
     },
     "racing-bulls": {
       "carModel": {
@@ -689,7 +1066,8 @@
           "s-18290f0b3c",
           "s-8948258625",
           "s-d6610a2e9e"
-        ]
+        ],
+        "makerKey": "red-bull-ford"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -699,7 +1077,17 @@
           "s-1141e46780"
         ]
       },
-      "specs": []
+      "specs": [
+        {
+          "component": "power-unit",
+          "label": "Power unit",
+          "value": "Red Bull Ford Powertrains unit",
+          "scope": "car_specific",
+          "sources": [
+            "s-70cde5d7c7"
+          ]
+        }
+      ]
     },
     "alpine": {
       "carModel": {
@@ -719,7 +1107,8 @@
           "s-87a6a529b1",
           "s-9d3e4d7ec2",
           "s-76b24b3ef6"
-        ]
+        ],
+        "makerKey": "mercedes"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -729,7 +1118,161 @@
           "s-9d3e4d7ec2"
         ]
       },
-      "specs": []
+      "specs": [
+        {
+          "component": "front-suspension",
+          "label": "Front suspension",
+          "value": "Carbon fibre upper/lower wishbones; pull-rod operated torsion bars; dampers inside front of monocoque; aluminium uprights",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "rear-suspension",
+          "label": "Rear suspension",
+          "value": "Carbon fibre upper/lower wishbones; push-rod operated torsion bars; dampers inside carbon suspension carrier; aluminium uprights",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "wheels",
+          "label": "Wheels",
+          "value": "Standard machined magnesium rims",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "front-wing",
+          "label": "Front wing",
+          "value": "Moulded carbon fibre; hydraulically actuated active elements for straights and corners",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "rear-wing",
+          "label": "Rear wing",
+          "value": "Moulded carbon fibre; hydraulically actuated active elements for straights and corners",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Brakes",
+          "value": "Carbon discs and pads; calipers and master cylinders linked to integrated brake-by-wire tied to energy management",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Seat / harness / ballast",
+          "value": "Removable driver-specific carbon seat; six-point harness; seat assembly ballastable to 82 kg",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Steering wheel",
+          "value": "Bespoke wheel with gear and clutch paddles, Overtake and Boost controls, driver display",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "chassis",
+          "label": "Chassis",
+          "value": "Moulded carbon fibre and aluminium honeycomb monocoque, built in-house; PU installed as stressed member",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "fuel-system",
+          "label": "Fuel system",
+          "value": "Kevlar-reinforced homologated rubber fuel cell; scavenge-to-primer pump supply",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "transmission",
+          "label": "Transmission / hydraulics",
+          "value": "Mercedes-AMG designed 8-speed semi-automatic cassette gearbox + reverse; hydraulic Quickshift; hydraulically controlled differential; hydraulics for PU actuation, power steering, active aero, clutch",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Published car weight",
+          "value": "772 kg with driver, cameras and ballast",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Length / wheelbase / width",
+          "value": "5620 mm / 3400 mm / 1900 mm",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "front-tyre",
+          "label": "Front tyre width",
+          "value": "280 mm",
+          "scope": "regulation",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "rear-tyre",
+          "label": "Rear tyre width",
+          "value": "375 mm",
+          "scope": "regulation",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Power unit",
+          "value": "Mercedes-AMG F1 M17 E PERFORMANCE",
+          "scope": "car_specific",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "PU spec (as published by team)",
+          "value": "185 kg min; 1.6 l V6 90 deg, 24 valves, 15,000 rpm; 3000 MJ/h; 350 bar DI; turbine 150,000 rpm; Li-ion ES 4.0 MJ usable; MGU-K 60,000 rpm, 350 kW, 9.0 MJ/lap (circuit specific); allocation 4 ICE/TC/EXH, 3 MGU-K/ES/CE per driver",
+          "scope": "regulation",
+          "sources": [
+            "s-18a0c41376"
+          ]
+        }
+      ]
     },
     "audi": {
       "carModel": {
@@ -748,7 +1291,8 @@
           "s-aa914939eb",
           "s-77c6000a71",
           "s-f8f422b803"
-        ]
+        ],
+        "makerKey": "audi"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -759,7 +1303,207 @@
           "s-f8f422b803"
         ]
       },
-      "specs": []
+      "specs": [
+        {
+          "component": "chassis",
+          "label": "Survival cell",
+          "value": "Team-moulded carbon fibre composite structure incorporating ATL fuel cell bladder",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Safety structures",
+          "value": "Intrusion-protected monocoque; front, side and rear impact structures; roll hoop; halo",
+          "scope": "regulation",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Seat / harness",
+          "value": "Bespoke carbon fibre seat; Sabelt 6-point harness",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "bodywork",
+          "label": "Bodywork",
+          "value": "Carbon fibre composite front wing, nose, sidepods, engine cover, floor and rear wing",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "front-suspension",
+          "label": "Front suspension",
+          "value": "Carbon fibre double wishbone; push-rod activated inboard torsion springs, rockers; Ohlins dampers",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "rear-suspension",
+          "label": "Rear suspension",
+          "value": "Carbon fibre double wishbone; push-rod activated inboard torsion springs, rockers; Ohlins dampers",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Discs",
+          "value": "Brembo carbon self-ventilating discs front and rear",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Calipers / master cylinder",
+          "value": "Brembo monobloc nickel-plated aluminium calipers machined from solid; Brembo tandem master cylinder",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Rear brake control",
+          "value": "Electronically controlled hydraulic rear brakes (brake-by-wire)",
+          "scope": "regulation",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Steering",
+          "value": "Power-assisted rack and pinion; customised carbon fibre steering wheel",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "electronics",
+          "label": "Electronics",
+          "value": "FIA-approved electronics incl. FIA standard ECU",
+          "scope": "regulation",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Power unit",
+          "value": "Audi AFR 26 Hybrid",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "transmission",
+          "label": "Gearbox",
+          "value": "Team carbon fibre maincase with cassette, 8 forward + 1 reverse; sequential semi-automatic; carbon composite clutch",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "wheels",
+          "label": "Wheels",
+          "value": "APP Tech 18-inch magnesium",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "front-tyre",
+          "label": "Tyres",
+          "value": "Pirelli",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "rear-tyre",
+          "label": "Tyres",
+          "value": "Pirelli",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Length / width / height",
+          "value": "5440 mm / 1900 mm / 980 mm",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Wheelbase",
+          "value": "<= 3400 mm",
+          "scope": "regulation",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Published car weight",
+          "value": "770 kg",
+          "scope": "car_specific",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "ICE",
+          "value": "90 deg V6, 1600 cc, bore 80 mm, stroke 53 mm, 4 valves/cyl, single turbine+compressor, 350 bar direct injection, 3000 MJ/h max fuel energy flow",
+          "scope": "regulation",
+          "sources": [
+            "s-aa914939eb"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "ERS",
+          "value": "MGU-K hybrid recovery; lithium-ion battery >= 35 kg; 4 MJ max deployment; MGU-K 350 kW (team quotes 470 hp), 60,000 rpm",
+          "scope": "regulation",
+          "sources": [
+            "s-aa914939eb"
+          ],
+          "officialOutput": true
+        },
+        {
+          "component": "power-unit",
+          "label": "Fuel / lubricants",
+          "value": "bp bespoke fuel; Castrol lubricants, greases and EV fluids",
+          "scope": "car_specific",
+          "sources": [
+            "s-3c913c847f"
+          ]
+        }
+      ]
     },
     "haas": {
       "carModel": {
@@ -777,7 +1521,8 @@
           "s-b40e8274bb",
           "s-938e82cf39",
           "s-5944eedf51"
-        ]
+        ],
+        "makerKey": "ferrari"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -788,7 +1533,161 @@
           "s-5944eedf51"
         ]
       },
-      "specs": []
+      "specs": [
+        {
+          "component": "power-unit",
+          "label": "Power unit",
+          "value": "Ferrari 067/6 (page prints 'O67\\6'), turbocharged 1.6 l V6 hybrid",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "chassis",
+          "label": "Chassis material",
+          "value": "Carbon fibre and honeycomb composite",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "bodywork",
+          "label": "Bodywork material",
+          "value": "Carbon fibre",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "front-suspension",
+          "label": "Suspension / dampers",
+          "value": "Independent; ZF Sachs / Ohlins dampers",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "rear-suspension",
+          "label": "Suspension / dampers",
+          "value": "Independent; ZF Sachs / Ohlins dampers",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Steering / steering wheel / instrumentation",
+          "value": "Ferrari",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "transmission",
+          "label": "Transmission",
+          "value": "Ferrari: servo hydraulic limited-slip differential; semi-automatic sequential electronically controlled quick-shift, 8 + reverse",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "transmission",
+          "label": "Clutch",
+          "value": "AP Racing",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Brake system",
+          "value": "Brembo carbon self-ventilating discs; nickel-plated aluminium monobloc calipers; Brembo tandem master cylinder; rear brake-by-wire",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Seatbelts / seat",
+          "value": "Sabelt belts; carbon fibre seat moulded to the driver",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "wheels",
+          "label": "Wheels",
+          "value": "BBS",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "front-tyre",
+          "label": "Tyres",
+          "value": "Pirelli P Zero",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "rear-tyre",
+          "label": "Tyres",
+          "value": "Pirelli P Zero",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "fuel-system",
+          "label": "Fuel cell",
+          "value": "ATL",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Fuel / lubricants",
+          "value": "Shell",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Overall width",
+          "value": "1900 mm",
+          "scope": "regulation",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Published car weight",
+          "value": "770 kg (incl. driver)",
+          "scope": "car_specific",
+          "sources": [
+            "s-2ccbe446e4"
+          ]
+        }
+      ]
     },
     "aston-martin": {
       "carModel": {
@@ -805,7 +1704,8 @@
           "s-4ad9814268",
           "s-c432613d84",
           "s-0b029a5399"
-        ]
+        ],
+        "makerKey": "honda"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -815,7 +1715,146 @@
           "s-f6062d7ea9"
         ]
       },
-      "specs": []
+      "specs": [
+        {
+          "component": "chassis",
+          "label": "Chassis",
+          "value": "Carbon fibre composite monocoque with Zylon side anti-intrusion panels",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637",
+            "s-c432613d84"
+          ]
+        },
+        {
+          "component": "front-suspension",
+          "label": "Suspension",
+          "value": "Aluminium uprights, carbon fibre wishbones, track rod and push-rod; inboard chassis-mounted torsion springs, dampers and anti-roll bar",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637",
+            "s-c432613d84"
+          ]
+        },
+        {
+          "component": "rear-suspension",
+          "label": "Suspension",
+          "value": "Aluminium uprights, carbon fibre wishbones, track rod and push-rod; inboard torsion springs, dampers and anti-roll bar",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637",
+            "s-c432613d84"
+          ]
+        },
+        {
+          "component": "wheels",
+          "label": "Wheels",
+          "value": "BBS 18-inch",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "front-tyre",
+          "label": "Tyres",
+          "value": "Pirelli P Zero",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "rear-tyre",
+          "label": "Tyres",
+          "value": "Pirelli P Zero",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "transmission",
+          "label": "Clutch",
+          "value": "AP Racing",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Brake system",
+          "value": "Brembo calipers; in-house brake-by-wire; Carbon Industrie carbon discs and pads",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "electronics",
+          "label": "Electronics",
+          "value": "McLaren Applied TAG single ECU; in-house electrical harness",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Wheelbase / width",
+          "value": "3400 mm max / 1900 mm max",
+          "scope": "regulation",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Weight",
+          "value": "FIA minimum 768 kg (incl. driver, excl. fuel); weight distribution 44.5%-46.0%",
+          "scope": "regulation",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Power unit",
+          "value": "Honda RA626H: 1.6 l V6 turbo with energy recovery system",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "transmission",
+          "label": "Gearbox",
+          "value": "Aston Martin Aramco eight-speed semi-automatic, developed in-house at AMR Technology Campus",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Fuel",
+          "value": "Aramco ProForce+ 100% sustainable fuel (exclusive supply)",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        },
+        {
+          "component": "power-unit",
+          "label": "Lubricants",
+          "value": "Valvoline (transmission fluid, engine oil, brake fluid, coolant)",
+          "scope": "car_specific",
+          "sources": [
+            "s-0b61667637"
+          ]
+        }
+      ]
     },
     "williams": {
       "carModel": {
@@ -833,7 +1872,8 @@
           "s-c6aa9bd933",
           "s-e309d2d749",
           "s-76b24b3ef6"
-        ]
+        ],
+        "makerKey": "mercedes"
       },
       "tyreSupplier": {
         "value": "Pirelli",
@@ -843,7 +1883,17 @@
           "s-e309d2d749"
         ]
       },
-      "specs": []
+      "specs": [
+        {
+          "component": "dimensions",
+          "label": "Published car weight",
+          "value": "772.4 kg (incl. driver, excl. fuel), as reported from Williams' spec",
+          "scope": "car_specific",
+          "sources": [
+            "s-8f7807bcb4"
+          ]
+        }
+      ]
     },
     "cadillac": {
       "carModel": {
@@ -863,7 +1913,8 @@
           "s-74e4ce3aa7",
           "s-6df973a5c9",
           "s-24e145b4bb"
-        ]
+        ],
+        "makerKey": "ferrari"
       },
       "tyreSupplier": {
         "value": "Pirelli",

@@ -86,21 +86,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.05,
             "y": 0.65,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.335,
+            "y": 0.6,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.3,
             "y": 0.72,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.22,
             "y": 0.55,
             "status": "draft",
@@ -121,21 +128,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.45,
+            "y": 0.84,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.68,
             "y": 0.35,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.89,
-            "y": 0.65,
+            "component": "rear-suspension",
+            "x": 0.815,
+            "y": 0.41,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.92,
+            "y": 0.48,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.92,
             "y": 0.22,
             "status": "draft",
@@ -224,21 +245,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.06,
             "y": 0.8,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.195,
+            "y": 0.56,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.23,
             "y": 0.73,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.3,
             "y": 0.5,
             "status": "draft",
@@ -259,21 +287,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.46,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.7,
             "y": 0.3,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.86,
-            "y": 0.72,
+            "component": "rear-suspension",
+            "x": 0.785,
+            "y": 0.48,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.89,
+            "y": 0.55,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.95,
             "y": 0.3,
             "status": "draft",
@@ -362,21 +404,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.07,
             "y": 0.8,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.235,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.27,
             "y": 0.75,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.33,
             "y": 0.55,
             "status": "draft",
@@ -397,21 +446,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.46,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.7,
             "y": 0.35,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.87,
-            "y": 0.75,
+            "component": "rear-suspension",
+            "x": 0.795,
+            "y": 0.51,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.9,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.93,
             "y": 0.3,
             "status": "draft",
@@ -500,21 +563,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.05,
             "y": 0.8,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.205,
+            "y": 0.57,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.24,
             "y": 0.74,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.31,
             "y": 0.52,
             "status": "draft",
@@ -535,21 +605,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.46,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.66,
             "y": 0.25,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.85,
-            "y": 0.73,
+            "component": "rear-suspension",
+            "x": 0.775,
+            "y": 0.49,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.88,
+            "y": 0.56,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.95,
             "y": 0.32,
             "status": "draft",
@@ -638,21 +722,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.07,
             "y": 0.82,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.215,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.25,
             "y": 0.75,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.32,
             "y": 0.5,
             "status": "draft",
@@ -673,21 +764,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.46,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.68,
             "y": 0.35,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.86,
-            "y": 0.75,
+            "component": "rear-suspension",
+            "x": 0.785,
+            "y": 0.51,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.89,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.94,
             "y": 0.25,
             "status": "draft",
@@ -776,21 +881,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.06,
             "y": 0.8,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.205,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.24,
             "y": 0.75,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.31,
             "y": 0.5,
             "status": "draft",
@@ -811,21 +923,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.43,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.7,
             "y": 0.3,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.85,
-            "y": 0.75,
+            "component": "rear-suspension",
+            "x": 0.775,
+            "y": 0.51,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.88,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.94,
             "y": 0.3,
             "status": "draft",
@@ -914,21 +1040,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.06,
             "y": 0.8,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.205,
+            "y": 0.56,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.24,
             "y": 0.73,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.31,
             "y": 0.5,
             "status": "draft",
@@ -949,21 +1082,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.43,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.7,
             "y": 0.35,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.87,
-            "y": 0.75,
+            "component": "rear-suspension",
+            "x": 0.795,
+            "y": 0.51,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.9,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.93,
             "y": 0.3,
             "status": "draft",
@@ -1052,21 +1199,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.06,
             "y": 0.8,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.205,
+            "y": 0.56,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.24,
             "y": 0.73,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.32,
             "y": 0.5,
             "status": "draft",
@@ -1087,21 +1241,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.46,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.7,
             "y": 0.3,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.86,
-            "y": 0.75,
+            "component": "rear-suspension",
+            "x": 0.785,
+            "y": 0.51,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.89,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.94,
             "y": 0.32,
             "status": "draft",
@@ -1190,21 +1358,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.06,
             "y": 0.82,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.205,
+            "y": 0.56,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.24,
             "y": 0.73,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.31,
             "y": 0.5,
             "status": "draft",
@@ -1225,21 +1400,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.45,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.7,
             "y": 0.35,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.86,
-            "y": 0.73,
+            "component": "rear-suspension",
+            "x": 0.785,
+            "y": 0.49,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.89,
+            "y": 0.56,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.94,
             "y": 0.3,
             "status": "draft",
@@ -1328,21 +1517,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.07,
             "y": 0.85,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.215,
+            "y": 0.61,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.25,
             "y": 0.78,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.32,
             "y": 0.55,
             "status": "draft",
@@ -1363,21 +1559,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.46,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.7,
             "y": 0.3,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.86,
-            "y": 0.75,
+            "component": "rear-suspension",
+            "x": 0.785,
+            "y": 0.51,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.89,
+            "y": 0.58,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.95,
             "y": 0.3,
             "status": "draft",
@@ -1466,21 +1676,28 @@
         },
         "hotspots": [
           {
-            "component": "front_wing",
+            "component": "front-wing",
             "x": 0.07,
             "y": 0.82,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_tyre",
+            "component": "front-tyre",
+            "x": 0.205,
+            "y": 0.59,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "brakes",
             "x": 0.24,
             "y": 0.76,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "front_suspension",
+            "component": "front-suspension",
             "x": 0.31,
             "y": 0.55,
             "status": "draft",
@@ -1501,21 +1718,35 @@
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "power_unit",
+            "component": "floor",
+            "x": 0.46,
+            "y": 0.87,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "power-unit",
             "x": 0.7,
             "y": 0.3,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_tyre",
-            "x": 0.86,
-            "y": 0.78,
+            "component": "rear-suspension",
+            "x": 0.785,
+            "y": 0.54,
             "status": "draft",
             "placedBy": "visual review of master, 10% grid"
           },
           {
-            "component": "rear_wing",
+            "component": "rear-tyre",
+            "x": 0.89,
+            "y": 0.61,
+            "status": "draft",
+            "placedBy": "visual review of master, 10% grid"
+          },
+          {
+            "component": "rear-wing",
             "x": 0.95,
             "y": 0.3,
             "status": "draft",

@@ -11,7 +11,8 @@ import { articlePage } from '../src/news/render.mjs';
 import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
 import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
 import { loadCarPhotos, carPhotoFor, imageObject } from '../src/identity/car-photos.mjs';
-import { loadPeople, teamPeople, teamMachine } from '../src/identity/people.mjs';
+import { loadPeople, teamPeople, teamMachine, personProfiles } from '../src/identity/people.mjs';
+import { loadExplorer, explorerFor } from '../src/identity/explorer.mjs';
 
 const DIST = path.resolve('dist');
 const t0 = Date.now();
@@ -30,6 +31,8 @@ const carReg = loadCarPhotos();
 const peopleReg = loadPeople();
 ctx.peopleFor = (cid, season) => teamPeople(peopleReg, cid, season);
 ctx.machineFor = (cid, season) => teamMachine(peopleReg, cid, season);
+const explorerReg = loadExplorer();
+ctx.explorerFor = (o) => explorerFor(explorerReg, o);
 const carCandidates = process.env.F1_CAR_CANDIDATES === '1' || process.env.VERCEL_ENV === 'preview';
 ctx.carPhotoFor = (cid, season) => carPhotoFor(carReg, cid, season, { includeCandidates: carCandidates });
 fs.mkdirSync(path.join(DIST, 'media/cars'), { recursive: true });
@@ -65,7 +68,11 @@ fs.writeFileSync(path.join(DIST, `assets/progress.${progHash}.js`), prog);
 const pc = fs.readFileSync('src/web/pbecast.js', 'utf8').replace("from './progress.js'", `from './progress.${progHash}.js'`);
 const pcHash = crypto.createHash('sha256').update(pc).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/pbecast.${pcHash}.js`), pc);
-const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js` };
+// Car Explorer client (team pages only)
+const xpJs = fs.readFileSync('src/web/explorer.js', 'utf8');
+const xpHash = crypto.createHash('sha256').update(xpJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/explorer.${xpHash}.js`), xpJs);
+const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];
@@ -92,6 +99,9 @@ emit(P.driversIndex(ctx));
 for (const d of ctx.drivers) if (ctx.careers[d.id]?.entries) emit(P.driverPage(ctx, d));
 emit(P.teamsIndex(ctx));
 for (const c of ctx.constructors) emit(P.teamPage(ctx, c, lineageChain));
+for (const prof of Object.values(personProfiles(peopleReg))) emit(P.personPage(ctx, prof));
+// cleared personnel photos (square crops made by scripts/people-photos.mjs)
+if (fs.existsSync('assets-src/people')) { fs.mkdirSync(path.join(DIST, 'media/people'), { recursive: true }); for (const f of fs.readdirSync('assets-src/people').filter((x) => /\.(webp|avif)$/.test(x))) fs.copyFileSync(path.join('assets-src/people', f), path.join(DIST, 'media/people', f)); }
 emit(P.circuitsIndex(ctx));
 for (const c of ctx.circuits) emit(P.circuitPage(ctx, c, ''));
 emit(P.standingsPage(ctx, ctx.currentSeason));

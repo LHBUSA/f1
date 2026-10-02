@@ -63,7 +63,7 @@ test('machine facts are sourced and regulation facts are labelled as such', () =
   for (const [season, m] of Object.entries(people.machines)) for (const cid of Object.keys(m.teams)) {
     const t = teamMachine(people, cid, Number(season));
     for (const s of t.specs) assert.ok(['car_specific', 'regulation'].includes(s.scope), `${cid} ${s.label} scope`);
-    assert.ok(!JSON.stringify(m.teams[cid]).match(/\b\d{3,4}\s*(hp|bhp|ps)\b/i), `${cid} horsepower claim`);
+    for (const sp of m.teams[cid].specs || []) if (/\b\d{3,4}\s*(hp|bhp|ps)\b/i.test(sp.value)) assert.ok(sp.officialOutput && sp.sources.some((x) => m.sources[x]?.type === 'first_party'), `${cid} horsepower claim without first-party publication`);
   }
   const p = teamPeople(people, 'mercedes', 2026);
   assert.ok(p.leadership.length && p.technical.length);

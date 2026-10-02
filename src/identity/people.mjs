@@ -9,7 +9,8 @@ export function loadPeople() {
   const p = read('src/identity/personnel.json');
   const machines = {};
   for (const f of fs.readdirSync('src/identity').filter((x) => /^machine-\d{4}\.json$/.test(x))) { const m = read(`src/identity/${f}`); machines[m.season] = m; }
-  return { ...p, machines };
+  const photos = fs.existsSync('src/identity/people-photos.json') ? read('src/identity/people-photos.json').photos || {} : {};
+  return { ...p, machines, photos };
 }
 
 // Customer pages credit data to PropSports; upstream data providers (same list as scripts/guard-source-brand.mjs) are
@@ -21,18 +22,49 @@ const resolveSources = (ids, table) => (ids || []).map((id) => ({ id, ...table[i
 export function teamPeople(reg, constructorId, season) {
   const roles = reg.roles
     .filter((r) => r.constructorId === constructorId && r.season === season && r.display && r.current === true && !r.effectiveTo && (r.sources || []).length)
-    .map((r) => ({ ...r, name: reg.people[r.personId]?.name, slug: r.personId, sources: resolveSources(r.sources, reg.sources) }))
+    .map((r) => ({ ...r, name: reg.people[r.personId]?.name, slug: r.personId, photo: photoFor(reg, r.personId), sources: resolveSources(r.sources, reg.sources) }))
     .filter((r) => r.name && r.sources.length);
   const group = (g) => roles.filter((r) => r.roleGroup === g && !r.driverId).sort((a, b) => (a.rank || 9) - (b.rank || 9));
+  const byDriver = {};
+  for (const r of roles.filter((x) => x.driverId)) {
+    const d = (byDriver[r.driverId] ??= { raceEngineers: [], performanceEngineers: [], mechanics: [], other: [] });
+    if (/performance engineer/i.test(r.role)) d.performanceEngineers.push(r);
+    else if (/race engineer/i.test(r.role)) d.raceEngineers.push(r);
+    else if (/mechanic|car chief|crew chief/i.test(r.role) || r.roleGroup === 'garage_operations') d.mechanics.push(r);
+    else d.other.push(r);
+  }
+  for (const d of Object.values(byDriver)) d.raceEngineers.sort((a, b) => /^senior/i.test(a.role) - /^senior/i.test(b.role));
   return {
     leadership: group('leadership'),
     technical: group('technical'),
     raceEngineering: group('race_engineering'),
-    driverEngineers: roles.filter((r) => r.driverId && r.roleGroup === 'race_engineering'),
+    sporting: group('sporting'),
+    driverEngineers: roles.filter((r) => r.driverId && r.roleGroup === 'race_engineering' && /race engineer/i.test(r.role)),
+    driverChains: byDriver,
     powerUnit: group('power_unit'),
     garageOps: group('garage_operations'),
     garage: reg.garage?.[constructorId]?.season === season ? reg.garage[constructorId] : null,
+    photoCredits: roles.filter((r) => r.photo).map((r) => ({ name: r.name, ...r.photo })).filter((x, i, a) => a.findIndex((y) => y.name === x.name) === i),
   };
+}
+
+// cleared personnel photographs only (src/identity/people-photos.json); anything else falls back to initials
+export function photoFor(reg, personId) {
+  const p = reg.photos?.[personId];
+  return p && p.rightsStatus === 'cleared' && p.files ? p : null;
+}
+
+// every person with at least one displayable role -> profile page data (current roles first, then history)
+export function personProfiles(reg) {
+  const out = {};
+  for (const r of reg.roles.filter((x) => x.display && (x.sources || []).length)) {
+    const person = reg.people[r.personId];
+    if (!person) continue;
+    const prof = (out[r.personId] ??= { slug: r.personId, name: person.name, photo: photoFor(reg, r.personId), roles: [] });
+    prof.roles.push({ ...r, sources: resolveSources(r.sources, reg.sources) });
+  }
+  for (const p of Object.values(out)) p.roles.sort((a, b) => (b.season - a.season) || ((b.current === true) - (a.current === true)));
+  return out;
 }
 
 export function teamMachine(reg, constructorId, season) {

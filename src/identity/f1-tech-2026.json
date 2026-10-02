@@ -1,0 +1,960 @@
+{
+  "_doc": "General F1 tech (regulation level) per Car Explorer component, Pirelli tyre facts and power-unit maker facts. Statements are normalised in our own words; every one keeps its source. Rendered as GENERAL F1 TECH, never as a team-specific spec. Upstream data hosts are provenance-only (not linked on pages).",
+  "version": "f1-tech-2026@1",
+  "season": 2026,
+  "retrieved": "2026-10-02",
+  "conflicts": [
+    "MGU-K recovery: Mercedes/McLaren/Alpine sheets say 9 MJ/lap; FIA Section C Issue 20 C5.2.10 and FIA 2024 release say 8.5 MJ/lap. Use FIA for general text.",
+    "Min mass: FIA 2024 release 768 kg; Issue 20 C4.1 = 724 kg (726 kg quali) + nominal tyre mass. Team-published weights 770 (Audi, Haas), 772 (Mercedes, McLaren, Alpine), 772.4 (Williams, media).",
+    "Active aero naming: FIA 2024 release 'Z-Mode/X-Mode'; regulations + teams use 'Corner Mode/Straight Mode' (McLaren says 'Cornering Mode').",
+    "Red Bull RB22 page labels 185 kg as 'chassis weight' - it is the PU minimum weight."
+  ],
+  "general": {
+    "front-wing": [
+      {
+        "text": "The front wing carries two adjustable flaps (primary and secondary) that the FIA standard ECU switches between two fixed positions: Corner Mode (high downforce) and Straight Mode (reduced incidence, low drag).",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "Each switch between modes must complete within 400 ms, and any system failure must return the wing to Corner Mode.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "The front wing flaps may only be deployed (Straight Mode) when the car is stationary or fully inside a designated Activation Zone.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "The 2026 front wing is about 100 mm narrower than the 2022-25 design. Early FIA material called the modes 'Z-Mode'/'X-Mode'; the regulations now use Corner Mode / Straight Mode.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          },
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      }
+    ],
+    "rear-wing": [
+      {
+        "text": "The rear wing flap has two fixed, ECU-commanded positions - Corner Mode and Straight Mode - driven by a single actuator, replacing the old DRS concept.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          },
+          {
+            "url": "https://www.astonmartinf1.com/en-GB/2026",
+            "publisher": "Aston Martin Aramco F1 Team",
+            "type": "first_party",
+            "date": null
+          }
+        ]
+      },
+      {
+        "text": "Rear wing profiles are limited to at most three elements, and a failed adjuster must leave the flap in Corner Mode.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      }
+    ],
+    "front-suspension": [
+      {
+        "text": "Suspension must be passive: any powered device that changes suspension configuration is banned, and nothing may be adjusted while the car is moving.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "Front and rear suspension must act independently, each responding only to loads on its own axle.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "Push-rod vs pull-rod is a team choice; teams pick the layout for both mechanical and aerodynamic reasons.",
+        "sources": [
+          {
+            "url": "https://www.astonmartinf1.com/en-GB/2026",
+            "publisher": "Aston Martin Aramco F1 Team",
+            "type": "first_party",
+            "date": null
+          }
+        ]
+      }
+    ],
+    "rear-suspension": [
+      {
+        "text": "Rear suspension is subject to the same passive-only rule: no powered devices and no in-motion adjustment.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "The inboard parts (rockers, springs, dampers) count as sprung mass; uprights, links and wheels are unsprung.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      }
+    ],
+    "brakes": [
+      {
+        "text": "One pedal feeds two master cylinders with separate front and rear hydraulic circuits.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "Rear braking pressure may come from a powered brake-by-wire system run by the FIA control electronics, capped at 1.2x the driver's own rear pressure and backed by a hydraulic fallback.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "Disc diameter is 325-345 mm at the front and 260-280 mm at the rear, max 34 mm thick; liquid cooling of brakes is forbidden.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      }
+    ],
+    "cockpit": [
+      {
+        "text": "Every car has two roll structures; the secondary one is the halo, built to FIA standard 8869-2018 by an FIA-designated manufacturer.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "Roll hoop load requirement rose from 16G to 20G and side intrusion protection was strengthened for 2026.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      },
+      {
+        "text": "Steering re-aligns only the two front wheels and must be a single steering wheel rotating about one axis.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      }
+    ],
+    "sidepod": [
+      {
+        "text": "Primary heat exchangers (radiators) must use aluminium alloy cores and header tanks and cannot be additively manufactured.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "FIA introduced in-washing wheel-wake control boards at the front of the sidepods to manage front-wheel wake.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      }
+    ],
+    "floor": [
+      {
+        "text": "2026 cars use a partially flat floor and a less powerful diffuser, reducing ground-effect downforce and the need for ultra-stiff, low ride heights.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      },
+      {
+        "text": "Maximum floor width was cut by 150 mm; a plank assembly with three measurement holes runs underneath.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          },
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      }
+    ],
+    "power-unit": [
+      {
+        "text": "The ICE remains a 1600 cc, 90 deg V6 with four valves per cylinder; fuel energy flow is capped at 3000 MJ/h.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "The MGU-H is gone: only the engine and the MGU-K may propel the car or recharge energy. ERS-K power is capped at 350 kW (up from 120 kW).",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          },
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      },
+      {
+        "text": "FIA describes the power split as roughly 50/50: ICE about 400 kW plus 350 kW electric. Recharge is limited to 8.5 MJ per lap and the battery state-of-charge window to 4 MJ.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          },
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "Fuel must be 100% advanced sustainable (from non-food biomass, municipal waste or renewable non-biological feedstock).",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          },
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      }
+    ],
+    "front-tyre": [
+      {
+        "text": "Wheels stay 18-inch (rim diameter ~462.5-463 mm) and must be AZ70/AZ80 magnesium alloy; front rim tyre-mounting width is 315 mm.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          },
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      },
+      {
+        "text": "Front tyres are 25 mm narrower than in 2022-25.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      }
+    ],
+    "rear-tyre": [
+      {
+        "text": "Rear tyres are 30 mm narrower than in 2022-25; rear rim tyre-mounting width is 401.3 mm.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          },
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      },
+      {
+        "text": "Tyre specification is set by the supplier with the FIA; teams may not cut, groove or chemically treat tyres.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      }
+    ],
+    "dimensions": [
+      {
+        "text": "Maximum wheelbase is 3400 mm (down from 3600 mm) and maximum width 1900 mm (down from 2000 mm).",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          },
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      },
+      {
+        "text": "Minimum mass is set as a car+driver figure plus Pirelli's measured nominal tyre mass: 724 kg (726 kg in qualifying) + tyres under Issue 20. The 2024 launch figure was 768 kg (722 kg + ~46 kg tyres).",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          },
+          {
+            "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+            "publisher": "FIA",
+            "type": "fia",
+            "date": "2024-06-06"
+          }
+        ]
+      },
+      {
+        "text": "The gearbox must have exactly eight forward ratios; CVTs are banned.",
+        "sources": [
+          {
+            "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+            "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+            "type": "fia",
+            "date": "2026-08-05"
+          }
+        ]
+      }
+    ]
+  },
+  "tyres": {
+    "supplier": "Pirelli (Global Tyre Partner since 2011)",
+    "generation": "2026-generation narrower tyres on retained 18-inch wheels",
+    "rimInches": 18,
+    "widthChange": {
+      "front": "-25 mm",
+      "rear": "-30 mm",
+      "frontTyreWidthMm": 280,
+      "rearTyreWidthMm": 375,
+      "rimMountingWidthMm": {
+        "front": 315,
+        "rear": 401.3
+      },
+      "sources": [
+        {
+          "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+          "publisher": "FIA",
+          "type": "fia",
+          "date": "2024-06-06",
+          "retrieved": "2026-10-02",
+          "note": "launch press release; some figures later amended by regulation issues"
+        },
+        {
+          "url": "https://media.alpinecars.com/bwt-alpine-formula-one-team-2026-press-pack/?lang=eng",
+          "publisher": "Alpine global media website (BWT Alpine F1 Team 2026 Press Pack PDF, pp.13-14)",
+          "type": "first_party",
+          "date": "2026-01-23",
+          "retrieved": "2026-10-02",
+          "note": "PDF is image-based; values read via OCR of pages 13-14"
+        },
+        {
+          "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+          "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+          "type": "fia",
+          "date": "2026-08-05",
+          "retrieved": "2026-10-02"
+        }
+      ],
+      "note": "280/375 mm tyre widths are from Alpine's first-party press pack; Pirelli page captured gives no dimensions"
+    },
+    "dryCompounds": [
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5"
+    ],
+    "intermediate": "One intermediate type: for wet track with no standing water or a drying surface",
+    "wet": "One full wet (Extreme Wet) type for heavy rain",
+    "eventAllocation": {
+      "event": "2026 Bahrain Grand Prix in Malaysia",
+      "value": {
+        "published": true,
+        "event": "2026 Bahrain Grand Prix in Malaysia (Sepang)",
+        "hard": "C2",
+        "medium": "C3",
+        "soft": "C4",
+        "sources": [
+          {
+            "url": "https://press.pirelli.com/sepang-reopens-its-doors-to-formula-1-after-nine-years/",
+            "publisher": "Pirelli Press",
+            "type": "pirelli",
+            "date": "2026-09-29",
+            "retrieved": "2026-10-02"
+          },
+          {
+            "url": "https://press.pirelli.com/leclerc-tops-fp2-on-a-day-of-high-tyre-degradation/",
+            "publisher": "Pirelli Press",
+            "type": "pirelli",
+            "date": null,
+            "retrieved": "2026-10-02"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://press.pirelli.com/sepang-reopens-its-doors-to-formula-1-after-nine-years/",
+          "publisher": "Pirelli Press",
+          "type": "pirelli",
+          "date": "2026-09-29"
+        },
+        {
+          "url": "https://press.pirelli.com/leclerc-tops-fp2-on-a-day-of-high-tyre-degradation/",
+          "publisher": "Pirelli Press",
+          "type": "pirelli",
+          "date": null
+        }
+      ]
+    },
+    "sources": [
+      {
+        "url": "https://press.pirelli.com/sepang-reopens-its-doors-to-formula-1-after-nine-years/",
+        "publisher": "Pirelli Press",
+        "type": "pirelli",
+        "date": "2026-09-29"
+      },
+      {
+        "url": "https://www.pirelli.com/tyres/en-ww/motorsport/car/formula-1",
+        "publisher": "Pirelli",
+        "type": "pirelli",
+        "date": null
+      },
+      {
+        "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+        "publisher": "FIA",
+        "type": "fia",
+        "date": "2024-06-06"
+      },
+      {
+        "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins",
+        "publisher": "Mercedes-AMG PETRONAS F1 Team",
+        "type": "first_party",
+        "date": "2026-02-02"
+      },
+      {
+        "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+        "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+        "type": "fia",
+        "date": "2026-08-05"
+      },
+      {
+        "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+        "publisher": "FIA",
+        "type": "fia",
+        "date": "2024-06-06"
+      },
+      {
+        "url": "https://api.fia.com/news/new-era-competition-fia-showcases-future-focused-formula-1-regulations-2026-and-beyond",
+        "publisher": "FIA",
+        "type": "fia",
+        "date": "2024-06-06"
+      },
+      {
+        "url": "https://media.alpinecars.com/bwt-alpine-formula-one-team-2026-press-pack/?lang=eng",
+        "publisher": "Alpine global media website (BWT Alpine F1 Team 2026 Press Pack PDF, pp.13-14)",
+        "type": "first_party",
+        "date": "2026-01-23"
+      },
+      {
+        "url": "https://api.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf",
+        "publisher": "FIA - 2026 F1 Regulations Section C [Technical] Issue 20",
+        "type": "fia",
+        "date": "2026-08-05"
+      },
+      {
+        "url": "https://www.pirelli.com/tyres/en-ww/motorsport/car/formula-1",
+        "publisher": "Pirelli",
+        "type": "pirelli",
+        "date": null
+      },
+      {
+        "url": "https://www.mclaren.com/racing/formula-1/2026/what-is-the-technical-specification-of-our-2026-formula-1/",
+        "publisher": "McLaren Racing",
+        "type": "first_party",
+        "date": "2026-02-11"
+      },
+      {
+        "url": "https://www.pirelli.com/tyres/en-ww/motorsport/car/formula-1",
+        "publisher": "Pirelli",
+        "type": "pirelli",
+        "date": null
+      },
+      {
+        "url": "https://www.mclaren.com/racing/formula-1/2026/what-is-the-technical-specification-of-our-2026-formula-1/",
+        "publisher": "McLaren Racing",
+        "type": "first_party",
+        "date": "2026-02-11"
+      },
+      {
+        "url": "https://www.pirelli.com/tyres/en-ww/motorsport/car/formula-1",
+        "publisher": "Pirelli",
+        "type": "pirelli",
+        "date": null
+      },
+      {
+        "url": "https://www.mclaren.com/racing/formula-1/2026/what-is-the-technical-specification-of-our-2026-formula-1/",
+        "publisher": "McLaren Racing",
+        "type": "first_party",
+        "date": "2026-02-11"
+      },
+      {
+        "url": "https://www.mclaren.com/racing/formula-1/2026/what-is-the-technical-specification-of-our-2026-formula-1/",
+        "publisher": "McLaren Racing",
+        "type": "first_party",
+        "date": "2026-02-11"
+      },
+      {
+        "url": "https://www.astonmartinf1.com/en-GB/2026",
+        "publisher": "Aston Martin Aramco F1 Team",
+        "type": "first_party",
+        "date": null
+      },
+      {
+        "url": "https://www.haasf1team.com/season/machine/vf-26",
+        "publisher": "MoneyGram Haas F1 Team",
+        "type": "first_party",
+        "date": null
+      },
+      {
+        "url": "https://press.pirelli.com/sepang-reopens-its-doors-to-formula-1-after-nine-years/",
+        "publisher": "Pirelli Press",
+        "type": "pirelli",
+        "date": "2026-09-29"
+      },
+      {
+        "url": "https://press.pirelli.com/leclerc-tops-fp2-on-a-day-of-high-tyre-degradation/",
+        "publisher": "Pirelli Press",
+        "type": "pirelli",
+        "date": null
+      }
+    ]
+  },
+  "powerUnits": {
+    "mercedes": {
+      "designation": "Mercedes-AMG F1 M17 E PERFORMANCE",
+      "architecture": [
+        "1.6 l V6, 90 deg, 24 valves, max 15,000 rpm",
+        "single turbocharger, no MGU-H",
+        "MGU-K 350 kW, 60,000 rpm",
+        "lithium-ion energy store, 4 MJ usable window",
+        "near 50:50 ICE/electrical split (team statement)"
+      ],
+      "fuelPartner": "PETRONAS (Primax advanced sustainable fuel)",
+      "lubricantPartner": "PETRONAS (Syntium engine oil, Tutela fluids)",
+      "outputPublished": null,
+      "outputNote": "no total output officially published",
+      "leadership": [
+        {
+          "name": "Hywel Thomas",
+          "role": "Managing Director, Mercedes-AMG HPP",
+          "sources": [
+            {
+              "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins",
+              "publisher": "Mercedes-AMG PETRONAS F1 Team",
+              "type": "first_party",
+              "date": "2026-02-02"
+            }
+          ]
+        }
+      ],
+      "customers": [
+        "mercedes",
+        "mclaren",
+        "williams",
+        "alpine"
+      ],
+      "sources": [
+        {
+          "url": "https://www.mercedesamgf1.com/f1-w17-2026-technical-specifications",
+          "publisher": "Mercedes-AMG PETRONAS F1 Team",
+          "type": "first_party",
+          "date": null
+        },
+        {
+          "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins",
+          "publisher": "Mercedes-AMG PETRONAS F1 Team",
+          "type": "first_party",
+          "date": "2026-02-02"
+        },
+        {
+          "url": "https://www.mclaren.com/racing/formula-1/2026/what-is-the-technical-specification-of-our-2026-formula-1/",
+          "publisher": "McLaren Racing",
+          "type": "first_party",
+          "date": "2026-02-11"
+        },
+        {
+          "url": "https://media.alpinecars.com/bwt-alpine-formula-one-team-2026-press-pack/?lang=eng",
+          "publisher": "Alpine global media website (BWT Alpine F1 Team 2026 Press Pack PDF, pp.13-14)",
+          "type": "first_party",
+          "date": "2026-01-23"
+        }
+      ]
+    },
+    "ferrari": {
+      "designation": "067/6",
+      "architecture": [
+        "1.6 l turbocharged V6 hybrid (Haas spec)"
+      ],
+      "fuelPartner": null,
+      "lubricantPartner": null,
+      "outputPublished": null,
+      "outputNote": "not officially published (ferrari.com blocked to our UA)",
+      "leadership": [],
+      "customers": [
+        "ferrari",
+        "haas",
+        "cadillac"
+      ],
+      "sources": [
+        {
+          "url": "https://www.haasf1team.com/season/machine/vf-26",
+          "publisher": "MoneyGram Haas F1 Team",
+          "type": "first_party",
+          "date": null
+        }
+      ]
+    },
+    "red-bull-ford": {
+      "designation": "DM01",
+      "architecture": [
+        "1.6 l V6, 90 deg, 24 valves, 15,000 rpm",
+        "ICE + MGU-K hybrid; MGU-H not used",
+        "Ford support on battery cells, e-motor, PU control software"
+      ],
+      "fuelPartner": null,
+      "lubricantPartner": "Mobil 1 (RB22 page 'Oil')",
+      "outputPublished": {
+        "value": ">1000 bhp (combined, team-published)",
+        "sources": [
+          {
+            "url": "https://www.redbullracing.com/int-en/cars/rb22",
+            "publisher": "Oracle Red Bull Racing",
+            "type": "first_party",
+            "date": "2026-01-26"
+          }
+        ]
+      },
+      "outputNote": null,
+      "leadership": [
+        {
+          "name": "Ben Hodgkinson",
+          "role": "Technical Director, Red Bull Powertrains",
+          "sources": [
+            {
+              "url": "https://www.redbull.com/gb-en/red-bull-x-ford-future-f1-engines",
+              "publisher": "Red Bull (redbull.com)",
+              "type": "first_party",
+              "date": "2025-07-29"
+            }
+          ]
+        },
+        {
+          "name": "Steve Blewett",
+          "role": "Production Director",
+          "sources": [
+            {
+              "url": "https://www.redbull.com/gb-en/red-bull-x-ford-future-f1-engines",
+              "publisher": "Red Bull (redbull.com)",
+              "type": "first_party",
+              "date": "2025-07-29"
+            }
+          ]
+        },
+        {
+          "name": "Omid Mostaghimi",
+          "role": "Chief Engineer, Electronics and Energy Recovery",
+          "sources": [
+            {
+              "url": "https://www.redbull.com/gb-en/red-bull-x-ford-future-f1-engines",
+              "publisher": "Red Bull (redbull.com)",
+              "type": "first_party",
+              "date": "2025-07-29"
+            }
+          ]
+        },
+        {
+          "name": "Mark Rushbrook",
+          "role": "Head of Ford Motorsport (Ford Performance)",
+          "sources": [
+            {
+              "url": "https://www.redbull.com/gb-en/red-bull-x-ford-future-f1-engines",
+              "publisher": "Red Bull (redbull.com)",
+              "type": "first_party",
+              "date": "2025-07-29"
+            }
+          ]
+        }
+      ],
+      "customers": [
+        "red-bull",
+        "racing-bulls"
+      ],
+      "sources": [
+        {
+          "url": "https://www.redbullracing.com/int-en/cars/rb22",
+          "publisher": "Oracle Red Bull Racing",
+          "type": "first_party",
+          "date": "2026-01-26"
+        },
+        {
+          "url": "https://www.redbull.com/gb-en/red-bull-x-ford-future-f1-engines",
+          "publisher": "Red Bull (redbull.com)",
+          "type": "first_party",
+          "date": "2025-07-29"
+        },
+        {
+          "url": "https://www.visacashapprb.com/int-en/cars/vcarb03",
+          "publisher": "Visa Cash App Racing Bulls",
+          "type": "first_party",
+          "date": null
+        }
+      ]
+    },
+    "honda": {
+      "designation": "RA626H",
+      "architecture": [
+        "1.6 l V6 turbo ICE",
+        "MGU-K (kinetic) + energy store + control electronics",
+        "50:50 ICE/electric output balance",
+        "MGU-H removed"
+      ],
+      "fuelPartner": "Aramco (ProForce+, via Aston Martin)",
+      "lubricantPartner": "Valvoline (via Aston Martin)",
+      "outputPublished": null,
+      "outputNote": "not officially published; Honda states total max output is comparable to the previous generation",
+      "leadership": [
+        {
+          "name": "Koji Watanabe",
+          "role": "President, Honda Racing Corporation",
+          "sources": [
+            {
+              "url": "https://www.astonmartinf1.com/en-GB/news/feature/koji-watanabe-undercut",
+              "publisher": "Aston Martin Aramco F1 Team",
+              "type": "first_party",
+              "date": "2025-12-10"
+            }
+          ]
+        }
+      ],
+      "customers": [
+        "aston-martin"
+      ],
+      "sources": [
+        {
+          "url": "https://global.honda/en/POWEREDbyHONDA/2026_ra626h/",
+          "publisher": "Honda Motor Co. (global.honda)",
+          "type": "first_party",
+          "date": null
+        },
+        {
+          "url": "https://global.honda/en/F1/machine/2026_AMR26/",
+          "publisher": "Honda Motor Co. (global.honda)",
+          "type": "first_party",
+          "date": null
+        },
+        {
+          "url": "https://www.astonmartinf1.com/en-GB/2026",
+          "publisher": "Aston Martin Aramco F1 Team",
+          "type": "first_party",
+          "date": null
+        }
+      ]
+    },
+    "audi": {
+      "designation": "Audi AFR 26 Hybrid",
+      "architecture": [
+        "90 deg V6, 1600 cc, bore 80 mm x stroke 53 mm, 4 valves/cyl",
+        "single turbine + compressor",
+        "350 bar direct injection, 3000 MJ/h max fuel energy flow",
+        "MGU-K 350 kW, 60,000 rpm; Li-ion ES >= 35 kg, 4 MJ max deployment"
+      ],
+      "fuelPartner": "bp",
+      "lubricantPartner": "Castrol",
+      "outputPublished": {
+        "value": "MGU-K 350 kW (470 hp) only; total output not published",
+        "sources": [
+          {
+            "url": "https://contenthub.audif1.com/en/audi-r26-technical-specifications-88",
+            "publisher": "Audi Revolut F1 Team Content Hub",
+            "type": "first_party",
+            "date": "2026-01-26"
+          }
+        ]
+      },
+      "outputNote": null,
+      "leadership": [
+        {
+          "name": "Stefan Dreyer",
+          "role": "Chief Technical Officer, Audi Formula Racing GmbH",
+          "sources": [
+            {
+              "url": "https://contenthub.audif1.com/en/publications/motorsport/2026-audi-revolut-f1-team-press-pack-2",
+              "publisher": "Audi Revolut F1 Team Content Hub (2026 Press Pack PDF)",
+              "type": "first_party",
+              "date": null
+            }
+          ]
+        },
+        {
+          "name": "Mattia Binotto",
+          "role": "CEO & Team Principal, Audi Revolut F1 Team (from April 2026)",
+          "sources": [
+            {
+              "url": "https://contenthub.audif1.com/en/publications/motorsport/2026-audi-revolut-f1-team-press-pack-2",
+              "publisher": "Audi Revolut F1 Team Content Hub (2026 Press Pack PDF)",
+              "type": "first_party",
+              "date": null
+            }
+          ]
+        }
+      ],
+      "customers": [
+        "audi"
+      ],
+      "sources": [
+        {
+          "url": "https://contenthub.audif1.com/en/audi-r26-technical-specifications-88",
+          "publisher": "Audi Revolut F1 Team Content Hub",
+          "type": "first_party",
+          "date": "2026-01-26"
+        },
+        {
+          "url": "https://contenthub.audif1.com/en/publications/motorsport/2026-audi-revolut-f1-team-press-pack-2",
+          "publisher": "Audi Revolut F1 Team Content Hub (2026 Press Pack PDF)",
+          "type": "first_party",
+          "date": null
+        }
+      ]
+    }
+  }
+}

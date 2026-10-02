@@ -1,14 +1,17 @@
 {
-  "_doc": "Car Explorer component map (shared by every car photo). Hotspot anchors live per photo in car-photos.json explorer.hotspots (normalised master coordinates). Each component links to machine-<season>.json spec components (CAR-SPECIFIC vs GENERAL F1 TECH via spec.scope) and to personnel FUNCTIONS (role groups / relationships), never to a named designer of a part unless a source documents it.",
-  "version": "f1-explorer-components@1",
+  "_doc": "Car Explorer component map (shared by every car photo). Hotspot anchors live per photo in car-photos.json explorer.hotspots (normalised master coordinates, kebab component ids). Panels pull CAR-SPECIFIC facts from machine-<season>.json specs and GENERAL F1 TECH from f1-tech-<season>.json; people links are functions/relationships, never a claim that a named person designed a part.",
+  "version": "f1-explorer-components@2",
   "components": {
-    "front_wing": { "label": "Front wing", "specs": ["bodywork"], "people": ["technical"] },
-    "front_tyre": { "label": "Front tyre", "specs": ["tyres", "wheels", "brakes"], "machine": ["tyreSupplier"], "people": ["race_engineering"] },
-    "front_suspension": { "label": "Front suspension", "specs": ["front_suspension"], "people": ["technical"] },
-    "cockpit": { "label": "Cockpit", "specs": ["cockpit", "electronics"], "people": ["driver", "race_engineer"] },
-    "sidepod": { "label": "Sidepod / bodywork", "specs": ["bodywork", "chassis"], "people": ["technical"] },
-    "power_unit": { "label": "Power unit", "specs": ["power_unit", "gearbox", "fuel_system"], "machine": ["powerUnit"], "people": ["power_unit"] },
-    "rear_tyre": { "label": "Rear tyre", "specs": ["tyres", "wheels", "brakes", "rear_suspension"], "machine": ["tyreSupplier"], "people": ["race_engineering"] },
-    "rear_wing": { "label": "Rear wing", "specs": ["bodywork"], "people": ["technical"] }
+    "front-wing": { "label": "Front wing" },
+    "front-tyre": { "label": "Front tyre" },
+    "front-suspension": { "label": "Front suspension" },
+    "brakes": { "label": "Brakes" },
+    "cockpit": { "label": "Cockpit / halo" },
+    "sidepod": { "label": "Sidepod / cooling" },
+    "floor": { "label": "Floor / underbody" },
+    "power-unit": { "label": "Power unit" },
+    "rear-suspension": { "label": "Rear suspension" },
+    "rear-tyre": { "label": "Rear tyre" },
+    "rear-wing": { "label": "Rear wing" }
   }
 }
