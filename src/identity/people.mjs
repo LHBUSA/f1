@@ -12,7 +12,10 @@ export function loadPeople() {
   return { ...p, machines };
 }
 
-const resolveSources = (ids, table) => (ids || []).map((id) => ({ id, ...table[id] })).filter((s) => s.url);
+// Customer pages credit data to PropSports; upstream data providers (same list as scripts/guard-source-brand.mjs) are
+// cited in the registry but never linked on a page. public=false sources stay provenance-only.
+const UPSTREAM = /\b(?:[a-z0-9-]+\.)*(?:espn\.com|espncdn\.com|espn\.go\.com|api\.met\.no|wikidata\.org|wikipedia\.org|openf1\.org|jolpi\.ca|ergast\.com|formula1\.com|fia\.com|workers\.dev)\b/i;
+const resolveSources = (ids, table) => (ids || []).map((id) => ({ id, ...table[id] })).filter((s) => s.url).map((s) => ({ ...s, public: !UPSTREAM.test(s.url) }));
 
 // roles for one constructor in one season, grouped; never another season's roles on the current page
 export function teamPeople(reg, constructorId, season) {

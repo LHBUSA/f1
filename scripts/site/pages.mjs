@@ -657,7 +657,7 @@ function groupBy(arr, fn) {
 export { intelligencePages } from './intelligence.mjs';
 
 // ---- THE MACHINE / THE PEOPLE BEHIND THE MACHINE (registry-driven; sourced facts only, unknowns omitted) ----
-const srcLink = (sources) => (sources?.length ? `<a class="src" href="${esc(sources[0].url)}" rel="noopener" title="Source: ${esc(sources[0].publisher || '')}">source</a>` : '');
+const srcLink = (sources) => { const s = sources?.find((x) => x.public); return s ? `<a class="src" href="${esc(s.url)}" rel="noopener">source</a>` : ''; };
 const initials = (n) => n.split(/\s+/).filter(Boolean).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 
 function machineStrip(ctx, c, season, m, people, lineup) {
