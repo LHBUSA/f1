@@ -31,16 +31,16 @@
       "creditLine": "Own work",
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "attribution": "Photo: Liauzh, CC BY 4.0, via Wikimedia Commons (background removed and cropped by PropBetEdge)",
+      "attribution": "Photo: Liauzh, CC BY 4.0 · background removed",
       "acquisitionDate": "2026-10-02",
-      "rightsStatus": "licensed_cc_by_4.0",
+      "rightsStatus": "licensed_cc_by_4.0_approved",
       "rightsNotes": "CC BY 4.0 permits commercial use and adaptation with attribution and an indication of changes. No Commons restriction templates on the file. Sponsor marks are part of the photographed livery and are not removed or altered; trademarks are not licensed to PropBetEdge and are shown only as they appear on the car.",
-      "approvedForPublicUse": false,
-      "approvalNote": "Candidate. Rights proof is complete; awaiting owner visual approval of the Mercedes canary before public rendering.",
+      "approvedForPublicUse": true,
+      "approvalNote": "Owner approved 2026-10-02 as the first live real-car constructor page (/teams/mercedes).",
       "derivatives": {
         "changes": [
-          "background removed (rembg isnet-general-use segmentation; no pixels generated)",
-          "isolated fragments removed (largest connected component kept); alpha below 40/255 cleared",
+          "background removed (rembg isnet-general-use segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments and a track-line sliver behind the rear tyre masked to transparent (background only; car pixels untouched)",
           "cropped to the car",
           "resized"
         ],
@@ -64,14 +64,13 @@
           }
         },
         "aspect": [
-          4767,
+          4553,
           1258
         ],
-        "facing": "left",
-        "knownArtifacts": [
-          "a faint line continues behind the rear floor at the right edge (segmentation kept a sliver of track line connected to the car)"
-        ]
-      }
+        "facing": "left"
+      },
+      "approvedBy": "owner",
+      "approvedAt": "2026-10-02"
     }
   ]
 }
