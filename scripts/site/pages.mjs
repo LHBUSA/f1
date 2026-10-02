@@ -70,7 +70,7 @@ export function home(ctx) {
   const fit = ev ? ctx.fit[ev.id] : null;
   const recaps = ctx.recaps.slice(0, 4);
   const body = `
-  <section class="hero"><div class="wrap"><span class="eyebrow">PropBetEdge Formula 1 Intelligence</span><h1>Every lap that matters,<br>measured.</h1><p class="sub">The ${season} FIA Formula One World Championship from sourced results only: live timing, Driver &amp; Constructor DNA, Circuit Fit, teammate battles and ${ctx.coverage.seasons} seasons of history.</p></div></section>
+  <section class="hero hero-home">${heroArt()}<div class="wrap hero-copy"><span class="eyebrow">PropBetEdge Formula 1 Intelligence</span><h1>Every lap that matters,<br>measured.</h1><p class="sub">The ${season} FIA Formula One World Championship from sourced results only: live timing, Driver &amp; Constructor DNA, Circuit Fit, teammate battles and ${ctx.coverage.seasons} seasons of history.</p></div></section>
   ${gp}
   ${stand}
   <section class="section"><div class="wrap"><div class="split">${latest}<div class="grid">${spot('qualifying', 'Qualifying pace vs teammate')}</div></div></div></section>
@@ -98,6 +98,13 @@ export function teamsByStanding(ctx) {
   const st = ctx.standingsBy[`${ctx.currentSeason}|constructor`] || [];
   const pos = (cid) => st.find((s) => s.subject_id === cid)?.position ?? 99;
   return [...ctx.currentTeams].sort((a, b) => pos(a) - pos(b));
+}
+
+// Hero backdrop: separate mobile (portrait) and desktop compositions; AVIF first, WebP fallback.
+// Absolutely positioned inside a fixed-height hero, so it can never shift layout.
+export function heroArt() {
+  const b = '/media/backdrop';
+  return `<picture class="hero-art" aria-hidden="true"><source media="(max-width: 767px)" type="image/avif" srcset="${b}/hero-mobile-900.avif"><source media="(max-width: 767px)" type="image/webp" srcset="${b}/hero-mobile-900.webp"><source type="image/avif" srcset="${b}/hero-desktop-1600.avif 1600w, ${b}/hero-desktop-2560.avif 2560w" sizes="100vw"><img src="${b}/hero-desktop-1600.webp" srcset="${b}/hero-desktop-1600.webp 1600w, ${b}/hero-desktop-2560.webp 2560w" sizes="100vw" width="2560" height="1200" alt="" fetchpriority="high" decoding="async"></picture>`;
 }
 
 function teamCard(ctx, cid, season) {

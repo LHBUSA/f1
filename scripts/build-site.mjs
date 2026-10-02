@@ -29,6 +29,12 @@ fs.writeFileSync(path.join(DIST, `assets/app.${jsHash}.js`), js);
 for (const f of ['barlow-condensed-latin-500-normal', 'barlow-condensed-latin-600-normal', 'barlow-condensed-latin-700-normal', 'barlow-condensed-latin-800-normal']) fs.copyFileSync(`node_modules/@fontsource/barlow-condensed/files/${f}.woff2`, path.join(DIST, `assets/fonts/${f}.woff2`));
 for (const f of ['barlow-latin-400-normal', 'barlow-latin-500-normal', 'barlow-latin-600-normal']) fs.copyFileSync(`node_modules/@fontsource/barlow/files/${f}.woff2`, path.join(DIST, `assets/fonts/${f}.woff2`));
 for (const f of fs.readdirSync('public')) fs.copyFileSync(path.join('public', f), path.join(DIST, f));
+// Backdrop art: committed final set in assets-src/backdrop; F1_BACKDROP=A..D selects a candidate render (comparison builds).
+const BD_SRC = process.env.F1_BACKDROP ? path.resolve('art/out', process.env.F1_BACKDROP) : path.resolve('assets-src/backdrop');
+if (fs.existsSync(BD_SRC)) {
+  fs.mkdirSync(path.join(DIST, 'media/backdrop'), { recursive: true });
+  for (const f of fs.readdirSync(BD_SRC).filter((x) => /\.(avif|webp)$/.test(x))) fs.copyFileSync(path.join(BD_SRC, f), path.join(DIST, 'media/backdrop', f));
+} else console.warn('build-site: no backdrop assets at', BD_SRC);
 const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js` };
 
 // ---------- page writer ----------

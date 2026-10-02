@@ -115,10 +115,14 @@ const NETWORK = [
   ['https://boxing.propbetedge.ai', 'Boxing'],
 ];
 
-export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true }) {
+export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg }) {
   const canonical = SITE + (path === '/' ? '/' : path.replace(/\/$/, ''));
   const fullTitle = path === '/' ? title : `${title} | PropBetEdge F1`;
   const active = section || '/' + (path.split('/')[1] || '');
+  // Backdrop variant by page type: race-weekend (races, circuits), PBEcast, home, data (everything else).
+  const bgClass = bg || (path === '/' ? 'site' : ['/races', '/circuits', '/seasons'].includes(active) ? 'race' : active === '/pbecast' ? 'cast' : 'data');
+  const heroPreload = path === '/' ? `<link rel="preload" as="image" type="image/avif" href="/media/backdrop/hero-mobile-900.avif" media="(max-width: 767px)" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" imagesrcset="/media/backdrop/hero-desktop-1600.avif 1600w, /media/backdrop/hero-desktop-2560.avif 2560w" imagesizes="100vw" media="(min-width: 768px)" fetchpriority="high">` : '';
   const nav = NAV.map(([h, t]) => `<a href="${h}"${(h === '/' ? active === '/' : active === h) ? ' aria-current="page"' : ''}>${t}</a>`).join('');
   const ld = jsonLd.length ? jsonLd.map((j) => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('') : '';
   return `<!doctype html>
@@ -140,11 +144,15 @@ ${noindex ? '<meta name="robots" content="noindex,follow">' : '<meta name="robot
 <meta name="theme-color" content="#06070a">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/assets/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/barlow-condensed-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+${heroPreload}
 <link rel="stylesheet" href="${assets.css}">
 <script src="${assets.js}" defer></script>
 ${ld}
 </head>
-<body data-path="${esc(path)}">
+<body data-path="${esc(path)}" class="bg-${bgClass}">
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="masthead wrap">
