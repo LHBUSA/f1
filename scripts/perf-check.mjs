@@ -1,7 +1,7 @@
 // LCP / CLS / backdrop bytes for key pages at every QA width (local or production base URL).
 import { chromium } from 'playwright';
 const base = process.argv[2] || 'http://127.0.0.1:4173';
-const pages = ['/', '/drivers/max-verstappen', '/races/2026-azerbaijan-grand-prix', '/standings', '/pbecast', '/circuits/circuit-de-monaco'];
+const pages = process.env.PERF_PAGES ? process.env.PERF_PAGES.split(',') : ['/', '/drivers/max-verstappen', '/races/2026-azerbaijan-grand-prix', '/standings', '/pbecast', '/circuits/circuit-de-monaco', '/intelligence', '/news', '/news/george-russell-wins-2026-azerbaijan-grand-prix'];
 const b = await chromium.launch();
 let worst = { cls: 0, at: '' };
 const rows = [];

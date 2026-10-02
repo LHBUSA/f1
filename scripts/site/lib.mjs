@@ -98,7 +98,8 @@ const NAV = [
   ['/circuits', 'Circuits'],
   ['/matchups', 'Matchups'],
   ['/pbecast', 'PBEcast'],
-  ['/news', 'Intelligence'],
+  ['/intelligence', 'Intelligence'],
+  ['/news', 'News'],
 ];
 const NETWORK = [
   ['https://propbetedge.ai', 'Sports News'],
@@ -115,7 +116,7 @@ const NETWORK = [
   ['https://boxing.propbetedge.ai', 'Boxing'],
 ];
 
-export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg }) {
+export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg, ogImage = null, ogImageAlt = null, article = null }) {
   const canonical = SITE + (path === '/' ? '/' : path.replace(/\/$/, ''));
   const fullTitle = path === '/' ? title : `${title} | PropBetEdge F1`;
   const active = section || '/' + (path.split('/')[1] || '');
@@ -139,7 +140,17 @@ ${noindex ? '<meta name="robots" content="noindex,follow">' : '<meta name="robot
 <meta property="og:title" content="${esc(fullTitle)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:image" content="${SITE}/og.png">
+<meta property="og:image" content="${esc(ogImage || SITE + '/og.png')}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+${ogImageAlt ? `<meta property="og:image:alt" content="${esc(ogImageAlt)}">` : ''}
+${article ? `<meta property="article:published_time" content="${esc(article.published)}">
+<meta property="article:modified_time" content="${esc(article.modified)}">
+<meta property="article:section" content="${esc(article.section)}">` : ''}
+<meta name="twitter:title" content="${esc(fullTitle)}">
+<meta name="twitter:description" content="${esc(description)}">
+<meta name="twitter:image" content="${esc(ogImage || SITE + '/og.png')}">
+<link rel="alternate" type="application/rss+xml" title="PropBetEdge F1 News" href="/feed.xml">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#06070a">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">

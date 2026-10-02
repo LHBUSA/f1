@@ -3,6 +3,9 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/news/:slug(\\d{4}-[a-z0-9-]+-grand-prix)", "destination": "/races/:slug", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",

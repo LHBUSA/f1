@@ -68,16 +68,15 @@ export function home(ctx) {
   const battles = currentBattles(ctx).slice(0, 6);
 
   const fit = ev ? ctx.fit[ev.id] : null;
-  const recaps = ctx.recaps.slice(0, 4);
   const body = `
   <section class="hero hero-home">${heroArt()}<div class="wrap hero-copy"><span class="eyebrow">PropBetEdge Formula 1 Intelligence</span><h1>Every lap that matters,<br>measured.</h1><p class="sub">The ${season} FIA Formula One World Championship from sourced results only: live timing, Driver &amp; Constructor DNA, Circuit Fit, teammate battles and ${ctx.coverage.seasons} seasons of history.</p></div></section>
   ${gp}
+  ${ctx.newsModule || ''}
   ${stand}
   <section class="section"><div class="wrap"><div class="split">${latest}<div class="grid">${spot('qualifying', 'Qualifying pace vs teammate')}</div></div></div></section>
   <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Flagship</span><h2>Teammate Battles ${season}</h2></div><a class="more" href="/matchups">All battles</a></div><div class="grid g3">${battles.map((t) => battleCard(ctx, t, season)).join('')}</div></div></section>
   ${fit ? `<section class="section"><div class="wrap"><div class="split"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit · ${esc(ctx.circuitName(ev.circuit_id))}</span><h2>Who suits ${esc(ev.name.replace(/ Grand Prix.*/, ''))}</h2></div><a class="more" href="${ctx.raceUrl(ev.id)}#fit">Full fit</a></div>${fitList(ctx, fit, 6)}</div><div class="grid">${spot('positions_gained', 'Race gains')}${spot('finishing', 'Finishing vs teammate')}</div></div></div></section>` : ''}
-  <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${season} grid</span><h2>Constructors</h2></div><a class="more" href="/teams">All teams</a></div><div class="grid g4">${teamsByStanding(ctx).map((cid) => teamCard(ctx, cid, season)).join('')}</div></div></section>
-  <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Intelligence</span><h2>Latest race recaps</h2></div><a class="more" href="/news">All recaps</a></div><div class="grid g2">${recaps.map((r) => `<a class="card card-link" href="/news/${r.slug}"><span class="kicker">${esc(fmtDate(r.date))} · Data recap</span><h3>${esc(r.title)}</h3><p class="muted">${esc(r.dek)}</p></a>`).join('')}</div></div></section>`;
+  <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${season} grid</span><h2>Constructors</h2></div><a class="more" href="/teams">All teams</a></div><div class="grid g4">${teamsByStanding(ctx).map((cid) => teamCard(ctx, cid, season)).join('')}</div></div></section>`;
   return {
     path: '/',
     title: `F1 ${season} Live, Standings, Driver DNA & Teammate Battles | PropBetEdge F1`,
@@ -149,7 +148,6 @@ export function racePage(ctx, ev) {
   const p = poleOf(ctx, ev.id);
   const race = ctx.rows(ev.id, 'race');
   const fl = race.filter((r) => r.fastest_lap_ms).sort((a, b) => a.fastest_lap_ms - b.fastest_lap_ms)[0];
-  const ledMost = [...race].sort((a, b) => (b.laps_led || 0) - (a.laps_led || 0))[0];
   const gainer = race.filter((r) => r.status === 'classified' && r.grid && r.position).sort((a, b) => b.grid - b.position - (a.grid - a.position))[0];
   const dnfs = race.filter((r) => r.status === 'retired' || r.status === 'disqualified' || r.status === 'not_classified');
   const tabs = types.length
@@ -160,7 +158,7 @@ export function racePage(ctx, ev) {
       <div class="stat-box"><span>Winner</span><b>${esc(ctx.driverById[w.driver_id]?.code || ctx.driverById[w.driver_id]?.last_name)}</b><span>${teamLink(ctx, w.constructor_id)} · from P${w.grid ?? '?'}</span></div>
       ${p ? `<div class="stat-box"><span>Pole</span><b>${esc(ctx.driverById[p.driver_id]?.code || ctx.driverById[p.driver_id]?.last_name)}</b><span>${p.q3_ms ? fmtMs(p.q3_ms) : ''}</span></div>` : ''}
       ${fl ? `<div class="stat-box"><span>Fastest lap</span><b class="purple">${esc(fl.fastest_lap_text)}</b><span>${esc(ctx.driverById[fl.driver_id]?.last_name)}${fl.fastest_lap_number ? ` · L${fl.fastest_lap_number}` : ''}</span></div>` : ''}
-      ${ledMost?.laps_led ? `<div class="stat-box"><span>Most laps led</span><b>${ledMost.laps_led}</b><span>${esc(ctx.driverById[ledMost.driver_id]?.last_name)}</span></div>` : ''}
+
       ${gainer && gainer.grid - gainer.position > 0 ? `<div class="stat-box"><span>Biggest gain</span><b class="green">+${gainer.grid - gainer.position}</b><span>${esc(ctx.driverById[gainer.driver_id]?.last_name)} P${gainer.grid}→P${gainer.position}</span></div>` : ''}
       <div class="stat-box"><span>Retirements</span><b>${dnfs.length}</b><span>of ${race.filter((r) => ['classified', 'retired', 'disqualified', 'not_classified'].includes(r.status)).length} starters</span></div>
     </div>`
@@ -643,3 +641,5 @@ function groupBy(arr, fn) {
   for (const x of arr) (m[fn(x)] ||= []).push(x);
   return m;
 }
+
+export { intelligencePages } from './intelligence.mjs';

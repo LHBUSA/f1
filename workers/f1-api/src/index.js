@@ -164,6 +164,17 @@ export default {
         const out = evs.filter((e) => !ev || e.id === ev).map((e) => ({ event_id: e.id, round: e.round, name: e.name, session: e.sessions.find((s) => s.type === type) || null })).filter((x) => x.session?.results?.length);
         return respond(req, out);
       }
+      // newsroom: published stories only (frozen packets + validated drafts)
+      if (p === '/news') {
+        const idx = (await doc(env, 'news-index')) || { articles: [] };
+        const cls = q.get('class');
+        const lim = Math.min(Number(q.get('limit')) || 200, 200);
+        return respond(req, { ...idx, articles: idx.articles.filter((a) => !cls || a.class === cls).slice(0, lim) }, { cache: 'public, max-age=120' });
+      }
+      if ((m = p.match(/^\/news\/([a-z0-9-]+)$/))) {
+        const a = await doc(env, `news-${m[1]}`);
+        return a ? respond(req, a, { cache: 'public, max-age=300' }) : err(req, 404, 'story not found');
+      }
       if (p === '/circuits') return respond(req, await doc(env, 'circuits'));
       if ((m = p.match(/^\/circuits\/([a-z0-9-]+)$/))) {
         const c = (await doc(env, 'circuits')).find((x) => x.id === m[1]);

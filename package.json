@@ -10,10 +10,12 @@
     "enrich": "node scripts/enrich-wikidata.mjs",
     "derive": "node scripts/derive.mjs",
     "pipeline": "node scripts/normalize.mjs && node scripts/enrich-wikidata.mjs && node scripts/derive.mjs",
-    "build": "node scripts/fetch-dataset.mjs && node scripts/normalize.mjs --assemble-only && node scripts/derive.mjs && node scripts/verify-media.mjs && node scripts/build-projection.mjs && node scripts/build-site.mjs && node scripts/guard-source-brand.mjs && node scripts/publish-projection.mjs",
+    "build": "node scripts/fetch-dataset.mjs && node scripts/normalize.mjs --assemble-only && node scripts/derive.mjs && node scripts/verify-media.mjs && node scripts/build-projection.mjs && node scripts/build-news.mjs && node scripts/build-site.mjs && node scripts/guard-source-brand.mjs && node scripts/publish-projection.mjs",
     "serve": "node scripts/serve.mjs",
     "qa:browser": "node scripts/qa-browser.mjs",
-    "guard": "node scripts/guard-source-brand.mjs"
+    "guard": "node scripts/guard-source-brand.mjs",
+    "test": "node --test tests/",
+    "news:canary": "F1_NEWS_SHADOW=1 node scripts/build-site.mjs && node scripts/news-canary.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -23,6 +25,7 @@
     "@fontsource/barlow-condensed": "^5.3.0",
     "@resvg/resvg-js": "^2.6.2",
     "playwright": "^1.63.0",
+    "sharp": "^0.35.4",
     "wrangler": "^4.146.0"
   }
 }

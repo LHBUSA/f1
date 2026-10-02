@@ -219,7 +219,9 @@ export function normalizeEvent(ev, lookup, constructorOf, ingestedAt) {
         gap_ms: parseTimeMs(s.behindTime?.d),
         behind_laps: s.behindLaps?.v || null,
         points: isPointsSession ? (s.championshipPts?.v ?? null) : null,
-        laps_led: isPointsSession ? (s.lapsLead?.v ?? null) : null,
+        // ESPN 'lapsLead' is NOT laps led: across 63 races (2024-26) the field's per-race total is 1-4, never the race
+        // distance (audit 2026-10-02). Its meaning is unverified, so it is not mapped to anything.
+        laps_led: null,
         pit_stops: isPointsSession && s.pitsTaken ? s.pitsTaken.v : null,
         fastest_lap_text: s.fastestLap?.d && s.fastestLap.d !== '0' ? s.fastestLap.d : null,
         fastest_lap_ms: parseTimeMs(s.fastestLap?.d),

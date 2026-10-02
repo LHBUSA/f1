@@ -6,6 +6,9 @@ import { loadContext } from './site/context.mjs';
 import { layout, esc, SITE, fmtDate } from './site/lib.mjs';
 import * as P from './site/pages.mjs';
 import { lineageChain } from '../src/core/constructors.mjs';
+import { loadProjection } from '../src/news/data.mjs';
+import { articlePage } from '../src/news/render.mjs';
+import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
 
 const DIST = path.resolve('dist');
 const t0 = Date.now();
@@ -13,7 +16,12 @@ fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(path.join(DIST, 'assets/fonts'), { recursive: true });
 
 const ctx = loadContext();
-ctx.recaps = P.buildRecaps(ctx);
+// newsroom records from build-news (published only; F1_NEWS_SHADOW=1 also renders shadow stories, noindex, for QA)
+const X = loadProjection();
+const newsAll = fs.existsSync('data/news/articles.json') ? JSON.parse(fs.readFileSync('data/news/articles.json', 'utf8')) : [];
+const newsPub = newsAll.filter((a) => a.status === 'published');
+const newsEmit = newsAll.filter((a) => a.status === 'published' || (process.env.F1_NEWS_SHADOW === '1' && a.status === 'shadow'));
+ctx.newsModule = homeModule(newsPub, X);
 
 // ---------- assets ----------
 const colors = new Set();
@@ -39,6 +47,7 @@ const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.j
 
 // ---------- page writer ----------
 const sitemap = [];
+const allPaths = new Set();
 let pages = 0;
 function emit(p) {
   const html = layout({ ...p, assets });
@@ -47,7 +56,8 @@ function emit(p) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, html);
   pages++;
-  if (!p.noindex) sitemap.push(p.path);
+  allPaths.add(p.path);
+  if (!p.noindex) sitemap.push({ path: p.path, lastmod: p.article?.modified?.slice(0, 10) });
 }
 
 emit(P.home(ctx));
@@ -66,10 +76,24 @@ for (const y of seasons) if (y !== ctx.currentSeason && ctx.standingsBy[`${y}|dr
 emit(P.matchupsIndex(ctx));
 for (const k of Object.keys(ctx.matchups)) emit(P.matchupPage(ctx, k));
 emit(P.pbecast(ctx));
-emit(P.newsIndex(ctx));
-for (const r of ctx.recaps) emit(P.newsArticle(ctx, r));
 emit(methodology(ctx));
 emit(coveragePage(ctx));
+for (const p of P.intelligencePages(ctx, X, newsPub)) emit(p);
+
+// ---------- newsroom ----------
+// links resolve only to pages this build emitted (articles are emitted last, so every target already exists)
+const linkOk = (h) => allPaths.has(h) || newsEmit.some((a) => `/news/${a.slug}` === h);
+emit(newsIndexPage(newsPub, X));
+fs.mkdirSync(path.join(DIST, 'news/cards'), { recursive: true });
+for (const a of newsEmit) {
+  const related = order(newsPub.filter((b) => b.slug !== a.slug && (b.event_id === a.event_id || b.packet.entities.some((x) => x.type === 'driver' && a.packet.entities.some((y) => y.type === 'driver' && y.ref === x.ref && ['p1', 'q1'].includes(y.key))))), X).slice(0, 4);
+  emit(articlePage(a, { linkOk, related, site: SITE }));
+  for (const ext of ['jpg', 'webp']) fs.copyFileSync(path.join('data/news/cards', `${a.slug}.${ext}`), path.join(DIST, 'news/cards', `${a.slug}.${ext}`));
+}
+fs.writeFileSync(path.join(DIST, 'feed.xml'), feedXml(newsPub, X, SITE));
+const ns = newsSitemapXml(newsPub, X, SITE);
+fs.writeFileSync(path.join(DIST, 'news-sitemap.xml'), ns.xml);
+console.log(`news: ${newsPub.length} published${newsEmit.length > newsPub.length ? ` + ${newsEmit.length - newsPub.length} shadow (noindex, QA build)` : ''}; news-sitemap ${ns.count}`);
 
 // 404 (not in sitemap)
 const nf = layout({ path: '/404', title: 'Page not found', description: 'Page not found.', noindex: true, assets, body: `<section class="hero"><div class="wrap"><span class="eyebrow">404</span><h1>Off the racing line</h1><p class="sub">That page doesn’t exist. Try the <a class="more" href="/races">calendar</a>, <a class="more" href="/drivers">drivers</a> or <a class="more" href="/standings">standings</a>.</p></div></section>` });
@@ -77,8 +101,8 @@ fs.writeFileSync(path.join(DIST, '404.html'), nf);
 
 // sitemap + robots
 const today = new Date().toISOString().slice(0, 10);
-fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `<url><loc>${SITE}${p === '/' ? '/' : p}</loc><lastmod>${today}</lastmod></url>`).join('\n')}\n</urlset>\n`);
-fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\n`);
+fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `<url><loc>${SITE}${p.path === '/' ? '/' : p.path}</loc><lastmod>${p.lastmod || today}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\nSitemap: ${SITE}/news-sitemap.xml\n`);
 console.log(`built ${pages} pages (${sitemap.length} indexable) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
 
 // ---------- static content pages ----------

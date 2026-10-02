@@ -9,7 +9,8 @@ for (const s of specs) {
   await pg.waitForTimeout(500);
   const h = await pg.evaluate(() => { const hb = document.querySelector('.site-header').getBoundingClientRect().bottom; const h1 = document.querySelector('main h1'); return h1 ? { hb: Math.round(hb), h1: Math.round(h1.getBoundingClientRect().top), cls: h1.parentElement.className } : null; });
   console.log(w, p, JSON.stringify(h));
-  await pg.screenshot({ path: `${outDir}/${w}${p.replace(/\//g, '_') || '_home'}.png` });
+  // FULL=1: whole page (sticky header pinned to the top of the capture)
+  await pg.screenshot({ path: `${outDir}/${w}${p.replace(/\//g, '_') || '_home'}.png`, fullPage: process.env.FULL === '1' });
   await ctx.close();
 }
 await b.close();
