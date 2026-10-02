@@ -577,3 +577,32 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .rail-credit{margin-top:4px}
 @media (prefers-reduced-motion: reduce){.rail-card,.rail-car img,.grid-rail::before{transition:none}.rail-card:hover .rail-car img{transform:none}}
 @media(min-width:768px){.rail{--lead:max(28px,calc((100% - var(--wrap)) / 2 + 28px))}}
+
+/* Teammate qualifying gaps: responsive matchup rows (bounded logo slot; names wrap, never clipped) */
+.tm-gaps{list-style:none;margin:0;padding:0;display:grid}
+.tm-head{display:none}
+.tm-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"team team" "a b" "gap gap";gap:6px 14px;padding:12px 2px;border-top:1px solid var(--line)}
+.tm-row:first-child{border-top:0}
+.tm-team{grid-area:team;display:flex;align-items:center;gap:8px;min-width:0;color:inherit;text-decoration:none;font:700 13px var(--display);letter-spacing:.08em;text-transform:uppercase}
+.tm-team:hover .tm-tname{text-decoration:underline}
+.tm-mark{flex:none;display:inline-flex;align-items:center;justify-content:center;width:44px;height:20px}
+.tm-mark .tmark{max-width:44px;max-height:20px}
+.tm-mark img{max-width:40px;max-height:16px;object-fit:contain}
+.tm-mark .tmark-light{padding:1px 2px}
+.tm-team::before{content:"";width:3px;align-self:stretch;border-radius:2px;background:var(--tc);margin-right:2px}
+.tm-a{grid-area:a;min-width:0}.tm-b{grid-area:b;min-width:0;text-align:right}
+.tm-drv{display:flex;flex-direction:column;gap:1px;min-width:0}
+.tm-name{font-weight:600;overflow-wrap:anywhere}.tm-name a{color:inherit}
+.tm-drv small{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.tm-gap{grid-area:gap;justify-self:center;font:700 15px var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tm-arrow{color:var(--faint);margin:0 6px;font-weight:400}
+@media(min-width:600px){
+  .tm-row{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"team team team" "a gap b";align-items:center}
+  .tm-gap{align-self:center}
+}
+@media(min-width:1024px){
+  .tm-head{display:grid;grid-template-columns:minmax(150px,220px) minmax(0,1fr) 120px minmax(0,1fr);gap:14px;padding:0 2px 8px;font:600 11px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--line2)}
+  .tm-head span:nth-child(3){text-align:center}.tm-head span:nth-child(4){text-align:right}
+  .tm-row{grid-template-columns:minmax(150px,220px) minmax(0,1fr) 120px minmax(0,1fr);grid-template-areas:"team a gap b";padding:10px 2px}
+  .tm-drv small{display:none}.tm-arrow{display:none}
+}

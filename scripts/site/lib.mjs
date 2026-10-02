@@ -261,9 +261,11 @@ export function dnaRadar(dims, color = 'ff4d2e', size = 220) {
 
 // Team mark (identification only; approved rights-clean files in src/identity/team-logos.json). Reserved width/height
 // from the file's aspect ratio so the layout never shifts; dark-ink marks sit on a light chip, nothing is recoloured.
-export function teamMark(logo, h = 18, cls = '') {
+// opts.box = [maxW, maxH]: fit the mark inside a bounded slot (aspect preserved, explicit dimensions, never auto)
+export function teamMark(logo, h = 18, cls = '', opts = {}) {
   if (!logo) return '';
   if (logo.fallback) return `<span class="tmark tmark-code${cls ? ` ${cls}` : ''}" aria-hidden="true">${esc(logo.short)}</span>`;
-  const w = Math.round(h * logo.aspect);
+  let w = Math.round(h * logo.aspect);
+  if (opts.box && !logo.fallback) { const [bw, bh] = opts.box; const r1 = (v) => Math.round(v * 10) / 10; h = bh; w = r1(bh * logo.aspect); if (w > bw) { w = bw; h = r1(bw / logo.aspect); } }
   return `<span class="tmark tmark-${logo.bg || 'none'}${cls ? ` ${cls}` : ''}"><img src="${logo.publicPath}" width="${w}" height="${h}" alt="" decoding="async"></span>`;
 }

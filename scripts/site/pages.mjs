@@ -191,7 +191,11 @@ export function racePage(ctx, ev) {
       const [a, b] = rs.sort((x, y) => x.position - y.position);
       let d = null;
       for (const k of ['q3_ms', 'q2_ms', 'q1_ms']) if (a[k] && b[k]) { d = ((b[k] - a[k]) / a[k]) * 100; break; }
-      return `<tr><td>${teamLink(ctx, cid, ev.season)}</td><td>${driverCell(ctx, a.driver_id, cid, ev.season)}</td><td class="num">${d != null ? '+' + d.toFixed(3) + '%' : '—'}</td><td>${driverCell(ctx, b.driver_id, cid, ev.season)}</td></tr>`;
+      // responsive matchup row (no table): the logo sits in a bounded identity slot so a wide wordmark can never set
+      // the column width; driver names wrap instead of being clipped
+      const color = ctx.colorOf(cid, ev.season);
+      const who = (r, label) => { const dv = ctx.driverById[r.driver_id]; const url = ctx.driverUrl(r.driver_id); return `<div class="tm-drv"><span class="tm-name">${url ? `<a href="${url}">${esc(dv?.full_name || r.driver_id)}</a>` : esc(dv?.full_name || r.driver_id)}${dv?.code ? ` <span class="code">${esc(dv.code)}</span>` : ''}</span><small>${label}</small></div>`; };
+      return `<li class="tm-row ${teamClass(color)}"><a class="tm-team" href="${ctx.teamUrl(cid)}"><span class="tm-mark">${ev.season === ctx.currentSeason ? teamMark(ctx.logoFor?.(cid), 16, '', { box: [40, 16] }) : ''}</span><span class="tm-tname">${esc(ctx.conById[cid]?.name || cid)}</span></a><div class="tm-a">${who(a, 'Ahead')}</div><div class="tm-gap" aria-label="Gap ${d != null ? d.toFixed(3) + ' percent' : 'unavailable'}">${d != null ? `<span class="tm-arrow" aria-hidden="true">←</span>+${d.toFixed(3)}%<span class="tm-arrow" aria-hidden="true">→</span>` : '—'}</div><div class="tm-b">${who(b, 'Behind')}</div></li>`;
     })
     .join('');
   const fit = ctx.fit[ev.id];
@@ -207,8 +211,8 @@ export function racePage(ctx, ev) {
   <section class="section"><div class="wrap"><div class="split"><div><div class="section-head"><h2>Classification</h2></div>${tabs}</div><div class="grid">
     <div class="card"><span class="kicker">Session schedule</span>${sessionList(ctx, ev)}${!isPast ? `<p class="fine" data-weather="${esc(c?.slug || '')}" data-weather-from="${esc(ev.start_utc)}" data-weather-to="${esc(ev.end_utc || ev.start_utc)}"></p>` : ''}</div>
     ${champ}
-    ${tm ? `<div class="card"><span class="eyebrow">Teammate qualifying gaps</span><div class="table-wrap"><table><thead><tr><th>Team</th><th>Ahead</th><th class="num">Gap</th><th>Behind</th></tr></thead><tbody>${tm}</tbody></table></div><p class="fine">Deepest knockout session both drivers set a time in.</p></div>` : ''}
   </div></div></div></section>
+  ${tm ? `<section class="section" id="teammate-gaps"><div class="wrap"><div class="card"><div class="section-head"><div><span class="eyebrow">Qualifying</span><h2>Teammate qualifying gaps</h2></div></div><div class="tm-head" aria-hidden="true"><span>Team</span><span>Ahead</span><span>Gap</span><span>Behind</span></div><ol class="tm-gaps">${tm}</ol><p class="fine">Gap = slower teammate's time vs the faster one, in the deepest knockout session both drivers set a time in.</p></div></div></section>` : ''}
   ${fit ? `<section class="section" id="fit"><div class="wrap"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit</span><h2>Driver × circuit profile</h2></div></div>${fitList(ctx, fit, 22)}</div></div></section>` : ''}
   ${history.length ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Recent winners at ${esc(ctx.circuitName(ev.circuit_id))}</h2><a class="more" href="${ctx.circuitUrl(ev.circuit_id)}">Circuit DNA</a></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Winner</th><th>Team</th><th class="num">Grid</th></tr></thead><tbody>${history
     .map((h) => {
