@@ -69,7 +69,8 @@ export function careerTimeline(reg, personId) {
   const items = [];
   for (const r of rs) for (const t of splitTitles(r)) {
     const org = r.constructorId || r.organisation || null;
-    const ranged = !!(r.effectiveFrom || r.effectiveTo);
+    // an undated record with no season (e.g. an ongoing non-F1 role) is an open range with an unverified start
+    const ranged = !!(r.effectiveFrom || r.effectiveTo) || r.season == null;
     items.push({
       key: `${org}|${t.title.toLowerCase()}|${t.driverId || ''}`,
       title: t.title, roleGroup: r.roleGroup, constructorId: r.constructorId || null, organisation: r.organisation || null, driverId: t.driverId,
@@ -84,13 +85,17 @@ export function careerTimeline(reg, personId) {
   const out = [...ranges];
   for (const o of obs) {
     const y = o.observedSeasons[0];
-    const host = ranges.find((g) => g.key === o.key && (!g.from || year(g.from) <= y) && (g.ongoing || (g.to && year(g.to) >= y)));
+    // same title/team/driver, or the season record's title is the short form of the range title
+    // ("Team Principal" within "Team Principal & General Manager")
+    const sameRole = (g) => g.key === o.key || (g.constructorId === o.constructorId && g.organisation === o.organisation && g.driverId === o.driverId && new RegExp(`^${o.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*(?:&|and)\\s`, 'i').test(g.title));
+    const host = ranges.find((g) => sameRole(g) && (!g.from || year(g.from) <= y) && (g.ongoing || (g.to && year(g.to) >= y)));
     if (host) { host.sources = [...new Set([...host.sources, ...o.sources])]; if (o.ongoing) host.ongoing = true; if (o.confidence === 'high') host.confidence = 'high'; continue; }
     const twin = out.find((g) => !g.ranged && g.key === o.key);
     if (twin) { twin.observedSeasons = [...new Set([...twin.observedSeasons, y])].sort(); twin.sources = [...new Set([...twin.sources, ...o.sources])]; twin.ongoing ||= o.ongoing; continue; }
     out.push({ ...o });
   }
-  const startOf = (e) => (e.from ? dateStart(e.from) : e.observedSeasons.length ? `${e.observedSeasons[0]}-01-01` : '9999');
+  // undated starts sort by their end; season records by their season
+  const startOf = (e) => (e.from ? dateStart(e.from) : e.to ? dateStart(e.to) : e.observedSeasons.length ? `${e.observedSeasons[0]}-01-01` : '0000');
   out.sort((a, b) => startOf(b).localeCompare(startOf(a)) || (b.ongoing - a.ongoing) || a.title.localeCompare(b.title));
   for (const e of out) e.period = periodLabel(e);
   // explicit gaps between consecutive ended ranges (newest first): never imply continuity between them
@@ -102,21 +107,27 @@ export function careerTimeline(reg, personId) {
     const end = e.ongoing ? '9999' : e.to ? dateEnd(e.to) : dateStart(e.from);
     if (!reach || end > reach) reach = end;
   }
-  return { entries: out, gaps };
+  // a spell with an unknown start may reach back into any earlier gap: such gaps are not asserted
+  const openStart = out.filter((e) => e.ranged && !e.from && e.to);
+  return { entries: out, gaps: gaps.filter((g) => !openStart.some((e) => year(e.to) >= g.from)) };
 }
 
 export function periodLabel(e) {
   if (!e.ranged) return `${e.observedSeasons.join(', ')} season${e.observedSeasons.length > 1 ? 's' : ''}`;
   const f = e.from ? fmtPartial(e.from) : 'Start date not verified';
   const t = e.ongoing ? 'present' : e.to ? fmtPartial(e.to) : 'end date not verified';
-  return `${f} – ${t}`;
+  return f === t ? f : `${f} – ${t}`;
 }
 
 // current roles = current, not ended, current season; effective_from only from a range with the SAME title/team/driver
 // that is still ongoing (an earlier spell's start date never becomes the current role's start date)
 export function currentRoles(reg, personId, season) {
   const tl = careerTimeline(reg, personId);
-  return tl.entries.filter((e) => e.ongoing && (e.ranged ? !e.to : e.observedSeasons.includes(season))).map((e) => ({ ...e, effective_from: e.ranged ? e.from : null }));
+  // headline order: team-wide titles before driver-specific ones, then by group seniority, then most recent start
+  const G = { ownership: 0, leadership: 1, technical: 2, power_unit: 3, sporting: 4, race_engineering: 5, garage_operations: 6 };
+  return tl.entries.filter((e) => e.ongoing && (e.ranged ? !e.to : e.observedSeasons.includes(season)))
+    .map((e) => ({ ...e, effective_from: e.ranged ? e.from : null }))
+    .sort((a, b) => (!!a.driverId - !!b.driverId) || ((G[a.roleGroup] ?? 9) - (G[b.roleGroup] ?? 9)) || String(b.from || '').localeCompare(String(a.from || '')));
 }
 
 // ---------- identity (bio fact model) ----------

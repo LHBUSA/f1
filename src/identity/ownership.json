@@ -184,6 +184,20 @@
       "type": "first_party",
       "date": "2025-01-09",
       "tier": "A"
+    },
+    "o-cc1c17f1ac": {
+      "url": "https://www.bbc.com/sport/formula1/27937992",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2014-06-20",
+      "tier": "B"
+    },
+    "o-3c09063baf": {
+      "url": "https://www.planetf1.com/news/wolff-repurchases-stake-in-williams/",
+      "publisher": "PlanetF1",
+      "type": "media",
+      "date": "2020-06-07",
+      "tier": "B"
     }
   },
   "records": [
@@ -1266,6 +1280,27 @@
       "conflicts": [
         "Public descriptions vary between 'TWG owning the team in partnership with GM' and 'a TWG-owned operation backed by GM' (The Race)."
       ]
+    },
+    {
+      "id": "own-williams-toto-wolff",
+      "constructorId": "williams",
+      "entity": {
+        "kind": "person",
+        "name": "Toto Wolff",
+        "personId": "toto-wolff"
+      },
+      "relationship": "investor",
+      "ownership_type": "minority shareholder",
+      "percentage": null,
+      "valid_from": "2009",
+      "valid_to": "2016",
+      "current": false,
+      "confidence": "medium",
+      "sources": [
+        "o-cc1c17f1ac",
+        "o-3c09063baf"
+      ],
+      "notes": "Shareholding in Williams; size not recorded."
     }
   ],
   "unverified": [

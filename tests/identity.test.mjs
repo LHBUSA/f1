@@ -39,7 +39,7 @@ test('displayed personnel roles are sourced, current, unique and point at real p
     assert.ok(people.people[r.personId], `unknown person ${r.personId}`);
     assert.ok(r.sources?.length, `${r.personId} ${r.role} has no source`);
     for (const s of r.sources) assert.ok(people.sources[s]?.url, `${r.personId} source ${s} unresolved`);
-    assert.ok(['leadership', 'technical', 'race_engineering', 'garage_operations', 'power_unit', 'sporting'].includes(r.roleGroup), r.roleGroup);
+    assert.ok(['leadership', 'technical', 'race_engineering', 'garage_operations', 'power_unit', 'sporting', 'ownership'].includes(r.roleGroup), r.roleGroup);
     const k = `${r.personId}|${r.constructorId}|${r.season}|${r.role}|${r.driverId}`;
     assert.ok(!keys.has(k), `duplicate role ${k}`);
     keys.add(k);

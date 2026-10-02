@@ -39,7 +39,9 @@ export function summaryOf(ctx, prof) {
     parts.push(`The verified record also lists ${past.length} earlier role${past.length > 1 ? 's' : ''}${ys.length ? ` between ${Math.min(...ys)} and ${Math.max(...ys)}` : ''}${orgs.length ? ` with ${orgs.slice(0, 4).join(', ')}${orgs.length > 4 ? ' and others' : ''}` : ''}.`);
   }
   const ds = prof.drivers.filter((x) => x.stats && /\brace engineer\b/i.test(x.entry.title));
-  if (ds.length) parts.push(`Drivers in the verified race-engineering record: ${ds.map((x) => `${x.driver.full_name} (${x.entry.period})`).join(', ')}.`);
+  const byDriver = new Map();
+  for (const x of ds) byDriver.set(x.driver.full_name, [...(byDriver.get(x.driver.full_name) || []), x.entry.period]);
+  if (byDriver.size) parts.push(`Drivers in the verified race-engineering record: ${[...byDriver].map(([n, ps]) => `${n} (${ps.reverse().join('; ')})`).join(', ')}.`);
   return parts.map(guard).join(' ');
 }
 
@@ -87,7 +89,7 @@ function carsHtml(ctx, prof) {
 function ownershipHtml(ctx, prof) {
   if (!prof.ownership.length) return '';
   return `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Ownership</span><h2>Team ownership</h2></div></div>
-  <ul class="role-list">${prof.ownership.map((o) => `<li><b>${esc(capital(o.relationship))}</b> · <a href="/teams/${esc(o.constructorId)}">${esc(ctx.conById[o.constructorId]?.name || o.constructorId)}</a>${o.valid_from ? ` · since ${esc(fmtPartial(o.valid_from))}` : ''}${o.valid_to ? ` – ${esc(fmtPartial(o.valid_to))}` : ''}${o.share_text ? ` · ${esc(o.share_text)}` : o.percentage != null ? ` · ${esc(String(o.percentage))}% (publicly stated)` : ''}${o.confidence === 'medium' ? ' <span class="tag">reported</span>' : ''}</li>`).join('')}</ul>
+  <ul class="role-list">${prof.ownership.map((o) => `<li><b>${esc(capital(o.relationship))}</b> · <a href="/teams/${esc(o.constructorId)}">${esc(ctx.conById[o.constructorId]?.name || o.constructorId)}</a>${o.valid_from && !o.valid_to ? ` · since ${esc(fmtPartial(o.valid_from))}` : ''}${o.valid_to ? ` · ${o.valid_from ? `${esc(fmtPartial(o.valid_from))} – ` : 'until '}${esc(fmtPartial(o.valid_to))}` : ''}${o.share_text ? ` · ${esc(o.share_text)}` : o.percentage != null ? ` · ${esc(String(o.percentage))}% (publicly stated)` : ''}${o.confidence === 'medium' ? ' <span class="tag">reported</span>' : ''}</li>`).join('')}</ul>
   <p class="fine">Ownership is recorded separately from job titles: a chairman, CEO or team principal is shown as an owner only where a source states an ownership relationship. Percentages appear only when publicly stated.</p></div></section>`;
 }
 const capital = (s) => String(s || '').replace(/^./, (c) => c.toUpperCase());
@@ -104,7 +106,8 @@ export function personTitle(ctx, prof) {
   const team = lead ? orgName(ctx, lead) : '';
   const title = lead ? lead.title : prof.ownership[0] ? capital(prof.ownership[0].relationship) : 'Formula 1';
   const hasDrivers = prof.drivers.length > 0;
-  return `${prof.name} – ${team ? `${team} F1 ` : 'F1 '}${title}, Career & ${hasDrivers ? 'Driver' : 'Team'} History`;
+  const former = !prof.current.length && lead;
+  return `${prof.name} – ${former ? 'Former ' : ''}${team ? `${team} F1 ` : 'F1 '}${lead ? lead.title : title}, Career & ${hasDrivers ? 'Driver' : 'Team'} History`;
 }
 
 export function personLd(ctx, prof) {
@@ -133,7 +136,7 @@ export function personPageV2(ctx, prof) {
     id.nationality?.value && ['Nationality', esc(id.nationality.value)],
     id.date_of_birth?.value && ['Born', `${esc(/^\d{4}-\d{2}-\d{2}$/.test(id.date_of_birth.value) ? fmtDate(id.date_of_birth.value) : id.date_of_birth.value)}${id.birthplace?.value ? `, ${esc(id.birthplace.value)}` : ''}`],
     !id.date_of_birth?.value && id.birthplace?.value && ['Born in', esc(id.birthplace.value)],
-    team && ['Team', `<a href="/teams/${esc(team.id)}">${esc(team.name)}</a>`],
+    team && [prof.current.length ? 'Team' : 'Last team', `<a href="/teams/${esc(team.id)}">${esc(team.name)}</a>`],
     prof.verifiedAsOf && ['Verified as of', esc(fmtDate(prof.verifiedAsOf))],
   ].filter(Boolean);
   const cur = prof.current;
@@ -142,7 +145,7 @@ export function personPageV2(ctx, prof) {
   const summary = summaryOf(ctx, prof);
   const tc = teamClass(team ? ctx.colorOf(team.id, ctx.currentSeason) : null);
   const body = `${crumbs(bc)}<div class="${tc}">
-  <section class="hero"><div class="wrap person-hero">${face(prof, 120)}<div><span class="eyebrow">${team ? esc(team.name) : 'Formula 1'}${lead ? ` · ${esc(lead.title)}` : ''}</span><h1>${esc(prof.name)}</h1>${lead ? `<p class="lede">${esc(lead.title)}${team ? ` · ${esc(team.name)}` : ''}</p>` : ''}
+  <section class="hero"><div class="wrap person-hero">${face(prof, 120)}<div><span class="eyebrow">${team ? esc(team.name) : 'Formula 1'}${lead ? ` · ${prof.current.length ? '' : 'Former '}${esc(lead.title)}` : ''}</span><h1>${esc(prof.name)}</h1>${lead ? `<p class="lede">${prof.current.length ? '' : 'Former '}${esc(lead.title)}${team ? ` · ${esc(team.name)}` : ''}</p>` : ''}
   ${meta.length ? `<div class="hero-meta">${meta.map(([k, v]) => `<span><b>${k}</b>${v}</span>`).join('')}</div>` : ''}<div class="team-stripe"></div></div></div></section>
   ${summary ? `<section class="section psum"><div class="wrap"><p class="sub">${esc(summary)}</p></div></section>` : ''}
   ${curHtml}

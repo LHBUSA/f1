@@ -1,19 +1,123 @@
 {
-  "_doc": "Canonical, season-aware F1 personnel graph. people = identity (one record per person, ever). roles = PERSON x ROLE x TEAM x (DRIVER) x SEASON edges with effective dates and sources. A role renders on a constructor page only when display=true, current=true and season matches. Facts are normalised from sources; no prose is copied. Conflicts are recorded, never silently resolved. Unknown = absent (never guessed). Mechanics: only named when a source documents them; otherwise the team record says not_publicly_documented.",
-  "version": "f1-personnel@1",
+  "_doc": "Canonical, season-aware F1 personnel graph. people = identity (one record per person, ever). roles = PERSON x ROLE x TEAM x (DRIVER) x SEASON edges with effective dates and sources. A role renders on a constructor page only when display=true, current=true and season matches. Facts are normalised from sources; no prose is copied. Conflicts are recorded, never silently resolved. Unknown = absent (never guessed). Mechanics: only named when a source documents them; otherwise the team record says not_publicly_documented. People V2: history=true roles are dated earlier/other spells (profile timeline only, never a team page); people[id].identity holds sourced identity facts {value, sources[, conflict]} - a field with a recorded conflict is held. sources[id].tier = A (team/FIA/first party) | B (formula1.com + established reporting) | wikidata (open identity data only).",
+  "version": "f1-personnel@2",
   "retrieved": "2026-10-02",
   "people": {
     "toto-wolff": {
-      "name": "Toto Wolff"
+      "name": "Toto Wolff",
+      "identity": {
+        "full_name": {
+          "value": "Toto Wolff",
+          "sources": [
+            "s-85ef690c60",
+            "s-e1c087404b"
+          ]
+        },
+        "nationality": {
+          "value": "Austrian",
+          "sources": [
+            "s-85ef690c60",
+            "s-e1c087404b"
+          ],
+          "variants": [
+            "Austria"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1972-01-12",
+          "sources": [
+            "s-85ef690c60",
+            "s-e1c087404b"
+          ]
+        },
+        "birthplace": {
+          "value": "Vienna",
+          "sources": [
+            "s-85ef690c60",
+            "s-e1c087404b"
+          ]
+        },
+        "education": [
+          {
+            "value": "economics and business studies",
+            "sources": [
+              "s-85ef690c60"
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "value": "investment / team management",
+            "sources": [
+              "s-85ef690c60"
+            ]
+          }
+        ],
+        "prior_racing": [
+          {
+            "value": "Austrian Formula Ford; 1994 Nurburgring 24h class win; 2006 24h race win",
+            "sources": [
+              "s-85ef690c60",
+              "s-98c846f243"
+            ]
+          }
+        ]
+      }
     },
     "bradley-lord": {
-      "name": "Bradley Lord"
+      "name": "Bradley Lord",
+      "identity": {
+        "full_name": {
+          "value": "Bradley Lord",
+          "sources": [
+            "s-f47b5bb2b6"
+          ]
+        }
+      }
     },
     "rob-thomas": {
       "name": "Rob Thomas"
     },
     "james-allison": {
-      "name": "James Allison"
+      "name": "James Allison",
+      "identity": {
+        "full_name": {
+          "value": "James Allison",
+          "sources": [
+            "s-9a43269d6c",
+            "s-cbc022c117"
+          ]
+        },
+        "nationality": {
+          "value": "British",
+          "sources": [
+            "s-cbc022c117"
+          ],
+          "variants": [
+            "United Kingdom"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1968-02-21",
+          "sources": [
+            "s-cbc022c117"
+          ]
+        },
+        "birthplace": {
+          "value": "Lincolnshire",
+          "sources": [
+            "s-cbc022c117"
+          ]
+        },
+        "specialty": [
+          {
+            "value": "aerodynamics / technical direction",
+            "sources": [
+              "s-1d82f79c9a"
+            ]
+          }
+        ]
+      }
     },
     "andrew-shovlin": {
       "name": "Andrew Shovlin"
@@ -22,17 +126,146 @@
       "name": "Hywel Thomas"
     },
     "marcus-dudley": {
-      "name": "Marcus Dudley"
+      "name": "Marcus Dudley",
+      "identity": {
+        "full_name": {
+          "value": "Marcus Dudley",
+          "sources": [
+            "s-255f72030f",
+            "s-d437df11a8",
+            "s-472ae86745"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-472ae86745"
+          ]
+        },
+        "specialty": [
+          {
+            "value": "race engineering",
+            "sources": [
+              "s-d437df11a8"
+            ]
+          }
+        ]
+      }
     },
     "peter-bonnington": {
       "name": "Peter Bonnington",
-      "known_as": "Bono"
+      "known_as": "Bono",
+      "identity": {
+        "full_name": {
+          "value": "Peter Bonnington",
+          "sources": [
+            "s-1a9453ac10",
+            "s-0d3b63049d",
+            "s-9f2e32ae2d"
+          ]
+        },
+        "known_as": {
+          "value": "Bono",
+          "sources": [
+            "s-1a9453ac10",
+            "s-a64054a395"
+          ]
+        },
+        "nationality": {
+          "value": "British",
+          "sources": [
+            "s-9f2e32ae2d",
+            "s-578c7417b0"
+          ],
+          "variants": [
+            "United Kingdom"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1975-02-12",
+          "sources": [
+            "s-9f2e32ae2d"
+          ]
+        },
+        "specialty": [
+          {
+            "value": "race engineering",
+            "sources": [
+              "s-1a9453ac10"
+            ]
+          }
+        ]
+      }
     },
     "ron-meadows": {
       "name": "Ron Meadows"
     },
     "frederic-vasseur": {
-      "name": "Frédéric Vasseur"
+      "name": "Frédéric Vasseur",
+      "identity": {
+        "full_name": {
+          "value": "Frédéric Vasseur",
+          "sources": [
+            "s-b033724671",
+            "s-e2f6fe4ca5"
+          ],
+          "variants": [
+            "Frederic Vasseur"
+          ]
+        },
+        "known_as": {
+          "value": "Fred Vasseur",
+          "sources": [
+            "s-b033724671"
+          ]
+        },
+        "nationality": {
+          "value": "French",
+          "sources": [
+            "s-5184a403c1"
+          ],
+          "variants": [
+            "France"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1968-05-28",
+          "sources": [
+            "s-5184a403c1"
+          ]
+        },
+        "birthplace": {
+          "value": "Draveil",
+          "sources": [
+            "s-5184a403c1"
+          ]
+        },
+        "education": [
+          {
+            "value": "ESTACA engineering school, graduated 1995",
+            "sources": [
+              "s-e2f6fe4ca5"
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "value": "team management; trained engineer",
+            "sources": [
+              "s-b033724671"
+            ]
+          }
+        ],
+        "prior_racing": [
+          {
+            "value": "junior-series team owner (ASM 1998, ART Grand Prix)",
+            "sources": [
+              "s-e2f6fe4ca5",
+              "s-b033724671"
+            ]
+          }
+        ]
+      }
     },
     "jerome-d-ambrosio": {
       "name": "Jérôme d'Ambrosio"
@@ -41,7 +274,15 @@
       "name": "Loïc Serra"
     },
     "diego-tondi": {
-      "name": "Diego Tondi"
+      "name": "Diego Tondi",
+      "identity": {
+        "full_name": {
+          "value": "Diego Tondi",
+          "sources": [
+            "s-8792195c1c"
+          ]
+        }
+      }
     },
     "franck-sanchez": {
       "name": "Franck Sanchez"
@@ -56,13 +297,67 @@
       "name": "Diego Ioverno"
     },
     "enrico-gualtieri": {
-      "name": "Enrico Gualtieri"
+      "name": "Enrico Gualtieri",
+      "identity": {
+        "full_name": {
+          "value": "Enrico Gualtieri",
+          "sources": [
+            "s-873b4d3559"
+          ]
+        },
+        "nationality": {
+          "value": "Italy",
+          "sources": [
+            "s-873b4d3559"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1975-02-21",
+          "sources": [
+            "s-873b4d3559"
+          ]
+        },
+        "birthplace": {
+          "value": "Modena",
+          "sources": [
+            "s-873b4d3559"
+          ]
+        }
+      }
     },
     "bryan-bozzi": {
-      "name": "Bryan Bozzi"
+      "name": "Bryan Bozzi",
+      "identity": {
+        "full_name": {
+          "value": "Bryan Bozzi",
+          "sources": [
+            "s-098bf87ceb"
+          ]
+        }
+      }
     },
     "carlo-santi": {
-      "name": "Carlo Santi"
+      "name": "Carlo Santi",
+      "identity": {
+        "full_name": {
+          "value": "Carlo Santi",
+          "sources": [
+            "s-9fb01ee28a"
+          ]
+        },
+        "nationality": {
+          "value": "Italy",
+          "sources": [
+            "s-9fb01ee28a"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1974-02-15",
+          "sources": [
+            "s-9fb01ee28a"
+          ]
+        }
+      }
     },
     "cedric-michel-grosjean": {
       "name": "Cedric Michel-Grosjean"
@@ -71,43 +366,353 @@
       "name": "Riccardo Adami"
     },
     "zak-brown": {
-      "name": "Zak Brown"
+      "name": "Zak Brown",
+      "identity": {
+        "full_name": {
+          "value": "Zak Brown",
+          "sources": [
+            "s-aac30476c2"
+          ]
+        },
+        "nationality": {
+          "value": "United States",
+          "sources": [
+            "s-aac30476c2"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1971-11-07",
+          "sources": [
+            "s-aac30476c2"
+          ]
+        },
+        "birthplace": {
+          "value": "Los Angeles",
+          "sources": [
+            "s-aac30476c2"
+          ]
+        }
+      }
     },
     "andrea-stella": {
-      "name": "Andrea Stella"
+      "name": "Andrea Stella",
+      "identity": {
+        "full_name": {
+          "value": "Andrea Stella",
+          "sources": [
+            "s-5f01f82dc1",
+            "s-694467e7f7"
+          ]
+        },
+        "nationality": {
+          "value": "Italian",
+          "sources": [
+            "s-5f01f82dc1",
+            "s-7c3b68e798",
+            "s-694467e7f7"
+          ],
+          "variants": [
+            "Italy"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1971-02-22",
+          "sources": [
+            "s-694467e7f7"
+          ]
+        },
+        "birthplace": {
+          "value": "Orvieto",
+          "sources": [
+            "s-694467e7f7"
+          ]
+        },
+        "education": [
+          {
+            "value": "PhD in Mechanical Engineering, Sapienza University of Rome",
+            "sources": [
+              "s-5f01f82dc1"
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "value": "aerospace / race engineering",
+            "sources": [
+              "s-5f01f82dc1"
+            ]
+          }
+        ]
+      }
     },
     "rob-marshall": {
-      "name": "Rob Marshall"
+      "name": "Rob Marshall",
+      "identity": {
+        "full_name": {
+          "value": "Rob Marshall",
+          "sources": [
+            "s-46279330a0"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-46279330a0"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1968-04-14",
+          "sources": [
+            "s-46279330a0"
+          ]
+        },
+        "birthplace": {
+          "value": "Taunton",
+          "sources": [
+            "s-46279330a0"
+          ]
+        }
+      }
     },
     "peter-prodromou": {
-      "name": "Peter Prodromou"
+      "name": "Peter Prodromou",
+      "identity": {
+        "full_name": {
+          "value": "Peter Prodromou",
+          "sources": [
+            "s-bb8ec8de1a"
+          ]
+        },
+        "nationality": {
+          "value": "Cyprus",
+          "sources": [
+            "s-bb8ec8de1a"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1969-01-14",
+          "sources": [
+            "s-bb8ec8de1a"
+          ]
+        },
+        "birthplace": {
+          "value": "London",
+          "sources": [
+            "s-bb8ec8de1a"
+          ]
+        }
+      }
     },
     "neil-houldey": {
-      "name": "Neil Houldey"
+      "name": "Neil Houldey",
+      "identity": {
+        "full_name": {
+          "value": "Neil Houldey",
+          "sources": [
+            "s-1c348bcd88"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-1c348bcd88"
+          ]
+        }
+      }
     },
     "mark-temple": {
-      "name": "Mark Temple"
+      "name": "Mark Temple",
+      "identity": {
+        "full_name": {
+          "value": "Mark Temple",
+          "sources": [
+            "s-5df941ff2d"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-5df941ff2d"
+          ]
+        }
+      }
     },
     "randeep-singh": {
-      "name": "Randeep Singh"
+      "name": "Randeep Singh",
+      "identity": {
+        "full_name": {
+          "value": "Randeep Singh",
+          "sources": [
+            "s-3322635292"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-3322635292"
+          ]
+        }
+      }
     },
     "will-courtenay": {
-      "name": "Will Courtenay"
+      "name": "Will Courtenay",
+      "identity": {
+        "full_name": {
+          "value": "Will Courtenay",
+          "sources": [
+            "s-f7e9c9e113"
+          ]
+        }
+      }
     },
     "will-joseph": {
-      "name": "Will Joseph"
+      "name": "Will Joseph",
+      "identity": {
+        "full_name": {
+          "value": "Will Joseph",
+          "sources": [
+            "s-18c6ddf9f5"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-18c6ddf9f5"
+          ]
+        }
+      }
     },
     "tom-stallard": {
-      "name": "Tom Stallard"
+      "name": "Tom Stallard",
+      "identity": {
+        "full_name": {
+          "value": "Tom Stallard",
+          "sources": [
+            "s-66ace51d70"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-66ace51d70"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1978-09-11",
+          "sources": [
+            "s-66ace51d70"
+          ]
+        },
+        "birthplace": {
+          "value": "City of Westminster",
+          "sources": [
+            "s-66ace51d70"
+          ]
+        }
+      }
     },
     "gianpiero-lambiase": {
-      "name": "Gianpiero Lambiase"
+      "name": "Gianpiero Lambiase",
+      "identity": {
+        "full_name": {
+          "value": "Gianpiero Lambiase",
+          "sources": [
+            "s-04060f8987",
+            "s-17a7942acc",
+            "s-acdf4a9d43"
+          ]
+        },
+        "known_as": {
+          "value": "GP",
+          "sources": [
+            "s-35141a987e"
+          ]
+        },
+        "nationality": {
+          "value": "British",
+          "sources": [
+            "s-04060f8987",
+            "s-e357835e70",
+            "s-acdf4a9d43"
+          ],
+          "variants": [
+            "United Kingdom"
+          ]
+        },
+        "birthplace": {
+          "value": "London",
+          "sources": [
+            "s-acdf4a9d43",
+            "s-35141a987e"
+          ]
+        },
+        "specialty": [
+          {
+            "value": "race engineering",
+            "sources": [
+              "s-04060f8987"
+            ]
+          }
+        ]
+      }
     },
     "laurent-mekies": {
-      "name": "Laurent Mekies"
+      "name": "Laurent Mekies",
+      "identity": {
+        "full_name": {
+          "value": "Laurent Mekies",
+          "sources": [
+            "s-8f4b64970a"
+          ]
+        },
+        "nationality": {
+          "value": "France",
+          "sources": [
+            "s-8f4b64970a"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1977-04-28",
+          "sources": [
+            "s-8f4b64970a"
+          ]
+        },
+        "birthplace": {
+          "value": "Tours",
+          "sources": [
+            "s-8f4b64970a"
+          ]
+        }
+      }
     },
     "pierre-wache": {
-      "name": "Pierre Waché"
+      "name": "Pierre Waché",
+      "identity": {
+        "full_name": {
+          "value": "Pierre Waché",
+          "sources": [
+            "s-d7751badfb"
+          ]
+        },
+        "nationality": {
+          "value": "France",
+          "sources": [
+            "s-d7751badfb"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1974-12-10",
+          "sources": [
+            "s-d7751badfb"
+          ]
+        },
+        "birthplace": {
+          "value": "Auchel",
+          "sources": [
+            "s-d7751badfb"
+          ]
+        }
+      }
     },
     "ben-waterhouse": {
       "name": "Ben Waterhouse"
@@ -131,10 +736,38 @@
       "name": "Tom McCullough"
     },
     "stephen-knowles": {
-      "name": "Stephen Knowles"
+      "name": "Stephen Knowles",
+      "identity": {
+        "full_name": {
+          "value": "Stephen Knowles",
+          "sources": [
+            "s-b57989d22f"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-b57989d22f"
+          ]
+        }
+      }
     },
     "richard-wolverson": {
-      "name": "Richard Wolverson"
+      "name": "Richard Wolverson",
+      "identity": {
+        "full_name": {
+          "value": "Richard Wolverson",
+          "sources": [
+            "s-f110fc37a9"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-f110fc37a9"
+          ]
+        }
+      }
     },
     "ben-hodgkinson": {
       "name": "Ben Hodgkinson"
@@ -152,16 +785,97 @@
       "name": "Christian Hertrich"
     },
     "adrian-newey": {
-      "name": "Adrian Newey"
+      "name": "Adrian Newey",
+      "identity": {
+        "full_name": {
+          "value": "Adrian Newey",
+          "sources": [
+            "s-fd1c121984",
+            "s-720d6dc952"
+          ]
+        },
+        "nationality": {
+          "value": "British",
+          "sources": [
+            "s-720d6dc952"
+          ],
+          "variants": [
+            "United Kingdom"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1958-12-26",
+          "sources": [
+            "s-720d6dc952"
+          ]
+        },
+        "birthplace": {
+          "value": "Stratford-upon-Avon",
+          "sources": [
+            "s-720d6dc952",
+            "s-e2edf669a6"
+          ]
+        },
+        "education": [
+          {
+            "value": "University of Southampton (aeronautics and astronautics)",
+            "sources": [
+              "s-e2edf669a6"
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "value": "car design / aerodynamics",
+            "sources": [
+              "s-e2edf669a6"
+            ]
+          }
+        ]
+      }
     },
     "christian-horner": {
       "name": "Christian Horner"
     },
     "alan-permane": {
-      "name": "Alan Permane"
+      "name": "Alan Permane",
+      "identity": {
+        "full_name": {
+          "value": "Alan Permane",
+          "sources": [
+            "s-95fa6314cd"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1967-02-04",
+          "sources": [
+            "s-95fa6314cd"
+          ]
+        },
+        "birthplace": {
+          "value": "Walton-on-Thames",
+          "sources": [
+            "s-95fa6314cd"
+          ]
+        }
+      }
     },
     "peter-bayer": {
-      "name": "Peter Bayer"
+      "name": "Peter Bayer",
+      "identity": {
+        "full_name": {
+          "value": "Peter Bayer",
+          "sources": [
+            "s-23bf5d898b"
+          ]
+        },
+        "nationality": {
+          "value": "Austria",
+          "sources": [
+            "s-23bf5d898b"
+          ]
+        }
+      }
     },
     "tim-goss": {
       "name": "Tim Goss"
@@ -179,31 +893,193 @@
       "name": "Alexandre Iliopoulos"
     },
     "pierre-hamelin": {
-      "name": "Pierre Hamelin"
+      "name": "Pierre Hamelin",
+      "identity": {
+        "full_name": {
+          "value": "Pierre Hamelin",
+          "sources": [
+            "s-d437df11a8",
+            "s-8331690a79",
+            "s-a58657dfda"
+          ]
+        },
+        "nationality": {
+          "value": "France",
+          "sources": [
+            "s-a58657dfda"
+          ]
+        },
+        "specialty": [
+          {
+            "value": "race engineering",
+            "sources": [
+              "s-8331690a79"
+            ]
+          }
+        ]
+      }
     },
     "flavio-briatore": {
-      "name": "Flavio Briatore"
+      "name": "Flavio Briatore",
+      "identity": {
+        "full_name": {
+          "value": "Flavio Briatore",
+          "sources": [
+            "s-6a7f234b29"
+          ]
+        },
+        "nationality": {
+          "value": "Italy",
+          "sources": [
+            "s-6a7f234b29"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1950-04-12",
+          "sources": [
+            "s-6a7f234b29"
+          ]
+        },
+        "birthplace": {
+          "value": "Verzuolo",
+          "sources": [
+            "s-6a7f234b29"
+          ]
+        }
+      }
     },
     "steve-nielsen": {
-      "name": "Steve Nielsen"
+      "name": "Steve Nielsen",
+      "identity": {
+        "full_name": {
+          "value": "Steve Nielsen",
+          "sources": [
+            "s-9e0151c853"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-9e0151c853"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1964-07-02",
+          "sources": [
+            "s-9e0151c853"
+          ]
+        },
+        "birthplace": {
+          "value": "Bristol",
+          "sources": [
+            "s-9e0151c853"
+          ]
+        }
+      }
     },
     "dave-greenwood": {
-      "name": "Dave Greenwood"
+      "name": "Dave Greenwood",
+      "identity": {
+        "full_name": {
+          "value": "Dave Greenwood",
+          "sources": [
+            "s-05ec289961"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-05ec289961"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1978-03-30",
+          "sources": [
+            "s-05ec289961"
+          ]
+        },
+        "birthplace": {
+          "value": "Wakefield",
+          "sources": [
+            "s-05ec289961"
+          ]
+        }
+      }
     },
     "ian-pearce": {
       "name": "Ian Pearce"
     },
     "philippe-krief": {
-      "name": "Philippe Krief"
+      "name": "Philippe Krief",
+      "identity": {
+        "full_name": {
+          "value": "Philippe Krief",
+          "sources": [
+            "s-9f55cc1015"
+          ]
+        },
+        "nationality": {
+          "value": "France",
+          "sources": [
+            "s-9f55cc1015"
+          ]
+        }
+      }
     },
     "mike-elliott": {
       "name": "Mike Elliott"
     },
     "david-sanchez": {
-      "name": "David Sanchez"
+      "name": "David Sanchez",
+      "identity": {
+        "full_name": {
+          "value": "David Sanchez",
+          "sources": [
+            "s-b4124e3942"
+          ]
+        },
+        "nationality": {
+          "value": "France",
+          "sources": [
+            "s-b4124e3942"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1980",
+          "sources": [
+            "s-b4124e3942"
+          ]
+        },
+        "birthplace": {
+          "value": "Hérault",
+          "sources": [
+            "s-b4124e3942"
+          ]
+        }
+      }
     },
     "jason-somerville": {
-      "name": "Jason Somerville"
+      "name": "Jason Somerville",
+      "identity": {
+        "full_name": {
+          "value": "Jason Somerville",
+          "sources": [
+            "s-c182f8a5c0"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-c182f8a5c0"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1968-12-03",
+          "sources": [
+            "s-c182f8a5c0"
+          ]
+        }
+      }
     },
     "kris-midgley": {
       "name": "Kris Midgley"
@@ -221,13 +1097,65 @@
       "name": "Oliver Oakes"
     },
     "mattia-binotto": {
-      "name": "Mattia Binotto"
+      "name": "Mattia Binotto",
+      "identity": {
+        "full_name": {
+          "value": "Mattia Binotto",
+          "sources": [
+            "s-440c93720c"
+          ]
+        },
+        "nationality": {
+          "value": "Italy",
+          "sources": [
+            "s-440c93720c"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1969-11-03",
+          "sources": [
+            "s-440c93720c"
+          ]
+        },
+        "birthplace": {
+          "value": "Lausanne",
+          "sources": [
+            "s-440c93720c"
+          ]
+        }
+      }
     },
     "jonathan-wheatley": {
       "name": "Jonathan Wheatley"
     },
     "allan-mcnish": {
-      "name": "Allan McNish"
+      "name": "Allan McNish",
+      "identity": {
+        "full_name": {
+          "value": "Allan McNish",
+          "sources": [
+            "s-53923eac00"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-53923eac00"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1969-12-29",
+          "sources": [
+            "s-53923eac00"
+          ]
+        },
+        "birthplace": {
+          "value": "Dumfries",
+          "sources": [
+            "s-53923eac00"
+          ]
+        }
+      }
     },
     "james-key": {
       "name": "James Key"
@@ -251,7 +1179,21 @@
       "name": "Jose Manuel Lopez"
     },
     "lee-stevenson": {
-      "name": "Lee Stevenson"
+      "name": "Lee Stevenson",
+      "identity": {
+        "full_name": {
+          "value": "Lee Stevenson",
+          "sources": [
+            "s-5e769fc472"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-5e769fc472"
+          ]
+        }
+      }
     },
     "matthew-caller": {
       "name": "Matthew Caller"
@@ -266,10 +1208,116 @@
       "name": "Christian Foyer"
     },
     "ayao-komatsu": {
-      "name": "Ayao Komatsu"
+      "name": "Ayao Komatsu",
+      "identity": {
+        "full_name": {
+          "value": "Ayao Komatsu",
+          "sources": [
+            "s-7603f8e5f2",
+            "s-790abaa020"
+          ]
+        },
+        "nationality": {
+          "value": "Japanese",
+          "sources": [
+            "s-096d807456",
+            "s-790abaa020"
+          ],
+          "variants": [
+            "Japan"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1976-01-28",
+          "sources": [
+            "s-790abaa020",
+            "s-17666ac291"
+          ]
+        },
+        "birthplace": {
+          "value": "Tokyo",
+          "sources": [
+            "s-790abaa020"
+          ]
+        },
+        "education": [
+          {
+            "value": "Loughborough University",
+            "sources": [
+              "s-096d807456"
+            ]
+          },
+          {
+            "value": "degree in automotive engineering; PhD in vehicle dynamics and control",
+            "sources": [
+              "s-17666ac291"
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "value": "race engineering",
+            "sources": [
+              "s-096d807456",
+              "s-17666ac291"
+            ]
+          }
+        ]
+      }
     },
     "gene-haas": {
-      "name": "Gene Haas"
+      "name": "Gene Haas",
+      "identity": {
+        "full_name": {
+          "value": "Gene Haas",
+          "sources": [
+            "s-02b3580c02",
+            "s-bbfed8b9fe"
+          ]
+        },
+        "nationality": {
+          "value": "American",
+          "sources": [
+            "s-02b3580c02",
+            "s-bbfed8b9fe"
+          ],
+          "variants": [
+            "United States"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1952-11-12",
+          "sources": [
+            "s-bbfed8b9fe"
+          ]
+        },
+        "birthplace": {
+          "value": "Youngstown, Ohio",
+          "sources": [
+            "s-02b3580c02",
+            "s-bbfed8b9fe"
+          ],
+          "variants": [
+            "Youngstown"
+          ]
+        },
+        "specialty": [
+          {
+            "value": "machine-tool manufacturing (Haas Automation)",
+            "sources": [
+              "s-02b3580c02"
+            ]
+          }
+        ],
+        "prior_racing": [
+          {
+            "value": "NASCAR team owner (Stewart-Haas Racing co-founder)",
+            "sources": [
+              "s-02b3580c02"
+            ]
+          }
+        ]
+      }
     },
     "andrea-de-zordo": {
       "name": "Andrea De Zordo"
@@ -278,7 +1326,27 @@
       "name": "Mark Lowe"
     },
     "laura-mueller": {
-      "name": "Laura Mueller"
+      "name": "Laura Mueller",
+      "identity": {
+        "full_name": {
+          "value": "Laura Müller",
+          "sources": [
+            "s-d706fdcff6"
+          ]
+        },
+        "nationality": {
+          "value": "Germany",
+          "sources": [
+            "s-d706fdcff6"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1992",
+          "sources": [
+            "s-d706fdcff6"
+          ]
+        }
+      }
     },
     "ronan-ohare": {
       "name": "Ronan O'Hare"
@@ -302,22 +1370,172 @@
       "name": "Dom Haines"
     },
     "lawrence-stroll": {
-      "name": "Lawrence Stroll"
+      "name": "Lawrence Stroll",
+      "identity": {
+        "full_name": {
+          "value": "Lawrence Stroll",
+          "sources": [
+            "s-7132ec61bf"
+          ]
+        },
+        "nationality": {
+          "value": "Canada",
+          "sources": [
+            "s-7132ec61bf"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1959-07-11",
+          "sources": [
+            "s-7132ec61bf"
+          ]
+        },
+        "birthplace": {
+          "value": "Montreal",
+          "sources": [
+            "s-7132ec61bf"
+          ]
+        }
+      }
     },
     "andy-cowell": {
-      "name": "Andy Cowell"
+      "name": "Andy Cowell",
+      "identity": {
+        "full_name": {
+          "value": "Andy Cowell",
+          "sources": [
+            "s-4c630d975a"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-4c630d975a"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1969-02-12",
+          "sources": [
+            "s-4c630d975a"
+          ]
+        },
+        "birthplace": {
+          "value": "Blackpool",
+          "sources": [
+            "s-4c630d975a"
+          ]
+        }
+      }
     },
     "enrico-cardile": {
-      "name": "Enrico Cardile"
+      "name": "Enrico Cardile",
+      "identity": {
+        "full_name": {
+          "value": "Enrico Cardile",
+          "sources": [
+            "s-e2b1b34227"
+          ]
+        },
+        "nationality": {
+          "value": "Italy",
+          "sources": [
+            "s-e2b1b34227"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1975-04-05",
+          "sources": [
+            "s-e2b1b34227"
+          ]
+        },
+        "birthplace": {
+          "value": "Arezzo",
+          "sources": [
+            "s-e2b1b34227"
+          ]
+        }
+      }
     },
     "mike-krack": {
-      "name": "Mike Krack"
+      "name": "Mike Krack",
+      "identity": {
+        "full_name": {
+          "value": "Mike Krack",
+          "sources": [
+            "s-fbc24ecc4a"
+          ]
+        },
+        "nationality": {
+          "value": "Luxembourg",
+          "sources": [
+            "s-fbc24ecc4a"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1972-03-18",
+          "sources": [
+            "s-fbc24ecc4a"
+          ]
+        },
+        "birthplace": {
+          "value": "Luxembourg",
+          "sources": [
+            "s-fbc24ecc4a"
+          ]
+        }
+      }
     },
     "andy-stevenson": {
-      "name": "Andy Stevenson"
+      "name": "Andy Stevenson",
+      "identity": {
+        "full_name": {
+          "value": "Andy Stevenson",
+          "sources": [
+            "s-8b7fb775a7"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-8b7fb775a7"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1967-09-20",
+          "sources": [
+            "s-8b7fb775a7"
+          ]
+        }
+      }
     },
     "pedro-de-la-rosa": {
-      "name": "Pedro de la Rosa"
+      "name": "Pedro de la Rosa",
+      "identity": {
+        "full_name": {
+          "value": "Pedro de la Rosa",
+          "sources": [
+            "s-ddc7e29242"
+          ]
+        },
+        "nationality": {
+          "value": "Spain",
+          "sources": [
+            "s-ddc7e29242"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1971-02-24",
+          "sources": [
+            "s-ddc7e29242"
+          ]
+        },
+        "birthplace": {
+          "value": "Barcelona",
+          "sources": [
+            "s-ddc7e29242"
+          ]
+        }
+      }
     },
     "chris-cronin": {
       "name": "Chris Cronin"
@@ -347,7 +1565,27 @@
       "name": "Akio Haga"
     },
     "koji-watanabe": {
-      "name": "Koji Watanabe"
+      "name": "Koji Watanabe",
+      "identity": {
+        "full_name": {
+          "value": "Koji Watanabe",
+          "sources": [
+            "s-ed106aa57e"
+          ]
+        },
+        "nationality": {
+          "value": "Japan",
+          "sources": [
+            "s-ed106aa57e"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1964",
+          "sources": [
+            "s-ed106aa57e"
+          ]
+        }
+      }
     },
     "tetsushi-kakuda": {
       "name": "Tetsushi Kakuda"
@@ -359,31 +1597,184 @@
       "name": "Shintaro Orihara"
     },
     "james-vowles": {
-      "name": "James Vowles"
+      "name": "James Vowles",
+      "identity": {
+        "full_name": {
+          "value": "James Vowles",
+          "sources": [
+            "s-6fb1380e53",
+            "s-1113ae60dc"
+          ]
+        },
+        "nationality": {
+          "value": "British",
+          "sources": [
+            "s-1113ae60dc"
+          ],
+          "variants": [
+            "United Kingdom"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1979-06-20",
+          "sources": [
+            "s-1113ae60dc"
+          ]
+        },
+        "birthplace": {
+          "value": "Felbridge",
+          "sources": [
+            "s-1113ae60dc"
+          ]
+        },
+        "specialty": [
+          {
+            "value": "race strategy",
+            "sources": [
+              "s-6fb1380e53",
+              "s-03fa8b185b"
+            ]
+          }
+        ]
+      }
     },
     "matthew-savage": {
       "name": "Matthew Savage"
     },
     "pat-fry": {
-      "name": "Pat Fry"
+      "name": "Pat Fry",
+      "identity": {
+        "full_name": {
+          "value": "Pat Fry",
+          "sources": [
+            "s-19395848f4"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-19395848f4"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1964-03-17",
+          "sources": [
+            "s-19395848f4"
+          ]
+        },
+        "birthplace": {
+          "value": "Shepperton",
+          "sources": [
+            "s-19395848f4"
+          ]
+        }
+      }
     },
     "matt-harman": {
-      "name": "Matt Harman"
+      "name": "Matt Harman",
+      "identity": {
+        "full_name": {
+          "value": "Matt Harman",
+          "sources": [
+            "s-ff4b876836"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-ff4b876836"
+          ]
+        }
+      }
     },
     "sven-smeets": {
-      "name": "Sven Smeets"
+      "name": "Sven Smeets",
+      "identity": {
+        "full_name": {
+          "value": "Sven Smeets",
+          "sources": [
+            "s-c72a24d80b"
+          ]
+        },
+        "nationality": {
+          "value": "Belgium",
+          "sources": [
+            "s-c72a24d80b"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1972-05-12",
+          "sources": [
+            "s-c72a24d80b"
+          ]
+        },
+        "birthplace": {
+          "value": "Hasselt",
+          "sources": [
+            "s-c72a24d80b"
+          ]
+        }
+      }
     },
     "dave-redding": {
-      "name": "Dave Redding"
+      "name": "Dave Redding",
+      "identity": {
+        "full_name": {
+          "value": "David Redding",
+          "sources": [
+            "s-5929588840"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-5929588840"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1965-07-13",
+          "sources": [
+            "s-5929588840"
+          ]
+        }
+      }
     },
     "paul-williams": {
       "name": "Paul Williams"
     },
     "james-urwin": {
-      "name": "James Urwin"
+      "name": "James Urwin",
+      "identity": {
+        "full_name": {
+          "value": "James Urwin",
+          "sources": [
+            "s-1a02792916"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-1a02792916"
+          ]
+        }
+      }
     },
     "gaetan-jego": {
-      "name": "Gaetan Jego"
+      "name": "Gaetan Jego",
+      "identity": {
+        "full_name": {
+          "value": "Gaëtan Jego",
+          "sources": [
+            "s-0358964333"
+          ]
+        },
+        "nationality": {
+          "value": "France",
+          "sources": [
+            "s-0358964333"
+          ]
+        }
+      }
     },
     "dave-robson": {
       "name": "Dave Robson"
@@ -410,13 +1801,65 @@
       "name": "Dan Towriss"
     },
     "marc-hynes": {
-      "name": "Marc Hynes"
+      "name": "Marc Hynes",
+      "identity": {
+        "full_name": {
+          "value": "Marc Hynes",
+          "sources": [
+            "s-c92deb9be9"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-c92deb9be9"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1978-02-26",
+          "sources": [
+            "s-c92deb9be9"
+          ]
+        },
+        "birthplace": {
+          "value": "Guildford",
+          "sources": [
+            "s-c92deb9be9"
+          ]
+        }
+      }
     },
     "nick-chester": {
       "name": "Nick Chester"
     },
     "pat-symonds": {
-      "name": "Pat Symonds"
+      "name": "Pat Symonds",
+      "identity": {
+        "full_name": {
+          "value": "Pat Symonds",
+          "sources": [
+            "s-b3f71f5920"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-b3f71f5920"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1953-06-11",
+          "sources": [
+            "s-b3f71f5920"
+          ]
+        },
+        "birthplace": {
+          "value": "Bedford",
+          "sources": [
+            "s-b3f71f5920"
+          ]
+        }
+      }
     },
     "rob-white": {
       "name": "Rob White"
@@ -482,10 +1925,50 @@
       "name": "Evan Short"
     },
     "simone-resta": {
-      "name": "Simone Resta"
+      "name": "Simone Resta",
+      "identity": {
+        "full_name": {
+          "value": "Simone Resta",
+          "sources": [
+            "s-21e62f7e05"
+          ]
+        },
+        "nationality": {
+          "value": "Italy",
+          "sources": [
+            "s-21e62f7e05"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1970-09-14",
+          "sources": [
+            "s-21e62f7e05"
+          ]
+        },
+        "birthplace": {
+          "value": "Imola",
+          "sources": [
+            "s-21e62f7e05"
+          ]
+        }
+      }
     },
     "giacomo-tortora": {
-      "name": "Giacomo Tortora"
+      "name": "Giacomo Tortora",
+      "identity": {
+        "full_name": {
+          "value": "Giacomo Tortora",
+          "sources": [
+            "s-b2da27ff35"
+          ]
+        },
+        "nationality": {
+          "value": "Italy",
+          "sources": [
+            "s-b2da27ff35"
+          ]
+        }
+      }
     },
     "matt-deane": {
       "name": "Matt Deane"
@@ -497,7 +1980,27 @@
       "name": "Luca Diella"
     },
     "ravin-jain": {
-      "name": "Ravin Jain"
+      "name": "Ravin Jain",
+      "identity": {
+        "full_name": {
+          "value": "Ravin Jain",
+          "sources": [
+            "s-ed944e5089"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1994",
+          "sources": [
+            "s-ed944e5089"
+          ]
+        },
+        "birthplace": {
+          "value": "London Borough of Tower Hamlets",
+          "sources": [
+            "s-ed944e5089"
+          ]
+        }
+      }
     },
     "guillaume-dezoteux": {
       "name": "Guillaume Dezoteux"
@@ -509,7 +2012,33 @@
       "name": "Mike Payne"
     },
     "hannah-schmitz": {
-      "name": "Hannah Schmitz"
+      "name": "Hannah Schmitz",
+      "identity": {
+        "full_name": {
+          "value": "Hannah Schmitz",
+          "sources": [
+            "s-c951dc543c"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-c951dc543c"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1985-05-02",
+          "sources": [
+            "s-c951dc543c"
+          ]
+        },
+        "birthplace": {
+          "value": "Caterham",
+          "sources": [
+            "s-c951dc543c"
+          ]
+        }
+      }
     },
     "curtis-stones": {
       "name": "Curtis Stones"
@@ -530,10 +2059,38 @@
       "name": "Marc Cox"
     },
     "angelos-tsiaparas": {
-      "name": "Angelos Tsiaparas"
+      "name": "Angelos Tsiaparas",
+      "identity": {
+        "full_name": {
+          "value": "Angelos Tsiaparas",
+          "sources": [
+            "s-ce26ded1a9"
+          ]
+        },
+        "nationality": {
+          "value": "Greece",
+          "sources": [
+            "s-ce26ded1a9"
+          ]
+        }
+      }
     },
     "richard-frith": {
-      "name": "Richard Frith"
+      "name": "Richard Frith",
+      "identity": {
+        "full_name": {
+          "value": "Richard Frith",
+          "sources": [
+            "s-2bb351e155"
+          ]
+        },
+        "nationality": {
+          "value": "United Kingdom",
+          "sources": [
+            "s-2bb351e155"
+          ]
+        }
+      }
     },
     "sam-edmonds": {
       "name": "Sam Edmonds"
@@ -570,6 +2127,37 @@
     },
     "dan-martin": {
       "name": "Dan Martin"
+    },
+    "guenther-steiner": {
+      "name": "Guenther Steiner",
+      "identity": {
+        "full_name": {
+          "value": "Guenther Steiner",
+          "sources": [
+            "s-7603f8e5f2",
+            "s-7dc4d3ca35"
+          ]
+        },
+        "nationality": {
+          "value": "Italian",
+          "sources": [
+            "s-7dc4d3ca35",
+            "s-6a98f369dc"
+          ]
+        },
+        "date_of_birth": {
+          "value": "1965-04-07",
+          "sources": [
+            "s-6a98f369dc"
+          ]
+        },
+        "birthplace": {
+          "value": "Merano",
+          "sources": [
+            "s-6a98f369dc"
+          ]
+        }
+      }
     }
   },
   "sources": {
@@ -739,7 +2327,8 @@
       "url": "https://racingnews365.com/meet-the-2026-f1-race-engineers",
       "publisher": "RacingNews365",
       "type": "media",
-      "date": "2026-03-01"
+      "date": "2026-03-01",
+      "tier": "B"
     },
     "s-dc6fdc4fbe": {
       "url": "https://www.motorsportmagazine.com/articles/single-seaters/f1/who-are-all-the-f1-race-engineers-in-2026/",
@@ -817,7 +2406,8 @@
       "url": "https://www.mclaren.com/racing/team/andrea-stella/",
       "publisher": "McLaren Racing",
       "type": "first_party",
-      "date": null
+      "date": null,
+      "tier": "A"
     },
     "s-f86d92bd33": {
       "url": "https://www.mclaren.com/racing/formula-1/2026/behind-the-design-of-the-mcl40/",
@@ -937,7 +2527,8 @@
       "url": "https://www.redbullracing.com/int-en/team/gianpiero-lambiase",
       "publisher": "Oracle Red Bull Racing",
       "type": "first_party",
-      "date": null
+      "date": null,
+      "tier": "A"
     },
     "s-339f344172": {
       "url": "https://racingnews365.com/bombshell-red-bull-exit-officially-confirmed",
@@ -1615,7 +3206,8 @@
       "url": "https://www.gpblog.com/en/exclusive-news/mercedes-makes-decision-on-race-engineers-for-russell-and-antonelli",
       "publisher": "GPblog",
       "type": "media",
-      "date": "2026-01-12"
+      "date": "2026-01-12",
+      "tier": "B"
     },
     "s-cc02b5c0d8": {
       "url": "https://www.espn.com/f1/story/_/id/48852291/canada-grand-prix-mercedes-george-russell-wins-sprint-lando-norris-kimi-antonelli",
@@ -1627,7 +3219,8 @@
       "url": "https://www.gpfans.com/en/f1-news/1076588/f1-race-engineers/",
       "publisher": "GPFans",
       "type": "media",
-      "date": "2026-02-19"
+      "date": "2026-02-19",
+      "tier": "B"
     },
     "s-c39660db1d": {
       "url": "https://www.youtube.com/watch?v=7eTqO7rRUCI",
@@ -1976,6 +3569,776 @@
       "publisher": "TGR Haas F1 Team",
       "type": "first_party",
       "date": "2026-02-24"
+    },
+    "s-1a9453ac10": {
+      "url": "https://www.motorsportmagazine.com/articles/single-seaters/f1/who-is-peter-bono-bonnington-hamiltons-brotherly-race-engineer/",
+      "publisher": "Motor Sport Magazine",
+      "type": "media",
+      "date": "2024-04-03",
+      "tier": "B"
+    },
+    "s-a64054a395": {
+      "url": "https://www.formula1.com/en/latest/article/i-feel-really-lucky-antonelli-expands-on-what-its-like-working-with-race.k1diHZ3DTDuvgoIlgxG0i",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2025-03-31",
+      "tier": "B"
+    },
+    "s-b6291ea8d9": {
+      "url": "https://www.autosport.com/f1/news/hamilton-fired-up-by-bonos-poignant-final-hammertime-call/10680951/",
+      "publisher": "Autosport",
+      "type": "media",
+      "date": "2024-12-09",
+      "tier": "B"
+    },
+    "s-0d3b63049d": {
+      "url": "https://www.bbc.co.uk/sport/formula1/articles/cvgep0xn85eo",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2024-08-21",
+      "tier": "B"
+    },
+    "s-d437df11a8": {
+      "url": "https://www.planetf1.com/news/f1-race-engineers-driver-pairings",
+      "publisher": "PlanetF1",
+      "type": "media",
+      "date": "2026-01-28",
+      "tier": "B"
+    },
+    "s-eed2438664": {
+      "url": "https://www.formula1.com/en/latest/article/max-verstappens-race-engineer-gianpiero-lambiase-to-leave-red-bull-in-2028.5QVkhqOu9rWXJGMEyPFD81",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2026-04-09",
+      "tier": "B"
+    },
+    "s-89ce77b59d": {
+      "url": "https://racingnews365.com/who-is-gianpiero-lambiase-the-stunning-red-bull-exit-that-has-rocked-f1",
+      "publisher": "RacingNews365",
+      "type": "media",
+      "date": "2026-04-09",
+      "tier": "B"
+    },
+    "s-35141a987e": {
+      "url": "https://racingnews365.com/gianpiero-lambiase",
+      "publisher": "RacingNews365",
+      "type": "media",
+      "date": "2023-09-01",
+      "tier": "B"
+    },
+    "s-e357835e70": {
+      "url": "https://www.bbc.com/sport/formula1/articles/cedexn47qzlo",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2026-04-09",
+      "tier": "B"
+    },
+    "s-2f6e5ae202": {
+      "url": "https://www.autosport.com/f1/news/f1-race-engineers-who-works-with-each-driver-and-what-is-their-role/10580876/",
+      "publisher": "Autosport",
+      "type": "media",
+      "date": "2024-02-28",
+      "tier": "B"
+    },
+    "s-440c180c78": {
+      "url": "https://www.formula1.com/en/latest/article/verstappens-race-engineer-lambiase-set-for-promotion-in-red-bull-restructure.2MrWXmpwJc5kKUKFvsF9SG",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2024-09-18",
+      "tier": "B"
+    },
+    "s-28d6cb02ff": {
+      "url": "https://www.the-race.com/formula-1/red-bull-reveals-new-f1-team-structure-after-major-exit/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2024-09-18",
+      "tier": "B"
+    },
+    "s-1d82f79c9a": {
+      "url": "https://www.bbc.co.uk/sport/formula1/36902822",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2016-07-27",
+      "tier": "B"
+    },
+    "s-531af3aa8d": {
+      "url": "https://www.bbc.com/sport/formula1/22447414",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2013-05-08",
+      "tier": "B"
+    },
+    "s-b1099805f7": {
+      "url": "https://www.skysports.com/f1/news/12433/10513956/james-allison-leaves-ferrari",
+      "publisher": "Sky Sports",
+      "type": "media",
+      "date": "2016-08-01",
+      "tier": "B"
+    },
+    "s-89a4db0633": {
+      "url": "https://www.formula1.com/en/latest/article.mercedes-announce-new-technical-director-as-james-allison-steps-back-from.2V03o2mzFozI8IormooTp3.html",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2021-04-09",
+      "tier": "B"
+    },
+    "s-e6145eb6b1": {
+      "url": "https://www.formula1.com/en/latest/article.mercedes-confirm-leadership-reshuffle-as-james-allison-returns-to-technical.2WSPCuUWupcdnNmYTUSUii.html",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2023-04-21",
+      "tier": "B"
+    },
+    "s-9a43269d6c": {
+      "url": "https://www.mercedesamgf1.com/en/team/management/james-allison/",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": null,
+      "tier": "A"
+    },
+    "s-e2edf669a6": {
+      "url": "https://www.the-race.com/formula-1/who-is-adrian-newey-departing-red-bull-f1-design-genius/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2024-05-01",
+      "tier": "B"
+    },
+    "s-acc29bfb74": {
+      "url": "https://www.motorsport.com/f1/news/adrian-newey-set-to-leave-red-bull-f1-team/10603201/",
+      "publisher": "Motorsport.com",
+      "type": "media",
+      "date": "2024-04-25",
+      "tier": "B"
+    },
+    "s-eeac8c14a6": {
+      "url": "https://www.autosport.com/f1/news/newey-set-to-leave-red-bull-f1-team/10603196/",
+      "publisher": "Autosport",
+      "type": "media",
+      "date": "2024-04-25",
+      "tier": "B"
+    },
+    "s-ede53bb089": {
+      "url": "https://www.formula1.com/en/latest/article/breaking-adrian-newey-to-join-aston-martin-as-silverstone-squad-win-race-to.4hHfMt6Z5FX1KiLDqWRV4C",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2024-09-10",
+      "tier": "B"
+    },
+    "s-fd1c121984": {
+      "url": "https://www.formula1.com/en/latest/article/adrian-newey-to-become-aston-martin-team-principal-from-2026-as-andy-cowell.72VRUpQWazORbiImZ4sJKx",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2025-11-26",
+      "tier": "B"
+    },
+    "s-e0b699af59": {
+      "url": "https://www.skysports.com/f1/news/12433/13475798/adrian-newey-aston-martin-name-legendary-designer-as-new-f1-team-principal-from-2026-season-replacing-andy-cowell",
+      "publisher": "Sky Sports",
+      "type": "media",
+      "date": "2025-11-26",
+      "tier": "B"
+    },
+    "s-e45f96f963": {
+      "url": "https://www.the-race.com/formula-1/aston-martin-team-principal-search-f1-2026-adrian-newey-jonathan-wheatley-audi/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2026-03-19",
+      "tier": "B"
+    },
+    "s-98c846f243": {
+      "url": "https://www.bbc.com/sport/formula1/18967950",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2012-07-24",
+      "tier": "B"
+    },
+    "s-85ef690c60": {
+      "url": "https://www.mercedesamgf1.com/en/team/management/toto-wolff/",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": null,
+      "tier": "A"
+    },
+    "s-e4298dab18": {
+      "url": "https://www.bbc.com/sport/formula1/21114695",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2013-01-21",
+      "tier": "B"
+    },
+    "s-cc1c17f1ac": {
+      "url": "https://www.bbc.com/sport/formula1/27937992",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2014-06-20",
+      "tier": "B"
+    },
+    "s-19053201c5": {
+      "url": "https://www.formula1.com/en/latest/article.breaking-wolff-to-continue-as-mercedes-team-principal-for-further-three.4y9Qx6wKNsT7l2laxLXdoU.html",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2020-12-18",
+      "tier": "B"
+    },
+    "s-e2f6fe4ca5": {
+      "url": "https://www.estaca.fr/actualites/frederic-vasseur-diplome-estaca-tete-scuderia-ferrari/",
+      "publisher": "ESTACA (engineering school)",
+      "type": "first_party",
+      "date": "2022-12-15",
+      "tier": "A"
+    },
+    "s-2aeab6a636": {
+      "url": "https://www.formula1.com/en/latest/article/sauber-confirm-vasseur-as-new-team-principal.4Yu5hUaTOMS0aY0M68goEc",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2017-07-12",
+      "tier": "B"
+    },
+    "s-b033724671": {
+      "url": "https://www.motorsport.com/f1/news/ferrari-announces-vasseur-as-new-formula-1-boss/10410795/",
+      "publisher": "Motorsport.com",
+      "type": "media",
+      "date": "2022-12-14",
+      "tier": "B"
+    },
+    "s-6fb1380e53": {
+      "url": "https://www.williamsf1.com/posts/93701e34-e20a-4bfd-bbd2-c289a1d5bd78/williams-racing-appoints-new-team-principal.",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": "2023-01-13",
+      "tier": "A"
+    },
+    "s-ec13ccb087": {
+      "url": "https://www.formula1.com/en/latest/article/williams-team-principal-james-vowles-signs-new-long-term-contract.tlw4pS12ZCoZdyA4UHwUK",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2025-06-19",
+      "tier": "B"
+    },
+    "s-03fa8b185b": {
+      "url": "https://www.autosport.com/f1/news/williams-announce-mercedes-strategist-vowles-as-new-f1-team-principal/10420356/",
+      "publisher": "Autosport",
+      "type": "media",
+      "date": "2023-01-14",
+      "tier": "B"
+    },
+    "s-02b3580c02": {
+      "url": "https://www.formula1.com/en/latest/article.sunday-conversation-gene-haas-on-staying-humble-and-racing-on-his-own-terms.6tUcQ7oxskoEEai8I8uskS.html",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2018-04-08",
+      "tier": "B"
+    },
+    "s-17666ac291": {
+      "url": "https://racingnews365.com/who-is-the-new-team-boss-of-haas-f1",
+      "publisher": "RacingNews365",
+      "type": "media",
+      "date": null,
+      "tier": "B"
+    },
+    "s-096d807456": {
+      "url": "https://www.the-race.com/formula-1/who-is-new-haas-f1-boss-ayao-komatsu/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2024-01-10",
+      "tier": "B"
+    },
+    "s-7603f8e5f2": {
+      "url": "https://www.haasf1team.com/news/moneygram-haas-f1-team-appoints-ayao-komatsu-team-principal",
+      "publisher": "MoneyGram Haas F1 Team",
+      "type": "first_party",
+      "date": "2024-01-10",
+      "tier": "A"
+    },
+    "s-0022cf0363": {
+      "url": "https://www.formula1.com/en/latest/article.breaking-guenther-steiner-leaves-haas-team-principal-ayao-komatsu.EoHIsZH1SbRkJMSKJ8h3I.html",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2024-01-10",
+      "tier": "B"
+    },
+    "s-7dc4d3ca35": {
+      "url": "https://www.bbc.com/sport/formula1/67934824",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2024-01-10",
+      "tier": "B"
+    },
+    "s-255f72030f": {
+      "url": "https://www.crash.net/f1/news/1021143/1/george-russell-have-new-race-engineer-f1-2023-season",
+      "publisher": "Crash.net",
+      "type": "media",
+      "date": "2023-02-27",
+      "tier": "B"
+    },
+    "s-7c3b68e798": {
+      "url": "https://www.bbc.com/sport/formula1/50977329",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2020-01-02",
+      "tier": "B"
+    },
+    "s-f7fc76cd0a": {
+      "url": "https://www.formula1.com/en/latest/article.andrea-stella-promoted-to-mclaren-racing-director-role.1Q0bleLDmvuCUIoUjM7BW4.html",
+      "publisher": "Formula1.com",
+      "type": "media",
+      "date": "2020-01-03",
+      "tier": "B"
+    },
+    "s-9f2e32ae2d": {
+      "url": "https://www.wikidata.org/wiki/Q100400524",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-17a7942acc": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/gianpiero-lambiase-joins-mclaren-mastercard-f1-team-chief-racing-officer/",
+      "publisher": "McLaren",
+      "type": "first_party",
+      "date": "2026-04-09",
+      "tier": "A"
+    },
+    "s-acdf4a9d43": {
+      "url": "https://www.wikidata.org/wiki/Q29419176",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-cbc022c117": {
+      "url": "https://www.wikidata.org/wiki/Q3913494",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-720d6dc952": {
+      "url": "https://www.wikidata.org/wiki/Q173380",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-e1c087404b": {
+      "url": "https://www.wikidata.org/wiki/Q90005",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-5184a403c1": {
+      "url": "https://www.wikidata.org/wiki/Q21634600",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-1113ae60dc": {
+      "url": "https://www.wikidata.org/wiki/Q708167",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-bbfed8b9fe": {
+      "url": "https://www.wikidata.org/wiki/Q1094091",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-790abaa020": {
+      "url": "https://www.wikidata.org/wiki/Q29418940",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-6a98f369dc": {
+      "url": "https://www.wikidata.org/wiki/Q9282722",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-694467e7f7": {
+      "url": "https://www.wikidata.org/wiki/Q3616058",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": null,
+      "tier": "wikidata"
+    },
+    "s-f47b5bb2b6": {
+      "url": "https://www.wikidata.org/wiki/Q136619699",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-472ae86745": {
+      "url": "https://www.wikidata.org/wiki/Q137203872",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-8792195c1c": {
+      "url": "https://www.wikidata.org/wiki/Q132240507",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-873b4d3559": {
+      "url": "https://www.wikidata.org/wiki/Q110096714",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-098bf87ceb": {
+      "url": "https://www.wikidata.org/wiki/Q130693595",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-9fb01ee28a": {
+      "url": "https://www.wikidata.org/wiki/Q138175727",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-aac30476c2": {
+      "url": "https://www.wikidata.org/wiki/Q8064960",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-46279330a0": {
+      "url": "https://www.wikidata.org/wiki/Q97452547",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-bb8ec8de1a": {
+      "url": "https://www.wikidata.org/wiki/Q3280576",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-1c348bcd88": {
+      "url": "https://www.wikidata.org/wiki/Q117774065",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-5df941ff2d": {
+      "url": "https://www.wikidata.org/wiki/Q128496015",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-3322635292": {
+      "url": "https://www.wikidata.org/wiki/Q132906747",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-f7e9c9e113": {
+      "url": "https://www.wikidata.org/wiki/Q130642903",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-18c6ddf9f5": {
+      "url": "https://www.wikidata.org/wiki/Q121009678",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-66ace51d70": {
+      "url": "https://www.wikidata.org/wiki/Q173401",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-8f4b64970a": {
+      "url": "https://www.wikidata.org/wiki/Q11753278",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-d7751badfb": {
+      "url": "https://www.wikidata.org/wiki/Q50394511",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-b57989d22f": {
+      "url": "https://www.wikidata.org/wiki/Q138507314",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-f110fc37a9": {
+      "url": "https://www.wikidata.org/wiki/Q138507765",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-95fa6314cd": {
+      "url": "https://www.wikidata.org/wiki/Q9144137",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-23bf5d898b": {
+      "url": "https://www.wikidata.org/wiki/Q121611107",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-a58657dfda": {
+      "url": "https://www.wikidata.org/wiki/Q138507350",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-6a7f234b29": {
+      "url": "https://www.wikidata.org/wiki/Q173169",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-9e0151c853": {
+      "url": "https://www.wikidata.org/wiki/Q9345800",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-05ec289961": {
+      "url": "https://www.wikidata.org/wiki/Q47502384",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-9f55cc1015": {
+      "url": "https://www.wikidata.org/wiki/Q120799061",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-b4124e3942": {
+      "url": "https://www.wikidata.org/wiki/Q110317087",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-c182f8a5c0": {
+      "url": "https://www.wikidata.org/wiki/Q137638975",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-440c93720c": {
+      "url": "https://www.wikidata.org/wiki/Q19788193",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-53923eac00": {
+      "url": "https://www.wikidata.org/wiki/Q173002",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-5e769fc472": {
+      "url": "https://www.wikidata.org/wiki/Q134723095",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-d706fdcff6": {
+      "url": "https://www.wikidata.org/wiki/Q131842507",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-7132ec61bf": {
+      "url": "https://www.wikidata.org/wiki/Q24053619",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-4c630d975a": {
+      "url": "https://www.wikidata.org/wiki/Q30929441",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-e2b1b34227": {
+      "url": "https://www.wikidata.org/wiki/Q96650378",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-fbc24ecc4a": {
+      "url": "https://www.wikidata.org/wiki/Q29419200",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-8b7fb775a7": {
+      "url": "https://www.wikidata.org/wiki/Q29051514",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-ddc7e29242": {
+      "url": "https://www.wikidata.org/wiki/Q82924",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-ed106aa57e": {
+      "url": "https://www.wikidata.org/wiki/Q121539005",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-19395848f4": {
+      "url": "https://www.wikidata.org/wiki/Q173631",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-ff4b876836": {
+      "url": "https://www.wikidata.org/wiki/Q112730841",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-c72a24d80b": {
+      "url": "https://www.wikidata.org/wiki/Q4288794",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-5929588840": {
+      "url": "https://www.wikidata.org/wiki/Q11693086",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-1a02792916": {
+      "url": "https://www.wikidata.org/wiki/Q138497250",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-0358964333": {
+      "url": "https://www.wikidata.org/wiki/Q138498556",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-c92deb9be9": {
+      "url": "https://www.wikidata.org/wiki/Q4346623",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-b3f71f5920": {
+      "url": "https://www.wikidata.org/wiki/Q173544",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-21e62f7e05": {
+      "url": "https://www.wikidata.org/wiki/Q19622520",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-b2da27ff35": {
+      "url": "https://www.wikidata.org/wiki/Q118213971",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-ed944e5089": {
+      "url": "https://www.wikidata.org/wiki/Q118163719",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-c951dc543c": {
+      "url": "https://www.wikidata.org/wiki/Q111576763",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-ce26ded1a9": {
+      "url": "https://www.wikidata.org/wiki/Q138465608",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
+    },
+    "s-2bb351e155": {
+      "url": "https://www.wikidata.org/wiki/Q137901772",
+      "publisher": "Wikidata",
+      "type": "wikidata",
+      "date": "2026-10-02",
+      "tier": "wikidata"
     }
   },
   "roles": [
@@ -1992,7 +4355,9 @@
       "current": true,
       "sources": [
         "merc-wolff",
-        "merc-launch-2026"
+        "merc-launch-2026",
+        "s-85ef690c60",
+        "s-19053201c5"
       ],
       "confidence": "high",
       "display": true
@@ -2039,12 +4404,14 @@
       "constructorId": "mercedes",
       "driverId": null,
       "season": 2026,
-      "effectiveFrom": null,
+      "effectiveFrom": "2023-04-21",
       "effectiveTo": null,
       "current": true,
       "sources": [
         "merc-allison",
-        "espn-allison-deal"
+        "espn-allison-deal",
+        "s-e6145eb6b1",
+        "s-9a43269d6c"
       ],
       "confidence": "high",
       "display": true
@@ -2074,12 +4441,17 @@
       "constructorId": "mercedes",
       "driverId": "george-russell",
       "season": 2026,
-      "effectiveFrom": null,
+      "effectiveFrom": "2023",
       "effectiveTo": null,
       "current": true,
       "sources": [
         "msport-engineers-2026",
-        "rn365-engineers-2026"
+        "rn365-engineers-2026",
+        "s-255f72030f",
+        "s-d437df11a8",
+        "s-ea8283aed0",
+        "s-8331690a79",
+        "s-578c7417b0"
       ],
       "confidence": "medium",
       "display": true,
@@ -2093,13 +4465,17 @@
       "constructorId": "mercedes",
       "driverId": "kimi-antonelli",
       "season": 2026,
-      "effectiveFrom": null,
+      "effectiveFrom": "2025",
       "effectiveTo": null,
       "current": true,
       "sources": [
         "msport-engineers-2026",
         "rn365-engineers-2026",
-        "s-60be554aa9"
+        "s-60be554aa9",
+        "s-a64054a395",
+        "s-8331690a79",
+        "s-578c7417b0",
+        "s-d437df11a8"
       ],
       "confidence": "high",
       "display": true,
@@ -3213,12 +5589,14 @@
       "constructorId": "racing-bulls",
       "driverId": "arvid-lindblad",
       "season": 2026,
-      "effectiveFrom": null,
+      "effectiveFrom": "2026",
       "effectiveTo": null,
       "current": true,
       "sources": [
         "s-e7a2e96cc5",
-        "s-8331690a79"
+        "s-8331690a79",
+        "s-d437df11a8",
+        "s-ea8283aed0"
       ],
       "confidence": "medium",
       "display": true,
@@ -3774,7 +6152,7 @@
       "constructorId": "haas",
       "driverId": null,
       "season": 2026,
-      "effectiveFrom": null,
+      "effectiveFrom": "2024-01-10",
       "effectiveTo": null,
       "current": true,
       "sources": [
@@ -3782,7 +6160,10 @@
         "s-29b6ca09a6",
         "s-33066e4c26",
         "s-9fb8876647",
-        "s-9f1c594ee2"
+        "s-9f1c594ee2",
+        "s-7603f8e5f2",
+        "s-0022cf0363",
+        "s-7dc4d3ca35"
       ],
       "confidence": "high",
       "display": true,
@@ -3791,7 +6172,7 @@
     {
       "personId": "gene-haas",
       "role": "Founder",
-      "roleGroup": "leadership",
+      "roleGroup": "ownership",
       "rank": 2,
       "constructorId": "haas",
       "driverId": null,
@@ -4009,7 +6390,7 @@
     },
     {
       "personId": "adrian-newey",
-      "role": "Managing Technical Partner and Team Principal",
+      "role": "Managing Technical Partner; Team Principal",
       "roleGroup": "leadership",
       "rank": 1,
       "constructorId": "aston-martin",
@@ -4456,7 +6837,7 @@
       "constructorId": "williams",
       "driverId": null,
       "season": 2026,
-      "effectiveFrom": null,
+      "effectiveFrom": "2023-02-20",
       "effectiveTo": null,
       "current": true,
       "sources": [
@@ -4466,7 +6847,10 @@
         "s-a621d608f7",
         "s-13fd95936f",
         "s-9f1c594ee2",
-        "s-27c39b7a80"
+        "s-27c39b7a80",
+        "s-6fb1380e53",
+        "s-03fa8b185b",
+        "s-ec13ccb087"
       ],
       "confidence": "high",
       "display": true,
@@ -6069,14 +8453,904 @@
       "constructorId": "mercedes",
       "driverId": null,
       "season": 2026,
-      "effectiveFrom": null,
+      "effectiveFrom": "2024-08-21",
       "effectiveTo": null,
       "current": true,
       "sources": [
-        "s-60be554aa9"
+        "s-60be554aa9",
+        "s-0d3b63049d",
+        "s-1a9453ac10",
+        "s-578c7417b0"
       ],
       "confidence": "high",
       "display": true
+    },
+    {
+      "personId": "peter-bonnington",
+      "role": "Data Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": null,
+      "organisation": "Jordan Grand Prix",
+      "driverId": null,
+      "season": 2004,
+      "effectiveFrom": "2004",
+      "effectiveTo": "2005",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-1a9453ac10"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "peter-bonnington",
+      "role": "Performance Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": null,
+      "organisation": "Honda Racing F1",
+      "driverId": "jenson-button",
+      "season": 2006,
+      "effectiveFrom": "2006",
+      "effectiveTo": "2008",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-1a9453ac10"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "peter-bonnington",
+      "role": "Data/Performance Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": null,
+      "organisation": "Brawn GP",
+      "driverId": "jenson-button",
+      "season": 2009,
+      "effectiveFrom": "2009",
+      "effectiveTo": "2009",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-1a9453ac10"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "peter-bonnington",
+      "role": "Assistant Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "mercedes",
+      "driverId": "michael-schumacher",
+      "season": 2010,
+      "effectiveFrom": "2010",
+      "effectiveTo": "2011-09",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-1a9453ac10"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "peter-bonnington",
+      "role": "Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "mercedes",
+      "driverId": "michael-schumacher",
+      "season": 2011,
+      "effectiveFrom": "2011-09",
+      "effectiveTo": "2012",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-1a9453ac10",
+        "s-a64054a395"
+      ],
+      "confidence": "medium",
+      "display": false,
+      "conflicts": [
+        "Brief hint said Schumacher race engineer 2010-2012; Motor Sport Magazine: official race engineer only from Sept 2011 (after Mark Slade left), assistant race engineer before that"
+      ],
+      "notes": "F1.com confirms he worked with Schumacher during the comeback, no dates"
+    },
+    {
+      "personId": "peter-bonnington",
+      "role": "Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "mercedes",
+      "driverId": "lewis-hamilton",
+      "season": 2013,
+      "effectiveFrom": "2013",
+      "effectiveTo": "2024-12-08",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-b6291ea8d9",
+        "s-8331690a79",
+        "s-0d3b63049d",
+        "s-a64054a395"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "last race together 2024 Abu Dhabi GP (race date 2024-12-08); covered Hamilton's whole 12-year Mercedes career"
+    },
+    {
+      "personId": "gianpiero-lambiase",
+      "role": "Data Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": null,
+      "organisation": "Jordan Grand Prix",
+      "driverId": null,
+      "season": 2005,
+      "effectiveFrom": "2005",
+      "effectiveTo": null,
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-eed2438664",
+        "s-89ce77b59d"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "stayed through Midland/Spyker/Force India eras"
+    },
+    {
+      "personId": "gianpiero-lambiase",
+      "role": "Performance Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "force-india",
+      "driverId": "giancarlo-fisichella",
+      "season": 2009,
+      "effectiveFrom": "2009",
+      "effectiveTo": "2009",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-35141a987e",
+        "s-89ce77b59d"
+      ],
+      "confidence": "medium",
+      "display": false,
+      "notes": "Fisichella's 2009 Spa pole/podium; both sources same publisher"
+    },
+    {
+      "personId": "gianpiero-lambiase",
+      "role": "Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "red-bull",
+      "driverId": "daniil-kvyat",
+      "season": 2015,
+      "effectiveFrom": "2015",
+      "effectiveTo": "2016-05",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-eed2438664",
+        "s-89ce77b59d"
+      ],
+      "confidence": "medium",
+      "display": false,
+      "conflicts": [
+        "F1.com: joined Red Bull in 2015; RN365: joined late 2014, initially with Kvyat"
+      ]
+    },
+    {
+      "personId": "gianpiero-lambiase",
+      "role": "Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "red-bull",
+      "driverId": "max-verstappen",
+      "season": 2016,
+      "effectiveFrom": "2016-05-15",
+      "effectiveTo": null,
+      "current": true,
+      "history": true,
+      "sources": [
+        "s-e357835e70",
+        "s-89ce77b59d",
+        "s-eed2438664",
+        "s-8331690a79"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "first race together 2016 Spanish GP (race date 2016-05-15), Verstappen's Red Bull debut; pairing continues in 2026"
+    },
+    {
+      "personId": "gianpiero-lambiase",
+      "role": "Head of Race Engineering",
+      "roleGroup": "race_engineering",
+      "constructorId": "red-bull",
+      "driverId": null,
+      "season": 2022,
+      "effectiveFrom": "2022",
+      "effectiveTo": null,
+      "current": true,
+      "history": true,
+      "sources": [
+        "s-2f6e5ae202",
+        "s-35141a987e",
+        "s-04060f8987",
+        "s-e357835e70"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "gianpiero-lambiase",
+      "role": "Head of Racing",
+      "roleGroup": "leadership",
+      "constructorId": "red-bull",
+      "driverId": null,
+      "season": 2025,
+      "effectiveFrom": "2025-01",
+      "effectiveTo": null,
+      "current": true,
+      "history": true,
+      "sources": [
+        "s-440c180c78",
+        "s-28d6cb02ff",
+        "s-eed2438664"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "announced 2024-09-18 (restructure after Wheatley exit, effective Jan 2025); keeps Verstappen race-engineer role"
+    },
+    {
+      "personId": "james-allison",
+      "role": "Head of Aerodynamics",
+      "roleGroup": "technical",
+      "constructorId": "ferrari",
+      "driverId": null,
+      "season": 2000,
+      "effectiveFrom": "2000",
+      "effectiveTo": "2004",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-1d82f79c9a"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "james-allison",
+      "role": "Technical Director",
+      "roleGroup": "technical",
+      "constructorId": "lotus-f1",
+      "driverId": null,
+      "season": 2013,
+      "effectiveFrom": null,
+      "effectiveTo": "2013-05-08",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-531af3aa8d",
+        "s-b1099805f7"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "start of Enstone TD tenure not sourced; stepped down 2013-05-08 (Nick Chester replaced him)"
+    },
+    {
+      "personId": "james-allison",
+      "role": "Technical Director",
+      "roleGroup": "technical",
+      "constructorId": "ferrari",
+      "driverId": null,
+      "season": 2013,
+      "effectiveFrom": "2013",
+      "effectiveTo": "2016-07-27",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-1d82f79c9a",
+        "s-b1099805f7"
+      ],
+      "confidence": "medium",
+      "display": false,
+      "conflicts": [
+        "BBC titles the role technical director; Sky Sports calls it chief technical officer"
+      ]
+    },
+    {
+      "personId": "james-allison",
+      "role": "Technical Director",
+      "roleGroup": "technical",
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2017,
+      "effectiveFrom": "2017",
+      "effectiveTo": "2021-04-09",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-89a4db0633",
+        "s-e6145eb6b1"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "james-allison",
+      "role": "Chief Technical Officer",
+      "roleGroup": "technical",
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2021,
+      "effectiveFrom": "2021-04-09",
+      "effectiveTo": "2023-04-21",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-89a4db0633",
+        "s-e6145eb6b1"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "adrian-newey",
+      "role": "Chief Designer / Technical Director",
+      "roleGroup": "technical",
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 1990,
+      "effectiveFrom": "1990",
+      "effectiveTo": "1996",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-e2edf669a6"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "adrian-newey",
+      "role": "Technical Director",
+      "roleGroup": "technical",
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 1997,
+      "effectiveFrom": "1997",
+      "effectiveTo": "2005",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-e2edf669a6"
+      ],
+      "confidence": "medium",
+      "display": false,
+      "conflicts": [
+        "The Race table gives McLaren 1997-2004; he joined Red Bull for 2006, so end year 2004/2005 unconfirmed"
+      ]
+    },
+    {
+      "personId": "adrian-newey",
+      "role": "Chief Technical Officer",
+      "roleGroup": "technical",
+      "constructorId": "red-bull",
+      "driverId": null,
+      "season": 2006,
+      "effectiveFrom": "2006",
+      "effectiveTo": "2025",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-acc29bfb74",
+        "s-eeac8c14a6",
+        "s-e2edf669a6",
+        "s-ede53bb089"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "departure announced May 2024 (F1.com); left before joining Aston Martin 2025-03-01; exact last day not sourced"
+    },
+    {
+      "personId": "adrian-newey",
+      "role": "Managing Technical Partner",
+      "roleGroup": "technical",
+      "constructorId": "aston-martin",
+      "driverId": null,
+      "season": 2025,
+      "effectiveFrom": "2025-03-01",
+      "effectiveTo": null,
+      "current": true,
+      "history": true,
+      "sources": [
+        "s-ede53bb089",
+        "s-fd1c121984",
+        "s-e0b699af59",
+        "s-e45f96f963"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "adrian-newey",
+      "role": "Team Principal",
+      "roleGroup": "leadership",
+      "constructorId": "aston-martin",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": "2026",
+      "effectiveTo": null,
+      "current": true,
+      "history": true,
+      "sources": [
+        "s-fd1c121984",
+        "s-e0b699af59",
+        "s-e45f96f963"
+      ],
+      "confidence": "medium",
+      "display": false,
+      "conflicts": [
+        "Mar 2026 reports said Newey would step down with Jonathan Wheatley lined up; Aston statement 2026-03-19 said he 'continues to lead the team as team principal'; no confirmed handover found"
+      ]
+    },
+    {
+      "personId": "toto-wolff",
+      "role": "Non-Executive Director",
+      "roleGroup": "leadership",
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 2009,
+      "effectiveFrom": "2009",
+      "effectiveTo": "2012-07-24",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-98c846f243",
+        "s-85ef690c60"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": " Shareholding recorded in the ownership graph."
+    },
+    {
+      "personId": "toto-wolff",
+      "role": "Executive Director",
+      "roleGroup": "leadership",
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 2012,
+      "effectiveFrom": "2012-07-24",
+      "effectiveTo": "2013-01-21",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-98c846f243",
+        "s-e4298dab18",
+        "s-85ef690c60"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "toto-wolff",
+      "role": "Executive Director",
+      "roleGroup": "leadership",
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2013,
+      "effectiveFrom": "2013-01-21",
+      "effectiveTo": null,
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-e4298dab18",
+        "s-cc1c17f1ac"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "BBC: appointed director of motorsport and executive director of the F1 team; Mercedes bio: joined 2013 as Managing Partner"
+    },
+    {
+      "personId": "frederic-vasseur",
+      "role": "Director of F1 operations (team principal)",
+      "roleGroup": "leadership",
+      "constructorId": "renault-2016",
+      "driverId": null,
+      "season": 2016,
+      "effectiveFrom": "2016",
+      "effectiveTo": null,
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-e2f6fe4ca5",
+        "s-2aeab6a636"
+      ],
+      "confidence": "low",
+      "display": false,
+      "notes": "ESTACA: 'Director of F1 operations' at Renault; F1.com 2017: 'formerly with Renault's F1 program'; start/end dates not read in a source",
+      "held": "low confidence"
+    },
+    {
+      "personId": "frederic-vasseur",
+      "role": "Team Principal & CEO",
+      "roleGroup": "leadership",
+      "constructorId": "sauber",
+      "driverId": null,
+      "season": 2017,
+      "effectiveFrom": "2017-07-17",
+      "effectiveTo": "2018",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-2aeab6a636",
+        "s-b033724671"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "also Managing Director & CEO of Sauber Motorsport AG"
+    },
+    {
+      "personId": "frederic-vasseur",
+      "role": "Team Principal & CEO",
+      "roleGroup": "leadership",
+      "constructorId": "alfa-romeo-sauber",
+      "driverId": null,
+      "season": 2019,
+      "effectiveFrom": "2019",
+      "effectiveTo": "2022-12",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-b033724671",
+        "s-e2f6fe4ca5"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "left for Ferrari; start there 2023-01-09"
+    },
+    {
+      "personId": "frederic-vasseur",
+      "role": "Team Principal & General Manager",
+      "roleGroup": "leadership",
+      "constructorId": "ferrari",
+      "driverId": null,
+      "season": 2023,
+      "effectiveFrom": "2023-01-09",
+      "effectiveTo": null,
+      "current": true,
+      "history": true,
+      "sources": [
+        "s-b033724671",
+        "s-e2f6fe4ca5"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "james-vowles",
+      "role": "Engineering & strategy roles",
+      "roleGroup": "sporting",
+      "constructorId": null,
+      "organisation": "British American Racing / Honda Racing F1",
+      "driverId": null,
+      "season": 2008,
+      "effectiveFrom": null,
+      "effectiveTo": "2008",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-6fb1380e53",
+        "s-ec13ccb087"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "james-vowles",
+      "role": "Strategist",
+      "roleGroup": "sporting",
+      "constructorId": null,
+      "organisation": "Brawn GP",
+      "driverId": null,
+      "season": 2009,
+      "effectiveFrom": "2009",
+      "effectiveTo": "2009",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-6fb1380e53"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "james-vowles",
+      "role": "Motorsport Strategy Director",
+      "roleGroup": "sporting",
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2023,
+      "effectiveFrom": null,
+      "effectiveTo": "2023-02",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-6fb1380e53",
+        "s-03fa8b185b",
+        "s-ec13ccb087"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "at Mercedes 2010-2023 overall; strategy director 'for over four years' (Williams) / 2019-2022 (F1.com), start c.2018-2019"
+    },
+    {
+      "personId": "gene-haas",
+      "role": "Founder",
+      "roleGroup": "ownership",
+      "constructorId": null,
+      "organisation": "Haas Automation",
+      "driverId": null,
+      "season": null,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "history": true,
+      "sources": [
+        "s-02b3580c02"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "founding year not read in a source"
+    },
+    {
+      "personId": "ayao-komatsu",
+      "role": "Tyre Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": null,
+      "organisation": "British American Racing",
+      "driverId": null,
+      "season": 2003,
+      "effectiveFrom": "2003",
+      "effectiveTo": "2006",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-17666ac291",
+        "s-096d807456",
+        "s-7603f8e5f2"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "ayao-komatsu",
+      "role": "Performance Engineer, Race Engineer, Chief Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": null,
+      "organisation": "Renault / Lotus F1 Team (Enstone)",
+      "driverId": null,
+      "season": 2006,
+      "effectiveFrom": "2006",
+      "effectiveTo": "2015",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-096d807456",
+        "s-17666ac291",
+        "s-7603f8e5f2"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "race engineer to Vitaly Petrov and Romain Grosjean (The Race); per-driver years not sourced"
+    },
+    {
+      "personId": "ayao-komatsu",
+      "role": "Chief Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "haas",
+      "driverId": null,
+      "season": 2016,
+      "effectiveFrom": "2016",
+      "effectiveTo": null,
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-7603f8e5f2",
+        "s-17666ac291",
+        "s-0022cf0363"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "ayao-komatsu",
+      "role": "Director of Engineering",
+      "roleGroup": "technical",
+      "constructorId": "haas",
+      "driverId": null,
+      "season": 2024,
+      "effectiveFrom": null,
+      "effectiveTo": "2024-01-10",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-7603f8e5f2",
+        "s-7dc4d3ca35",
+        "s-0022cf0363"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "guenther-steiner",
+      "role": "Team Principal",
+      "roleGroup": "leadership",
+      "constructorId": "haas",
+      "driverId": null,
+      "season": 2016,
+      "effectiveFrom": "2016",
+      "effectiveTo": "2024-01-10",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-0022cf0363",
+        "s-7603f8e5f2",
+        "s-7dc4d3ca35"
+      ],
+      "confidence": "high",
+      "display": false,
+      "conflicts": [
+        "F1.com counts tenure from 2016 (race debut); BBC/Haas say he led the team about 10 years, i.e. from its 2014 founding"
+      ]
+    },
+    {
+      "personId": "marcus-dudley",
+      "role": "Performance Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2013,
+      "effectiveFrom": "2013",
+      "effectiveTo": "2022",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-d437df11a8",
+        "s-2f6e5ae202",
+        "s-255f72030f"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "stood in as Hamilton's race engineer at 2019 Mexican GP and 2022 Austrian GP"
+    },
+    {
+      "personId": "pierre-hamelin",
+      "role": "Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "racing-bulls",
+      "driverId": "isack-hadjar",
+      "season": 2025,
+      "effectiveFrom": "2025",
+      "effectiveTo": "2025",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-d437df11a8",
+        "s-8331690a79"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "andrea-stella",
+      "role": "Performance Engineer / Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "ferrari",
+      "driverId": null,
+      "season": 2014,
+      "effectiveFrom": null,
+      "effectiveTo": "2014",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-5f01f82dc1",
+        "s-7c3b68e798"
+      ],
+      "confidence": "medium",
+      "display": false,
+      "notes": "McLaren bio: test-team performance engineer then race engineer to Schumacher, Raikkonen, Alonso; joined McLaren from Ferrari end of 2014 (BBC); per-driver years not sourced"
+    },
+    {
+      "personId": "andrea-stella",
+      "role": "Race Engineer",
+      "roleGroup": "race_engineering",
+      "constructorId": "ferrari",
+      "driverId": "fernando-alonso",
+      "season": 2014,
+      "effectiveFrom": null,
+      "effectiveTo": "2014",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-5f01f82dc1"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "andrea-stella",
+      "role": "Head of Race Operations",
+      "roleGroup": "sporting",
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2015,
+      "effectiveFrom": "2015",
+      "effectiveTo": "2018",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-5f01f82dc1"
+      ],
+      "confidence": "medium",
+      "display": false
+    },
+    {
+      "personId": "andrea-stella",
+      "role": "Performance Director",
+      "roleGroup": "technical",
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2018,
+      "effectiveFrom": "2018",
+      "effectiveTo": "2019",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-5f01f82dc1",
+        "s-7c3b68e798",
+        "s-f7fc76cd0a"
+      ],
+      "confidence": "high",
+      "display": false
+    },
+    {
+      "personId": "andrea-stella",
+      "role": "Racing Director",
+      "roleGroup": "sporting",
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2020,
+      "effectiveFrom": "2020-01",
+      "effectiveTo": "2022-12",
+      "current": false,
+      "history": true,
+      "sources": [
+        "s-f7fc76cd0a",
+        "s-7c3b68e798"
+      ],
+      "confidence": "high",
+      "display": false,
+      "conflicts": [
+        "McLaren bio lists 'Executive Director Racing 2019-2022' instead"
+      ]
+    },
+    {
+      "personId": "andrea-stella",
+      "role": "Team Principal",
+      "roleGroup": "leadership",
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2022,
+      "effectiveFrom": "2022-12",
+      "effectiveTo": null,
+      "current": true,
+      "history": true,
+      "sources": [
+        "s-5f01f82dc1"
+      ],
+      "confidence": "high",
+      "display": false,
+      "notes": "announced 2022-12-13 replacing Andreas Seidl; bio now says Team Principal and Chief Racing Officer"
     }
   ],
   "garage": {

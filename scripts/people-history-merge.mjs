@@ -27,6 +27,10 @@ const srcs = (arr) => (arr || []).filter((s) => s?.url && !BAD.test(s.url)).map(
 const yr = (s) => (s ? Number(String(s).slice(0, 4)) : null);
 const norm = (t) => String(t || '').toLowerCase().replace(/\s+/g, ' ').trim();
 
+// one record = one title: a combined title is split so each title can carry its own dated spell
+const SPLIT = { 'Managing Technical Partner and Team Principal': 'Managing Technical Partner; Team Principal' };
+for (const r of P.roles) if (SPLIT[r.role]) r.role = SPLIT[r.role];
+
 let added = 0, lent = 0, skipped = 0;
 const key = (r) => `${r.personId}|${r.constructorId || r.organisation || ''}|${norm(r.role)}|${r.driverId || ''}|${r.effectiveFrom || ''}`;
 const have = new Set(P.roles.map(key));
@@ -37,7 +41,8 @@ for (const x of H.roles || []) {
   const ongoing = x.current === true && !x.effectiveTo;
   if (ongoing && x.constructorId) {
     const titles = splitTitles({ role: x.role, driverId: x.driverId }).map((t) => norm(t.title));
-    const host = P.roles.find((r) => !r.history && r.personId === x.personId && r.constructorId === x.constructorId && r.current === true && !r.effectiveTo && (r.driverId || null) === (x.driverId || null) && splitTitles(r).some((t) => titles.includes(norm(t.title))));
+    // only a single-title record can borrow a start date (a combined record would date every title it carries)
+    const host = P.roles.find((r) => !r.history && r.personId === x.personId && r.constructorId === x.constructorId && r.current === true && !r.effectiveTo && (r.driverId || null) === (x.driverId || null) && splitTitles(r).length === 1 && titles.includes(norm(splitTitles(r)[0].title)));
     if (host) {
       if (!host.effectiveFrom && x.effectiveFrom) { host.effectiveFrom = x.effectiveFrom; lent++; }
       host.sources = [...new Set([...host.sources, ...sources])];
@@ -74,11 +79,12 @@ function putField(pid, k, f) {
   // non-strict fields (e.g. nationality wording "British" vs "United Kingdom"): keep the first, record the variant
   else prev.variants = [...new Set([...(prev.variants || []), f.value])];
 }
-// Wikidata first (open identity data), then team/media research
+// team/media research first (demonym wording, e.g. "British"), then open identity data; a disagreeing date of birth
+// or birthplace puts the field on hold
+for (const [pid, rec] of Object.entries(H.identity || {})) if (P.people[pid]) for (const k of FIELDS) putField(pid, k, rec[k]);
 for (const [pid, rec] of Object.entries(W.identity || {})) for (const k of FIELDS) if (k !== 'known_as') putField(pid, k, rec[k]);
 for (const [pid, rec] of Object.entries(H.identity || {})) {
   if (!P.people[pid]) continue;
-  for (const k of FIELDS) putField(pid, k, rec[k]);
   for (const k of LISTS) for (const f of rec[k] || []) {
     const sources = srcs(f.sources);
     if (!f?.value || !sources.length) continue;
