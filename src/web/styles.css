@@ -528,3 +528,4 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .role-list{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:8px}.role-list li{padding:8px 10px;border:1px solid var(--line,rgba(255,255,255,.1));border-radius:8px}
 .role-list .src{margin-left:8px}
 .hs-r span{left:auto;right:-6px;transform:none}.hs-l span{left:-6px;transform:none}
+@media (scripting: enabled){.xp:not(.xp-on) .xp-panel{display:none}.xp .xp-chips{display:flex}}
