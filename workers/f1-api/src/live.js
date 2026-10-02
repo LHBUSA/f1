@@ -3,6 +3,7 @@
 const ESPN_CORE = 'https://sports.core.api.espn.com/v2/sports/racing/leagues/f1';
 const UA = 'PropBetEdge-F1/1.0 (+https://f1.propbetedge.ai)';
 const SESSION_LABEL = { FP1: 'Practice 1', FP2: 'Practice 2', FP3: 'Practice 3', Qual: 'Qualifying', SS: 'Sprint Qualifying', SR: 'Sprint', Race: 'Grand Prix' };
+import { buildModel, progressAt } from '../../../src/core/progress.mjs';
 const RECORD_MS = 10_000;
 const RECORDER_VERSION = 'f1-recorder@1';
 // numeric timing values kept per car per frame (as the source reports them; parsed, never estimated)
@@ -18,6 +19,7 @@ export class LiveHub {
   }
   async fetch(req) {
     // unflushed recorder frames (the live tail R2 does not have yet)
+    if (req && new URL(req.url).pathname === '/proof') { const sid = new URL(req.url).searchParams.get('session'); await this.proof(sid); const o = await this.env.DATA.get(`observations/espn-${sid}/proof.json`); return json(o ? await o.json() : { error: 'no recording' }); }
     if (req && new URL(req.url).pathname === '/buffer') {
       const b = (await this.state.storage.get('obs-buf')) || null;
       return json(b ? { session: b.session, meta: b.meta, frames: b.frames } : { session: null, frames: [] });
@@ -67,7 +69,24 @@ export class LiveHub {
     cur.frames.push({ t: f.t, state: f.state, lap: f.lap, flag: f.flag, status: f.status, clock: f.clock, cars: f.cars });
     cur.last_sig = sig;
     await this.state.storage.put('obs-buf', cur);
-    if (f.state === 'post') await this.flush(true);
+    if (f.state === 'post') { await this.flush(true); await this.proof(f.session).catch((e) => console.error('proof', e?.message || e)); }
+  }
+  // Automatic replay proof when a session ends (runs in the Worker; does not depend on any operator session).
+  // Same deterministic checks as scripts/replay-proof.mjs, written next to the recording as proof.json.
+  async proof(session) {
+    const dir = `observations/espn-${session}`;
+    const idx = await (await this.env.DATA.get(`${dir}/index.json`))?.json();
+    if (!idx) return;
+    const raw = [];
+    for (let i = 1; i <= idx.chunks; i++) { const c = await this.env.DATA.get(`${dir}/chunk-${String(i).padStart(5, '0')}.json`); if (c) raw.push(...(await c.json()).frames); }
+    const frames = raw.map((f) => ({ t: f.t, lap: f.lap, flag: f.flag, cars: (f.cars || []).map(([id, pos, status, v]) => ({ id, pos, status: /RETIRED|DISQUALIFIED/.test(status || '') ? 'retired' : 'running', laps: v?.lapsCompleted != null ? Number(v.lapsCompleted) : null })) }));
+    const ts = frames.map((f) => Date.parse(f.t));
+    const m1 = buildModel(frames), m2 = buildModel([...frames].reverse());
+    const ids = [...m1.cars.keys()], samples = Array.from({ length: 40 }, (_, i) => m1.start + ((m1.end - m1.start) * i) / 39);
+    const snap = (m, T) => JSON.stringify(ids.map((id) => progressAt(m, id, T)));
+    const gaps = []; for (let i = 1; i < ts.length; i++) if (ts[i] - ts[i - 1] > 60000) gaps.push({ from: frames[i - 1].t, to: frames[i].t, s: Math.round((ts[i] - ts[i - 1]) / 1000) });
+    const checks = { multiple_frames: frames.length >= 2, monotonic: ts.every((t, i) => !i || t > ts[i - 1]), deterministic: samples.every((T) => snap(m1, T) === snap(m2, T)), crossings: [...m1.cars.values()].reduce((a, c) => a + c.crossings.length, 0) };
+    await this.env.DATA.put(`${dir}/proof.json`, JSON.stringify({ session, model: m1.version, generated_at: new Date().toISOString(), frames: frames.length, first_t: frames[0]?.t, last_t: frames.at(-1)?.t, gaps, checks, pass: checks.multiple_frames && checks.monotonic && checks.deterministic }), { httpMetadata: { contentType: 'application/json' } });
   }
   async flush(force) {
     const cur = await this.state.storage.get('obs-buf');

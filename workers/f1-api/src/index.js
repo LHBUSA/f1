@@ -39,7 +39,9 @@ async function recordedSessions(env, internal) {
     const idx = await o.json();
     const id = sessionPublicId(idx.meta, internal);
     if (!id) continue;
-    out.push({ id, upstream: String(idx.session), type: SESSION_TYPE[idx.meta?.type] || null, event_id: internal.event_by_upstream?.[String(idx.meta?.event_id)] || null, event_name: idx.meta?.event_name?.replace(/^.*?(?=(?:[A-Z][a-z]+ )*Grand Prix)/, '') || null, frames: idx.frames, chunks: idx.chunks, first_t: idx.first_t, last_t: idx.last_t, last_state: idx.last_state, recorder: idx.recorder });
+    const pr = await env.DATA.get(`${pre}proof.json`);
+    const proof = pr ? await pr.json() : null;
+    out.push({ proof: proof ? { pass: proof.pass, frames: proof.frames, gaps: proof.gaps.length, generated_at: proof.generated_at } : null, id, upstream: String(idx.session), type: SESSION_TYPE[idx.meta?.type] || null, event_id: internal.event_by_upstream?.[String(idx.meta?.event_id)] || null, event_name: idx.meta?.event_name?.replace(/^.*?(?=(?:[A-Z][a-z]+ )*Grand Prix)/, '') || null, frames: idx.frames, chunks: idx.chunks, first_t: idx.first_t, last_t: idx.last_t, last_state: idx.last_state, recorder: idx.recorder });
   }
   sessionsMemo.at = Date.now();
   sessionsMemo.list = out.sort((a, b) => String(b.first_t).localeCompare(String(a.first_t)));
@@ -172,6 +174,12 @@ export default {
         if (!/^\d+$/.test(sid)) return err(req, 400, 'bad session');
         const o = await env.DATA.get(`observations/espn-${sid}/${q.get('chunk') ? `chunk-${String(Number(q.get('chunk'))).padStart(5, '0')}` : 'index'}.json`);
         return o ? respond(req, await o.json(), { cache: 'no-store' }) : err(req, 404, 'not found');
+      }
+      if (p === '/admin/proof' && req.method === 'POST') {
+        if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
+        const sid = q.get('session');
+        if (!/^\d+$/.test(sid || '')) return err(req, 400, 'bad session');
+        return env.LIVE.get(env.LIVE.idFromName('global')).fetch(`https://live/proof?session=${sid}`);
       }
       if (p === '/admin/deploy-ledger') {
         if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');

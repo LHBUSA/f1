@@ -77,7 +77,8 @@ function drawCars(T) {
     const p = progressAt(S.model, c.id, T, { live: S.mode === 'live' });
     if (!p || p.state === 'out') continue;
     if (p.state === 'unplaced') { unplaced.push(c); continue; }
-    placed.push({ c, frac: p.laps, held: p.state === 'held' });
+    const m = S.model.cars.get(c.id), lastX = m && [...m.crossings].reverse().find((x) => x.ms <= T);
+    placed.push({ c, frac: p.laps, held: p.state === 'held', crossedAgo: lastX ? T - lastX.ms : null });
   }
   // opening lap: running order at the line, spaced back, until each car's first observed crossing
   unplaced.forEach((c, i) => placed.push({ c, frac: -((i + 1) * 14) / L, held: true, grid: true }));
@@ -98,15 +99,20 @@ function drawCars(T) {
     }
     const w = 30 * dpr, h = 15 * dpr;
     if (sel) { ctx.shadowColor = `#${t?.color || 'fff'}`; ctx.shadowBlur = 14 * dpr; }
-    ctx.fillStyle = `#${t?.color || '888'}`; ctx.globalAlpha = d.it.held ? 0.7 : 1;
+    ctx.fillStyle = `#${t?.color || '888'}`; ctx.globalAlpha = d.it.held ? 0.45 : 1;
     ctx.beginPath(); ctx.roundRect(d.x - w / 2, d.y - h / 2, w, h, 4 * dpr); ctx.fill(); ctx.shadowBlur = 0;
-    ctx.lineWidth = sel ? 2 * dpr : 1 * dpr; ctx.strokeStyle = sel ? '#ffffff' : 'rgba(255,255,255,.35)'; ctx.stroke();
+    if (d.it.held) ctx.setLineDash([3 * dpr, 2 * dpr]);
+    ctx.lineWidth = sel ? 2 * dpr : 1 * dpr; ctx.strokeStyle = sel ? '#ffffff' : d.it.held ? 'rgba(255,207,92,.8)' : 'rgba(255,255,255,.35)'; ctx.stroke(); ctx.setLineDash([]);
+    // an OBSERVED crossing (real recorded event) within the last 2 s gets a brief ring at the timing line
+    if (d.it.crossedAgo != null && d.it.crossedAgo < 2000) { ctx.globalAlpha = 1 - d.it.crossedAgo / 2000; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5 * dpr; ctx.beginPath(); ctx.arc(d.x, d.y, 16 * dpr, 0, 7); ctx.stroke(); }
     ctx.fillStyle = `#${t?.text || 'fff'}`; ctx.font = `700 ${10.5 * dpr}px "Barlow Condensed", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(ID.drivers[d.it.c.id]?.code || '', d.x, d.y + 0.5 * dpr);
     if (d.it.c.pos === 1) { ctx.fillStyle = '#ffcf5c'; ctx.font = `800 ${9 * dpr}px "Barlow Condensed", sans-serif`; ctx.fillText('P1', d.x, d.y - h * 0.95); }
     ctx.globalAlpha = 1; ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
   }
   S.hit = drawn.map((d) => ({ x: d.x / dpr, y: d.y / dpr, id: d.it.c.id }));
+  // QA hook: the exact race state on screen (track fraction + state per car), comparable across widths
+  window.__pbecast = { T, mode: S.mode, session: S.session, cars: drawn.map((d) => ({ id: d.it.c.id, frac: Math.round(d.it.frac * 1e6) / 1e6, held: !!d.it.held, grid: !!d.it.grid })).sort((a, b) => a.id.localeCompare(b.id)), unplaced: placed.length - drawn.length };
 }
 
 // ---------- tower ----------
@@ -202,7 +208,8 @@ function syncScrubber() { const r = $('[data-pc-scrub]'); if (r && S.model) r.va
 function bindReplay() {
   $('[data-pc-play]')?.addEventListener('click', () => { S.playing = !S.playing; if (S.T >= S.model.end) S.T = S.model.start; $('[data-pc-play]').textContent = S.playing ? 'Pause' : 'Play'; });
   document.querySelectorAll('[data-pc-speed]').forEach((b) => b.addEventListener('click', () => { S.speed = Number(b.dataset.pcSpeed); document.querySelectorAll('[data-pc-speed]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); }));
-  $('[data-pc-scrub]')?.addEventListener('input', (e) => { S.T = S.model.start + (Number(e.target.value) / 1000) * (S.model.end - S.model.start); });
+  $('[data-pc-scrub]')?.addEventListener('input', (e) => { S.T = S.model.start + (Number(e.target.value) / 1000) * (S.model.end - S.model.start); persistT(); });
+  $('[data-pc-scrub]')?.addEventListener('change', persistT);
   $('[data-pc-lapjump]')?.addEventListener('change', (e) => { const lap = Number(e.target.value); const f = S.model.frames.find((x) => x.lap >= lap); if (f) { S.T = f.ms; syncScrubber(); } });
 }
 
@@ -216,6 +223,7 @@ document.addEventListener('click', (e) => {
     if (hit && hit.d < 18) { S.selected = ID.drivers[hit.id]?.code || null; persistSel(); }
   }
 });
+function persistT() { if (S.mode !== 'replay' || !S.model) return; const u = new URL(location.href); u.searchParams.set('session', S.session); u.searchParams.set('t', new Date(Math.round(S.T)).toISOString()); history.replaceState(null, '', u); }
 function persistSel() {
   const u = new URL(location.href); if (S.selected) u.searchParams.set('driver', S.selected); else u.searchParams.delete('driver'); history.replaceState(null, '', u);
   const d = Object.values(ID.drivers).find((x) => x.code === S.selected), t = d && ID.teams[d.team], card = $('[data-pc-driver]');
@@ -278,7 +286,9 @@ async function loadRecorded() {
   if (sel) sel.replaceChildren(...idx.map((s) => Object.assign(el('option', null, `${D.session_labels[s.type] || s.type} · ${s.frames} frames`), { value: s.id })));
   $('[data-pc-recorded]').textContent = idx.length ? `${idx.length} recorded session${idx.length > 1 ? 's' : ''} this weekend` : 'No session recorded for this weekend yet.';
   if (!idx.length) return;
-  S.session = idx[0].id;
+  const asked = new URLSearchParams(location.search).get('session');
+  S.session = idx.find((s) => s.id === asked)?.id || idx[0].id;
+  if (sel) sel.value = S.session;
   if (!S.entitled) { await loadEvents(); return; }
   await openReplay(S.session);
   sel?.addEventListener('change', () => openReplay(sel.value));
@@ -286,7 +296,9 @@ async function loadRecorded() {
 async function openReplay(id) {
   const r = await getJSON(`${PRIV}/replay/${id}`, { priv: true });
   if (r.status !== 200) { ga('premium_feature_attempted', { feature: 'pbecast_replay', status: r.status }); return; }
-  S.mode = 'replay'; S.session = id; S.frames = r.body.frames; S.model = buildModel(S.frames); S.T = S.model.start; S.events = r.body.events || [];
+  S.mode = 'replay'; S.session = id; S.frames = r.body.frames; S.model = buildModel(S.frames); S.events = r.body.events || [];
+  const want = Date.parse(new URLSearchParams(location.search).get('t') || '');
+  S.T = Number.isFinite(want) ? Math.min(S.model.end, Math.max(S.model.start, want)) : S.model.start;
   const cov = r.body.coverage || {};
   $('[data-pc-coverage]').textContent = `${cov.frames || 0} frames · longest recording silence ${cov.longest_silence_s ?? 0}s${cov.silences_over_60s ? ` · ${cov.silences_over_60s} gap${cov.silences_over_60s > 1 ? 's' : ''} over 60s (cars held, not interpolated)` : ''}`;
   const laps = [...new Set(S.model.frames.map((f) => f.lap).filter(Boolean))];
