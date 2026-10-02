@@ -546,3 +546,34 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .team-car .tmark{pointer-events:none}
 .tmark-code{font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 5px;border:1px solid var(--line,rgba(255,255,255,.2));border-radius:3px;color:var(--muted);line-height:1.2}
 .trend .same{color:var(--muted)}.trend .na{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);border:1px dashed var(--line,rgba(255,255,255,.2));border-radius:3px;padding:0 4px}.trend .gain,.trend .loss{white-space:nowrap;font-weight:700}
+
+/* ---- Homepage: THE GRID car rail (real cars are the hero; car pixels never altered) ---- */
+.grid-rail{position:relative;padding-top:8px;overflow:hidden}
+.grid-rail::before{content:"";position:absolute;inset:20% 0 0;background:radial-gradient(60% 70% at 50% 55%,color-mix(in srgb,var(--rail-accent,transparent) 16%,transparent),transparent 70%);transition:background .4s;pointer-events:none}
+.rail-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.rail-nav{display:flex;gap:8px}
+.rail-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--panel);color:inherit;font-size:22px;line-height:1;cursor:pointer}
+.rail-btn:hover,.rail-btn:focus-visible{border-color:#ffffff66}
+.rail{--card:clamp(280px,86vw,560px);--lead:max(16px,calc((100% - var(--wrap)) / 2 + 16px));position:relative;list-style:none;margin:6px 0 0;padding:6px calc(100% - var(--lead) - var(--card)) 14px var(--lead);scroll-padding-left:var(--lead);display:grid;grid-auto-flow:column;grid-auto-columns:var(--card);gap:clamp(10px,2vw,28px);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.rail::-webkit-scrollbar{display:none}
+.rail:focus-visible{outline:2px solid #ffffff55;outline-offset:2px;border-radius:12px}
+.rail.dragging{scroll-snap-type:none;cursor:grabbing}.rail.dragging .rail-card{pointer-events:none}
+@media(min-width:1024px){.rail{--card:min(34vw,620px)}}
+.rail-item{scroll-snap-align:start}
+.rail-card{position:relative;display:flex;flex-direction:column;gap:8px;height:100%;padding:16px 18px 18px;border-radius:14px;color:inherit;text-decoration:none;border:1px solid var(--line);background:radial-gradient(70% 60% at 50% 58%,color-mix(in srgb,var(--tc) 22%,transparent),transparent 72%),linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.25));transition:opacity .3s,transform .3s,border-color .3s}
+.rail-item:not(.is-active) .rail-card{opacity:.72;transform:scale(.94)}
+.rail-card:hover,.rail-card:focus-visible{border-color:color-mix(in srgb,var(--tc) 60%,#fff 10%);outline:none}
+.rail-card:focus-visible{box-shadow:0 0 0 2px #fff}
+.rail-head{display:flex;align-items:center;gap:8px;font:700 15px var(--display);letter-spacing:.06em;text-transform:uppercase}
+.rail-car{display:block;margin:4px -6px 0}
+.rail-car img{display:block;width:100%;height:auto;filter:drop-shadow(0 18px 22px rgba(0,0,0,.6));transition:transform .3s;user-select:none;-webkit-user-drag:none}
+.rail-card:hover .rail-car img,.rail-card:focus-visible .rail-car img{transform:translateY(-3px) scale(1.015)}
+.rail-meta{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.rail-model{font:800 20px var(--display);letter-spacing:.04em}
+.rail-drivers{font:600 13px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.rail-season{flex-basis:100%;font-size:12px;color:var(--faint);letter-spacing:.04em}
+.rail-cta{margin-top:auto;font:700 12px var(--display);letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--tc) 55%,#fff)}
+.rail-card:hover .rail-cta,.rail-card:focus-visible .rail-cta{text-decoration:underline}
+.rail-credit{margin-top:4px}
+@media (prefers-reduced-motion: reduce){.rail-card,.rail-car img,.grid-rail::before{transition:none}.rail-card:hover .rail-car img{transform:none}}
+@media(min-width:768px){.rail{--lead:max(28px,calc((100% - var(--wrap)) / 2 + 28px))}}

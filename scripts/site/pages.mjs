@@ -70,6 +70,7 @@ export function home(ctx) {
   const fit = ev ? ctx.fit[ev.id] : null;
   const body = `
   <section class="hero hero-home">${heroArt()}<div class="wrap hero-copy"><span class="eyebrow">PropBetEdge Formula 1 Intelligence</span><h1>Every lap that matters,<br>measured.</h1><p class="sub">The ${season} FIA Formula One World Championship from sourced results only: live timing, Driver &amp; Constructor DNA, Circuit Fit, teammate battles and ${ctx.coverage.seasons} seasons of history.</p></div></section>
+  ${carRail(ctx)}
   ${gp}
   ${ctx.newsModule || ''}
   ${stand}
@@ -78,6 +79,7 @@ export function home(ctx) {
   ${fit ? `<section class="section"><div class="wrap"><div class="split"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit · ${esc(ctx.circuitName(ev.circuit_id))}</span><h2>Who suits ${esc(ev.name.replace(/ Grand Prix.*/, ''))}</h2></div><a class="more" href="${ctx.raceUrl(ev.id)}#fit">Full fit</a></div>${fitList(ctx, fit, 6)}</div><div class="grid">${spot('positions_gained', 'Race gains')}${spot('finishing', 'Finishing vs teammate')}</div></div></div></section>` : ''}
   <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${season} grid</span><h2>Constructors</h2></div><a class="more" href="/teams">All teams</a></div><div class="grid g4">${teamsByStanding(ctx).map((cid) => teamCard(ctx, cid, season)).join('')}</div></div></section>`;
   return {
+    rail: true,
     path: '/',
     title: `F1 ${season} Live, Standings, Driver DNA & Teammate Battles | PropBetEdge F1`,
     description: `Formula 1 ${season} intelligence: next Grand Prix schedule, live timing, championship standings, Driver and Constructor DNA, Circuit Fit and teammate battles, built from sourced results.`,
@@ -799,4 +801,43 @@ function explorerSection(ctx, xp) {
     ${explorerLinks(ctx, c)}
   </article>`).join('')}
 </div></section>`;
+}
+
+// ---- HOMEPAGE: THE 2026 GRID car rail (real approved car photos from the canonical registry; feeds /teams/:id) ----
+export function currentLineup(ctx, cid, season) {
+  const last = ctx.results.filter((r) => r.session_type === 'race' && r.constructor_id === cid && ctx.eventById?.[r.event_id]?.season === season).sort((x, y) => ctx.eventById[y.event_id].round - ctx.eventById[x.event_id].round)[0];
+  return last ? ctx.results.filter((r) => r.session_type === 'race' && r.constructor_id === cid && r.event_id === last.event_id).map((r) => ctx.driverById[r.driver_id]).filter(Boolean) : [];
+}
+
+// order = current constructors' championship; deterministic fallback = identity registry order
+export function railOrder(ctx, season, teamIds) {
+  const st = (ctx.standingsBy[`${season}|constructor`] || []).filter((s) => s.subject_id && teamIds.includes(s.subject_id)).sort((a, b) => a.position - b.position).map((s) => s.subject_id);
+  return st.length ? [...st, ...teamIds.filter((t) => !st.includes(t))] : [...teamIds];
+}
+
+function carRail(ctx) {
+  const season = ctx.currentSeason;
+  const ids = railOrder(ctx, season, ctx.currentTeamIds || []);
+  const cards = ids.map((cid, i) => {
+    const photo = ctx.carPhotoFor?.(cid, season);
+    if (!photo) { console.warn(`homepage rail: no approved ${season} car photo for ${cid}`); return ''; }
+    const c = ctx.conById[cid];
+    const color = ctx.colorOf(cid, season);
+    const st = (ctx.standingsBy[`${season}|constructor`] || []).find((s) => s.subject_id === cid);
+    const machine = ctx.machineFor?.(cid, season);
+    const model = machine?.carModel ? machine.carModel.short || machine.carModel.value : null;
+    const drivers = currentLineup(ctx, cid, season).map((d) => d.last_name).join(' · ');
+    const [aw, ah] = photo.derivatives.aspect;
+    const set = (ext) => [640, 960, 1280].map((w) => `/media/cars/${photo.id}-${w}.${ext} ${w}w`).join(', ');
+    const eager = i < 2;
+    return `<li class="rail-item ${teamClass(color)}" data-cid="${cid}"><a class="rail-card" href="${ctx.teamUrl(cid)}" aria-label="${esc(`${c.name}${model ? ` ${model}` : ''} – explore the ${season} car and team`)}">
+      <span class="rail-head">${teamMark(ctx.logoFor?.(cid), 22)}<b>${esc(c.name)}</b></span>
+      <span class="rail-car"><picture><source type="image/avif" srcset="${set('avif')}" sizes="(min-width:1024px) 34vw, 86vw"><img src="/media/cars/${photo.id}-960.webp" srcset="${set('webp')}" sizes="(min-width:1024px) 34vw, 86vw" width="${aw}" height="${ah}" alt="${esc(`${season} ${c.name}${model ? ` ${model}` : ''}`)}" loading="${eager ? 'eager' : 'lazy'}" fetchpriority="low" decoding="async" draggable="false"></picture></span>
+      <span class="rail-meta">${model ? `<span class="rail-model">${esc(model)}</span>` : ''}${drivers ? `<span class="rail-drivers">${esc(drivers)}</span>` : ''}${st ? `<span class="rail-season">P${st.position} · ${fmtPts(st.points)} pts · ${st.wins ?? 0} win${st.wins === 1 ? '' : 's'}</span>` : ''}</span>
+      <span class="rail-cta">Explore ${esc(c.name)} →</span>
+    </a></li>`;
+  }).join('');
+  return `<section class="section grid-rail" aria-label="The ${season} grid"><div class="wrap rail-top"><div><span class="eyebrow">${season} grid</span><h2>Meet the cars</h2></div><div class="rail-nav"><button type="button" class="rail-btn" data-rail-prev aria-label="Previous car">‹</button><button type="button" class="rail-btn" data-rail-next aria-label="Next car">›</button></div></div>
+  <ul class="rail" data-rail tabindex="0" aria-label="${season} cars, in championship order. Use left and right arrows to browse.">${cards}</ul>
+  <p class="wrap fine rail-credit">Real ${season} cars, backgrounds removed. Photo credits on each team page.</p></section>`;
 }

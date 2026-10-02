@@ -43,6 +43,7 @@ for (const [cid, l] of Object.entries(teamLogos)) {
   try { fs.copyFileSync(l.derivative?.file || l.file, path.join(DIST, l.publicPath.slice(1))); logoOk[cid] = l; }
   catch (e) { console.warn(`build-site: team mark for ${cid} unavailable (${e.message}); using code badge`); }
 }
+ctx.currentTeamIds = Object.keys(teamIdent);
 ctx.logoFor = (cid) => logoOk[cid] || (teamIdent[cid] ? { fallback: true, short: teamIdent[cid].short } : null);
 ctx.explorerFor = (o) => explorerFor(explorerReg, o);
 const carCandidates = process.env.F1_CAR_CANDIDATES === '1' || process.env.VERCEL_ENV === 'preview';
@@ -84,7 +85,11 @@ fs.writeFileSync(path.join(DIST, `assets/pbecast.${pcHash}.js`), pc);
 const xpJs = fs.readFileSync('src/web/explorer.js', 'utf8');
 const xpHash = crypto.createHash('sha256').update(xpJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/explorer.${xpHash}.js`), xpJs);
-const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js` };
+// homepage car rail client
+const rlJs = fs.readFileSync('src/web/rail.js', 'utf8');
+const rlHash = crypto.createHash('sha256').update(rlJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/rail.${rlHash}.js`), rlJs);
+const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];
