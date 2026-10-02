@@ -1,0 +1,50 @@
+{
+  "_doc": "2026 team identity: display names and the PropBetEdge team code shown on PBEcast badges. Colours come from the PropSports constructors projection (sourced per season); nothing here is a team logo.",
+  "season": 2026,
+  "teams": {
+    "mercedes": {
+      "short": "MER",
+      "display": "Mercedes"
+    },
+    "ferrari": {
+      "short": "FER",
+      "display": "Ferrari"
+    },
+    "mclaren": {
+      "short": "MCL",
+      "display": "McLaren"
+    },
+    "red-bull": {
+      "short": "RBR",
+      "display": "Red Bull"
+    },
+    "racing-bulls": {
+      "short": "RB",
+      "display": "Racing Bulls"
+    },
+    "alpine": {
+      "short": "ALP",
+      "display": "Alpine"
+    },
+    "audi": {
+      "short": "AUD",
+      "display": "Audi"
+    },
+    "haas": {
+      "short": "HAA",
+      "display": "Haas"
+    },
+    "aston-martin": {
+      "short": "AMR",
+      "display": "Aston Martin"
+    },
+    "williams": {
+      "short": "WIL",
+      "display": "Williams"
+    },
+    "cadillac": {
+      "short": "CAD",
+      "display": "Cadillac"
+    }
+  }
+}

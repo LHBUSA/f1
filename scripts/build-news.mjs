@@ -9,9 +9,12 @@ import crypto from 'node:crypto';
 import sharp from 'sharp';
 import { loadProjection } from '../src/news/data.mjs';
 import { raceFinalPacket } from '../src/news/race-final.mjs';
-import { writeRaceFinal } from '../src/news/write-race.mjs';
-import { qualifyingPacket, writeQualifying } from '../src/news/qualifying.mjs';
-import { previewPacket, writePreview } from '../src/news/preview.mjs';
+import { composeRaceFinal, RACE_COMPOSER_VERSION } from '../src/news/compose-race.mjs';
+import { qualifyingPacket } from '../src/news/qualifying.mjs';
+import { composeQualifying, QUALI_COMPOSER_VERSION } from '../src/news/compose-quali.mjs';
+import { previewPacket } from '../src/news/preview.mjs';
+import { composePreview, COMPOSER_VERSION as PREVIEW_COMPOSER_VERSION } from '../src/news/compose-preview.mjs';
+import { editorialGate, EDITORIAL_VERSION } from '../src/news/quality.mjs';
 import { validateDraft, render, QUALITY_VERSION } from '../src/news/validate.mjs';
 import { cardSvg, renderCard, headshotData } from '../src/news/card.mjs';
 import { CLASS_LABEL } from '../src/news/render.mjs';
@@ -36,7 +39,7 @@ const SLUG = {
   qualifying: (P) => `${P.event_id}-qualifying-results`,
   preview: (P) => `${P.event_id}-preview`,
 };
-const MIN_WORDS = { race_final: 200, qualifying: 90, preview: 150 };
+const MIN_WORDS = { race_final: 400, qualifying: 300, preview: 400 };
 
 const candidates = [];
 for (const [cls, cfg] of Object.entries(classes)) {
@@ -57,7 +60,7 @@ for (const [cls, cfg] of Object.entries(classes)) {
       }
       if (!r?.ok) continue;
       const P = r.packet;
-      const draft = cls === 'race_final' ? writeRaceFinal(P) : cls === 'qualifying' ? writeQualifying(P) : writePreview(P);
+      const draft = cls === 'race_final' ? composeRaceFinal(P) : cls === 'qualifying' ? composeQualifying(P) : composePreview(P);
       draft.slug = SLUG[cls](P);
       candidates.push({ cls, cfg, ev, P, draft, sortKey: X.session(ev.id, cls === 'qualifying' ? 'qualifying' : 'race')?.start_utc || ev.start_utc });
     }
@@ -73,16 +76,18 @@ for (const cls of Object.keys(classes).filter((k) => !k.startsWith('_'))) {
   const cfg = classes[cls];
   list.forEach((c, i) => {
     const v = validateDraft(c.P, c.draft, { ledger, minWords: MIN_WORDS[cls] });
+    // editorial gate runs only on a factually clean draft and never relaxes it
+    const ed = v.ok ? editorialGate(c.P, c.draft, { X }) : { ok: false, reasons: ['factual_gate_failed'], warnings: [], words: v.words, links: 0 };
     const prev = live[c.draft.slug];
     const stale = cls === 'preview' && !prev && c.P.context.valid_until && c.P.context.valid_until <= NOW;
-    let status = !v.ok ? 'held' : stale ? 'stale' : cfg.mode === 'published' ? 'published' : cfg.mode === 'canary' ? (i < cfg.canary || prev?.status === 'published' ? 'published' : 'shadow') : 'shadow';
+    let status = !v.ok || !ed.ok ? 'held' : stale ? 'stale' : cfg.mode === 'published' ? 'published' : cfg.mode === 'canary' ? (i < cfg.canary || prev?.status === 'published' ? 'published' : 'shadow') : 'shadow';
     const published_at = prev?.published_at || NOW;
     const modified_at = prev && prev.packet_hash !== c.P.hash ? NOW : prev?.modified_at || published_at;
     const headline = render(c.draft.headline, c.P);
     ledger[c.draft.slug] = { topic: c.P.topic, headline };
-    const a = { slug: c.draft.slug, class: cls, topic: c.P.topic, event_id: c.P.event_id, status, published_at, modified_at, headline, dek: render(c.draft.dek, c.P), packet_hash: c.P.hash, packet: c.P, draft: c.draft, validation: { ok: v.ok, reasons: v.reasons, facts_used: v.facts_used, words: v.words, gate: QUALITY_VERSION } };
+    const a = { slug: c.draft.slug, class: cls, topic: c.P.topic, event_id: c.P.event_id, status, published_at, modified_at, headline, dek: render(c.draft.dek, c.P), packet_hash: c.P.hash, packet: c.P, draft: c.draft, validation: { ok: v.ok, reasons: v.reasons, facts_used: v.facts_used, words: v.words, gate: QUALITY_VERSION }, editorial: { ok: ed.ok, reasons: ed.reasons, warnings: ed.warnings, words: ed.words, links: ed.links, version: EDITORIAL_VERSION }, composer: c.draft.composer || null };
     articles.push(a);
-    report.stories.push({ slug: a.slug, class: cls, status, words: v.words, facts_used: v.facts_used.length, reasons: v.reasons });
+    report.stories.push({ slug: a.slug, class: cls, status, words: v.words, facts_used: v.facts_used.length, reasons: [...v.reasons, ...ed.reasons], warnings: ed.warnings, links: ed.links });
   });
   report.classes[cls] = { mode: cfg.mode, candidates: list.length, published: articles.filter((a) => a.class === cls && a.status === 'published').length, held: articles.filter((a) => a.class === cls && a.status === 'held').length };
 }
@@ -122,3 +127,4 @@ const by = (s) => articles.filter((a) => a.status === s).length;
 console.log(`news: ${articles.length} stories (${by('published')} published, ${by('shadow')} shadow, ${by('held')} held, ${by('stale')} stale); projection ${mf.version}`);
 for (const [k, v] of Object.entries(report.classes)) console.log(`  ${k}: ${JSON.stringify(v)}`);
 for (const s of report.stories.filter((x) => x.status === 'held')) console.log(`  HELD ${s.slug}: ${s.reasons.join('; ')}`);
+for (const s of report.stories.filter((x) => x.status === 'published')) console.log(`  PUBLISHED ${s.slug}: ${s.words} words, ${s.links} links${s.warnings?.length ? ` (${s.warnings.join('; ')})` : ''}`);

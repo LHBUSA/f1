@@ -1,6 +1,7 @@
 // QUALIFYING packet: the qualifying classification as of the end of the session (never the race that followed), the
 // knockout cut lines, teammate gaps, and what pole has meant at this circuit in our archive.
 import { Packet, posText, pts, fmtLap, secs, fmtDay, countWord, ordinal } from './packet.mjs';
+import { addStakes, addArchive, addDna, addPages, addBattle } from './context.mjs';
 
 export function qualifyingPacket(X, eventId, { asOf = new Date().toISOString() } = {}) {
   const ev = X.event[eventId];
@@ -80,11 +81,58 @@ export function qualifyingPacket(X, eventId, { asOf = new Date().toISOString() }
 
   // Driver DNA qualifying dimension, Circuit DNA pole conversion
   const qd = X.dnaDriver[pole.driver_id]?.current?.dimensions?.qualifying;
-  if (qd?.percentile != null) { P.fact('dna_window', X.dnaDriver[pole.driver_id].current.window, X.dnaDriver[pole.driver_id].current.window, 'Driver DNA window', 'projection: dna-driver'); P.limit(`Driver DNA is quoted from the ${X.dnaDriver[pole.driver_id].current.window} window as of publication, not as it stood before this session.`); }
   if (qd?.percentile != null) P.fact('pole_dna_q', qd.percentile, `${ordinal(qd.percentile)} percentile`, `Driver DNA Qualifying Pace (${X.dnaDriver[pole.driver_id].current.window})`, 'projection: dna-driver');
   const cd = X.dnaCircuit[ev.circuit_id];
   if (cd?.pole_win_rate != null && cd.sample?.pole_races >= 5) P.fact('circuit_pole_win', Math.round(cd.pole_win_rate * 100), `${Math.round(cd.pole_win_rate * 100)}%`, `Pole-to-win rate at this circuit (last ${cd.sample.pole_races} races, Circuit DNA)`, 'projection: dna-circuit');
   if (cd?.grid_finish_rho != null && cd.sample?.rho_races >= 5) P.fact('circuit_rho', Math.round(cd.grid_finish_rho * 100) / 100, cd.grid_finish_rho.toFixed(2), 'Grid-to-finish rank correlation at this circuit (Circuit DNA)', 'projection: dna-circuit');
+
+  // ---- v2 depth: stakes going in, the circuit's pole record, team by team, cut lines, spread ----
+  addStakes(P, X, ev, { after: false });
+  const c2 = P.entities.find((x) => x.key === 'c2')?.ref, c2r = c2 && rows.find((r) => r.driver_id === c2);
+  if (c2r && c2 !== pole.driver_id) P.fact('c2_pos', c2r.position, posText(c2r.position), 'Second in the championship: qualifying position', 'projection: qualifying classification');
+  addArchive(P, X, ev.circuit_id, ev.start_utc);
+  const p10 = rows.find((r) => r.position === 10);
+  if (p10?.best_lap_ms) P.fact('p10', 10, 'P10', 'Tenth place', 'projection: qualifying classification');
+  if (p10?.best_lap_ms) P.derive('spread10', p10.best_lap_ms - pole.best_lap_ms, secs(p10.best_lap_ms - pole.best_lap_ms), 'Gap from pole to tenth', { from: ['q1_lap', 'qualifying classification'], rule: 'difference' });
+  const margins = X.raceEvents(ev.season).filter((e) => e.start_utc <= ev.start_utc).map((e) => { const q = X.rows(e.id, 'qualifying'); const a = q.find((r) => r.position === 1), b = q.find((r) => r.position === 2); return a?.best_lap_ms && b?.best_lap_ms ? b.best_lap_ms - a.best_lap_ms : null; }).filter((x) => x != null);
+  if (margins.length >= 5 && second?.best_lap_ms) {
+    const avg = margins.reduce((a, b) => a + b, 0) / margins.length;
+    P.fact('season_pole_margin', Math.round(avg), secs(Math.round(avg)), 'Average pole margin this season (to date)', 'derived: qualifying classification');
+    const mine = second.best_lap_ms - pole.best_lap_ms;
+    if (mine === Math.max(...margins)) P.signal('largest_pole_margin_season');
+    if (mine === Math.min(...margins)) P.signal('smallest_pole_margin_season');
+  }
+  // team by team: the five teams with the best lead car
+  const teamBest = {};
+  for (const r of rows) if (!teamBest[r.constructor_id] || r.position < teamBest[r.constructor_id]) teamBest[r.constructor_id] = r.position;
+  Object.entries(teamBest).sort((a, b) => a[1] - b[1]).slice(0, 5).forEach(([t], i) => {
+    const cars = rows.filter((r) => r.constructor_id === t).sort((a, b) => a.position - b.position);
+    if (cars.length !== 2 || !C(t)) return;
+    const k = `qt${i + 1}`;
+    P.entity(k, 'team', t, C(t).name);
+    cars.forEach((r, j) => { P.entity(`${k}${'ab'[j]}`, 'driver', r.driver_id, D(r.driver_id)?.name); P.fact(`${k}${'ab'[j]}_pos`, r.position, posText(r.position), `${D(r.driver_id)?.name} qualifying position`, 'projection: qualifying classification'); });
+    const seg = ['q3_ms', 'q2_ms', 'q1_ms'].find((s) => cars[0][s] && cars[1][s]);
+    if (seg) P.derive(`${k}_gap`, cars[1][seg] - cars[0][seg], secs(cars[1][seg] - cars[0][seg]), `${C(t).name} intra-team gap in ${seg.slice(0, 2).toUpperCase()}`, { from: ['qualifying classification'], rule: `${seg} difference` });
+  });
+  if (hasKnockout) {
+    const named = (list, k) => [...list].sort((a, b) => a.position - b.position).slice(0, 8).forEach((r, i) => P.entity(`${k}${i + 1}`, 'driver', r.driver_id, D(r.driver_id)?.name));
+    named(outQ1, 'outq1_'); named(outQ2, 'outq2_');
+    // (named() lists up to five; widen so the list always matches the count)
+    P.fact('outq1_n', outQ1.length, countWord(outQ1.length), 'Drivers eliminated in Q1', 'projection: qualifying classification');
+    P.fact('outq2_n', outQ2.length, countWord(outQ2.length), 'Drivers eliminated in Q2', 'projection: qualifying classification');
+    const teamOut = Object.keys(teamBest).find((t) => { const c = rows.filter((r) => r.constructor_id === t); return c.length === 2 && c.every((r) => !r.q2_ms); });
+    if (teamOut && C(teamOut)) { P.entity('team_out_q1', 'team', teamOut, C(teamOut).name); P.signal('team_both_out_q1'); }
+  }
+  addBattle(P, X, ev.season, ev.start_utc, pole.constructor_id, 'tb1');
+  const leaderTeam = X.driver[P.entities.find((x) => x.key === 'leader')?.ref]?.team_id;
+  if (leaderTeam && leaderTeam !== pole.constructor_id) addBattle(P, X, ev.season, ev.start_utc, leaderTeam, 'tb2');
+  // last edition here: who had pole and what became of it
+  const prevEv = X.eventsAtCircuit(ev.circuit_id).filter((e) => e.start_utc < ev.start_utc && X.rows(e.id, 'race').some((r) => r.position === 1)).at(-1);
+  const prevPole = prevEv && (X.rows(prevEv.id, 'qualifying').find((r) => r.position === 1) || X.rows(prevEv.id, 'race').find((r) => r.grid === 1));
+  if (prevPole) { const pr = X.rows(prevEv.id, 'race').find((r) => r.driver_id === prevPole.driver_id); P.entity('prev_pole', 'driver', prevPole.driver_id, D(prevPole.driver_id)?.name); if (pr) P.fact('prev_pole_result', pr.status === 'classified' ? pr.position : pr.status, pr.status === 'classified' ? posText(pr.position) : 'a retirement', `${prevEv.season} pole-sitter race result here`, 'derived: our race archive'); }
+  addDna(P, X, 'q1');
+  addDna(P, X, 'q2');
+  addPages(P, ev.season, ev.id);
 
   const race = X.session(eventId, 'race');
   if (race?.start_utc) P.fact('race_date', race.start_utc, fmtDay(race.start_utc), 'Race start', 'projection: sessions');

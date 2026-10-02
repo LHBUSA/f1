@@ -78,7 +78,8 @@ export function validateDraft(packet, draft, { resolve = () => '/', ledger = nul
       if (t.kind === 'f') { if (!facts.has(t.id)) reasons.push('unknown_fact:' + t.id); else used.add(t.id); }
       else if (!ents.has(t.id)) reasons.push('unknown_entity:' + t.id);
     }
-    const bare = String(text).replace(TOKEN, '');
+    // qualifying segment names (Q1/Q2/Q3) are vocabulary, not numbers
+    const bare = String(text).replace(TOKEN, '').replace(/\bQ[123]\b/g, 'Qx');
     if (/\d/.test(bare)) reasons.push(`unsupported_number: "${bare.match(/[^.]*\d[^.]*/)?.[0]?.trim().slice(0, 80)}"`);
     // motorsport idiom, not a count
     const counted = bare.replace(/\bone-two\b/gi, '');
@@ -129,6 +130,7 @@ export function resolveHref(x) {
     case 'matchup': { const [a, b] = x.ref.split('|').sort(); return `/matchup/${a}/${b}`; }
     case 'pbecast': return `/pbecast/${x.ref}`;
     case 'news': return `/news/${x.ref}`;
+    case 'page': return x.ref;
     default: return null;
   }
 }

@@ -199,7 +199,8 @@ export function racePage(ctx, ev) {
   const body = `${crumbs(breadcrumb)}
   <section class="hero"><div class="wrap"><span class="eyebrow">Round ${ev.round ?? '—'} · ${ev.season} ${ev.sprint ? '· Sprint weekend' : ''}</span><h1>${esc(ev.name)}</h1>
   <div class="hero-meta"><span><b>Circuit</b><a href="${ctx.circuitUrl(ev.circuit_id)}">${esc(ctx.circuitName(ev.circuit_id))}</a></span><span><b>Location</b>${esc([c?.locality, c?.country].filter(Boolean).join(', '))}</span><span><b>Dates</b>${esc(fmtDate(ev.start_utc, false))} – ${esc(fmtDate(ev.end_utc || ev.start_utc))}</span><span>${statusPill(ev)}</span></div>
-  ${ev.official_name !== ev.name ? `<p class="fine">Official event name: ${esc(ev.official_name)}</p>` : ''}</div></section>
+  ${ev.official_name !== ev.name ? `<p class="fine">Official event name: ${esc(ev.official_name)}</p>` : ''}
+  ${ctx.relocations?.[ev.slug] ? `<p class="note">${esc(ctx.relocations[ev.slug].text)} <a href="/races/${esc(ctx.relocations[ev.slug].orig_id)}">Original round</a></p>` : ''}</div></section>
   ${facts ? `<section class="section"><div class="wrap">${facts}</div></section>` : ''}
   <section class="section"><div class="wrap"><div class="split"><div><div class="section-head"><h2>Classification</h2></div>${tabs}</div><div class="grid">
     <div class="card"><span class="kicker">Session schedule</span>${sessionList(ctx, ev)}${!isPast ? `<p class="fine" data-weather="${esc(c?.slug || '')}" data-weather-from="${esc(ev.start_utc)}" data-weather-to="${esc(ev.end_utc || ev.start_utc)}"></p>` : ''}</div>

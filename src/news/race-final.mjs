@@ -1,6 +1,7 @@
 // RACE FINAL packet: what the classification, qualifying, standings progression and our own DNA/archive say about one
 // Grand Prix. Signals are tested rules over packet facts; a signal is never used without its rule.
 import { Packet, gridText, posText, pts, fmtLap, secs, fmtDay, countWord, ordinal, gapMs } from './packet.mjs';
+import { addStakes, addArchive, addForm, addBattle, addDna, addPages } from './context.mjs';
 
 export const RACE_RULES = {
   close_finish_ms: 2000, // winner's margin under two seconds
@@ -100,32 +101,68 @@ export function raceFinalPacket(X, eventId, { asOf = new Date().toISOString(), r
   P.fact('retirements', dnf.length, dnf.length === 0 ? 'no retirements' : dnf.length === 1 ? 'one retirement' : `${countWord(dnf.length)} retirements`, 'Cars that retired', 'projection: race classification (status)');
   dnf.forEach((r, i) => { const d = D(r.driver_id); if (d) P.entity(`dnf${i + 1}`, 'driver', d.id, d.name); });
   P.fact('starters', rows.length, `${rows.length} starters`, 'Cars classified or retired', 'projection: race classification');
+  // retirements in context: this season's races up to and including this one
+  const seasonDnf = X.completedRaces(ev.season).filter((e) => e.start_utc <= ev.start_utc).map((e) => X.rows(e.id, 'race').filter((r) => r.status === 'retired').length);
+  if (seasonDnf.length >= 5) {
+    const avg = seasonDnf.reduce((a, b) => a + b, 0) / seasonDnf.length;
+    P.fact('season_dnf_avg', Math.round(avg * 10) / 10, (Math.round(avg * 10) / 10).toFixed(1), 'Average retirements per race this season (to date)', 'derived: race classification');
+    if (dnf.length === Math.max(...seasonDnf)) P.signal(seasonDnf.filter((n) => n === dnf.length).length === 1 ? 'most_dnf_season' : 'joint_most_dnf_season');
+  }
 
   // ---- team result ----
   const mate = rows.find((r) => r.constructor_id === w.constructor_id && r.driver_id !== w.driver_id);
   if (mate) {
     P.entity('p1_mate', 'driver', mate.driver_id, D(mate.driver_id)?.name);
     P.fact('p1_mate_result', mate.status === 'classified' ? mate.position : mate.status, mate.status === 'classified' ? posText(mate.position) : 'a retirement', 'Winner teammate result', 'projection: race classification');
-    const h = X.h2hAsOf(w.driver_id, mate.driver_id, ev.start_utc);
-    if (h.shared >= 3) {
-      P.fact('mate_race_h2h', `${h.a}-${h.b}`, `${h.a}–${h.b}`, `Race head-to-head as teammates (both classified), ${D(w.driver_id).name} vs ${D(mate.driver_id).name}, ${h.shared} shared races since ${h.first_season} up to and including this one`, 'derived: our race archive (as of this race)');
-      P.entity('matchup', 'matchup', `${w.driver_id}|${mate.driver_id}`, `${D(w.driver_id).last_name} vs ${D(mate.driver_id).last_name}`);
-    }
   }
+  // season teammate battles (as of this race) for the winner's team and, if different, the runner-up's
+  addBattle(P, X, ev.season, ev.start_utc, w.constructor_id, 'tb1');
+  if (p2 && p2.constructor_id !== w.constructor_id) addBattle(P, X, ev.season, ev.start_utc, p2.constructor_id, 'tb2');
+  // points by team this weekend
+  const teamPts = {};
+  for (const r of rows) teamPts[r.constructor_id] = (teamPts[r.constructor_id] || 0) + (r.points || 0);
+  Object.entries(teamPts).sort((a, b) => b[1] - a[1]).slice(0, 3).forEach(([t, n], i) => { if (!C(t)) return; P.entity(`haul${i + 1}`, 'team', t, C(t).name); P.fact(`haul${i + 1}_pts`, n, pts(n), `${C(t).name} points this weekend`, 'derived: race classification'); });
+  // team by team: both cars of the five best-scoring teams this weekend (grid, result, points)
+  Object.entries(teamPts).sort((a, b) => b[1] - a[1]).slice(0, 5).forEach(([t], i) => {
+    if (!C(t)) return;
+    const cars = rows.filter((r) => r.constructor_id === t).slice(0, 2);
+    if (cars.length !== 2) return;
+    const k = `tw${i + 1}`;
+    P.entity(k, 'team', t, C(t).name);
+    cars.forEach((r, j) => {
+      const c = `${k}${'ab'[j]}`;
+      P.entity(c, 'driver', r.driver_id, D(r.driver_id)?.name);
+      if (r.grid) P.fact(`${c}_grid`, r.grid, posText(r.grid), `${D(r.driver_id)?.name} grid`, 'projection: race classification');
+      P.fact(`${c}_fin`, r.status === 'classified' ? r.position : r.status, r.status === 'classified' ? posText(r.position) : r.laps != null ? `out on lap ${r.laps}` : 'a retirement', `${D(r.driver_id)?.name} result`, 'projection: race classification');
+    });
+    P.fact(`${k}_pts`, teamPts[t], pts(teamPts[t]), `${C(t).name} points this weekend`, 'derived: race classification');
+  });
+  // biggest drop among classified cars
+  const drops = classified.filter((r) => r.grid && r.position > r.grid).map((r) => ({ r, d: r.position - r.grid })).sort((a, b) => b.d - a.d);
+  if (drops[0] && drops[0].d >= 4) { P.entity('dropper', 'driver', drops[0].r.driver_id, D(drops[0].r.driver_id)?.name); P.fact('dropper_grid', drops[0].r.grid, posText(drops[0].r.grid), 'Largest drop: starting position', 'projection: race classification'); P.fact('dropper_finish', drops[0].r.position, posText(drops[0].r.position), 'Largest drop: finishing position', 'projection: race classification'); }
+  const gained = classified.filter((r) => r.grid && r.position < r.grid).length;
+  P.fact('gainers', gained, countWord(gained), 'Classified cars that finished ahead of their grid slot', 'derived: race classification');
   const oneTwo = p2 && p2.constructor_id === w.constructor_id;
   if (oneTwo) P.signal('team_one_two', { team: w.constructor_id });
 
   // ---- championship ----
   const ch = X.champAfter(ev.season, eventId, 'drivers');
-  if (ch && X.standingsBy[ev.season]?.progression_note == null) {
-    const lead = ch.after[0], second = ch.after[1];
-    P.entity('leader', 'driver', lead.id, D(lead.id)?.name);
-    P.fact('leader_points', lead.points, pts(lead.points), 'Championship leader points after this round', 'projection: standings progression');
-    if (second) {
-      P.entity('second', 'driver', second.id, D(second.id)?.name);
-      P.derive('leader_margin', lead.points - second.points, pts(lead.points - second.points), 'Championship lead after this round', { from: ['leader_points', 'standings progression'], rule: 'leader minus second' });
-    }
+  const st = ch && X.standingsBy[ev.season]?.progression_note == null ? addStakes(P, X, ev, { after: true }) : null;
+  if (st) {
     const prevLead = ch.before[0];
+    const lead = ch.after[0];
+    // how the gap at the top moved in THIS round, and who changed places in the top ten
+    const b1 = ch.before[0], b2 = ch.before[1];
+    if (b1 && b2 && ch.after[1]) {
+      P.fact('lead_before', b1.points - b2.points, pts(b1.points - b2.points), 'Championship lead before this round', 'projection: standings progression');
+      const dLead = (ch.after[0].points - ch.after[1].points) - (b1.points - b2.points);
+      P.derive('lead_move', Math.abs(dLead), pts(Math.abs(dLead)), `Change in the championship lead this round (${dLead < 0 ? 'closed' : dLead > 0 ? 'grew' : 'unchanged'})`, { from: ['lead_before', 'c2_gap'], rule: 'after minus before' });
+      P.signal(dLead < 0 ? 'lead_closed' : dLead > 0 ? 'lead_grew' : 'lead_unchanged');
+      const lr = rows.find((r) => r.driver_id === ch.after[0].id);
+      if (lr && lr.driver_id !== w.driver_id) { P.fact('leader_result', lr.status === 'classified' ? lr.position : lr.status, lr.status === 'classified' ? posText(lr.position) : 'a retirement', 'Championship leader race result', 'projection: race classification'); P.fact('leader_scored', lr.points || 0, pts(lr.points || 0), 'Championship leader points this weekend', 'projection: race classification'); }
+    }
+    const movers = ch.after.slice(0, 10).map((a) => ({ a, b: ch.before.find((x) => x.id === a.id) })).filter((x) => x.b && x.b.pos !== x.a.pos).sort((x, y) => (x.b.pos - x.a.pos) - (y.b.pos - y.a.pos)).reverse();
+    if (movers[0] && movers[0].b.pos > movers[0].a.pos) { P.entity('riser', 'driver', movers[0].a.id, D(movers[0].a.id)?.name); P.fact('riser_from', movers[0].b.pos, ordinal(movers[0].b.pos), 'Championship position before this round', 'projection: standings progression'); P.fact('riser_to', movers[0].a.pos, ordinal(movers[0].a.pos), 'Championship position after this round', 'projection: standings progression'); }
     if (prevLead && prevLead.id !== lead.id) { P.entity('prev_leader', 'driver', prevLead.id, D(prevLead.id)?.name); P.signal('lead_change', { from: prevLead.id, to: lead.id }); }
     const wb = ch.before.find((x) => x.id === w.driver_id), wa = ch.after.find((x) => x.id === w.driver_id);
     if (wa) {
@@ -137,9 +174,6 @@ export function raceFinalPacket(X, eventId, { asOf = new Date().toISOString(), r
         P.context.champ_check = { driver: w.driver_id, before: wb.points, after: wa.points, scored: w.points };
       }
     }
-    // constructors
-    const cc = X.champAfter(ev.season, eventId, 'constructors');
-    if (cc?.after[0]) { P.entity('con_leader', 'team', cc.after[0].id, C(cc.after[0].id)?.name); P.fact('con_leader_points', cc.after[0].points, pts(cc.after[0].points), 'Constructors championship leader points', 'projection: standings progression'); }
     const top = ch.after.slice(0, 5).map((x) => x.id);
     P.chart('championship', { title: `Drivers' championship after round ${ev.round}`, kind: 'line', x: ch.rounds.map((r) => r.round), series: top.map((id) => ({ id, name: D(id)?.name, color: C(D(id)?.team_id)?.color || null, values: ch.rounds.map((r) => r.drivers[id]?.p ?? null) })) });
   } else P.limit('Championship progression is not shown for this season because race-by-race sums do not match the official totals.');
@@ -157,26 +191,16 @@ export function raceFinalPacket(X, eventId, { asOf = new Date().toISOString(), r
   const prior = X.eventsAtCircuit(ev.circuit_id).filter((e) => e.start_utc < ev.start_utc);
   const priorWins = prior.filter((e) => X.rows(e.id, 'race').some((r) => r.position === 1 && r.status === 'classified' && r.driver_id === w.driver_id)).length;
   if (prior.length) P.fact('circuit_prior_wins', priorWins, priorWins === 0 ? 'no previous wins' : priorWins === 1 ? 'one previous win' : `${countWord(priorWins)} previous wins`, `Winner wins at this circuit before this race`, 'derived: our race archive');
-  const cdna = X.dnaCircuit[ev.circuit_id];
-  if (cdna?.pole_win_rate != null && cdna.sample?.pole_races >= 5) {
-    P.fact('circuit_pole_win', Math.round(cdna.pole_win_rate * 100), `${Math.round(cdna.pole_win_rate * 100)}%`, `Pole-to-win rate at this circuit (last ${cdna.sample.pole_races} races, Circuit DNA)`, 'projection: dna-circuit');
-    if (w.grid === 1 && cdna.pole_win_rate >= 0.5) P.signal('consistent_with_circuit_pole', { rate: cdna.pole_win_rate });
-    if (w.grid && w.grid > 3 && cdna.pole_win_rate >= 0.5) P.signal('against_circuit_pole_trend', { rate: cdna.pole_win_rate });
+  const arch = addArchive(P, X, ev.circuit_id, ev.start_utc);
+  if (arch) {
+    if (w.grid === 1) P.signal(P.get('arch_pole_wins').value * 2 >= arch.classified.length ? 'pole_win_fits_archive' : 'pole_win_rare_here');
+    if (w.grid && w.grid > 2) P.signal('won_off_front_row_here');
   }
-
-  // ---- Driver DNA (current window) ----
-  const dna = X.dnaDriver[w.driver_id]?.current;
-  if (dna?.dimensions) {
-    const strengths = Object.entries(dna.dimensions).filter(([, v]) => v.percentile != null && v.percentile >= RACE_RULES.dna_strength_pct && v.confidence !== 'low').sort((a, b) => b[1].percentile - a[1].percentile);
-    if (strengths[0]) {
-      const [k, v] = strengths[0];
-      P.fact('p1_dna_top', v.percentile, `${ordinal(v.percentile)} percentile`, `${D(w.driver_id).name} Driver DNA, ${v.label} (${dna.window})`, 'projection: dna-driver');
-      P.fact('p1_dna_top_label', v.label, v.label, 'Strongest Driver DNA dimension', 'projection: dna-driver');
-      P.fact('dna_window', dna.window, dna.window, 'Driver DNA window', 'projection: dna-driver');
-      P.limit(`Driver DNA is quoted from the ${dna.window} window as of publication, not as it stood before this race.`);
-      P.context.dna = { dimension: k, label: v.label, percentile: v.percentile, window: dna.window };
-    }
-  }
+  // form going into the race, Driver DNA for the podium
+  addForm(P, X, ev.season, ev.start_utc, ['p1', 'p2']);
+  addDna(P, X, 'p1');
+  addDna(P, X, 'p2');
+  addPages(P, ev.season, ev.id);
   const conDna = X.dnaCon[w.constructor_id]?.[ev.season];
   if (conDna?.dimensions?.qualifying_speed?.percentile != null) P.fact('p1_team_quali_dna', conDna.dimensions.qualifying_speed.percentile, `${ordinal(conDna.dimensions.qualifying_speed.percentile)} percentile`, `${C(w.constructor_id)?.name} Constructor DNA, Qualifying Speed (${ev.season})`, 'projection: dna-constructor');
 

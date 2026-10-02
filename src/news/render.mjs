@@ -13,23 +13,19 @@ export function html(text, packet, linkOk = () => true) {
 }
 
 function bars(rows, { valueOf, label, fmt, max }) {
-  const H = 26, W = 640, L = 64, top = 6;
   const m = max ?? Math.max(...rows.map(valueOf), 1);
-  const h = rows.length * H + top * 2;
-  return `<figure class="nchart"><svg viewBox="0 0 ${W} ${h}" role="img" aria-label="${esc(label)}" width="100%" height="${h}" preserveAspectRatio="xMinYMin meet">${rows.map((r, i) => {
-    const v = valueOf(r), w = Math.max(2, ((W - L - 90) * v) / m), y = top + i * H;
-    return `<text x="${L - 10}" y="${y + 17}" text-anchor="end" class="nc-l">${esc(r.code || r.name || '')}</text><rect x="${L}" y="${y + 4}" width="${w.toFixed(1)}" height="${H - 10}" rx="3" fill="#${esc(r.color || 'ff4d2e')}" opacity=".9"/><text x="${(L + w + 8).toFixed(1)}" y="${y + 17}" class="nc-v">${esc(fmt(v, r))}</text>`;
-  }).join('')}</svg><figcaption>${esc(label)}</figcaption></figure>`;
+  return `<figure class="nchart nbars"><ol>${rows.map((r) => { const v = valueOf(r); const w = Math.max(2, Math.round((100 * v) / m)); return `<li><span class="nb-l">${esc(r.code || r.name || '')}</span><span class="nb-t"><i class="w-${w} ${teamCls(r.color)}"></i></span><span class="nb-v">${esc(fmt(v, r))}</span></li>`; }).join('')}</ol><figcaption>${esc(label)}</figcaption></figure>`;
 }
+const teamCls = (c) => (c ? `tc-${String(c).toLowerCase().replace(/[^0-9a-f]/g, '')}` : 'tc-none');
 
 function slope(rows, label) {
   const n = Math.max(...rows.flatMap((r) => [r.grid, r.finish]), 10);
   const W = 640, H = 22 * n + 30, x0 = 120, x1 = 520, y = (p) => 18 + (p - 1) * 22;
-  return `<figure class="nchart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}" width="100%" height="${H}" preserveAspectRatio="xMinYMin meet"><text x="${x0}" y="12" text-anchor="middle" class="nc-h">GRID</text><text x="${x1}" y="12" text-anchor="middle" class="nc-h">FINISH</text>${rows.map((r) => `<line x1="${x0}" y1="${y(r.grid)}" x2="${x1}" y2="${y(r.finish)}" stroke="#${esc(r.color || '8a90a0')}" stroke-width="2.5" opacity=".9"/><circle cx="${x0}" cy="${y(r.grid)}" r="4" fill="#${esc(r.color || '8a90a0')}"/><circle cx="${x1}" cy="${y(r.finish)}" r="4" fill="#${esc(r.color || '8a90a0')}"/><text x="${x0 - 12}" y="${y(r.grid) + 4}" text-anchor="end" class="nc-l">P${r.grid} ${esc(r.code || '')}</text><text x="${x1 + 12}" y="${y(r.finish) + 4}" class="nc-l">P${r.finish} ${esc(r.code || '')}</text>`).join('')}</svg><figcaption>${esc(label)}</figcaption></figure>`;
+  return `<figure class="nchart"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true" focusable="false" width="100%" height="${H}" preserveAspectRatio="xMinYMin meet"><text x="${x0}" y="12" text-anchor="middle" class="nc-h">GRID</text><text x="${x1}" y="12" text-anchor="middle" class="nc-h">FINISH</text>${rows.map((r) => `<line x1="${x0}" y1="${y(r.grid)}" x2="${x1}" y2="${y(r.finish)}" stroke="#${esc(r.color || '8a90a0')}" stroke-width="2.5" opacity=".9"/><circle cx="${x0}" cy="${y(r.grid)}" r="4" fill="#${esc(r.color || '8a90a0')}"/><circle cx="${x1}" cy="${y(r.finish)}" r="4" fill="#${esc(r.color || '8a90a0')}"/><text x="${x0 - 12}" y="${y(r.grid) + 4}" text-anchor="end" class="nc-l">P${r.grid} ${esc(r.code || '')}</text><text x="${x1 + 12}" y="${y(r.finish) + 4}" class="nc-l">P${r.finish} ${esc(r.code || '')}</text>`).join('')}</svg><figcaption>${esc(label)}</figcaption></figure>`;
 }
 
 function line(chart) {
-  const W = 640, H = 260, L = 44, R = 120, T = 12, B = 28;
+  const W = 480, H = 260, L = 40, R = 104, T = 12, B = 28;
   const xs = chart.x, all = chart.series.flatMap((s) => s.values).filter((v) => v != null);
   const maxY = Math.max(...all, 1);
   const px = (i) => L + ((W - L - R) * i) / Math.max(1, xs.length - 1), py = (v) => T + (H - T - B) * (1 - v / maxY);
@@ -42,7 +38,7 @@ function line(chart) {
     return `<polyline points="${pts.join(' ')}" fill="none" stroke="#${esc(s.color || 'c6ccd9')}" stroke-width="2.5" stroke-linejoin="round"/>`;
   }).join('') + labels.map((l) => `<text x="${W - R + 8}" y="${l.y.toFixed(1)}" class="nc-l" fill="#${esc(l.s.color || 'c6ccd9')}">${esc(l.s.name?.split(' ').slice(-1)[0] || '')} ${l.v}</text>`).join('');
   const ticks = xs.map((r, i) => (i % Math.ceil(xs.length / 8) === 0 || i === xs.length - 1 ? `<text x="${px(i).toFixed(1)}" y="${H - 8}" text-anchor="middle" class="nc-a">R${r}</text>` : '')).join('');
-  return `<figure class="nchart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(chart.title)}" width="100%" height="${H}" preserveAspectRatio="xMinYMin meet">${grid}${paths}${ticks}</svg><figcaption>${esc(chart.title)} (points by round)</figcaption></figure>`;
+  return `<figure class="nchart"><svg viewBox="0 0 ${W} ${H}" aria-hidden="true" focusable="false" width="100%" height="${H}" preserveAspectRatio="xMinYMin meet">${grid}${paths}${ticks}</svg><figcaption>${esc(chart.title)} (points by round)</figcaption></figure>`;
 }
 
 function table(chart, kind, link) {
@@ -68,7 +64,9 @@ export function moduleHtml(id, packet, link) {
 export function articlePage(a, { linkOk, related = [], site }) {
   const P = a.packet, d = a.draft;
   const link = (href, text) => (linkOk(href) ? `<a href="${esc(href)}">${esc(text)}</a>` : esc(text));
-  const ents = P.entities.filter((x) => ['driver', 'team', 'circuit', 'race'].includes(x.type)).filter((x, i, arr) => arr.findIndex((y) => y.ref === x.ref && y.type === x.type) === i);
+  // chips: the story's core subjects only (comparison circuits and archive races stay in the prose)
+  const CORE = /^(race|circuit|orig_race|p1|p2|p3|p1_team|q1|q2|q1_team|leader|c2|leader_team|fit1)$/;
+  const ents = P.entities.filter((x) => CORE.test(x.key) && ['driver', 'team', 'circuit', 'race'].includes(x.type)).filter((x, i, arr) => arr.findIndex((y) => y.ref === x.ref && y.type === x.type) === i);
   const chips = ents.slice(0, 8).map((x) => { const h = resolveHref(x); return linkOk(h) ? `<a class="chip" href="${esc(h)}">${esc(x.name)}</a>` : ''; }).join('');
   const hl = renderPlain(d.headline, P), dk = renderPlain(d.dek, P);
   const sections = d.sections.map((s) => `<section class="nsec">${s.heading ? `<h2>${esc(s.heading)}</h2>` : ''}${(s.paragraphs || []).map((p) => `<p>${html(p, P, linkOk)}</p>`).join('')}${s.module ? moduleHtml(s.module, P, link) : ''}</section>`).join('');
@@ -77,9 +75,9 @@ export function articlePage(a, { linkOk, related = [], site }) {
   const relatedLinks = [
     ...P.entities.filter((x) => x.type === 'driver' && /^(p1|p2|p3|q1|q2|leader|fit1)$/.test(x.key)).map((x) => [resolveHref(x), `${x.name}: Driver DNA & career`]),
     ...P.entities.filter((x) => x.type === 'team' && /^(p1_team|q1_team)$/.test(x.key)).map((x) => [resolveHref(x), `${x.name}: Constructor DNA`]),
-    ...P.entities.filter((x) => x.type === 'circuit').map((x) => [resolveHref(x), `${x.name}: Circuit DNA & history`]),
+    ...P.entities.filter((x) => x.type === 'circuit' && x.key === 'circuit').map((x) => [resolveHref(x), `${x.name}: Circuit DNA & history`]),
     ...P.entities.filter((x) => x.type === 'race' && x.key === 'race').map((x) => [resolveHref(x), `${x.name}: sessions & results`]),
-    ...P.entities.filter((x) => x.type === 'matchup').map((x) => [resolveHref(x), `${x.name}: teammate matchup`]),
+    ...P.entities.filter((x) => x.type === 'matchup').slice(0, 2).map((x) => [resolveHref(x), `${x.name}: teammate matchup`]),
     ['/standings', 'Championship standings'],
     [P.context.replay ? `/pbecast/${P.context.replay}` : '/pbecast', P.context.replay ? 'PBEcast replay' : 'PBEcast live timing'],
     ['/intelligence', 'F1 Intelligence hub'],
@@ -97,7 +95,7 @@ export function articlePage(a, { linkOk, related = [], site }) {
   <div class="nbody wrap">${sections}
     <aside class="nrelated"><h2>Go deeper</h2><ul>${relatedLinks.map(([h, t]) => `<li><a href="${esc(h)}">${esc(t)}</a></li>`).join('')}</ul></aside>
     ${related.length ? `<aside class="nrelated"><h2>Related stories</h2><ul>${related.map((r) => `<li><a href="/news/${esc(r.slug)}">${esc(r.headline)}</a></li>`).join('')}</ul></aside>` : ''}
-    <details class="nevidence"><summary>Evidence &amp; method</summary><p>Every number and name in this story comes from a frozen fact packet built from the PropSports F1 data plane, and the draft passed the ${esc(a.validation.gate)} publication gates (no unsupported numbers, names, causes or outcomes). Packet <code>${esc(P.hash)}</code>.</p><ul>${evidence}</ul>${P.limits.length ? `<p><b>Limits</b></p><ul>${P.limits.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}</details>
+    <details class="nevidence"><summary>Evidence &amp; methodology</summary><div class="nev-body"><p>Every number and name in this story comes from a frozen fact packet built from the PropSports F1 data plane. The draft passed the factual gate (no unsupported numbers, names, causes or outcomes) and the editorial gate before publication.</p><dl class="nev-meta"><div><dt>Packet</dt><dd><code>${esc(P.hash)}</code></dd></div><div><dt>Factual gate</dt><dd>${esc(a.validation.gate)}</dd></div>${a.editorial ? `<div><dt>Editorial gate</dt><dd>${esc(a.editorial.version)}</dd></div>` : ''}${a.composer ? `<div><dt>Composer</dt><dd>${esc(a.composer)}</dd></div>` : ''}</dl>${P.limits.length ? `<h3>Limits</h3><ul>${P.limits.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}<h3>Facts used (${used.size})</h3><ul class="nev-rows">${evidence}</ul></div></details>
   </div>
 </article>`;
   const mentions = P.entities.filter((x) => x.type === 'driver').slice(0, 8).map((x) => ({ '@type': 'Person', name: x.name, url: `${site}/drivers/${x.ref}` }));

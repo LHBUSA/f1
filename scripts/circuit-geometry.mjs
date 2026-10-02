@@ -22,7 +22,7 @@ const SEASON = Number(opt('season', new Date().getUTCFullYear()));
 const ONLY = (opt('only', '') || '').split(',').filter(Boolean);
 const ENDPOINT = opt('endpoint', 'https://overpass.private.coffee/api/interpreter');
 const UA = 'PropSports-F1/1.0 (+https://propsports.proptechusa.ai)';
-const OUT = path.resolve('data/geometry');
+const OUT = path.resolve('geometry'); // committed: ODbL derivative database (see geometry/README.md)
 fs.mkdirSync(OUT, { recursive: true });
 
 const circuits = JSON.parse(fs.readFileSync('data/derived/circuits.json', 'utf8'));

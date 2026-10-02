@@ -85,7 +85,7 @@ export default {
           const l = await env.DATA.list({ prefix: 'observations/', delimiter: '/' });
           return respond(req, { sessions: l.delimitedPrefixes }, { cache: 'no-store' });
         }
-        if (!/^d+$/.test(sid)) return err(req, 400, 'bad session');
+        if (!/^\d+$/.test(sid)) return err(req, 400, 'bad session');
         const o = await env.DATA.get(`observations/espn-${sid}/${q.get('chunk') ? `chunk-${String(Number(q.get('chunk'))).padStart(5, '0')}` : 'index'}.json`);
         return o ? respond(req, await o.json(), { cache: 'no-store' }) : err(req, 404, 'not found');
       }

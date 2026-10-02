@@ -113,12 +113,23 @@ const pubSession = (s, withResults) => ({
   distance_km: s.distance_km,
   ...(withResults ? { results: (resultsBySession[s.id] || []).sort((a, b) => (a.position ?? 999) - (b.position ?? 999)).map(pubResult) } : {}),
 });
+// Relocated rounds: "<X> Grand Prix in <Country>" in a season whose own "<X> Grand Prix" was cancelled is that round held
+// at another venue (2026: the Bahrain Grand Prix at Sepang; corroborated by Wikipedia "2026 Bahrain Grand Prix", which
+// gives the official name "Formula 1 Gulf Air Bahrain Grand Prix in Malaysia 2026"). The event keeps its true name; the
+// link lets every surface explain the venue instead of the name looking like an error.
+function relocationOf(e) {
+  const m = /^(.+ Grand Prix) in (.+)$/.exec(e.name || '');
+  if (!m) return null;
+  const orig = events.find((x) => x.season === e.season && x.id !== e.id && x.name === m[1] && x.status === 'canceled');
+  return orig ? { event_id: orig.slug, original_circuit_id: circuitSlug(evCirc[orig.id]?.circuit_id), host_country: m[2], basis: 'same-season cancelled round of the same name' } : null;
+}
 const pubEvent = (e, withSessions) => ({
   id: e.slug,
   season: e.season,
   round: e.round,
   name: e.name,
   official_name: e.official_name,
+  ...(relocationOf(e) ? { relocated_from: relocationOf(e) } : {}),
   circuit_id: circuitSlug(evCirc[e.id]?.circuit_id),
   start_utc: e.start_utc,
   end_utc: e.end_utc,

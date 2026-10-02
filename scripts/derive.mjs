@@ -25,6 +25,14 @@ try { wikidata = load('wikidata'); } catch {}
   const xw = wikidata?.venue_crosswalk || {};
   const canon = {};
   const merged = {};
+  // When several ESPN venues merge into one Wikidata circuit, the venue most events use is the main layout and owns the
+  // name/length/turns (2026-10-02: Bahrain's one-off 2020 "Outer Track" venue was captured last and had renamed the
+  // whole circuit and replaced its layout figures). Ties fall back to the most recent capture.
+  const venueUse = {};
+  for (const e of events) if (e.circuit_id) venueUse[e.circuit_id] = (venueUse[e.circuit_id] || 0) + 1;
+  const sorted = [...circuits].sort((a, b) => (venueUse[a.id] || 0) - (venueUse[b.id] || 0) || String(a.captured_at).localeCompare(String(b.captured_at)));
+  const ownerOf = {};
+  for (const c of sorted) { const wd = xw[c.id]?.wikidata_id; ownerOf[wd ? `wd-${wd}` : c.id] = c.id; }
   for (const c of circuits) {
     const wd = xw[c.id]?.wikidata_id;
     const cid = wd ? `wd-${wd}` : c.id;
@@ -32,8 +40,9 @@ try { wikidata = load('wikidata'); } catch {}
     const wdc = wd ? wikidata.circuits[wd] : null;
     const m = (merged[cid] ||= { ...c, id: cid, espn_venue_ids: [], name: c.name, wikidata_id: wd || null, wikidata_name: wdc?.name || null, lat: wdc?.lat ?? null, lon: wdc?.lon ?? null, opened: wdc?.opened ?? null, wikidata_country: wdc?.country || null });
     m.espn_venue_ids.push(c.espn_id);
-    // Prefer the most recently captured ESPN venue's descriptive fields (current layout).
-    if ((c.length_km && !m.length_km) || c.captured_at > m.captured_at) Object.assign(m, { name: c.name, length_km: c.length_km || m.length_km, turns: c.turns || m.turns, layout_type: c.layout_type || m.layout_type, locality: c.locality || m.locality, captured_at: c.captured_at });
+    // The main-layout venue (most events) supplies the descriptive fields; others only fill gaps.
+    if (ownerOf[cid] === c.id) Object.assign(m, { name: c.name, length_km: c.length_km || m.length_km, turns: c.turns || m.turns, layout_type: c.layout_type || m.layout_type, locality: c.locality || m.locality, captured_at: c.captured_at });
+    else if (c.length_km && !m.length_km) Object.assign(m, { length_km: c.length_km, turns: c.turns || m.turns });
   }
   // Per-event circuit. ESPN venue ids are per GRAND PRIX and the venue document describes the GP's CURRENT
   // venue (e.g. every Spanish GP 1995–2024 points at today's Madring), so history comes from Wikidata's

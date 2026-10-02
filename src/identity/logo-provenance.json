@@ -1,0 +1,128 @@
+{
+  "_doc": "Constructor mark provenance (2026 field). A mark renders publicly ONLY when approved_public is true. Commons \"Public domain\" on a logo is a copyright determination (simple text/geometry); it is not a trademark licence. Every team mark is a registered trademark of its owner and PropBetEdge holds no permission, so all are HELD and PBEcast renders the PropBetEdge team wordmark badge (team code + team colour) instead. Owner can approve a specific mark by flipping approved_public with a recorded decision.",
+  "acquired": "2026-10-02",
+  "assets": {
+    "ferrari": {
+      "candidate": null,
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "No clean candidate found on Wikimedia Commons (search 2026-10-02); team mark is a trademark of its owner."
+    },
+    "red-bull": {
+      "candidate": {
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Red_Bull_Racing_logo_ita.png",
+        "asset_type": "image/png",
+        "creator": "Unknown authorUnknown author",
+        "license": "Public domain",
+        "restrictions": null
+      },
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "Trademark of the team/owner; Commons Public domain covers copyright only. No permission for commercial use by PropBetEdge."
+    },
+    "mclaren": {
+      "candidate": {
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:McLaren_Speedmark.svg",
+        "asset_type": "image/svg+xml",
+        "creator": "Ved havet",
+        "license": "Public domain",
+        "restrictions": "trademarked"
+      },
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "Trademark of the team/owner; Commons Public domain covers copyright only and the file is tagged \"trademarked\". No permission for commercial use by PropBetEdge."
+    },
+    "mercedes": {
+      "candidate": {
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_Petronas_F1_Team_logo_(2026).svg",
+        "asset_type": "image/svg+xml",
+        "creator": "Mercedes-AMG Petronas F1 Team",
+        "license": "Public domain",
+        "restrictions": "trademarked"
+      },
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "Trademark of the team/owner; Commons Public domain covers copyright only and the file is tagged \"trademarked\". No permission for commercial use by PropBetEdge."
+    },
+    "racing-bulls": {
+      "candidate": null,
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "No clean candidate found on Wikimedia Commons (search 2026-10-02); team mark is a trademark of its owner."
+    },
+    "alpine": {
+      "candidate": {
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Alpine_F1_Team_Logo.svg",
+        "asset_type": "image/svg+xml",
+        "creator": "Alpine F1 Team",
+        "license": "Public domain",
+        "restrictions": "trademarked"
+      },
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "Trademark of the team/owner; Commons Public domain covers copyright only and the file is tagged \"trademarked\". No permission for commercial use by PropBetEdge."
+    },
+    "audi": {
+      "candidate": {
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Audif1.com_logo17.svg",
+        "asset_type": "image/svg+xml",
+        "creator": "Audi Revolut F1 Team / Sauber Motorsports AG",
+        "license": "Public domain",
+        "restrictions": "trademarked"
+      },
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "Trademark of the team/owner; Commons Public domain covers copyright only and the file is tagged \"trademarked\". No permission for commercial use by PropBetEdge."
+    },
+    "haas": {
+      "candidate": {
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:TGR_Haas_F1_Team_Logo_(2026).svg",
+        "asset_type": "image/svg+xml",
+        "creator": "Haas F1 Team",
+        "license": "Public domain",
+        "restrictions": "trademarked"
+      },
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "Trademark of the team/owner; Commons Public domain covers copyright only and the file is tagged \"trademarked\". No permission for commercial use by PropBetEdge."
+    },
+    "aston-martin": {
+      "candidate": {
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Aston_Martin_F1_Team_logo_2024.jpg",
+        "asset_type": "image/jpeg",
+        "creator": "Unknown authorUnknown author",
+        "license": "CC BY 4.0",
+        "restrictions": null
+      },
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "Trademark of the team/owner; Commons CC BY 4.0 covers copyright only. No permission for commercial use by PropBetEdge."
+    },
+    "williams": {
+      "candidate": {
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Williams_Racing_Logo_2024.webp",
+        "asset_type": "image/webp",
+        "creator": "Williams Grand Prix Engineering Limited",
+        "license": "Public domain",
+        "restrictions": null
+      },
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "Trademark of the team/owner; Commons Public domain covers copyright only. No permission for commercial use by PropBetEdge."
+    },
+    "cadillac": {
+      "candidate": null,
+      "approved_public": false,
+      "status": "held",
+      "hold_reason": "No clean candidate found on Wikimedia Commons (search 2026-10-02); team mark is a trademark of its owner."
+    }
+  }
+}

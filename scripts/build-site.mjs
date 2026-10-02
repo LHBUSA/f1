@@ -22,6 +22,9 @@ const newsAll = fs.existsSync('data/news/articles.json') ? JSON.parse(fs.readFil
 const newsPub = newsAll.filter((a) => a.status === 'published');
 const newsEmit = newsAll.filter((a) => a.status === 'published' || (process.env.F1_NEWS_SHADOW === '1' && a.status === 'shadow'));
 ctx.newsModule = homeModule(newsPub, X);
+// relocated rounds (projection relocation link): one explanation, shown on the race page
+ctx.relocations = {};
+for (const e of X.allEvents) if (e.relocated_from) { const o = X.event[e.relocated_from.event_id]; const oc = X.circuit[e.relocated_from.original_circuit_id]; ctx.relocations[e.id] = { orig_id: e.relocated_from.event_id, text: `This is the ${e.season} ${e.name.replace(/ in .+$/, '')}, held at ${X.circuit[e.circuit_id]?.name || 'a different circuit'} in ${e.relocated_from.host_country}. The round originally scheduled at ${oc?.name || 'its usual venue'}${o?.start_utc ? ` for ${new Date(o.start_utc).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' })}` : ''} is listed as cancelled.` }; }
 
 // ---------- assets ----------
 const colors = new Set();
