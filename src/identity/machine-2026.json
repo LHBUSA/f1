@@ -4,40 +4,875 @@
   "season": 2026,
   "retrieved": "2026-10-02",
   "sources": {
-    "merc-spec": { "url": "https://www.mercedesamgf1.com/f1-w17-2026-technical-specifications", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party" },
-    "merc-launch-2026": { "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party", "date": "2026-02-02" }
+    "merc-spec": {
+      "url": "https://www.mercedesamgf1.com/f1-w17-2026-technical-specifications",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party"
+    },
+    "merc-launch-2026": {
+      "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-02-02"
+    },
+    "s-44449c3cf6": {
+      "url": "https://motorsport.tech/formula-1/ferrari-following-complete-rethink-of-cars-architecture-with-sf-26",
+      "publisher": "Motorsport Technology",
+      "type": "media",
+      "date": "2026-01-23"
+    },
+    "s-05a40d6af1": {
+      "url": "https://scuderiafans.com/ferrari-sf-26-technical-specs-revealed-ahead-of-the-2026-f1-season/",
+      "publisher": "Scuderia Fans",
+      "type": "media",
+      "date": "2026-01-23"
+    },
+    "s-3e9248d176": {
+      "url": "https://www.motorsportmagazine.com/articles/single-seaters/f1/2026-ferrari-f1-car-launch/",
+      "publisher": "Motor Sport Magazine",
+      "type": "media",
+      "date": "2026-01-23"
+    },
+    "s-09201d2f9b": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5498",
+      "publisher": "ESPN core API",
+      "type": "espn",
+      "date": null
+    },
+    "s-85dc8b6fa7": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/868",
+      "publisher": "ESPN core API",
+      "type": "espn",
+      "date": null
+    },
+    "s-d1683a913e": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/what-is-the-technical-specification-of-our-2026-formula-1/",
+      "publisher": null,
+      "type": "first_party",
+      "date": "2026-02-11"
+    },
+    "s-76b24b3ef6": {
+      "url": "https://www.mercedesamgf1.com/f1-w17-2026-technical-specifications",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": null
+    },
+    "s-28a5cb26b4": {
+      "url": "https://www.mclaren.com/racing/formula-1/2023/mclaren-formula-1-team-and-mercedes-benz-renew-power-unit-agreement-until-2030/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": null
+    },
+    "s-028a8b880d": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5579",
+      "publisher": "ESPN core API",
+      "type": "espn",
+      "date": null
+    },
+    "s-fb6af26d41": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5752",
+      "publisher": "ESPN core API",
+      "type": "espn",
+      "date": null
+    },
+    "s-73b8177d94": {
+      "url": "https://www.redbullracing.com/int-en/cars/rb22",
+      "publisher": null,
+      "type": "first_party",
+      "date": "2026-01-26"
+    },
+    "s-18290f0b3c": {
+      "url": "https://www.redbull.com/gb-en/red-bull-x-ford-future-f1-engines",
+      "publisher": "Red Bull (redbull.com)",
+      "type": "first_party",
+      "date": "2026-02-24"
+    },
+    "s-739fc8c274": {
+      "url": "https://www.the-race.com/formula-1/red-bull-ford-f1-2026-launch-what-we-learned/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": null
+    },
+    "s-61c852ea4b": {
+      "url": "https://www.topgear.com.ph/news/racing-news/ford-red-bull-f1-engine-tguk-a2609-20260119-lfrm",
+      "publisher": "Top Gear Philippines (Top Gear UK syndication)",
+      "type": "media",
+      "date": "2026-01-19"
+    },
+    "s-70e8319b42": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/4665",
+      "publisher": "ESPN core API",
+      "type": "espn",
+      "date": null
+    },
+    "s-92188b0815": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5790",
+      "publisher": "ESPN core API",
+      "type": "espn",
+      "date": null
+    },
+    "s-703dc2b0bd": {
+      "url": "https://www.visacashapprb.com/int-en/cars",
+      "publisher": null,
+      "type": "first_party",
+      "date": null
+    },
+    "s-8948258625": {
+      "url": "https://www.planetf1.com/news/red-bull-rb22-ford-rbpt-programme-laurent-mekies-bear-with-us",
+      "publisher": "PlanetF1",
+      "type": "media",
+      "date": "2026-01-27"
+    },
+    "s-d6610a2e9e": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5741",
+      "publisher": "ESPN core API",
+      "type": "espn",
+      "date": null
+    },
+    "s-ace129bb65": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5652",
+      "publisher": "ESPN core API",
+      "type": "espn",
+      "date": null
+    },
+    "s-1141e46780": {
+      "url": "https://www.visacashapprb.com/int-en/team",
+      "publisher": "Visa Cash App Racing Bulls",
+      "type": "first_party",
+      "date": null
+    },
+    "s-2993ec727e": {
+      "url": "https://www.alpinef1.com/news/introducing-the-a526",
+      "publisher": null,
+      "type": "first_party",
+      "date": "2026-01-23"
+    },
+    "s-5239be2155": {
+      "url": "https://www.alpinef1.com/news/onboard-msc-world-europa-for-the-a526-launch",
+      "publisher": "BWT Alpine Formula One Team",
+      "type": "first_party",
+      "date": null
+    },
+    "s-e1e55e43c4": {
+      "url": "https://www.formula1.com/en/latest/article/6-key-factors-that-have-seen-alpine-jump-up-the-order-in-2026.4xb3f2oATygfWL0dKSIPTg",
+      "publisher": "Formula1.com",
+      "type": "press",
+      "date": "2026-04-02"
+    },
+    "s-a529394d10": {
+      "url": "https://www.espn.co.uk/f1/story/_/id/42344319/f1-alpine-use-mercedes-engines-2026-season",
+      "publisher": "ESPN",
+      "type": "espn",
+      "date": "2024-11-12"
+    },
+    "s-87a6a529b1": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5501",
+      "publisher": "ESPN core API (2026 athlete)",
+      "type": "espn",
+      "date": null
+    },
+    "s-9d3e4d7ec2": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5823",
+      "publisher": "ESPN core API (2026 athlete)",
+      "type": "espn",
+      "date": null
+    },
+    "s-da77bcaa94": {
+      "url": "https://www.alpinef1.com/news/azerbaijan-grand-prix-recap",
+      "publisher": "BWT Alpine Formula One Team",
+      "type": "first_party",
+      "date": null
+    },
+    "s-22367ca5e4": {
+      "url": "https://www.audi-mediacenter.com/en/press-releases/premiere-in-berlin-audi-revolut-f1-team-officially-unveiled-16997",
+      "publisher": null,
+      "type": "first_party",
+      "date": "2026-01-21"
+    },
+    "s-5db5c4e173": {
+      "url": "https://www.audi.com/en/audi-formula-racing-gmbh-17953",
+      "publisher": "AUDI AG (audi.com Media Center)",
+      "type": "first_party",
+      "date": null
+    },
+    "s-aa914939eb": {
+      "url": "https://contenthub.audif1.com/en/audi-r26-technical-specifications-88",
+      "publisher": "Audi Revolut F1 Team Content Hub",
+      "type": "first_party",
+      "date": null
+    },
+    "s-77c6000a71": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5835",
+      "publisher": "ESPN core API (2026 athlete)",
+      "type": "espn",
+      "date": null
+    },
+    "s-f8f422b803": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/4396",
+      "publisher": "ESPN core API (2026 athlete)",
+      "type": "espn",
+      "date": null
+    },
+    "s-bdd56981df": {
+      "url": "https://contenthub.audif1.com/en/publications/motorsport/2026-audi-revolut-f1-team-press-pack-2/download",
+      "publisher": "Audi Revolut F1 Team Content Hub (2026 Press Pack PDF, p.18-19 'Key personnel')",
+      "type": "first_party",
+      "date": "2026-05-29"
+    },
+    "s-b40e8274bb": {
+      "url": "https://www.haasf1team.com/news/tgr-haas-f1-team-reveals-vf-26-design-livery",
+      "publisher": null,
+      "type": "first_party",
+      "date": "2026-01-19"
+    },
+    "s-2ccbe446e4": {
+      "url": "https://www.haasf1team.com/season/machine/vf-26",
+      "publisher": "TGR Haas F1 Team",
+      "type": "first_party",
+      "date": null
+    },
+    "s-938e82cf39": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/4678",
+      "publisher": "ESPN",
+      "type": "espn",
+      "date": null
+    },
+    "s-5944eedf51": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5789",
+      "publisher": "ESPN",
+      "type": "espn",
+      "date": null
+    },
+    "s-ea19ee67ed": {
+      "url": "https://www.haasf1team.com/news/azerbaijan-grand-prix-race-recap-7",
+      "publisher": "TGR Haas F1 Team",
+      "type": "first_party",
+      "date": "2026-09-26"
+    },
+    "s-4ad9814268": {
+      "url": "https://global.honda/en/topics/2026/c_2026-02-10eng.html",
+      "publisher": null,
+      "type": "first_party",
+      "date": "2026-02-10"
+    },
+    "s-c432613d84": {
+      "url": "https://global.honda/en/F1/machine/2026_AMR26/",
+      "publisher": "Honda",
+      "type": "first_party",
+      "date": null
+    },
+    "s-0b029a5399": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/348",
+      "publisher": "ESPN",
+      "type": "espn",
+      "date": null
+    },
+    "s-f6062d7ea9": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/4775",
+      "publisher": "ESPN",
+      "type": "espn",
+      "date": null
+    },
+    "s-a9185abe39": {
+      "url": "https://www.williamsf1.com/articles/e124137e-f750-438c-914a-051f96d25e3f/vowles-on-our-fw48-updates-on-time-on-cost-and-to-specification",
+      "publisher": null,
+      "type": "first_party",
+      "date": "2026-10-01"
+    },
+    "s-18a8e6696d": {
+      "url": "https://www.williamsf1.com/articles/17630f10-34ff-4ca1-9a93-0ad757f8c6f2/mercedes-benz-power-unit-williams-racing-new-era",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": "2024-01-08"
+    },
+    "s-c6aa9bd933": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/5592",
+      "publisher": "ESPN",
+      "type": "espn",
+      "date": null
+    },
+    "s-e309d2d749": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/4686",
+      "publisher": "ESPN",
+      "type": "espn",
+      "date": null
+    },
+    "s-139f2b9b89": {
+      "url": "https://www.williamsf1.com/articles/12b41bc9-dd65-4fe2-836a-8b8f9c2a55b7/technical-brief-bahrain-in-malaysia",
+      "publisher": "Atlassian Williams F1 Team",
+      "type": "first_party",
+      "date": "2026-09-30"
+    },
+    "s-0bc7abfbfc": {
+      "url": "https://www.cadillacf1team.com/news/cadillac-formula-1-r-team-honors-mario-andretti-with-inaugural-chassis",
+      "publisher": null,
+      "type": "first_party",
+      "date": "2026-02-27"
+    },
+    "s-3c8e2aac77": {
+      "url": "https://www.cadillacf1team.com/news/cadillac-formula-1-r-team-announces-star-chinese-racer-zhou-guanyu-as",
+      "publisher": "Cadillac Formula 1 Team",
+      "type": "first_party",
+      "date": null
+    },
+    "s-03011aa090": {
+      "url": "https://www.cadillacf1team.com/news/the-cadillac-formula-1-team-goes-street-racing-in-the-land-of-fire",
+      "publisher": "Cadillac Formula 1 Team",
+      "type": "first_party",
+      "date": "2026-09-22"
+    },
+    "s-dad8d7970a": {
+      "url": "https://www.cadillacf1team.com/news/2026-italian-grand-prix-free-practice-report",
+      "publisher": "Cadillac Formula 1 Team",
+      "type": "first_party",
+      "date": "2026-09-04"
+    },
+    "s-74e4ce3aa7": {
+      "url": "https://www.skysports.com/f1/news/13492528/cadillac-f1-all-you-need-to-know-about-new-2026-team-drivers-team-principal-engine-super-bowl-launch",
+      "publisher": "Sky Sports",
+      "type": "media",
+      "date": "2026-02-10"
+    },
+    "s-6df973a5c9": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/4520",
+      "publisher": "ESPN core API (2026 athlete)",
+      "type": "espn",
+      "date": null
+    },
+    "s-24e145b4bb": {
+      "url": "http://sports.core.api.espn.com/v2/sports/racing/leagues/f1/seasons/2026/athletes/4472",
+      "publisher": "ESPN core API (2026 athlete)",
+      "type": "espn",
+      "date": null
+    }
   },
   "teams": {
     "mercedes": {
-      "carModel": { "value": "Mercedes-AMG F1 W17 E PERFORMANCE", "short": "W17", "sources": ["merc-launch-2026", "merc-spec"] },
-      "powerUnit": { "manufacturer": "Mercedes-AMG High Performance Powertrains", "designation": "Mercedes-AMG F1 M17 E PERFORMANCE", "relationship": "works", "sources": ["merc-spec", "merc-launch-2026"] },
-      "tyreSupplier": { "value": "Pirelli", "sources": ["merc-spec"] },
+      "carModel": {
+        "value": "Mercedes-AMG F1 W17 E PERFORMANCE",
+        "short": "W17",
+        "sources": [
+          "merc-launch-2026",
+          "merc-spec"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Mercedes-AMG High Performance Powertrains",
+        "designation": "Mercedes-AMG F1 M17 E PERFORMANCE",
+        "relationship": "works",
+        "sources": [
+          "merc-spec",
+          "merc-launch-2026"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "merc-spec"
+        ]
+      },
       "specs": [
-        { "component": "chassis", "label": "Monocoque", "value": "Moulded carbon fibre and honeycomb composite structure", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "bodywork", "label": "Bodywork", "value": "Carbon fibre composite including engine cover, sidepods, floor, nose, front wing and rear wing", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "front_suspension", "label": "Front suspension", "value": "Carbon fibre wishbone and push rod-activated springs and dampers", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "rear_suspension", "label": "Rear suspension", "value": "Carbon fibre wishbone and push rod-activated inboard springs and dampers", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "wheels", "label": "Wheels", "value": "OZ forged magnesium", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "tyres", "label": "Tyres", "value": "Pirelli", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "brakes", "label": "Brake system", "value": "Carbone Industries carbon discs and pads with rear brake-by-wire", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "brakes", "label": "Brake calipers", "value": "Brembo monobloc calipers in nickel-plated aluminium alloy (front and rear)", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "cockpit", "label": "Steering", "value": "Power-assisted rack and pinion; carbon fibre steering wheel", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "cockpit", "label": "Instrumentation", "value": "Motion Applied Technologies (MAT)", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "cockpit", "label": "Safety structures", "value": "Survival cell, front/side/rear impact structures, roll structures, titanium halo", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "electronics", "label": "Electronics", "value": "FIA standard ECU and FIA homologated electronic and electrical system", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "fuel_system", "label": "Fuel cell", "value": "ATL Kevlar-reinforced rubber bladder", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "gearbox", "label": "Gearbox", "value": "Eight forward, one reverse; carbon fibre main case; sequential semi-automatic hydraulic selection; carbon clutch", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "dimensions", "label": "Overall width / height", "value": "1900 mm / 970 mm (length under 5505 mm)", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "dimensions", "label": "Overall weight", "value": "772 kg (as published by the team)", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "power_unit", "label": "Power unit", "value": "Mercedes-AMG F1 M17 E PERFORMANCE", "scope": "car_specific", "sources": ["merc-spec"] },
-        { "component": "power_unit", "label": "Internal combustion engine", "value": "1.6 litre V6 (90°), 24 valves, max 15,000 rpm, direct injection max 350 bar", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "power_unit", "label": "Fuel flow", "value": "Max 3000 MJ/h", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "power_unit", "label": "MGU-K", "value": "Max 350 kW, max 60,000 rpm, up to 9.0 MJ recovery per lap (circuit specific)", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "power_unit", "label": "Energy store", "value": "Lithium-ion; max 4.0 MJ usable range on track", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "power_unit", "label": "Allocation", "value": "Four ICE/TC/EXH and three MGU-K/ES/CE per driver per season", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "power_unit", "label": "Minimum weight", "value": "185 kg", "scope": "regulation", "sources": ["merc-spec"] },
-        { "component": "power_unit", "label": "Fuel / lubricants", "value": "PETRONAS Primax fuel; PETRONAS Syntium lubricants; PETRONAS Tutela fluids", "scope": "car_specific", "sources": ["merc-spec"] }
+        {
+          "component": "chassis",
+          "label": "Monocoque",
+          "value": "Moulded carbon fibre and honeycomb composite structure",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "bodywork",
+          "label": "Bodywork",
+          "value": "Carbon fibre composite including engine cover, sidepods, floor, nose, front wing and rear wing",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "front_suspension",
+          "label": "Front suspension",
+          "value": "Carbon fibre wishbone and push rod-activated springs and dampers",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "rear_suspension",
+          "label": "Rear suspension",
+          "value": "Carbon fibre wishbone and push rod-activated inboard springs and dampers",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "wheels",
+          "label": "Wheels",
+          "value": "OZ forged magnesium",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "tyres",
+          "label": "Tyres",
+          "value": "Pirelli",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Brake system",
+          "value": "Carbone Industries carbon discs and pads with rear brake-by-wire",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "brakes",
+          "label": "Brake calipers",
+          "value": "Brembo monobloc calipers in nickel-plated aluminium alloy (front and rear)",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Steering",
+          "value": "Power-assisted rack and pinion; carbon fibre steering wheel",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Instrumentation",
+          "value": "Motion Applied Technologies (MAT)",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "cockpit",
+          "label": "Safety structures",
+          "value": "Survival cell, front/side/rear impact structures, roll structures, titanium halo",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "electronics",
+          "label": "Electronics",
+          "value": "FIA standard ECU and FIA homologated electronic and electrical system",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "fuel_system",
+          "label": "Fuel cell",
+          "value": "ATL Kevlar-reinforced rubber bladder",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "gearbox",
+          "label": "Gearbox",
+          "value": "Eight forward, one reverse; carbon fibre main case; sequential semi-automatic hydraulic selection; carbon clutch",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Overall width / height",
+          "value": "1900 mm / 970 mm (length under 5505 mm)",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "dimensions",
+          "label": "Overall weight",
+          "value": "772 kg (as published by the team)",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "power_unit",
+          "label": "Power unit",
+          "value": "Mercedes-AMG F1 M17 E PERFORMANCE",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "power_unit",
+          "label": "Internal combustion engine",
+          "value": "1.6 litre V6 (90°), 24 valves, max 15,000 rpm, direct injection max 350 bar",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "power_unit",
+          "label": "Fuel flow",
+          "value": "Max 3000 MJ/h",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "power_unit",
+          "label": "MGU-K",
+          "value": "Max 350 kW, max 60,000 rpm, up to 9.0 MJ recovery per lap (circuit specific)",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "power_unit",
+          "label": "Energy store",
+          "value": "Lithium-ion; max 4.0 MJ usable range on track",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "power_unit",
+          "label": "Allocation",
+          "value": "Four ICE/TC/EXH and three MGU-K/ES/CE per driver per season",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "power_unit",
+          "label": "Minimum weight",
+          "value": "185 kg",
+          "scope": "regulation",
+          "sources": [
+            "merc-spec"
+          ]
+        },
+        {
+          "component": "power_unit",
+          "label": "Fuel / lubricants",
+          "value": "PETRONAS Primax fuel; PETRONAS Syntium lubricants; PETRONAS Tutela fluids",
+          "scope": "car_specific",
+          "sources": [
+            "merc-spec"
+          ]
+        }
       ]
+    },
+    "ferrari": {
+      "carModel": null,
+      "carModelUnverified": {
+        "value": "SF-26",
+        "sourceType": "media",
+        "sourceUrl": "https://www.formula1.com/en/latest/article/first-look-ferrari-reveal-new-sf-26-car-for-2026-f1-season.19b0ad82cdsyXgvA675Ey4"
+      },
+      "powerUnit": {
+        "manufacturer": "Ferrari",
+        "designation": null,
+        "relationship": "works",
+        "sources": [
+          "s-44449c3cf6",
+          "s-3e9248d176"
+        ],
+        "designationHeld": "067/6 reported by media only (ferrari.com not reachable); held until first-party/FIA"
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-09201d2f9b",
+          "s-85dc8b6fa7"
+        ]
+      },
+      "specs": []
+    },
+    "mclaren": {
+      "carModel": {
+        "value": "MCL40",
+        "sources": [
+          "s-d1683a913e"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Mercedes",
+        "designation": "Mercedes-AMG F1 M17 E PERFORMANCE",
+        "relationship": "customer",
+        "sources": [
+          "s-d1683a913e",
+          "s-76b24b3ef6",
+          "s-28a5cb26b4",
+          "s-028a8b880d"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-d1683a913e",
+          "s-fb6af26d41"
+        ]
+      },
+      "specs": []
+    },
+    "red-bull": {
+      "carModel": {
+        "value": "RB22",
+        "sources": [
+          "s-73b8177d94"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Red Bull Ford Powertrains",
+        "designation": "Red Bull Ford DM01",
+        "relationship": "works",
+        "sources": [
+          "s-73b8177d94",
+          "s-18290f0b3c",
+          "s-739fc8c274",
+          "s-61c852ea4b",
+          "s-70e8319b42"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-70e8319b42",
+          "s-92188b0815",
+          "s-73b8177d94"
+        ]
+      },
+      "specs": []
+    },
+    "racing-bulls": {
+      "carModel": {
+        "value": "VCARB 03",
+        "sources": [
+          "s-703dc2b0bd"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Red Bull Ford Powertrains",
+        "designation": "Red Bull Ford DM01",
+        "relationship": "customer",
+        "sources": [
+          "s-703dc2b0bd",
+          "s-73b8177d94",
+          "s-18290f0b3c",
+          "s-8948258625",
+          "s-d6610a2e9e"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-d6610a2e9e",
+          "s-ace129bb65",
+          "s-1141e46780"
+        ]
+      },
+      "specs": []
+    },
+    "alpine": {
+      "carModel": {
+        "value": "A526",
+        "sources": [
+          "s-2993ec727e"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Mercedes",
+        "designation": null,
+        "relationship": "customer",
+        "sources": [
+          "s-5239be2155",
+          "s-e1e55e43c4",
+          "s-a529394d10",
+          "s-87a6a529b1",
+          "s-9d3e4d7ec2",
+          "s-76b24b3ef6"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-da77bcaa94",
+          "s-87a6a529b1",
+          "s-9d3e4d7ec2"
+        ]
+      },
+      "specs": []
+    },
+    "audi": {
+      "carModel": {
+        "value": "Audi R26",
+        "sources": [
+          "s-22367ca5e4"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Audi Formula Racing",
+        "designation": "Audi AFR 26 Hybrid",
+        "relationship": "works",
+        "sources": [
+          "s-22367ca5e4",
+          "s-5db5c4e173",
+          "s-aa914939eb",
+          "s-77c6000a71",
+          "s-f8f422b803"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-aa914939eb",
+          "s-bdd56981df",
+          "s-77c6000a71",
+          "s-f8f422b803"
+        ]
+      },
+      "specs": []
+    },
+    "haas": {
+      "carModel": {
+        "value": "VF-26",
+        "sources": [
+          "s-b40e8274bb"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Ferrari",
+        "designation": "Ferrari 067/6",
+        "relationship": "customer",
+        "sources": [
+          "s-2ccbe446e4",
+          "s-b40e8274bb",
+          "s-938e82cf39",
+          "s-5944eedf51"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-b40e8274bb",
+          "s-ea19ee67ed",
+          "s-938e82cf39",
+          "s-5944eedf51"
+        ]
+      },
+      "specs": []
+    },
+    "aston-martin": {
+      "carModel": {
+        "value": "AMR26",
+        "sources": [
+          "s-4ad9814268"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Honda",
+        "designation": "RA626H",
+        "relationship": "works",
+        "sources": [
+          "s-4ad9814268",
+          "s-c432613d84",
+          "s-0b029a5399"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-c432613d84",
+          "s-0b029a5399",
+          "s-f6062d7ea9"
+        ]
+      },
+      "specs": []
+    },
+    "williams": {
+      "carModel": {
+        "value": "FW48",
+        "sources": [
+          "s-a9185abe39"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Mercedes",
+        "designation": null,
+        "relationship": "customer",
+        "sources": [
+          "s-18a8e6696d",
+          "s-c6aa9bd933",
+          "s-e309d2d749",
+          "s-76b24b3ef6"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-139f2b9b89",
+          "s-c6aa9bd933",
+          "s-e309d2d749"
+        ]
+      },
+      "specs": []
+    },
+    "cadillac": {
+      "carModel": {
+        "value": "MAC-26",
+        "sources": [
+          "s-0bc7abfbfc"
+        ]
+      },
+      "powerUnit": {
+        "manufacturer": "Ferrari",
+        "designation": null,
+        "relationship": "customer",
+        "sources": [
+          "s-3c8e2aac77",
+          "s-03011aa090",
+          "s-dad8d7970a",
+          "s-74e4ce3aa7",
+          "s-6df973a5c9",
+          "s-24e145b4bb"
+        ]
+      },
+      "tyreSupplier": {
+        "value": "Pirelli",
+        "sources": [
+          "s-6df973a5c9",
+          "s-24e145b4bb"
+        ]
+      },
+      "specs": []
     }
   }
 }

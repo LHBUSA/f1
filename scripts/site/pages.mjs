@@ -679,7 +679,8 @@ function personCard(r) {
 
 function peopleSection(ctx, c, season, P, lineup) {
   if (!P) return '';
-  const groups = [['Leadership', P.leadership], ['Technical', P.technical], ['Power unit', P.powerUnit]].filter(([, rs]) => rs.length);
+  // compact by design: top roles per group (full history stays in the registry for future engineer profiles)
+  const groups = [['Leadership', P.leadership.slice(0, 3)], ['Technical', P.technical.slice(0, 4)], ['Power unit', P.powerUnit.slice(0, 2)]].filter(([, rs]) => rs.length);
   const pairs = lineup.map((d) => ({ d, eng: P.driverEngineers.find((r) => r.driverId === d.slug) }));
   if (!groups.length && !pairs.some((x) => x.eng) && !P.raceEngineering.length) return '';
   const garage = P.garageOps.length
@@ -689,7 +690,7 @@ function peopleSection(ctx, c, season, P, lineup) {
   <div class="people-grid">
     <div class="pgroup pgroup-race"><h3>Driver ↔ race engineer</h3><ul class="pairs">${pairs.map(({ d, eng }) => `<li><a class="drv" href="${ctx.driverUrl(d.id)}">${esc(d.name)}</a><span class="arrow" aria-hidden="true">→</span>${eng ? `<span class="eng"><small>Race engineer${eng.confidence === 'medium' ? ' · reported' : ''}</small><b>${esc(eng.name)}</b></span>${srcLink(eng.sources)}` : '<span class="eng none"><small>Race engineer</small><b>Not verified</b></span>'}</li>`).join('')}</ul></div>
     ${groups.map(([g, rs]) => `<div class="pgroup"><h3>${g}</h3><ul class="people">${rs.map(personCard).join('')}</ul></div>`).join('')}
-    ${P.raceEngineering.length ? `<div class="pgroup"><h3>Race engineering</h3><ul class="people">${P.raceEngineering.map(personCard).join('')}</ul></div>` : ''}
+    ${P.raceEngineering.length ? `<div class="pgroup"><h3>Race engineering</h3><ul class="people">${P.raceEngineering.slice(0, 3).map(personCard).join('')}</ul></div>` : ''}
     <div class="pgroup pgroup-garage"><h3>Garage / operations</h3>${garage}</div>
   </div>
   <p class="fine">Current ${season} roles from team, FIA and reputable motorsport sources; “reported” = confirmed by independent media, not yet by the team. Roles we cannot verify are left out.</p></div></section>`;
