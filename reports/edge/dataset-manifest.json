@@ -1,0 +1,163 @@
+{
+  "dataset_version": "f1-edge-dataset@0.1.0",
+  "feature_version": "f1-edge-features@0.1.0",
+  "dataset_sha256": "c1d7369aa60d0e5e09c249d9f8fa70f594421a9c084e8d0608119a8f6c84e3cf",
+  "file": "data/edge/dataset.jsonl (gitignored, rebuilt from data/normalized)",
+  "bytes": 205265139,
+  "first_season": 2009,
+  "eligible_from": 2011,
+  "events": 361,
+  "last_event": {
+    "id": "espn-600057444",
+    "season": 2026,
+    "round": 15,
+    "start": "2026-09-24T08:30:00.000Z"
+  },
+  "bt_config": {
+    "quali": {
+      "tau_days": 120,
+      "window_days": 1095,
+      "lambda_driver": 0.5,
+      "lambda_rw": 1,
+      "lambda_car0": 0.5,
+      "iters": 12
+    },
+    "race": {
+      "tau_days": 365,
+      "window_days": 1095,
+      "lambda_driver": 2,
+      "lambda_rw": 4,
+      "lambda_car0": 0.5,
+      "iters": 12
+    },
+    "selected_by": "scripts/edge/tune-bt.mjs on 2014-2021 events (reports/edge/bt-tuning.json)"
+  },
+  "pair_features": {
+    "q_bt": "qualifying Bradley-Terry strength (driver + car), as-of",
+    "q_bt_driver": "qualifying BT driver component",
+    "q_bt_car": "qualifying BT constructor-season component",
+    "r_bt": "race-order Bradley-Terry strength (driver + car), as-of",
+    "r_bt_driver": "race BT driver component",
+    "r_bt_car": "race BT constructor-season component",
+    "tm_gap_season": "teammate qualifying gap %, this season to date (shrunk; + = slower)",
+    "tm_gap_recent": "teammate qualifying gap %, last 6 comparable sessions (shrunk)",
+    "tm_gap_decay": "teammate qualifying gap %, 1-year decay over 3 seasons (shrunk)",
+    "tm_q_h2h": "teammate qualifying head-to-head, decayed net rate (shrunk)",
+    "tm_r_h2h": "teammate race head-to-head, decayed net rate (shrunk)",
+    "con_gap_pole": "constructor best-qualifying gap to pole %, season to date pooled with previous season (+ = slower)",
+    "points_before": "championship points this season before the event",
+    "champ_pos_before": "championship position before the event (previous season final if no race yet)",
+    "log_starts": "log(1 + career race starts before the event)",
+    "rookie": "1 if fewer than 10 career starts before the event",
+    "drv_reliability": "driver classification rate of started races, decayed (shrunk)",
+    "con_reliability": "constructor classification rate, season to date pooled with previous season",
+    "race_gains": "expectation-adjusted grid-to-finish gain, decayed (shrunk; expectation table built as-of)",
+    "circ_tm_gap": "teammate qualifying gap % at this circuit, prior visits (shrunk)",
+    "circ_pctl": "qualifying field percentile at this circuit minus 0.5, prior visits (shrunk)",
+    "circ_r_h2h": "teammate race head-to-head at this circuit (shrunk)",
+    "street_driver": "street event x driver street-vs-overall teammate gap",
+    "street_con": "street event x constructor street-vs-overall gap to pole",
+    "speed_driver": "high/low speed-class event x driver class-vs-overall teammate gap (as-of speed classes)",
+    "speed_con": "high/low speed-class event x constructor class-vs-overall gap to pole",
+    "pair_q_h2h": "prior qualifying head-to-head between these two drivers (decayed, shrunk) [pair-level]",
+    "pair_r_h2h": "prior race head-to-head between these two drivers (decayed, shrunk) [pair-level]",
+    "cf_q_x_track_position": "Circuit Fit component: driver qualifying pct x track-position importance",
+    "cf_gains_x_overtaking": "Circuit Fit component: race-gains pct x overtaking",
+    "cf_street": "Circuit Fit component: street form pct (street events)",
+    "cf_driver_speed": "Circuit Fit component: driver high/low-speed pct",
+    "cf_car_speed": "Circuit Fit component: car high/low-speed pct",
+    "cf_car_qualifying": "Circuit Fit component: car qualifying speed pct"
+  },
+  "targets": {
+    "race_h2h": {
+      "rows": 75450,
+      "eligible": 67383,
+      "teammate": 3745,
+      "by_season": {
+        "2009": 2985,
+        "2010": 5082,
+        "2011": 5147,
+        "2012": 5412,
+        "2013": 4388,
+        "2014": 4145,
+        "2015": 3508,
+        "2016": 4842,
+        "2017": 3787,
+        "2018": 3989,
+        "2019": 3989,
+        "2020": 3230,
+        "2021": 4157,
+        "2022": 4161,
+        "2023": 4122,
+        "2024": 4504,
+        "2025": 4537,
+        "2026": 3465
+      }
+    },
+    "top10": {
+      "rows": 7538,
+      "eligible": 6770,
+      "teammate": 0,
+      "by_season": {
+        "2009": 318,
+        "2010": 450,
+        "2011": 452,
+        "2012": 476,
+        "2013": 418,
+        "2014": 406,
+        "2015": 375,
+        "2016": 462,
+        "2017": 400,
+        "2018": 420,
+        "2019": 420,
+        "2020": 340,
+        "2021": 439,
+        "2022": 439,
+        "2023": 437,
+        "2024": 477,
+        "2025": 479,
+        "2026": 330
+      }
+    },
+    "quali_h2h": {
+      "rows": 75851,
+      "eligible": 67757,
+      "teammate": 3768,
+      "by_season": {
+        "2009": 2850,
+        "2010": 5244,
+        "2011": 5176,
+        "2012": 5520,
+        "2013": 4389,
+        "2014": 4152,
+        "2015": 3554,
+        "2016": 4851,
+        "2017": 3800,
+        "2018": 3990,
+        "2019": 3990,
+        "2020": 3230,
+        "2021": 4180,
+        "2022": 4179,
+        "2023": 4180,
+        "2024": 4541,
+        "2025": 4560,
+        "2026": 3465
+      }
+    }
+  },
+  "target_definitions": {
+    "quali_h2h": "a ahead of b in the qualifying classification (all driver pairs; teammate flag marks the teammate subset)",
+    "race_h2h": "a ahead of b in race finishing order among starters: classified position; unpositioned cars by laps completed; DSQ last; equal = void (excluded)",
+    "top10": "started driver finishes in positions 1-10 (not disqualified)"
+  },
+  "source_sha256": {
+    "events": "1a39ce94f5984d073028a6127ed3b5735f6da6f2046a21ad69a1f62e6f0954f1",
+    "sessions": "a62fb40f0a17a2c1f8039b536e1476e1ef8f506d6fbbf109e5cb8da5909b71cb",
+    "classifications": "843cef2f90f3d7786a97b170dab3ac164eb6138c78d6878329c4e30492ff17bb",
+    "constructors": "167636b48fbc2abb25bfca0cd636ba77d32de76d21b5f4b0b2c6ee14fbb7687c",
+    "derived_circuits": "4548b01ab819f94907672f5fe5fdaa3e81a3e308e466774f01459b1a06b6f605",
+    "derived_event_circuits": "7dd6db7c75a5402bd91e591fda710fa8d237f481e0240c135d3911a9a25c7668"
+  },
+  "leakage_audit_pass": true,
+  "build_seconds": 42
+}

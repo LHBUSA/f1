@@ -1,0 +1,61 @@
+{
+  "generated_by": "scripts/edge/build-dataset.mjs",
+  "dataset_version": "f1-edge-dataset@0.1.0",
+  "checks": {
+    "feature_as_of_before_event_start": {
+      "rows_checked": 158839,
+      "violations": 0,
+      "pass": true
+    },
+    "truncated_recompute": {
+      "events": 16,
+      "identical": 16,
+      "pass": true,
+      "sample": [
+        "2009-R1",
+        "2010-R9",
+        "2011-R15",
+        "2013-R1",
+        "2014-R7",
+        "2015-R13",
+        "2016-R19",
+        "2018-R3",
+        "2019-R7",
+        "2020-R11",
+        "2021-R19",
+        "2022-R22",
+        "2024-R3",
+        "2025-R4",
+        "2026-R5",
+        "2026-R15"
+      ]
+    },
+    "negative_control_detects_leak": {
+      "cases": 3,
+      "detected": 3,
+      "pass": true
+    },
+    "static_inputs": {
+      "loaded": [
+        "classifications",
+        "constructors",
+        "derived_circuits",
+        "derived_event_circuits",
+        "events",
+        "sessions"
+      ],
+      "allowed": [
+        "classifications",
+        "constructors",
+        "derived_circuits",
+        "derived_event_circuits",
+        "events",
+        "sessions"
+      ],
+      "forbidden_loaded": [],
+      "edge_modules_reading_fs": [],
+      "pass": true
+    }
+  },
+  "pass": true
+}

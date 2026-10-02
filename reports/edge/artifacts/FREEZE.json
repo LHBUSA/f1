@@ -1,0 +1,69 @@
+{
+  "dataset_sha256": "c1d7369aa60d0e5e09c249d9f8fa70f594421a9c084e8d0608119a8f6c84e3cf",
+  "feature_snapshot_sha256": "998e9820e4370505859bfa954780a124bbcec78139f0ff676dab00b3151177cf",
+  "feature_version": "f1-edge-features@0.1.0",
+  "artifacts": {
+    "quali_h2h": {
+      "version": "f1-edge-quali-h2h@0.1.0-research",
+      "file": "reports/edge/artifacts/quali_h2h.json",
+      "params_sha256": "c33e83a7c157581c4dbf27e9868be48b9433fee26e8efc991c53c4d28eb36862",
+      "features": [
+        "q_bt",
+        "race_gains",
+        "r_bt_car",
+        "tmx_tm_gap_decay",
+        "con_gap_pole",
+        "cf_car_speed"
+      ]
+    },
+    "race_h2h_pre": {
+      "version": "f1-edge-race-h2h-pre@0.1.0-research",
+      "file": "reports/edge/artifacts/race_h2h_pre.json",
+      "params_sha256": "f886e70be74a93eff94efa9985ad4ca5cec126448039d13063e50af2bdacffe2",
+      "features": [
+        "r_bt",
+        "pair_q_h2h",
+        "con_gap_pole",
+        "cf_car_speed",
+        "rookie"
+      ]
+    },
+    "race_h2h_post": {
+      "version": "f1-edge-race-h2h-post@0.1.0-research",
+      "file": "reports/edge/artifacts/race_h2h_post.json",
+      "params_sha256": "3f6d3b54716b250778c3d4ce1a3c4a4f2b161b4d45b00d89496bb75da654cd18",
+      "features": [
+        "r_bt",
+        "grid_logratio",
+        "pair_q_h2h",
+        "grid_diff"
+      ]
+    },
+    "top10_pre": {
+      "version": "f1-edge-top10-pre@0.1.0-research",
+      "file": "reports/edge/artifacts/top10_pre.json",
+      "params_sha256": "4f665bc2d063ab21b10103a05d617b409336c0244134c73777f29c6e6f8478a1",
+      "features": [
+        "r_bt",
+        "q_bt",
+        "champ_pos_before",
+        "race_gains"
+      ]
+    },
+    "top10_post": {
+      "version": "f1-edge-top10-post@0.1.0-research",
+      "file": "reports/edge/artifacts/top10_post.json",
+      "params_sha256": "c92d9341f168c497823bf7164d764fb36101fdc8983e61fffd48098f0d47c807",
+      "features": [
+        "r_bt",
+        "grid_log",
+        "grid_top10",
+        "champ_pos_before",
+        "rookie",
+        "race_gains",
+        "con_gap_pole",
+        "q_bt_driver"
+      ]
+    }
+  }
+}

@@ -1,0 +1,3910 @@
+{
+  "generated_by": "scripts/edge/train-eval.mjs",
+  "dataset_sha256": "c1d7369aa60d0e5e09c249d9f8fa70f594421a9c084e8d0608119a8f6c84e3cf",
+  "feature_version": "f1-edge-features@0.1.0",
+  "protocol": {
+    "selection_train": [
+      2011,
+      2017
+    ],
+    "selection_validate": [
+      2018,
+      2021
+    ],
+    "test_years": [
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "shadow": 2026,
+    "min_gain": 0.0005
+  },
+  "models": {
+    "quali_h2h": {
+      "version": "f1-edge-quali-h2h@0.1.0-research",
+      "target": "quali_h2h",
+      "cutoff": "event_start",
+      "selection": {
+        "core": [
+          "q_bt"
+        ],
+        "core_val_log_loss": 0.41176,
+        "single_feature_tests": [
+          {
+            "feature": "race_gains",
+            "delta_vs_core": -0.00325
+          },
+          {
+            "feature": "r_bt_car",
+            "delta_vs_core": -0.00322
+          },
+          {
+            "feature": "pair_r_h2h",
+            "delta_vs_core": -0.00306
+          },
+          {
+            "feature": "r_bt",
+            "delta_vs_core": -0.00293
+          },
+          {
+            "feature": "con_gap_pole",
+            "delta_vs_core": -0.00278
+          },
+          {
+            "feature": "champ_pos_before",
+            "delta_vs_core": -0.00204
+          },
+          {
+            "feature": "cf_gains_x_overtaking",
+            "delta_vs_core": -0.00197
+          },
+          {
+            "feature": "points_before",
+            "delta_vs_core": -0.0011
+          },
+          {
+            "feature": "tmx_tm_gap_decay",
+            "delta_vs_core": -0.00094
+          },
+          {
+            "feature": "tmx_tm_q_h2h",
+            "delta_vs_core": -0.00078
+          },
+          {
+            "feature": "cf_car_speed",
+            "delta_vs_core": -0.00063
+          },
+          {
+            "feature": "pair_q_h2h",
+            "delta_vs_core": -0.00059
+          },
+          {
+            "feature": "tmx_tm_gap_recent",
+            "delta_vs_core": -0.00059
+          },
+          {
+            "feature": "tmx_tm_gap_season",
+            "delta_vs_core": -0.00058
+          },
+          {
+            "feature": "tmx_tm_r_h2h",
+            "delta_vs_core": -0.00051
+          },
+          {
+            "feature": "speed_con",
+            "delta_vs_core": -0.00048
+          },
+          {
+            "feature": "circ_pctl",
+            "delta_vs_core": -0.00042
+          },
+          {
+            "feature": "con_reliability",
+            "delta_vs_core": -0.00039
+          },
+          {
+            "feature": "drv_reliability",
+            "delta_vs_core": -0.00015
+          },
+          {
+            "feature": "cf_car_qualifying",
+            "delta_vs_core": -0.00014
+          },
+          {
+            "feature": "speed_driver",
+            "delta_vs_core": -0.0001
+          },
+          {
+            "feature": "r_bt_driver",
+            "delta_vs_core": -0.00006
+          },
+          {
+            "feature": "street_con",
+            "delta_vs_core": -0.00002
+          },
+          {
+            "feature": "cf_q_x_track_position",
+            "delta_vs_core": -0.00002
+          },
+          {
+            "feature": "rookie",
+            "delta_vs_core": 0
+          },
+          {
+            "feature": "circ_tm_gap",
+            "delta_vs_core": 0
+          },
+          {
+            "feature": "street_driver",
+            "delta_vs_core": 0.00001
+          },
+          {
+            "feature": "tm_gap_decay",
+            "delta_vs_core": 0.00002
+          },
+          {
+            "feature": "tm_r_h2h",
+            "delta_vs_core": 0.00003
+          },
+          {
+            "feature": "cf_driver_speed",
+            "delta_vs_core": 0.00005
+          },
+          {
+            "feature": "cf_street",
+            "delta_vs_core": 0.00009
+          },
+          {
+            "feature": "tm_gap_season",
+            "delta_vs_core": 0.00013
+          },
+          {
+            "feature": "log_starts",
+            "delta_vs_core": 0.00025
+          },
+          {
+            "feature": "q_bt_driver",
+            "delta_vs_core": 0.00031
+          },
+          {
+            "feature": "tm_q_h2h",
+            "delta_vs_core": 0.00031
+          },
+          {
+            "feature": "q_bt_car",
+            "delta_vs_core": 0.00036
+          },
+          {
+            "feature": "tm_gap_recent",
+            "delta_vs_core": 0.00042
+          },
+          {
+            "feature": "circ_r_h2h",
+            "delta_vs_core": 0.0005
+          }
+        ],
+        "forward_steps": [
+          {
+            "added": "race_gains",
+            "val_log_loss": 0.40851,
+            "gain": 0.00325
+          },
+          {
+            "added": "r_bt_car",
+            "val_log_loss": 0.40686,
+            "gain": 0.00165
+          },
+          {
+            "added": "tmx_tm_gap_decay",
+            "val_log_loss": 0.40549,
+            "gain": 0.00137
+          },
+          {
+            "added": "con_gap_pole",
+            "val_log_loss": 0.40468,
+            "gain": 0.00081
+          },
+          {
+            "added": "cf_car_speed",
+            "val_log_loss": 0.40395,
+            "gain": 0.00073
+          }
+        ],
+        "selected": [
+          "q_bt",
+          "race_gains",
+          "r_bt_car",
+          "tmx_tm_gap_decay",
+          "con_gap_pole",
+          "cf_car_speed"
+        ],
+        "final_val_log_loss": 0.40395
+      },
+      "per_season": {
+        "2022": {
+          "n_train": 46832,
+          "model": {
+            "n": 4179,
+            "log_loss": 0.4445,
+            "brier": 0.1431,
+            "accuracy": 0.7935,
+            "cal_intercept": -0.0096,
+            "cal_slope": 0.9646,
+            "ece": 0.0138
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4179,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.2604,
+              "cal_slope": 0,
+              "ece": 0.0647
+            },
+            "championship_position_before": {
+              "n": 4179,
+              "log_loss": 0.4856,
+              "brier": 0.1584,
+              "accuracy": 0.776,
+              "cal_intercept": 0.0045,
+              "cal_slope": 0.9375,
+              "ece": 0.0142
+            },
+            "points_before": {
+              "n": 4179,
+              "log_loss": 0.4989,
+              "brier": 0.1601,
+              "accuracy": 0.7676,
+              "cal_intercept": 0.1159,
+              "cal_slope": 0.7734,
+              "ece": 0.048
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4179,
+              "log_loss": 0.5165,
+              "brier": 0.172,
+              "accuracy": 0.7458,
+              "cal_intercept": 0.236,
+              "cal_slope": 0.9153,
+              "ece": 0.0406
+            },
+            "teammate_h2h_record": {
+              "n": 4179,
+              "log_loss": 0.6641,
+              "brier": 0.2358,
+              "accuracy": 0.6052,
+              "cal_intercept": 0.3618,
+              "cal_slope": 1.9287,
+              "ece": 0.077
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4179,
+              "log_loss": 0.4491,
+              "brier": 0.1454,
+              "accuracy": 0.7904,
+              "cal_intercept": -0.0503,
+              "cal_slope": 1.0081,
+              "ece": 0.0135
+            }
+          }
+        },
+        "2023": {
+          "n_train": 51011,
+          "model": {
+            "n": 4180,
+            "log_loss": 0.5361,
+            "brier": 0.1766,
+            "accuracy": 0.744,
+            "cal_intercept": -0.0007,
+            "cal_slope": 0.7503,
+            "ece": 0.0431
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4180,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.1978,
+              "cal_slope": 0,
+              "ece": 0.0493
+            },
+            "championship_position_before": {
+              "n": 4180,
+              "log_loss": 0.5691,
+              "brier": 0.1891,
+              "accuracy": 0.7248,
+              "cal_intercept": -0.0813,
+              "cal_slope": 0.7095,
+              "ece": 0.0565
+            },
+            "points_before": {
+              "n": 4180,
+              "log_loss": 0.6811,
+              "brier": 0.2071,
+              "accuracy": 0.7127,
+              "cal_intercept": 0.0514,
+              "cal_slope": 0.3899,
+              "ece": 0.11
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4180,
+              "log_loss": 0.5769,
+              "brier": 0.1939,
+              "accuracy": 0.7086,
+              "cal_intercept": 0.069,
+              "cal_slope": 0.7481,
+              "ece": 0.0374
+            },
+            "teammate_h2h_record": {
+              "n": 4180,
+              "log_loss": 0.6702,
+              "brier": 0.2388,
+              "accuracy": 0.5902,
+              "cal_intercept": 0.1452,
+              "cal_slope": 1.2566,
+              "ece": 0.0374
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4180,
+              "log_loss": 0.5308,
+              "brier": 0.1758,
+              "accuracy": 0.7414,
+              "cal_intercept": -0.018,
+              "cal_slope": 0.859,
+              "ece": 0.0209
+            }
+          }
+        },
+        "2024": {
+          "n_train": 55191,
+          "model": {
+            "n": 4541,
+            "log_loss": 0.4666,
+            "brier": 0.1515,
+            "accuracy": 0.7813,
+            "cal_intercept": 0.0097,
+            "cal_slope": 0.8976,
+            "ece": 0.0205
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4541,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.0128,
+              "cal_slope": 0,
+              "ece": 0.0032
+            },
+            "championship_position_before": {
+              "n": 4541,
+              "log_loss": 0.481,
+              "brier": 0.1569,
+              "accuracy": 0.7758,
+              "cal_intercept": -0.0902,
+              "cal_slope": 0.932,
+              "ece": 0.0169
+            },
+            "points_before": {
+              "n": 4541,
+              "log_loss": 0.5969,
+              "brier": 0.1782,
+              "accuracy": 0.7636,
+              "cal_intercept": 0.0294,
+              "cal_slope": 0.5115,
+              "ece": 0.1062
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4541,
+              "log_loss": 0.5307,
+              "brier": 0.1776,
+              "accuracy": 0.7311,
+              "cal_intercept": -0.0362,
+              "cal_slope": 0.9646,
+              "ece": 0.0123
+            },
+            "teammate_h2h_record": {
+              "n": 4541,
+              "log_loss": 0.6724,
+              "brier": 0.2398,
+              "accuracy": 0.5864,
+              "cal_intercept": -0.0504,
+              "cal_slope": 1.0204,
+              "ece": 0.0361
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4541,
+              "log_loss": 0.4603,
+              "brier": 0.1493,
+              "accuracy": 0.7868,
+              "cal_intercept": -0.0025,
+              "cal_slope": 0.9491,
+              "ece": 0.0272
+            }
+          }
+        },
+        "2025": {
+          "n_train": 59732,
+          "model": {
+            "n": 4560,
+            "log_loss": 0.4712,
+            "brier": 0.1558,
+            "accuracy": 0.7686,
+            "cal_intercept": 0.0955,
+            "cal_slope": 1.0142,
+            "ece": 0.0178
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4560,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.0281,
+              "cal_slope": 0,
+              "ece": 0.007
+            },
+            "championship_position_before": {
+              "n": 4560,
+              "log_loss": 0.5645,
+              "brier": 0.1913,
+              "accuracy": 0.7196,
+              "cal_intercept": -0.1255,
+              "cal_slope": 0.7353,
+              "ece": 0.0559
+            },
+            "points_before": {
+              "n": 4560,
+              "log_loss": 0.5582,
+              "brier": 0.1825,
+              "accuracy": 0.7053,
+              "cal_intercept": -0.0003,
+              "cal_slope": 0.6407,
+              "ece": 0.0422
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4560,
+              "log_loss": 0.5872,
+              "brier": 0.1998,
+              "accuracy": 0.6965,
+              "cal_intercept": -0.0762,
+              "cal_slope": 0.778,
+              "ece": 0.0486
+            },
+            "teammate_h2h_record": {
+              "n": 4560,
+              "log_loss": 0.6637,
+              "brier": 0.2356,
+              "accuracy": 0.6101,
+              "cal_intercept": -0.2079,
+              "cal_slope": 1.5075,
+              "ece": 0.0366
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4560,
+              "log_loss": 0.4676,
+              "brier": 0.1542,
+              "accuracy": 0.7713,
+              "cal_intercept": 0.0722,
+              "cal_slope": 0.9865,
+              "ece": 0.015
+            }
+          }
+        }
+      },
+      "pooled_test": {
+        "seasons": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "model": {
+          "n": 17460,
+          "log_loss": 0.4792,
+          "brier": 0.1566,
+          "accuracy": 0.772,
+          "cal_intercept": 0.0186,
+          "cal_slope": 0.8973,
+          "ece": 0.0165
+        },
+        "baselines": {
+          "coin_50_50": {
+            "n": 17460,
+            "log_loss": 0.6931,
+            "brier": 0.25,
+            "accuracy": 0.5,
+            "cal_intercept": 0.12,
+            "cal_slope": 0,
+            "ece": 0.03
+          },
+          "championship_position_before": {
+            "n": 17460,
+            "log_loss": 0.525,
+            "brier": 0.174,
+            "accuracy": 0.749,
+            "cal_intercept": -0.0806,
+            "cal_slope": 0.8216,
+            "ece": 0.0317
+          },
+          "points_before": {
+            "n": 17460,
+            "log_loss": 0.5835,
+            "brier": 0.1819,
+            "accuracy": 0.7371,
+            "cal_intercept": 0.0448,
+            "cal_slope": 0.5481,
+            "ece": 0.0667
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 17460,
+            "log_loss": 0.5531,
+            "brier": 0.1859,
+            "accuracy": 0.7202,
+            "cal_intercept": 0.0353,
+            "cal_slope": 0.8468,
+            "ece": 0.0243
+          },
+          "teammate_h2h_record": {
+            "n": 17460,
+            "log_loss": 0.6676,
+            "brier": 0.2375,
+            "accuracy": 0.598,
+            "cal_intercept": 0.0517,
+            "cal_slope": 1.2571,
+            "ece": 0.0248
+          },
+          "bt_raw_uncalibrated": {
+            "n": 17460,
+            "log_loss": 0.4764,
+            "brier": 0.156,
+            "accuracy": 0.7727,
+            "cal_intercept": -0.0002,
+            "cal_slope": 0.9477,
+            "ece": 0.0089
+          }
+        },
+        "model_minus_baseline_logloss_event_clustered": {
+          "coin_50_50": {
+            "mean_diff": -0.2141,
+            "se": 0.0119,
+            "events": 92
+          },
+          "championship_position_before": {
+            "mean_diff": -0.0459,
+            "se": 0.0082,
+            "events": 92
+          },
+          "points_before": {
+            "mean_diff": -0.1045,
+            "se": 0.0137,
+            "events": 92
+          },
+          "circuit_fit_ranking_asof": {
+            "mean_diff": -0.074,
+            "se": 0.0081,
+            "events": 92
+          },
+          "teammate_h2h_record": {
+            "mean_diff": -0.1886,
+            "se": 0.0123,
+            "events": 92
+          },
+          "bt_raw_uncalibrated": {
+            "mean_diff": 0.0028,
+            "se": 0.0025,
+            "events": 92
+          }
+        },
+        "verdict": {
+          "coin_50_50": "beats",
+          "championship_position_before": "beats",
+          "points_before": "beats",
+          "circuit_fit_ranking_asof": "beats",
+          "teammate_h2h_record": "beats",
+          "bt_raw_uncalibrated": "not_distinguishable"
+        },
+        "beats_all_baselines": false,
+        "teammate_subset": {
+          "model": {
+            "n": 919,
+            "log_loss": 0.5699,
+            "brier": 0.1938,
+            "accuracy": 0.7095,
+            "cal_intercept": 0.0742,
+            "cal_slope": 1.0271,
+            "ece": 0.0358
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 919,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.3138,
+              "cal_slope": 0,
+              "ece": 0.0778
+            },
+            "championship_position_before": {
+              "n": 919,
+              "log_loss": 0.6744,
+              "brier": 0.2368,
+              "accuracy": 0.6518,
+              "cal_intercept": 0.2058,
+              "cal_slope": 0.5149,
+              "ece": 0.0984
+            },
+            "points_before": {
+              "n": 919,
+              "log_loss": 0.6425,
+              "brier": 0.2258,
+              "accuracy": 0.6425,
+              "cal_intercept": 0.3054,
+              "cal_slope": 0.6567,
+              "ece": 0.0877
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 919,
+              "log_loss": 0.626,
+              "brier": 0.2178,
+              "accuracy": 0.6513,
+              "cal_intercept": 0.2387,
+              "cal_slope": 0.7648,
+              "ece": 0.0685
+            },
+            "teammate_h2h_record": {
+              "n": 919,
+              "log_loss": 0.6096,
+              "brier": 0.2096,
+              "accuracy": 0.7051,
+              "cal_intercept": 0.1344,
+              "cal_slope": 2.1929,
+              "ece": 0.1047
+            },
+            "bt_raw_uncalibrated": {
+              "n": 919,
+              "log_loss": 0.5787,
+              "brier": 0.1971,
+              "accuracy": 0.7084,
+              "cal_intercept": 0.0224,
+              "cal_slope": 1.3794,
+              "ece": 0.0556
+            }
+          }
+        },
+        "buckets": [
+          {
+            "bucket": "0.50-0.55",
+            "n": 1309,
+            "mean_pred": 0.5247,
+            "observed": 0.5202
+          },
+          {
+            "bucket": "0.55-0.60",
+            "n": 1330,
+            "mean_pred": 0.575,
+            "observed": 0.5857
+          },
+          {
+            "bucket": "0.60-0.65",
+            "n": 1366,
+            "mean_pred": 0.6249,
+            "observed": 0.6201
+          },
+          {
+            "bucket": "0.65-0.70",
+            "n": 1390,
+            "mean_pred": 0.6749,
+            "observed": 0.6676
+          },
+          {
+            "bucket": "0.70-0.75",
+            "n": 1491,
+            "mean_pred": 0.7249,
+            "observed": 0.6935
+          },
+          {
+            "bucket": "0.75-0.80",
+            "n": 1564,
+            "mean_pred": 0.7756,
+            "observed": 0.7558
+          },
+          {
+            "bucket": "0.80-0.85",
+            "n": 1587,
+            "mean_pred": 0.8248,
+            "observed": 0.7952
+          },
+          {
+            "bucket": "0.85-0.90",
+            "n": 1955,
+            "mean_pred": 0.8763,
+            "observed": 0.8619
+          },
+          {
+            "bucket": "0.90-0.95",
+            "n": 2916,
+            "mean_pred": 0.9267,
+            "observed": 0.9112
+          },
+          {
+            "bucket": "0.95-1.00",
+            "n": 2552,
+            "mean_pred": 0.9693,
+            "observed": 0.9498
+          }
+        ],
+        "breakdowns": {
+          "street": {
+            "n": 3211,
+            "log_loss": 0.4825,
+            "brier": 0.1571,
+            "accuracy": 0.7705,
+            "cal_intercept": -0.1729,
+            "cal_slope": 0.9,
+            "ece": 0.0319
+          },
+          "permanent": {
+            "n": 14249,
+            "log_loss": 0.4784,
+            "brier": 0.1565,
+            "accuracy": 0.7723,
+            "cal_intercept": 0.0616,
+            "cal_slope": 0.8992,
+            "ece": 0.0205
+          },
+          "speed_high": {
+            "n": 6061,
+            "log_loss": 0.4475,
+            "brier": 0.146,
+            "accuracy": 0.7885,
+            "cal_intercept": 0.0043,
+            "cal_slope": 1.0353,
+            "ece": 0.0147
+          },
+          "speed_medium": {
+            "n": 3800,
+            "log_loss": 0.5164,
+            "brier": 0.1691,
+            "accuracy": 0.7513,
+            "cal_intercept": 0.0909,
+            "cal_slope": 0.7876,
+            "ece": 0.0379
+          },
+          "speed_low": {
+            "n": 6459,
+            "log_loss": 0.4772,
+            "brier": 0.1555,
+            "accuracy": 0.7733,
+            "cal_intercept": -0.0163,
+            "cal_slope": 0.8877,
+            "ece": 0.0203
+          },
+          "teammate": {
+            "n": 919,
+            "log_loss": 0.5699,
+            "brier": 0.1938,
+            "accuracy": 0.7095,
+            "cal_intercept": 0.0742,
+            "cal_slope": 1.0271,
+            "ece": 0.0358
+          },
+          "cross_team": {
+            "n": 16541,
+            "log_loss": 0.4741,
+            "brier": 0.1546,
+            "accuracy": 0.7755,
+            "cal_intercept": 0.0128,
+            "cal_slope": 0.893,
+            "ece": 0.0162
+          },
+          "rookie_involved": {
+            "n": 1917,
+            "log_loss": 0.4978,
+            "brier": 0.1639,
+            "accuracy": 0.7585,
+            "cal_intercept": 0.1689,
+            "cal_slope": 0.8514,
+            "ece": 0.0319
+          },
+          "veterans_only": {
+            "n": 15543,
+            "log_loss": 0.4769,
+            "brier": 0.1557,
+            "accuracy": 0.7737,
+            "cal_intercept": 0.0012,
+            "cal_slope": 0.8996,
+            "ece": 0.0169
+          }
+        }
+      },
+      "shadow_2026_to_date": {
+        "n_train": 64292,
+        "model": {
+          "n": 3465,
+          "log_loss": 0.3393,
+          "brier": 0.1055,
+          "accuracy": 0.8508,
+          "cal_intercept": -0.253,
+          "cal_slope": 1.2929,
+          "ece": 0.0454
+        },
+        "baselines": {
+          "coin_50_50": {
+            "n": 3465,
+            "log_loss": 0.6931,
+            "brier": 0.25,
+            "accuracy": 0.5,
+            "cal_intercept": -0.6061,
+            "cal_slope": 0,
+            "ece": 0.147
+          },
+          "championship_position_before": {
+            "n": 3465,
+            "log_loss": 0.4101,
+            "brier": 0.1291,
+            "accuracy": 0.8261,
+            "cal_intercept": -0.141,
+            "cal_slope": 1.2233,
+            "ece": 0.0459
+          },
+          "points_before": {
+            "n": 3465,
+            "log_loss": 0.485,
+            "brier": 0.1567,
+            "accuracy": 0.8079,
+            "cal_intercept": -0.396,
+            "cal_slope": 1.587,
+            "ece": 0.1181
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 3465,
+            "log_loss": 0.5691,
+            "brier": 0.1942,
+            "accuracy": 0.6975,
+            "cal_intercept": -0.7519,
+            "cal_slope": 1.0022,
+            "ece": 0.1366
+          },
+          "teammate_h2h_record": {
+            "n": 3465,
+            "log_loss": 0.693,
+            "brier": 0.2499,
+            "accuracy": 0.5345,
+            "cal_intercept": -0.8084,
+            "cal_slope": 1.4017,
+            "ece": 0.1773
+          },
+          "bt_raw_uncalibrated": {
+            "n": 3465,
+            "log_loss": 0.3436,
+            "brier": 0.1066,
+            "accuracy": 0.8534,
+            "cal_intercept": -0.2889,
+            "cal_slope": 1.3089,
+            "ece": 0.0501
+          }
+        },
+        "teammate": {
+          "n": 165,
+          "log_loss": 0.6667,
+          "brier": 0.2368,
+          "accuracy": 0.6061,
+          "cal_intercept": 0.0562,
+          "cal_slope": 0.6397,
+          "ece": 0.0498
+        }
+      }
+    },
+    "race_h2h_pre": {
+      "version": "f1-edge-race-h2h-pre@0.1.0-research",
+      "target": "race_h2h",
+      "cutoff": "event_start",
+      "selection": {
+        "core": [
+          "r_bt"
+        ],
+        "core_val_log_loss": 0.54267,
+        "single_feature_tests": [
+          {
+            "feature": "pair_q_h2h",
+            "delta_vs_core": -0.0053
+          },
+          {
+            "feature": "q_bt",
+            "delta_vs_core": -0.0044
+          },
+          {
+            "feature": "con_gap_pole",
+            "delta_vs_core": -0.00285
+          },
+          {
+            "feature": "q_bt_driver",
+            "delta_vs_core": -0.00271
+          },
+          {
+            "feature": "pair_r_h2h",
+            "delta_vs_core": -0.00259
+          },
+          {
+            "feature": "drv_reliability",
+            "delta_vs_core": -0.00198
+          },
+          {
+            "feature": "con_reliability",
+            "delta_vs_core": -0.00197
+          },
+          {
+            "feature": "champ_pos_before",
+            "delta_vs_core": -0.00167
+          },
+          {
+            "feature": "q_bt_car",
+            "delta_vs_core": -0.00141
+          },
+          {
+            "feature": "circ_pctl",
+            "delta_vs_core": -0.0008
+          },
+          {
+            "feature": "tmx_tm_q_h2h",
+            "delta_vs_core": -0.00076
+          },
+          {
+            "feature": "rookie",
+            "delta_vs_core": -0.00074
+          },
+          {
+            "feature": "tmx_tm_gap_season",
+            "delta_vs_core": -0.00069
+          },
+          {
+            "feature": "tm_q_h2h",
+            "delta_vs_core": -0.00068
+          },
+          {
+            "feature": "tmx_tm_gap_decay",
+            "delta_vs_core": -0.00068
+          },
+          {
+            "feature": "tm_gap_decay",
+            "delta_vs_core": -0.00065
+          },
+          {
+            "feature": "cf_car_speed",
+            "delta_vs_core": -0.00062
+          },
+          {
+            "feature": "cf_q_x_track_position",
+            "delta_vs_core": -0.0005
+          },
+          {
+            "feature": "tmx_tm_gap_recent",
+            "delta_vs_core": -0.00043
+          },
+          {
+            "feature": "log_starts",
+            "delta_vs_core": -0.00042
+          },
+          {
+            "feature": "speed_con",
+            "delta_vs_core": -0.00041
+          },
+          {
+            "feature": "tm_gap_season",
+            "delta_vs_core": -0.00034
+          },
+          {
+            "feature": "tmx_tm_r_h2h",
+            "delta_vs_core": -0.00026
+          },
+          {
+            "feature": "cf_car_qualifying",
+            "delta_vs_core": -0.00018
+          },
+          {
+            "feature": "points_before",
+            "delta_vs_core": -0.0001
+          },
+          {
+            "feature": "circ_tm_gap",
+            "delta_vs_core": -0.00008
+          },
+          {
+            "feature": "tm_gap_recent",
+            "delta_vs_core": -0.00007
+          },
+          {
+            "feature": "street_con",
+            "delta_vs_core": -0.00004
+          },
+          {
+            "feature": "cf_street",
+            "delta_vs_core": -0.00003
+          },
+          {
+            "feature": "street_driver",
+            "delta_vs_core": -0.00002
+          },
+          {
+            "feature": "circ_r_h2h",
+            "delta_vs_core": 0.00009
+          },
+          {
+            "feature": "cf_gains_x_overtaking",
+            "delta_vs_core": 0.00018
+          },
+          {
+            "feature": "speed_driver",
+            "delta_vs_core": 0.00037
+          },
+          {
+            "feature": "tm_r_h2h",
+            "delta_vs_core": 0.00052
+          },
+          {
+            "feature": "cf_driver_speed",
+            "delta_vs_core": 0.00058
+          },
+          {
+            "feature": "r_bt_driver",
+            "delta_vs_core": 0.0006
+          },
+          {
+            "feature": "r_bt_car",
+            "delta_vs_core": 0.00061
+          },
+          {
+            "feature": "race_gains",
+            "delta_vs_core": 0.00077
+          }
+        ],
+        "forward_steps": [
+          {
+            "added": "pair_q_h2h",
+            "val_log_loss": 0.53736,
+            "gain": 0.0053
+          },
+          {
+            "added": "con_gap_pole",
+            "val_log_loss": 0.53629,
+            "gain": 0.00107
+          },
+          {
+            "added": "cf_car_speed",
+            "val_log_loss": 0.53574,
+            "gain": 0.00055
+          },
+          {
+            "added": "rookie",
+            "val_log_loss": 0.53522,
+            "gain": 0.00052
+          }
+        ],
+        "selected": [
+          "r_bt",
+          "pair_q_h2h",
+          "con_gap_pole",
+          "cf_car_speed",
+          "rookie"
+        ],
+        "final_val_log_loss": 0.53522
+      },
+      "per_season": {
+        "2022": {
+          "n_train": 46594,
+          "model": {
+            "n": 4161,
+            "log_loss": 0.5574,
+            "brier": 0.1872,
+            "accuracy": 0.7287,
+            "cal_intercept": -0.0498,
+            "cal_slope": 1.0501,
+            "ece": 0.0243
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4161,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.1324,
+              "cal_slope": 0,
+              "ece": 0.033
+            },
+            "championship_position_before": {
+              "n": 4161,
+              "log_loss": 0.5876,
+              "brier": 0.1994,
+              "accuracy": 0.7046,
+              "cal_intercept": -0.0813,
+              "cal_slope": 0.9315,
+              "ece": 0.0259
+            },
+            "points_before": {
+              "n": 4161,
+              "log_loss": 0.5697,
+              "brier": 0.1932,
+              "accuracy": 0.7061,
+              "cal_intercept": -0.0125,
+              "cal_slope": 0.8942,
+              "ece": 0.053
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4161,
+              "log_loss": 0.5907,
+              "brier": 0.2024,
+              "accuracy": 0.6887,
+              "cal_intercept": 0.0692,
+              "cal_slope": 0.9491,
+              "ece": 0.0219
+            },
+            "teammate_h2h_record": {
+              "n": 4161,
+              "log_loss": 0.6773,
+              "brier": 0.2421,
+              "accuracy": 0.5847,
+              "cal_intercept": 0.2361,
+              "cal_slope": 2.5525,
+              "ece": 0.0451
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4161,
+              "log_loss": 0.5607,
+              "brier": 0.1879,
+              "accuracy": 0.7251,
+              "cal_intercept": 0.0183,
+              "cal_slope": 0.9664,
+              "ece": 0.0281
+            }
+          }
+        },
+        "2023": {
+          "n_train": 50755,
+          "model": {
+            "n": 4122,
+            "log_loss": 0.5322,
+            "brier": 0.1777,
+            "accuracy": 0.7377,
+            "cal_intercept": -0.0368,
+            "cal_slope": 1.0796,
+            "ece": 0.0144
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4122,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.1878,
+              "cal_slope": 0,
+              "ece": 0.0468
+            },
+            "championship_position_before": {
+              "n": 4122,
+              "log_loss": 0.5583,
+              "brier": 0.1877,
+              "accuracy": 0.7296,
+              "cal_intercept": -0.0856,
+              "cal_slope": 1.1041,
+              "ece": 0.0259
+            },
+            "points_before": {
+              "n": 4122,
+              "log_loss": 0.583,
+              "brier": 0.1957,
+              "accuracy": 0.7227,
+              "cal_intercept": 0.0318,
+              "cal_slope": 0.8073,
+              "ece": 0.0885
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4122,
+              "log_loss": 0.5732,
+              "brier": 0.1954,
+              "accuracy": 0.7038,
+              "cal_intercept": 0.0608,
+              "cal_slope": 1.1319,
+              "ece": 0.0247
+            },
+            "teammate_h2h_record": {
+              "n": 4122,
+              "log_loss": 0.6779,
+              "brier": 0.2424,
+              "accuracy": 0.5838,
+              "cal_intercept": 0.1758,
+              "cal_slope": 1.5724,
+              "ece": 0.0439
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4122,
+              "log_loss": 0.5387,
+              "brier": 0.1804,
+              "accuracy": 0.7351,
+              "cal_intercept": 0.0081,
+              "cal_slope": 0.9317,
+              "ece": 0.0229
+            }
+          }
+        },
+        "2024": {
+          "n_train": 54877,
+          "model": {
+            "n": 4504,
+            "log_loss": 0.5047,
+            "brier": 0.1654,
+            "accuracy": 0.7589,
+            "cal_intercept": -0.1217,
+            "cal_slope": 1.1529,
+            "ece": 0.0343
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4504,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": -0.0355,
+              "cal_slope": 0,
+              "ece": 0.0089
+            },
+            "championship_position_before": {
+              "n": 4504,
+              "log_loss": 0.5233,
+              "brier": 0.1729,
+              "accuracy": 0.756,
+              "cal_intercept": -0.1424,
+              "cal_slope": 1.2206,
+              "ece": 0.0425
+            },
+            "points_before": {
+              "n": 4504,
+              "log_loss": 0.5538,
+              "brier": 0.1858,
+              "accuracy": 0.745,
+              "cal_intercept": -0.0325,
+              "cal_slope": 0.8694,
+              "ece": 0.091
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4504,
+              "log_loss": 0.5613,
+              "brier": 0.19,
+              "accuracy": 0.7141,
+              "cal_intercept": -0.0946,
+              "cal_slope": 1.263,
+              "ece": 0.0351
+            },
+            "teammate_h2h_record": {
+              "n": 4504,
+              "log_loss": 0.6843,
+              "brier": 0.2457,
+              "accuracy": 0.5448,
+              "cal_intercept": -0.0556,
+              "cal_slope": 0.9475,
+              "ece": 0.0222
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4504,
+              "log_loss": 0.5066,
+              "brier": 0.1658,
+              "accuracy": 0.7549,
+              "cal_intercept": -0.0895,
+              "cal_slope": 1.0259,
+              "ece": 0.0356
+            }
+          }
+        },
+        "2025": {
+          "n_train": 59381,
+          "model": {
+            "n": 4537,
+            "log_loss": 0.5485,
+            "brier": 0.184,
+            "accuracy": 0.7227,
+            "cal_intercept": 0.0328,
+            "cal_slope": 1.0116,
+            "ece": 0.0204
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4537,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.0763,
+              "cal_slope": 0,
+              "ece": 0.0191
+            },
+            "championship_position_before": {
+              "n": 4537,
+              "log_loss": 0.5848,
+              "brier": 0.1998,
+              "accuracy": 0.7008,
+              "cal_intercept": -0.0422,
+              "cal_slope": 0.9227,
+              "ece": 0.0199
+            },
+            "points_before": {
+              "n": 4537,
+              "log_loss": 0.6005,
+              "brier": 0.1981,
+              "accuracy": 0.6914,
+              "cal_intercept": 0.0578,
+              "cal_slope": 0.7044,
+              "ece": 0.0563
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4537,
+              "log_loss": 0.6131,
+              "brier": 0.2119,
+              "accuracy": 0.6707,
+              "cal_intercept": -0.0016,
+              "cal_slope": 0.9083,
+              "ece": 0.0211
+            },
+            "teammate_h2h_record": {
+              "n": 4537,
+              "log_loss": 0.6749,
+              "brier": 0.241,
+              "accuracy": 0.5771,
+              "cal_intercept": -0.1062,
+              "cal_slope": 1.6043,
+              "ece": 0.0273
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4537,
+              "log_loss": 0.5567,
+              "brier": 0.187,
+              "accuracy": 0.7088,
+              "cal_intercept": 0.0879,
+              "cal_slope": 0.8976,
+              "ece": 0.0277
+            }
+          }
+        }
+      },
+      "pooled_test": {
+        "seasons": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "model": {
+          "n": 17324,
+          "log_loss": 0.5354,
+          "brier": 0.1784,
+          "accuracy": 0.7371,
+          "cal_intercept": -0.0419,
+          "cal_slope": 1.0731,
+          "ece": 0.0151
+        },
+        "baselines": {
+          "coin_50_50": {
+            "n": 17324,
+            "log_loss": 0.6931,
+            "brier": 0.25,
+            "accuracy": 0.5,
+            "cal_intercept": 0.0871,
+            "cal_slope": 0,
+            "ece": 0.0218
+          },
+          "championship_position_before": {
+            "n": 17324,
+            "log_loss": 0.5632,
+            "brier": 0.1898,
+            "accuracy": 0.7229,
+            "cal_intercept": -0.0882,
+            "cal_slope": 1.0402,
+            "ece": 0.0232
+          },
+          "points_before": {
+            "n": 17324,
+            "log_loss": 0.5768,
+            "brier": 0.1931,
+            "accuracy": 0.7163,
+            "cal_intercept": 0.0141,
+            "cal_slope": 0.8137,
+            "ece": 0.0721
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 17324,
+            "log_loss": 0.5847,
+            "brier": 0.2,
+            "accuracy": 0.6942,
+            "cal_intercept": 0.0056,
+            "cal_slope": 1.0554,
+            "ece": 0.0126
+          },
+          "teammate_h2h_record": {
+            "n": 17324,
+            "log_loss": 0.6786,
+            "brier": 0.2428,
+            "accuracy": 0.5722,
+            "cal_intercept": 0.0486,
+            "cal_slope": 1.4015,
+            "ece": 0.0236
+          },
+          "bt_raw_uncalibrated": {
+            "n": 17324,
+            "log_loss": 0.5403,
+            "brier": 0.1802,
+            "accuracy": 0.731,
+            "cal_intercept": 0.0086,
+            "cal_slope": 0.9547,
+            "ece": 0.0154
+          }
+        },
+        "model_minus_baseline_logloss_event_clustered": {
+          "coin_50_50": {
+            "mean_diff": -0.157,
+            "se": 0.0113,
+            "events": 92
+          },
+          "championship_position_before": {
+            "mean_diff": -0.0279,
+            "se": 0.0049,
+            "events": 92
+          },
+          "points_before": {
+            "mean_diff": -0.0416,
+            "se": 0.0093,
+            "events": 92
+          },
+          "circuit_fit_ranking_asof": {
+            "mean_diff": -0.0492,
+            "se": 0.0053,
+            "events": 92
+          },
+          "teammate_h2h_record": {
+            "mean_diff": -0.1425,
+            "se": 0.0111,
+            "events": 92
+          },
+          "bt_raw_uncalibrated": {
+            "mean_diff": -0.0052,
+            "se": 0.0025,
+            "events": 92
+          }
+        },
+        "verdict": {
+          "coin_50_50": "beats",
+          "championship_position_before": "beats",
+          "points_before": "beats",
+          "circuit_fit_ranking_asof": "beats",
+          "teammate_h2h_record": "beats",
+          "bt_raw_uncalibrated": "beats"
+        },
+        "beats_all_baselines": true,
+        "teammate_subset": {
+          "model": {
+            "n": 910,
+            "log_loss": 0.6251,
+            "brier": 0.218,
+            "accuracy": 0.6516,
+            "cal_intercept": -0.0582,
+            "cal_slope": 1.3973,
+            "ece": 0.0331
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 910,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.1674,
+              "cal_slope": 0,
+              "ece": 0.0418
+            },
+            "championship_position_before": {
+              "n": 910,
+              "log_loss": 0.6707,
+              "brier": 0.2389,
+              "accuracy": 0.6198,
+              "cal_intercept": 0.0655,
+              "cal_slope": 0.6878,
+              "ece": 0.0572
+            },
+            "points_before": {
+              "n": 910,
+              "log_loss": 0.6476,
+              "brier": 0.2295,
+              "accuracy": 0.6203,
+              "cal_intercept": 0.1449,
+              "cal_slope": 0.9614,
+              "ece": 0.05
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 910,
+              "log_loss": 0.6485,
+              "brier": 0.2287,
+              "accuracy": 0.6225,
+              "cal_intercept": 0.0908,
+              "cal_slope": 0.8924,
+              "ece": 0.0364
+            },
+            "teammate_h2h_record": {
+              "n": 910,
+              "log_loss": 0.6502,
+              "brier": 0.229,
+              "accuracy": 0.6363,
+              "cal_intercept": 0.0644,
+              "cal_slope": 2.2012,
+              "ece": 0.0692
+            },
+            "bt_raw_uncalibrated": {
+              "n": 910,
+              "log_loss": 0.6405,
+              "brier": 0.2252,
+              "accuracy": 0.6055,
+              "cal_intercept": 0.0466,
+              "cal_slope": 1.5382,
+              "ece": 0.0472
+            }
+          }
+        },
+        "buckets": [
+          {
+            "bucket": "0.50-0.55",
+            "n": 1929,
+            "mean_pred": 0.525,
+            "observed": 0.5324
+          },
+          {
+            "bucket": "0.55-0.60",
+            "n": 1989,
+            "mean_pred": 0.5747,
+            "observed": 0.6003
+          },
+          {
+            "bucket": "0.60-0.65",
+            "n": 1867,
+            "mean_pred": 0.6247,
+            "observed": 0.6256
+          },
+          {
+            "bucket": "0.65-0.70",
+            "n": 1871,
+            "mean_pred": 0.6752,
+            "observed": 0.697
+          },
+          {
+            "bucket": "0.70-0.75",
+            "n": 1847,
+            "mean_pred": 0.7248,
+            "observed": 0.7412
+          },
+          {
+            "bucket": "0.75-0.80",
+            "n": 1769,
+            "mean_pred": 0.7757,
+            "observed": 0.8038
+          },
+          {
+            "bucket": "0.80-0.85",
+            "n": 2397,
+            "mean_pred": 0.8268,
+            "observed": 0.8531
+          },
+          {
+            "bucket": "0.85-0.90",
+            "n": 2615,
+            "mean_pred": 0.8738,
+            "observed": 0.8727
+          },
+          {
+            "bucket": "0.90-0.95",
+            "n": 998,
+            "mean_pred": 0.9177,
+            "observed": 0.9248
+          },
+          {
+            "bucket": "0.95-1.00",
+            "n": 42,
+            "mean_pred": 0.9541,
+            "observed": 0.8571
+          }
+        ],
+        "breakdowns": {
+          "street": {
+            "n": 3173,
+            "log_loss": 0.5725,
+            "brier": 0.1927,
+            "accuracy": 0.7192,
+            "cal_intercept": -0.0867,
+            "cal_slope": 0.8992,
+            "ece": 0.0386
+          },
+          "permanent": {
+            "n": 14151,
+            "log_loss": 0.5271,
+            "brier": 0.1752,
+            "accuracy": 0.7411,
+            "cal_intercept": -0.03,
+            "cal_slope": 1.1179,
+            "ece": 0.0187
+          },
+          "speed_high": {
+            "n": 6022,
+            "log_loss": 0.5531,
+            "brier": 0.1857,
+            "accuracy": 0.7204,
+            "cal_intercept": -0.0231,
+            "cal_slope": 0.9837,
+            "ece": 0.006
+          },
+          "speed_medium": {
+            "n": 3763,
+            "log_loss": 0.5262,
+            "brier": 0.1748,
+            "accuracy": 0.7433,
+            "cal_intercept": 0.039,
+            "cal_slope": 1.1253,
+            "ece": 0.0216
+          },
+          "speed_low": {
+            "n": 6418,
+            "log_loss": 0.5241,
+            "brier": 0.1736,
+            "accuracy": 0.7488,
+            "cal_intercept": -0.1258,
+            "cal_slope": 1.1317,
+            "ece": 0.0328
+          },
+          "teammate": {
+            "n": 910,
+            "log_loss": 0.6251,
+            "brier": 0.218,
+            "accuracy": 0.6516,
+            "cal_intercept": -0.0582,
+            "cal_slope": 1.3973,
+            "ece": 0.0331
+          },
+          "cross_team": {
+            "n": 16414,
+            "log_loss": 0.5304,
+            "brier": 0.1762,
+            "accuracy": 0.7419,
+            "cal_intercept": -0.0437,
+            "cal_slope": 1.0672,
+            "ece": 0.0149
+          },
+          "rookie_involved": {
+            "n": 1904,
+            "log_loss": 0.5397,
+            "brier": 0.1815,
+            "accuracy": 0.7253,
+            "cal_intercept": -0.0199,
+            "cal_slope": 1.0703,
+            "ece": 0.0147
+          },
+          "veterans_only": {
+            "n": 15420,
+            "log_loss": 0.5348,
+            "brier": 0.1781,
+            "accuracy": 0.7386,
+            "cal_intercept": -0.0445,
+            "cal_slope": 1.0725,
+            "ece": 0.0159
+          }
+        }
+      },
+      "shadow_2026_to_date": {
+        "n_train": 63918,
+        "model": {
+          "n": 3465,
+          "log_loss": 0.5521,
+          "brier": 0.1836,
+          "accuracy": 0.7359,
+          "cal_intercept": -0.3279,
+          "cal_slope": 0.9469,
+          "ece": 0.0629
+        },
+        "baselines": {
+          "coin_50_50": {
+            "n": 3465,
+            "log_loss": 0.6931,
+            "brier": 0.25,
+            "accuracy": 0.5,
+            "cal_intercept": -0.5101,
+            "cal_slope": 0,
+            "ece": 0.1248
+          },
+          "championship_position_before": {
+            "n": 3465,
+            "log_loss": 0.5546,
+            "brier": 0.1854,
+            "accuracy": 0.7358,
+            "cal_intercept": -0.1632,
+            "cal_slope": 0.948,
+            "ece": 0.0359
+          },
+          "points_before": {
+            "n": 3465,
+            "log_loss": 0.5955,
+            "brier": 0.2035,
+            "accuracy": 0.726,
+            "cal_intercept": -0.3406,
+            "cal_slope": 1.0297,
+            "ece": 0.0974
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 3465,
+            "log_loss": 0.6283,
+            "brier": 0.2192,
+            "accuracy": 0.641,
+            "cal_intercept": -0.5482,
+            "cal_slope": 0.9039,
+            "ece": 0.1176
+          },
+          "teammate_h2h_record": {
+            "n": 3465,
+            "log_loss": 0.6958,
+            "brier": 0.2513,
+            "accuracy": 0.5085,
+            "cal_intercept": -0.5886,
+            "cal_slope": 1.1137,
+            "ece": 0.1407
+          },
+          "bt_raw_uncalibrated": {
+            "n": 3465,
+            "log_loss": 0.5648,
+            "brier": 0.1882,
+            "accuracy": 0.729,
+            "cal_intercept": -0.3046,
+            "cal_slope": 0.9013,
+            "ece": 0.0672
+          }
+        },
+        "teammate": {
+          "n": 165,
+          "log_loss": 0.6817,
+          "brier": 0.244,
+          "accuracy": 0.5636,
+          "cal_intercept": 0.0653,
+          "cal_slope": 0.5718,
+          "ece": 0.0666
+        }
+      }
+    },
+    "race_h2h_post": {
+      "version": "f1-edge-race-h2h-post@0.1.0-research",
+      "target": "race_h2h",
+      "cutoff": "race_start (grid published)",
+      "selection": {
+        "core": [
+          "r_bt",
+          "grid_logratio"
+        ],
+        "core_val_log_loss": 0.51745,
+        "single_feature_tests": [
+          {
+            "feature": "pair_q_h2h",
+            "delta_vs_core": -0.00254
+          },
+          {
+            "feature": "pair_r_h2h",
+            "delta_vs_core": -0.00215
+          },
+          {
+            "feature": "grid_diff",
+            "delta_vs_core": -0.00178
+          },
+          {
+            "feature": "con_gap_pole",
+            "delta_vs_core": -0.00124
+          },
+          {
+            "feature": "con_reliability",
+            "delta_vs_core": -0.00076
+          },
+          {
+            "feature": "q_bt",
+            "delta_vs_core": -0.00073
+          },
+          {
+            "feature": "rookie",
+            "delta_vs_core": -0.00068
+          },
+          {
+            "feature": "q_bt_driver",
+            "delta_vs_core": -0.00064
+          },
+          {
+            "feature": "champ_pos_before",
+            "delta_vs_core": -0.00059
+          },
+          {
+            "feature": "tmx_tm_q_h2h",
+            "delta_vs_core": -0.00055
+          },
+          {
+            "feature": "drv_reliability",
+            "delta_vs_core": -0.00046
+          },
+          {
+            "feature": "tmx_tm_gap_season",
+            "delta_vs_core": -0.00045
+          },
+          {
+            "feature": "tmx_tm_gap_decay",
+            "delta_vs_core": -0.00043
+          },
+          {
+            "feature": "log_starts",
+            "delta_vs_core": -0.00036
+          },
+          {
+            "feature": "tmx_tm_r_h2h",
+            "delta_vs_core": -0.00028
+          },
+          {
+            "feature": "cf_car_speed",
+            "delta_vs_core": -0.00027
+          },
+          {
+            "feature": "tmx_tm_gap_recent",
+            "delta_vs_core": -0.00025
+          },
+          {
+            "feature": "tm_q_h2h",
+            "delta_vs_core": -0.00021
+          },
+          {
+            "feature": "speed_con",
+            "delta_vs_core": -0.00011
+          },
+          {
+            "feature": "points_before",
+            "delta_vs_core": -0.00008
+          },
+          {
+            "feature": "circ_pctl",
+            "delta_vs_core": -0.00007
+          },
+          {
+            "feature": "street_driver",
+            "delta_vs_core": -0.00006
+          },
+          {
+            "feature": "tm_gap_decay",
+            "delta_vs_core": -0.00005
+          },
+          {
+            "feature": "cf_q_x_track_position",
+            "delta_vs_core": -0.00005
+          },
+          {
+            "feature": "circ_r_h2h",
+            "delta_vs_core": -0.00003
+          },
+          {
+            "feature": "street_con",
+            "delta_vs_core": -0.00001
+          },
+          {
+            "feature": "cf_street",
+            "delta_vs_core": -0.00001
+          },
+          {
+            "feature": "r_bt_driver",
+            "delta_vs_core": 0.00002
+          },
+          {
+            "feature": "tm_r_h2h",
+            "delta_vs_core": 0.00002
+          },
+          {
+            "feature": "r_bt_car",
+            "delta_vs_core": 0.00003
+          },
+          {
+            "feature": "cf_gains_x_overtaking",
+            "delta_vs_core": 0.00008
+          },
+          {
+            "feature": "tm_gap_season",
+            "delta_vs_core": 0.00009
+          },
+          {
+            "feature": "tm_gap_recent",
+            "delta_vs_core": 0.0001
+          },
+          {
+            "feature": "circ_tm_gap",
+            "delta_vs_core": 0.00011
+          },
+          {
+            "feature": "race_gains",
+            "delta_vs_core": 0.00015
+          },
+          {
+            "feature": "q_bt_car",
+            "delta_vs_core": 0.00022
+          },
+          {
+            "feature": "speed_driver",
+            "delta_vs_core": 0.00025
+          },
+          {
+            "feature": "cf_driver_speed",
+            "delta_vs_core": 0.00033
+          },
+          {
+            "feature": "cf_car_qualifying",
+            "delta_vs_core": 0.00033
+          }
+        ],
+        "forward_steps": [
+          {
+            "added": "pair_q_h2h",
+            "val_log_loss": 0.51491,
+            "gain": 0.00254
+          },
+          {
+            "added": "grid_diff",
+            "val_log_loss": 0.51356,
+            "gain": 0.00135
+          }
+        ],
+        "selected": [
+          "r_bt",
+          "grid_logratio",
+          "pair_q_h2h",
+          "grid_diff"
+        ],
+        "final_val_log_loss": 0.51356
+      },
+      "per_season": {
+        "2022": {
+          "n_train": 46594,
+          "model": {
+            "n": 4161,
+            "log_loss": 0.5455,
+            "brier": 0.1809,
+            "accuracy": 0.7342,
+            "cal_intercept": -0.0585,
+            "cal_slope": 0.9531,
+            "ece": 0.0222
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4161,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.1324,
+              "cal_slope": 0,
+              "ece": 0.033
+            },
+            "championship_position_before": {
+              "n": 4161,
+              "log_loss": 0.5876,
+              "brier": 0.1994,
+              "accuracy": 0.7046,
+              "cal_intercept": -0.0813,
+              "cal_slope": 0.9315,
+              "ece": 0.0259
+            },
+            "points_before": {
+              "n": 4161,
+              "log_loss": 0.5697,
+              "brier": 0.1932,
+              "accuracy": 0.7061,
+              "cal_intercept": -0.0125,
+              "cal_slope": 0.8942,
+              "ece": 0.053
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4161,
+              "log_loss": 0.5907,
+              "brier": 0.2024,
+              "accuracy": 0.6887,
+              "cal_intercept": 0.0692,
+              "cal_slope": 0.9491,
+              "ece": 0.0219
+            },
+            "teammate_h2h_record": {
+              "n": 4161,
+              "log_loss": 0.6773,
+              "brier": 0.2421,
+              "accuracy": 0.5847,
+              "cal_intercept": 0.2361,
+              "cal_slope": 2.5525,
+              "ece": 0.0451
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4161,
+              "log_loss": 0.5607,
+              "brier": 0.1879,
+              "accuracy": 0.7251,
+              "cal_intercept": 0.0183,
+              "cal_slope": 0.9664,
+              "ece": 0.0281
+            },
+            "qualifying_grid": {
+              "n": 4161,
+              "log_loss": 0.5892,
+              "brier": 0.197,
+              "accuracy": 0.7114,
+              "cal_intercept": 0.0026,
+              "cal_slope": 0.7719,
+              "ece": 0.0338
+            }
+          }
+        },
+        "2023": {
+          "n_train": 50755,
+          "model": {
+            "n": 4122,
+            "log_loss": 0.5047,
+            "brier": 0.1653,
+            "accuracy": 0.7669,
+            "cal_intercept": -0.0334,
+            "cal_slope": 1.1284,
+            "ece": 0.0427
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4122,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.1878,
+              "cal_slope": 0,
+              "ece": 0.0468
+            },
+            "championship_position_before": {
+              "n": 4122,
+              "log_loss": 0.5583,
+              "brier": 0.1877,
+              "accuracy": 0.7296,
+              "cal_intercept": -0.0856,
+              "cal_slope": 1.1041,
+              "ece": 0.0259
+            },
+            "points_before": {
+              "n": 4122,
+              "log_loss": 0.583,
+              "brier": 0.1957,
+              "accuracy": 0.7227,
+              "cal_intercept": 0.0318,
+              "cal_slope": 0.8073,
+              "ece": 0.0885
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4122,
+              "log_loss": 0.5732,
+              "brier": 0.1954,
+              "accuracy": 0.7038,
+              "cal_intercept": 0.0608,
+              "cal_slope": 1.1319,
+              "ece": 0.0247
+            },
+            "teammate_h2h_record": {
+              "n": 4122,
+              "log_loss": 0.6779,
+              "brier": 0.2424,
+              "accuracy": 0.5838,
+              "cal_intercept": 0.1758,
+              "cal_slope": 1.5724,
+              "ece": 0.0439
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4122,
+              "log_loss": 0.5387,
+              "brier": 0.1804,
+              "accuracy": 0.7351,
+              "cal_intercept": 0.0081,
+              "cal_slope": 0.9317,
+              "ece": 0.0229
+            },
+            "qualifying_grid": {
+              "n": 4122,
+              "log_loss": 0.5588,
+              "brier": 0.1879,
+              "accuracy": 0.7261,
+              "cal_intercept": 0.0847,
+              "cal_slope": 0.9115,
+              "ece": 0.0322
+            }
+          }
+        },
+        "2024": {
+          "n_train": 54877,
+          "model": {
+            "n": 4504,
+            "log_loss": 0.4509,
+            "brier": 0.1434,
+            "accuracy": 0.8,
+            "cal_intercept": -0.1053,
+            "cal_slope": 1.3173,
+            "ece": 0.0525
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4504,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": -0.0355,
+              "cal_slope": 0,
+              "ece": 0.0089
+            },
+            "championship_position_before": {
+              "n": 4504,
+              "log_loss": 0.5233,
+              "brier": 0.1729,
+              "accuracy": 0.756,
+              "cal_intercept": -0.1424,
+              "cal_slope": 1.2206,
+              "ece": 0.0425
+            },
+            "points_before": {
+              "n": 4504,
+              "log_loss": 0.5538,
+              "brier": 0.1858,
+              "accuracy": 0.745,
+              "cal_intercept": -0.0325,
+              "cal_slope": 0.8694,
+              "ece": 0.091
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4504,
+              "log_loss": 0.5613,
+              "brier": 0.19,
+              "accuracy": 0.7141,
+              "cal_intercept": -0.0946,
+              "cal_slope": 1.263,
+              "ece": 0.0351
+            },
+            "teammate_h2h_record": {
+              "n": 4504,
+              "log_loss": 0.6843,
+              "brier": 0.2457,
+              "accuracy": 0.5448,
+              "cal_intercept": -0.0556,
+              "cal_slope": 0.9475,
+              "ece": 0.0222
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4504,
+              "log_loss": 0.5066,
+              "brier": 0.1658,
+              "accuracy": 0.7549,
+              "cal_intercept": -0.0895,
+              "cal_slope": 1.0259,
+              "ece": 0.0356
+            },
+            "qualifying_grid": {
+              "n": 4504,
+              "log_loss": 0.479,
+              "brier": 0.1531,
+              "accuracy": 0.8028,
+              "cal_intercept": -0.0236,
+              "cal_slope": 1.4509,
+              "ece": 0.0903
+            }
+          }
+        },
+        "2025": {
+          "n_train": 59381,
+          "model": {
+            "n": 4537,
+            "log_loss": 0.4985,
+            "brier": 0.164,
+            "accuracy": 0.7655,
+            "cal_intercept": 0.0486,
+            "cal_slope": 1.0857,
+            "ece": 0.0258
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 4537,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.0763,
+              "cal_slope": 0,
+              "ece": 0.0191
+            },
+            "championship_position_before": {
+              "n": 4537,
+              "log_loss": 0.5848,
+              "brier": 0.1998,
+              "accuracy": 0.7008,
+              "cal_intercept": -0.0422,
+              "cal_slope": 0.9227,
+              "ece": 0.0199
+            },
+            "points_before": {
+              "n": 4537,
+              "log_loss": 0.6005,
+              "brier": 0.1981,
+              "accuracy": 0.6914,
+              "cal_intercept": 0.0578,
+              "cal_slope": 0.7044,
+              "ece": 0.0563
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 4537,
+              "log_loss": 0.6131,
+              "brier": 0.2119,
+              "accuracy": 0.6707,
+              "cal_intercept": -0.0016,
+              "cal_slope": 0.9083,
+              "ece": 0.0211
+            },
+            "teammate_h2h_record": {
+              "n": 4537,
+              "log_loss": 0.6749,
+              "brier": 0.241,
+              "accuracy": 0.5771,
+              "cal_intercept": -0.1062,
+              "cal_slope": 1.6043,
+              "ece": 0.0273
+            },
+            "bt_raw_uncalibrated": {
+              "n": 4537,
+              "log_loss": 0.5567,
+              "brier": 0.187,
+              "accuracy": 0.7088,
+              "cal_intercept": 0.0879,
+              "cal_slope": 0.8976,
+              "ece": 0.0277
+            },
+            "qualifying_grid": {
+              "n": 4537,
+              "log_loss": 0.4978,
+              "brier": 0.1644,
+              "accuracy": 0.7551,
+              "cal_intercept": 0.0483,
+              "cal_slope": 1.2484,
+              "ece": 0.0397
+            }
+          }
+        }
+      },
+      "pooled_test": {
+        "seasons": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "model": {
+          "n": 17324,
+          "log_loss": 0.4989,
+          "brier": 0.163,
+          "accuracy": 0.7673,
+          "cal_intercept": -0.0393,
+          "cal_slope": 1.1143,
+          "ece": 0.0311
+        },
+        "baselines": {
+          "coin_50_50": {
+            "n": 17324,
+            "log_loss": 0.6931,
+            "brier": 0.25,
+            "accuracy": 0.5,
+            "cal_intercept": 0.0871,
+            "cal_slope": 0,
+            "ece": 0.0218
+          },
+          "championship_position_before": {
+            "n": 17324,
+            "log_loss": 0.5632,
+            "brier": 0.1898,
+            "accuracy": 0.7229,
+            "cal_intercept": -0.0882,
+            "cal_slope": 1.0402,
+            "ece": 0.0232
+          },
+          "points_before": {
+            "n": 17324,
+            "log_loss": 0.5768,
+            "brier": 0.1931,
+            "accuracy": 0.7163,
+            "cal_intercept": 0.0141,
+            "cal_slope": 0.8137,
+            "ece": 0.0721
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 17324,
+            "log_loss": 0.5847,
+            "brier": 0.2,
+            "accuracy": 0.6942,
+            "cal_intercept": 0.0056,
+            "cal_slope": 1.0554,
+            "ece": 0.0126
+          },
+          "teammate_h2h_record": {
+            "n": 17324,
+            "log_loss": 0.6786,
+            "brier": 0.2428,
+            "accuracy": 0.5722,
+            "cal_intercept": 0.0486,
+            "cal_slope": 1.4015,
+            "ece": 0.0236
+          },
+          "bt_raw_uncalibrated": {
+            "n": 17324,
+            "log_loss": 0.5403,
+            "brier": 0.1802,
+            "accuracy": 0.731,
+            "cal_intercept": 0.0086,
+            "cal_slope": 0.9547,
+            "ece": 0.0154
+          },
+          "qualifying_grid": {
+            "n": 17324,
+            "log_loss": 0.5294,
+            "brier": 0.1749,
+            "accuracy": 0.7501,
+            "cal_intercept": 0.0159,
+            "cal_slope": 1.0601,
+            "ece": 0.0399
+          }
+        },
+        "model_minus_baseline_logloss_event_clustered": {
+          "coin_50_50": {
+            "mean_diff": -0.1937,
+            "se": 0.0124,
+            "events": 92
+          },
+          "championship_position_before": {
+            "mean_diff": -0.0646,
+            "se": 0.0077,
+            "events": 92
+          },
+          "points_before": {
+            "mean_diff": -0.0783,
+            "se": 0.0105,
+            "events": 92
+          },
+          "circuit_fit_ranking_asof": {
+            "mean_diff": -0.0859,
+            "se": 0.008,
+            "events": 92
+          },
+          "teammate_h2h_record": {
+            "mean_diff": -0.1792,
+            "se": 0.0122,
+            "events": 92
+          },
+          "bt_raw_uncalibrated": {
+            "mean_diff": -0.0419,
+            "se": 0.0059,
+            "events": 92
+          },
+          "qualifying_grid": {
+            "mean_diff": -0.0303,
+            "se": 0.0062,
+            "events": 92
+          }
+        },
+        "verdict": {
+          "coin_50_50": "beats",
+          "championship_position_before": "beats",
+          "points_before": "beats",
+          "circuit_fit_ranking_asof": "beats",
+          "teammate_h2h_record": "beats",
+          "bt_raw_uncalibrated": "beats",
+          "qualifying_grid": "beats"
+        },
+        "beats_all_baselines": true,
+        "teammate_subset": {
+          "model": {
+            "n": 910,
+            "log_loss": 0.5733,
+            "brier": 0.1951,
+            "accuracy": 0.7099,
+            "cal_intercept": -0.1213,
+            "cal_slope": 1.5477,
+            "ece": 0.0583
+          },
+          "baselines": {
+            "coin_50_50": {
+              "n": 910,
+              "log_loss": 0.6931,
+              "brier": 0.25,
+              "accuracy": 0.5,
+              "cal_intercept": 0.1674,
+              "cal_slope": 0,
+              "ece": 0.0418
+            },
+            "championship_position_before": {
+              "n": 910,
+              "log_loss": 0.6707,
+              "brier": 0.2389,
+              "accuracy": 0.6198,
+              "cal_intercept": 0.0655,
+              "cal_slope": 0.6878,
+              "ece": 0.0572
+            },
+            "points_before": {
+              "n": 910,
+              "log_loss": 0.6476,
+              "brier": 0.2295,
+              "accuracy": 0.6203,
+              "cal_intercept": 0.1449,
+              "cal_slope": 0.9614,
+              "ece": 0.05
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 910,
+              "log_loss": 0.6485,
+              "brier": 0.2287,
+              "accuracy": 0.6225,
+              "cal_intercept": 0.0908,
+              "cal_slope": 0.8924,
+              "ece": 0.0364
+            },
+            "teammate_h2h_record": {
+              "n": 910,
+              "log_loss": 0.6502,
+              "brier": 0.229,
+              "accuracy": 0.6363,
+              "cal_intercept": 0.0644,
+              "cal_slope": 2.2012,
+              "ece": 0.0692
+            },
+            "bt_raw_uncalibrated": {
+              "n": 910,
+              "log_loss": 0.6405,
+              "brier": 0.2252,
+              "accuracy": 0.6055,
+              "cal_intercept": 0.0466,
+              "cal_slope": 1.5382,
+              "ece": 0.0472
+            },
+            "qualifying_grid": {
+              "n": 910,
+              "log_loss": 0.5831,
+              "brier": 0.1988,
+              "accuracy": 0.6967,
+              "cal_intercept": 0.0324,
+              "cal_slope": 1.1624,
+              "ece": 0.0507
+            }
+          }
+        },
+        "buckets": [
+          {
+            "bucket": "0.50-0.55",
+            "n": 1842,
+            "mean_pred": 0.5248,
+            "observed": 0.5309
+          },
+          {
+            "bucket": "0.55-0.60",
+            "n": 1829,
+            "mean_pred": 0.5752,
+            "observed": 0.6145
+          },
+          {
+            "bucket": "0.60-0.65",
+            "n": 1703,
+            "mean_pred": 0.6248,
+            "observed": 0.6635
+          },
+          {
+            "bucket": "0.65-0.70",
+            "n": 1771,
+            "mean_pred": 0.675,
+            "observed": 0.7047
+          },
+          {
+            "bucket": "0.70-0.75",
+            "n": 1726,
+            "mean_pred": 0.7251,
+            "observed": 0.7932
+          },
+          {
+            "bucket": "0.75-0.80",
+            "n": 1757,
+            "mean_pred": 0.7753,
+            "observed": 0.8361
+          },
+          {
+            "bucket": "0.80-0.85",
+            "n": 1846,
+            "mean_pred": 0.826,
+            "observed": 0.8499
+          },
+          {
+            "bucket": "0.85-0.90",
+            "n": 2230,
+            "mean_pred": 0.8762,
+            "observed": 0.8937
+          },
+          {
+            "bucket": "0.90-0.95",
+            "n": 2041,
+            "mean_pred": 0.9236,
+            "observed": 0.9157
+          },
+          {
+            "bucket": "0.95-1.00",
+            "n": 579,
+            "mean_pred": 0.9614,
+            "observed": 0.9378
+          }
+        ],
+        "breakdowns": {
+          "street": {
+            "n": 3173,
+            "log_loss": 0.5234,
+            "brier": 0.1712,
+            "accuracy": 0.7513,
+            "cal_intercept": -0.0679,
+            "cal_slope": 0.9985,
+            "ece": 0.0352
+          },
+          "permanent": {
+            "n": 14151,
+            "log_loss": 0.4934,
+            "brier": 0.1612,
+            "accuracy": 0.7708,
+            "cal_intercept": -0.0324,
+            "cal_slope": 1.1433,
+            "ece": 0.0333
+          },
+          "speed_high": {
+            "n": 6022,
+            "log_loss": 0.5235,
+            "brier": 0.172,
+            "accuracy": 0.7539,
+            "cal_intercept": -0.023,
+            "cal_slope": 0.9905,
+            "ece": 0.0323
+          },
+          "speed_medium": {
+            "n": 3763,
+            "log_loss": 0.4992,
+            "brier": 0.1626,
+            "accuracy": 0.7715,
+            "cal_intercept": 0.0534,
+            "cal_slope": 1.116,
+            "ece": 0.0419
+          },
+          "speed_low": {
+            "n": 6418,
+            "log_loss": 0.4747,
+            "brier": 0.1538,
+            "accuracy": 0.7806,
+            "cal_intercept": -0.1274,
+            "cal_slope": 1.2533,
+            "ece": 0.0424
+          },
+          "teammate": {
+            "n": 910,
+            "log_loss": 0.5733,
+            "brier": 0.1951,
+            "accuracy": 0.7099,
+            "cal_intercept": -0.1213,
+            "cal_slope": 1.5477,
+            "ece": 0.0583
+          },
+          "cross_team": {
+            "n": 16414,
+            "log_loss": 0.4948,
+            "brier": 0.1612,
+            "accuracy": 0.7704,
+            "cal_intercept": -0.0382,
+            "cal_slope": 1.1039,
+            "ece": 0.0305
+          },
+          "rookie_involved": {
+            "n": 1904,
+            "log_loss": 0.4989,
+            "brier": 0.1643,
+            "accuracy": 0.7631,
+            "cal_intercept": 0.0123,
+            "cal_slope": 1.2461,
+            "ece": 0.0416
+          },
+          "veterans_only": {
+            "n": 15420,
+            "log_loss": 0.4989,
+            "brier": 0.1629,
+            "accuracy": 0.7678,
+            "cal_intercept": -0.0502,
+            "cal_slope": 1.0997,
+            "ece": 0.0311
+          }
+        }
+      },
+      "shadow_2026_to_date": {
+        "n_train": 63918,
+        "model": {
+          "n": 3465,
+          "log_loss": 0.523,
+          "brier": 0.1689,
+          "accuracy": 0.7763,
+          "cal_intercept": -0.2672,
+          "cal_slope": 0.9032,
+          "ece": 0.0664
+        },
+        "baselines": {
+          "coin_50_50": {
+            "n": 3465,
+            "log_loss": 0.6931,
+            "brier": 0.25,
+            "accuracy": 0.5,
+            "cal_intercept": -0.5101,
+            "cal_slope": 0,
+            "ece": 0.1248
+          },
+          "championship_position_before": {
+            "n": 3465,
+            "log_loss": 0.5546,
+            "brier": 0.1854,
+            "accuracy": 0.7358,
+            "cal_intercept": -0.1632,
+            "cal_slope": 0.948,
+            "ece": 0.0359
+          },
+          "points_before": {
+            "n": 3465,
+            "log_loss": 0.5955,
+            "brier": 0.2035,
+            "accuracy": 0.726,
+            "cal_intercept": -0.3406,
+            "cal_slope": 1.0297,
+            "ece": 0.0974
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 3465,
+            "log_loss": 0.6283,
+            "brier": 0.2192,
+            "accuracy": 0.641,
+            "cal_intercept": -0.5482,
+            "cal_slope": 0.9039,
+            "ece": 0.1176
+          },
+          "teammate_h2h_record": {
+            "n": 3465,
+            "log_loss": 0.6958,
+            "brier": 0.2513,
+            "accuracy": 0.5085,
+            "cal_intercept": -0.5886,
+            "cal_slope": 1.1137,
+            "ece": 0.1407
+          },
+          "bt_raw_uncalibrated": {
+            "n": 3465,
+            "log_loss": 0.5648,
+            "brier": 0.1882,
+            "accuracy": 0.729,
+            "cal_intercept": -0.3046,
+            "cal_slope": 0.9013,
+            "ece": 0.0672
+          },
+          "qualifying_grid": {
+            "n": 3465,
+            "log_loss": 0.5419,
+            "brier": 0.1773,
+            "accuracy": 0.7746,
+            "cal_intercept": -0.3033,
+            "cal_slope": 0.911,
+            "ece": 0.0927
+          }
+        },
+        "teammate": {
+          "n": 165,
+          "log_loss": 0.6356,
+          "brier": 0.2225,
+          "accuracy": 0.6364,
+          "cal_intercept": -0.1323,
+          "cal_slope": 1.3467,
+          "ece": 0.0753
+        }
+      }
+    },
+    "top10_pre": {
+      "version": "f1-edge-top10-pre@0.1.0-research",
+      "target": "top10",
+      "cutoff": "event_start",
+      "selection": {
+        "core": [
+          "r_bt"
+        ],
+        "core_val_log_loss": 0.54988,
+        "single_feature_tests": [
+          {
+            "feature": "q_bt",
+            "delta_vs_core": -0.00896
+          },
+          {
+            "feature": "champ_pos_before",
+            "delta_vs_core": -0.00791
+          },
+          {
+            "feature": "q_bt_driver",
+            "delta_vs_core": -0.00486
+          },
+          {
+            "feature": "drv_reliability",
+            "delta_vs_core": -0.00424
+          },
+          {
+            "feature": "con_gap_pole",
+            "delta_vs_core": -0.00354
+          },
+          {
+            "feature": "q_bt_car",
+            "delta_vs_core": -0.00317
+          },
+          {
+            "feature": "con_reliability",
+            "delta_vs_core": -0.0021
+          },
+          {
+            "feature": "log_starts",
+            "delta_vs_core": -0.00164
+          },
+          {
+            "feature": "race_gains",
+            "delta_vs_core": -0.0015
+          },
+          {
+            "feature": "rookie",
+            "delta_vs_core": -0.0015
+          },
+          {
+            "feature": "tm_gap_decay",
+            "delta_vs_core": -0.00085
+          },
+          {
+            "feature": "circ_pctl",
+            "delta_vs_core": -0.00005
+          },
+          {
+            "feature": "points_before",
+            "delta_vs_core": 0.00003
+          },
+          {
+            "feature": "r_bt_driver",
+            "delta_vs_core": 0.00064
+          },
+          {
+            "feature": "r_bt_car",
+            "delta_vs_core": 0.00084
+          }
+        ],
+        "forward_steps": [
+          {
+            "added": "q_bt",
+            "val_log_loss": 0.54092,
+            "gain": 0.00896
+          },
+          {
+            "added": "champ_pos_before",
+            "val_log_loss": 0.53762,
+            "gain": 0.0033
+          },
+          {
+            "added": "race_gains",
+            "val_log_loss": 0.53606,
+            "gain": 0.00157
+          }
+        ],
+        "selected": [
+          "r_bt",
+          "q_bt",
+          "champ_pos_before",
+          "race_gains"
+        ],
+        "final_val_log_loss": 0.53606
+      },
+      "per_season": {
+        "2022": {
+          "n_train": 4608,
+          "model": {
+            "n": 439,
+            "log_loss": 0.545,
+            "brier": 0.1808,
+            "accuracy": 0.7494,
+            "cal_intercept": 0.1942,
+            "cal_slope": 0.9339,
+            "ece": 0.0631
+          },
+          "baselines": {
+            "base_rate": {
+              "n": 439,
+              "log_loss": 0.6947,
+              "brier": 0.2508,
+              "accuracy": 0.4989,
+              "cal_intercept": 0.0046,
+              "cal_slope": 0,
+              "ece": 0.028
+            },
+            "championship_position_before": {
+              "n": 439,
+              "log_loss": 0.5706,
+              "brier": 0.189,
+              "accuracy": 0.7426,
+              "cal_intercept": 0.147,
+              "cal_slope": 0.8656,
+              "ece": 0.0656
+            },
+            "points_before": {
+              "n": 439,
+              "log_loss": 0.5663,
+              "brier": 0.1915,
+              "accuracy": 0.7335,
+              "cal_intercept": 0.1409,
+              "cal_slope": 0.8622,
+              "ece": 0.0769
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 439,
+              "log_loss": 0.5779,
+              "brier": 0.195,
+              "accuracy": 0.7062,
+              "cal_intercept": 0.1322,
+              "cal_slope": 0.9025,
+              "ece": 0.0401
+            }
+          }
+        },
+        "2023": {
+          "n_train": 5047,
+          "model": {
+            "n": 437,
+            "log_loss": 0.4958,
+            "brier": 0.1615,
+            "accuracy": 0.7666,
+            "cal_intercept": 0.2393,
+            "cal_slope": 1.1681,
+            "ece": 0.0412
+          },
+          "baselines": {
+            "base_rate": {
+              "n": 437,
+              "log_loss": 0.6947,
+              "brier": 0.2508,
+              "accuracy": 0.4966,
+              "cal_intercept": 0.0137,
+              "cal_slope": 0,
+              "ece": 0.0279
+            },
+            "championship_position_before": {
+              "n": 437,
+              "log_loss": 0.5148,
+              "brier": 0.1681,
+              "accuracy": 0.762,
+              "cal_intercept": 0.1843,
+              "cal_slope": 1.1211,
+              "ece": 0.0497
+            },
+            "points_before": {
+              "n": 437,
+              "log_loss": 0.5573,
+              "brier": 0.1864,
+              "accuracy": 0.7483,
+              "cal_intercept": 0.1698,
+              "cal_slope": 0.9345,
+              "ece": 0.0743
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 437,
+              "log_loss": 0.5432,
+              "brier": 0.1826,
+              "accuracy": 0.7391,
+              "cal_intercept": 0.1779,
+              "cal_slope": 1.1855,
+              "ece": 0.0509
+            }
+          }
+        },
+        "2024": {
+          "n_train": 5484,
+          "model": {
+            "n": 477,
+            "log_loss": 0.4584,
+            "brier": 0.1457,
+            "accuracy": 0.8092,
+            "cal_intercept": 0.2293,
+            "cal_slope": 1.1501,
+            "ece": 0.058
+          },
+          "baselines": {
+            "base_rate": {
+              "n": 477,
+              "log_loss": 0.6944,
+              "brier": 0.2506,
+              "accuracy": 0.4969,
+              "cal_intercept": 0.0126,
+              "cal_slope": 0,
+              "ece": 0.0254
+            },
+            "championship_position_before": {
+              "n": 477,
+              "log_loss": 0.4792,
+              "brier": 0.1531,
+              "accuracy": 0.7966,
+              "cal_intercept": 0.1567,
+              "cal_slope": 1.1981,
+              "ece": 0.0788
+            },
+            "points_before": {
+              "n": 477,
+              "log_loss": 0.5321,
+              "brier": 0.1763,
+              "accuracy": 0.7799,
+              "cal_intercept": 0.1401,
+              "cal_slope": 0.8737,
+              "ece": 0.0969
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 477,
+              "log_loss": 0.5307,
+              "brier": 0.176,
+              "accuracy": 0.7589,
+              "cal_intercept": 0.1846,
+              "cal_slope": 1.2882,
+              "ece": 0.0533
+            }
+          }
+        },
+        "2025": {
+          "n_train": 5961,
+          "model": {
+            "n": 479,
+            "log_loss": 0.539,
+            "brier": 0.18,
+            "accuracy": 0.739,
+            "cal_intercept": 0.1956,
+            "cal_slope": 0.9693,
+            "ece": 0.0563
+          },
+          "baselines": {
+            "base_rate": {
+              "n": 479,
+              "log_loss": 0.694,
+              "brier": 0.2505,
+              "accuracy": 0.499,
+              "cal_intercept": 0.0042,
+              "cal_slope": 0,
+              "ece": 0.0213
+            },
+            "championship_position_before": {
+              "n": 479,
+              "log_loss": 0.5751,
+              "brier": 0.1946,
+              "accuracy": 0.7035,
+              "cal_intercept": 0.1099,
+              "cal_slope": 0.838,
+              "ece": 0.1035
+            },
+            "points_before": {
+              "n": 479,
+              "log_loss": 0.6142,
+              "brier": 0.2035,
+              "accuracy": 0.7161,
+              "cal_intercept": 0.0902,
+              "cal_slope": 0.6533,
+              "ece": 0.0972
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 479,
+              "log_loss": 0.6154,
+              "brier": 0.2118,
+              "accuracy": 0.6514,
+              "cal_intercept": 0.1012,
+              "cal_slope": 0.8077,
+              "ece": 0.0511
+            }
+          }
+        }
+      },
+      "pooled_test": {
+        "seasons": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "model": {
+          "n": 1832,
+          "log_loss": 0.5091,
+          "brier": 0.1668,
+          "accuracy": 0.7664,
+          "cal_intercept": 0.2168,
+          "cal_slope": 1.0545,
+          "ece": 0.0369
+        },
+        "baselines": {
+          "base_rate": {
+            "n": 1832,
+            "log_loss": 0.6945,
+            "brier": 0.2507,
+            "accuracy": 0.4978,
+            "cal_intercept": 0.0072,
+            "cal_slope": -0.0161,
+            "ece": 0.0255
+          },
+          "championship_position_before": {
+            "n": 1832,
+            "log_loss": 0.5347,
+            "brier": 0.1761,
+            "accuracy": 0.7511,
+            "cal_intercept": 0.149,
+            "cal_slope": 0.9941,
+            "ece": 0.0577
+          },
+          "points_before": {
+            "n": 1832,
+            "log_loss": 0.5678,
+            "brier": 0.1895,
+            "accuracy": 0.7445,
+            "cal_intercept": 0.1361,
+            "cal_slope": 0.8232,
+            "ece": 0.0786
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 1832,
+            "log_loss": 0.5671,
+            "brier": 0.1915,
+            "accuracy": 0.7134,
+            "cal_intercept": 0.146,
+            "cal_slope": 1.0271,
+            "ece": 0.0314
+          }
+        },
+        "model_minus_baseline_logloss_event_clustered": {
+          "base_rate": {
+            "mean_diff": -0.185,
+            "se": 0.0143,
+            "events": 92
+          },
+          "championship_position_before": {
+            "mean_diff": -0.0257,
+            "se": 0.0065,
+            "events": 92
+          },
+          "points_before": {
+            "mean_diff": -0.0587,
+            "se": 0.0106,
+            "events": 92
+          },
+          "circuit_fit_ranking_asof": {
+            "mean_diff": -0.058,
+            "se": 0.0084,
+            "events": 92
+          }
+        },
+        "verdict": {
+          "base_rate": "beats",
+          "championship_position_before": "beats",
+          "points_before": "beats",
+          "circuit_fit_ranking_asof": "beats"
+        },
+        "beats_all_baselines": true,
+        "teammate_subset": null,
+        "buckets": [
+          {
+            "bucket": "0.0-0.1",
+            "n": 86,
+            "mean_pred": 0.0762,
+            "observed": 0.0465
+          },
+          {
+            "bucket": "0.1-0.2",
+            "n": 315,
+            "mean_pred": 0.1587,
+            "observed": 0.2
+          },
+          {
+            "bucket": "0.2-0.3",
+            "n": 347,
+            "mean_pred": 0.2457,
+            "observed": 0.2651
+          },
+          {
+            "bucket": "0.3-0.4",
+            "n": 190,
+            "mean_pred": 0.3504,
+            "observed": 0.3632
+          },
+          {
+            "bucket": "0.4-0.5",
+            "n": 134,
+            "mean_pred": 0.4427,
+            "observed": 0.4925
+          },
+          {
+            "bucket": "0.5-0.6",
+            "n": 97,
+            "mean_pred": 0.5487,
+            "observed": 0.5979
+          },
+          {
+            "bucket": "0.6-0.7",
+            "n": 72,
+            "mean_pred": 0.6513,
+            "observed": 0.75
+          },
+          {
+            "bucket": "0.7-0.8",
+            "n": 204,
+            "mean_pred": 0.7553,
+            "observed": 0.8431
+          },
+          {
+            "bucket": "0.8-0.9",
+            "n": 278,
+            "mean_pred": 0.8447,
+            "observed": 0.8597
+          },
+          {
+            "bucket": "0.9-1.0",
+            "n": 109,
+            "mean_pred": 0.9239,
+            "observed": 0.945
+          }
+        ],
+        "breakdowns": {
+          "street": {
+            "n": 337,
+            "log_loss": 0.553,
+            "brier": 0.184,
+            "accuracy": 0.7389,
+            "cal_intercept": 0.1825,
+            "cal_slope": 0.8779,
+            "ece": 0.0553
+          },
+          "permanent": {
+            "n": 1495,
+            "log_loss": 0.4993,
+            "brier": 0.163,
+            "accuracy": 0.7726,
+            "cal_intercept": 0.2264,
+            "cal_slope": 1.1005,
+            "ece": 0.0357
+          },
+          "speed_high": {
+            "n": 637,
+            "log_loss": 0.5309,
+            "brier": 0.1745,
+            "accuracy": 0.7614,
+            "cal_intercept": 0.1915,
+            "cal_slope": 0.975,
+            "ece": 0.0418
+          },
+          "speed_medium": {
+            "n": 398,
+            "log_loss": 0.5116,
+            "brier": 0.1688,
+            "accuracy": 0.7563,
+            "cal_intercept": 0.2104,
+            "cal_slope": 1.0408,
+            "ece": 0.0398
+          },
+          "speed_low": {
+            "n": 678,
+            "log_loss": 0.4908,
+            "brier": 0.1596,
+            "accuracy": 0.7788,
+            "cal_intercept": 0.2447,
+            "cal_slope": 1.1294,
+            "ece": 0.0381
+          },
+          "rookie": {
+            "n": 107,
+            "log_loss": 0.5048,
+            "brier": 0.1663,
+            "accuracy": 0.757,
+            "cal_intercept": -0.0923,
+            "cal_slope": 0.927,
+            "ece": 0.0706
+          },
+          "veteran": {
+            "n": 1725,
+            "log_loss": 0.5094,
+            "brier": 0.1669,
+            "accuracy": 0.767,
+            "cal_intercept": 0.2275,
+            "cal_slope": 1.0524,
+            "ece": 0.0384
+          }
+        }
+      },
+      "shadow_2026_to_date": {
+        "n_train": 6440,
+        "model": {
+          "n": 330,
+          "log_loss": 0.5358,
+          "brier": 0.1773,
+          "accuracy": 0.7424,
+          "cal_intercept": -0.1528,
+          "cal_slope": 0.8375,
+          "ece": 0.0695
+        },
+        "baselines": {
+          "base_rate": {
+            "n": 330,
+            "log_loss": 0.6905,
+            "brier": 0.2487,
+            "accuracy": 0.5455,
+            "cal_intercept": -0.1823,
+            "cal_slope": 0.0001,
+            "ece": 0.0268
+          },
+          "championship_position_before": {
+            "n": 330,
+            "log_loss": 0.5416,
+            "brier": 0.1802,
+            "accuracy": 0.7455,
+            "cal_intercept": -0.1466,
+            "cal_slope": 0.8904,
+            "ece": 0.0478
+          },
+          "points_before": {
+            "n": 330,
+            "log_loss": 0.5907,
+            "brier": 0.1997,
+            "accuracy": 0.7061,
+            "cal_intercept": -0.1757,
+            "cal_slope": 1.0454,
+            "ece": 0.079
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 330,
+            "log_loss": 0.6114,
+            "brier": 0.2123,
+            "accuracy": 0.6455,
+            "cal_intercept": -0.1273,
+            "cal_slope": 0.866,
+            "ece": 0.0823
+          }
+        },
+        "teammate": null
+      }
+    },
+    "top10_post": {
+      "version": "f1-edge-top10-post@0.1.0-research",
+      "target": "top10",
+      "cutoff": "race_start (grid published)",
+      "selection": {
+        "core": [
+          "r_bt",
+          "grid_log",
+          "grid_top10"
+        ],
+        "core_val_log_loss": 0.51132,
+        "single_feature_tests": [
+          {
+            "feature": "champ_pos_before",
+            "delta_vs_core": -0.00369
+          },
+          {
+            "feature": "race_gains",
+            "delta_vs_core": -0.00151
+          },
+          {
+            "feature": "log_starts",
+            "delta_vs_core": -0.00147
+          },
+          {
+            "feature": "con_gap_pole",
+            "delta_vs_core": -0.00145
+          },
+          {
+            "feature": "q_bt_driver",
+            "delta_vs_core": -0.00142
+          },
+          {
+            "feature": "rookie",
+            "delta_vs_core": -0.00137
+          },
+          {
+            "feature": "q_bt",
+            "delta_vs_core": -0.00132
+          },
+          {
+            "feature": "drv_reliability",
+            "delta_vs_core": -0.00113
+          },
+          {
+            "feature": "con_reliability",
+            "delta_vs_core": -0.00023
+          },
+          {
+            "feature": "points_before",
+            "delta_vs_core": -0.00013
+          },
+          {
+            "feature": "tm_gap_decay",
+            "delta_vs_core": -0.00007
+          },
+          {
+            "feature": "circ_pctl",
+            "delta_vs_core": -0.00005
+          },
+          {
+            "feature": "r_bt_driver",
+            "delta_vs_core": 0.00011
+          },
+          {
+            "feature": "r_bt_car",
+            "delta_vs_core": 0.00019
+          },
+          {
+            "feature": "q_bt_car",
+            "delta_vs_core": 0.00102
+          }
+        ],
+        "forward_steps": [
+          {
+            "added": "champ_pos_before",
+            "val_log_loss": 0.50764,
+            "gain": 0.00369
+          },
+          {
+            "added": "rookie",
+            "val_log_loss": 0.50673,
+            "gain": 0.0009
+          },
+          {
+            "added": "race_gains",
+            "val_log_loss": 0.50603,
+            "gain": 0.00071
+          },
+          {
+            "added": "con_gap_pole",
+            "val_log_loss": 0.50543,
+            "gain": 0.0006
+          },
+          {
+            "added": "q_bt_driver",
+            "val_log_loss": 0.50471,
+            "gain": 0.00072
+          }
+        ],
+        "selected": [
+          "r_bt",
+          "grid_log",
+          "grid_top10",
+          "champ_pos_before",
+          "rookie",
+          "race_gains",
+          "con_gap_pole",
+          "q_bt_driver"
+        ],
+        "final_val_log_loss": 0.50471
+      },
+      "per_season": {
+        "2022": {
+          "n_train": 4608,
+          "model": {
+            "n": 439,
+            "log_loss": 0.5149,
+            "brier": 0.168,
+            "accuracy": 0.7608,
+            "cal_intercept": 0.1704,
+            "cal_slope": 1.0072,
+            "ece": 0.0563
+          },
+          "baselines": {
+            "base_rate": {
+              "n": 439,
+              "log_loss": 0.6947,
+              "brier": 0.2508,
+              "accuracy": 0.4989,
+              "cal_intercept": 0.0046,
+              "cal_slope": 0,
+              "ece": 0.028
+            },
+            "championship_position_before": {
+              "n": 439,
+              "log_loss": 0.5706,
+              "brier": 0.189,
+              "accuracy": 0.7426,
+              "cal_intercept": 0.147,
+              "cal_slope": 0.8656,
+              "ece": 0.0656
+            },
+            "points_before": {
+              "n": 439,
+              "log_loss": 0.5663,
+              "brier": 0.1915,
+              "accuracy": 0.7335,
+              "cal_intercept": 0.1409,
+              "cal_slope": 0.8622,
+              "ece": 0.0769
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 439,
+              "log_loss": 0.5779,
+              "brier": 0.195,
+              "accuracy": 0.7062,
+              "cal_intercept": 0.1322,
+              "cal_slope": 0.9025,
+              "ece": 0.0401
+            },
+            "qualifying_grid": {
+              "n": 439,
+              "log_loss": 0.558,
+              "brier": 0.1842,
+              "accuracy": 0.738,
+              "cal_intercept": 0.028,
+              "cal_slope": 0.8329,
+              "ece": 0.0393
+            }
+          }
+        },
+        "2023": {
+          "n_train": 5047,
+          "model": {
+            "n": 437,
+            "log_loss": 0.4781,
+            "brier": 0.1548,
+            "accuracy": 0.7918,
+            "cal_intercept": 0.1711,
+            "cal_slope": 1.1141,
+            "ece": 0.0561
+          },
+          "baselines": {
+            "base_rate": {
+              "n": 437,
+              "log_loss": 0.6947,
+              "brier": 0.2508,
+              "accuracy": 0.4966,
+              "cal_intercept": 0.0137,
+              "cal_slope": 0,
+              "ece": 0.0279
+            },
+            "championship_position_before": {
+              "n": 437,
+              "log_loss": 0.5148,
+              "brier": 0.1681,
+              "accuracy": 0.762,
+              "cal_intercept": 0.1843,
+              "cal_slope": 1.1211,
+              "ece": 0.0497
+            },
+            "points_before": {
+              "n": 437,
+              "log_loss": 0.5573,
+              "brier": 0.1864,
+              "accuracy": 0.7483,
+              "cal_intercept": 0.1698,
+              "cal_slope": 0.9345,
+              "ece": 0.0743
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 437,
+              "log_loss": 0.5432,
+              "brier": 0.1826,
+              "accuracy": 0.7391,
+              "cal_intercept": 0.1779,
+              "cal_slope": 1.1855,
+              "ece": 0.0509
+            },
+            "qualifying_grid": {
+              "n": 437,
+              "log_loss": 0.5609,
+              "brier": 0.1885,
+              "accuracy": 0.7277,
+              "cal_intercept": 0.032,
+              "cal_slope": 0.8366,
+              "ece": 0.0392
+            }
+          }
+        },
+        "2024": {
+          "n_train": 5484,
+          "model": {
+            "n": 477,
+            "log_loss": 0.3998,
+            "brier": 0.1217,
+            "accuracy": 0.826,
+            "cal_intercept": 0.2617,
+            "cal_slope": 1.4424,
+            "ece": 0.089
+          },
+          "baselines": {
+            "base_rate": {
+              "n": 477,
+              "log_loss": 0.6944,
+              "brier": 0.2506,
+              "accuracy": 0.4969,
+              "cal_intercept": 0.0126,
+              "cal_slope": 0,
+              "ece": 0.0254
+            },
+            "championship_position_before": {
+              "n": 477,
+              "log_loss": 0.4792,
+              "brier": 0.1531,
+              "accuracy": 0.7966,
+              "cal_intercept": 0.1567,
+              "cal_slope": 1.1981,
+              "ece": 0.0788
+            },
+            "points_before": {
+              "n": 477,
+              "log_loss": 0.5321,
+              "brier": 0.1763,
+              "accuracy": 0.7799,
+              "cal_intercept": 0.1401,
+              "cal_slope": 0.8737,
+              "ece": 0.0969
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 477,
+              "log_loss": 0.5307,
+              "brier": 0.176,
+              "accuracy": 0.7589,
+              "cal_intercept": 0.1846,
+              "cal_slope": 1.2882,
+              "ece": 0.0533
+            },
+            "qualifying_grid": {
+              "n": 477,
+              "log_loss": 0.4255,
+              "brier": 0.1291,
+              "accuracy": 0.8491,
+              "cal_intercept": 0.174,
+              "cal_slope": 1.5397,
+              "ece": 0.0885
+            }
+          }
+        },
+        "2025": {
+          "n_train": 5961,
+          "model": {
+            "n": 479,
+            "log_loss": 0.4842,
+            "brier": 0.1585,
+            "accuracy": 0.7641,
+            "cal_intercept": 0.1876,
+            "cal_slope": 1.0957,
+            "ece": 0.0349
+          },
+          "baselines": {
+            "base_rate": {
+              "n": 479,
+              "log_loss": 0.694,
+              "brier": 0.2505,
+              "accuracy": 0.499,
+              "cal_intercept": 0.0042,
+              "cal_slope": 0,
+              "ece": 0.0213
+            },
+            "championship_position_before": {
+              "n": 479,
+              "log_loss": 0.5751,
+              "brier": 0.1946,
+              "accuracy": 0.7035,
+              "cal_intercept": 0.1099,
+              "cal_slope": 0.838,
+              "ece": 0.1035
+            },
+            "points_before": {
+              "n": 479,
+              "log_loss": 0.6142,
+              "brier": 0.2035,
+              "accuracy": 0.7161,
+              "cal_intercept": 0.0902,
+              "cal_slope": 0.6533,
+              "ece": 0.0972
+            },
+            "circuit_fit_ranking_asof": {
+              "n": 479,
+              "log_loss": 0.6154,
+              "brier": 0.2118,
+              "accuracy": 0.6514,
+              "cal_intercept": 0.1012,
+              "cal_slope": 0.8077,
+              "ece": 0.0511
+            },
+            "qualifying_grid": {
+              "n": 479,
+              "log_loss": 0.4907,
+              "brier": 0.1598,
+              "accuracy": 0.7787,
+              "cal_intercept": 0.0528,
+              "cal_slope": 1.0955,
+              "ece": 0.029
+            }
+          }
+        }
+      },
+      "pooled_test": {
+        "seasons": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "model": {
+          "n": 1832,
+          "log_loss": 0.4681,
+          "brier": 0.1503,
+          "accuracy": 0.786,
+          "cal_intercept": 0.1966,
+          "cal_slope": 1.158,
+          "ece": 0.0403
+        },
+        "baselines": {
+          "base_rate": {
+            "n": 1832,
+            "log_loss": 0.6945,
+            "brier": 0.2507,
+            "accuracy": 0.4978,
+            "cal_intercept": 0.0072,
+            "cal_slope": -0.0161,
+            "ece": 0.0255
+          },
+          "championship_position_before": {
+            "n": 1832,
+            "log_loss": 0.5347,
+            "brier": 0.1761,
+            "accuracy": 0.7511,
+            "cal_intercept": 0.149,
+            "cal_slope": 0.9941,
+            "ece": 0.0577
+          },
+          "points_before": {
+            "n": 1832,
+            "log_loss": 0.5678,
+            "brier": 0.1895,
+            "accuracy": 0.7445,
+            "cal_intercept": 0.1361,
+            "cal_slope": 0.8232,
+            "ece": 0.0786
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 1832,
+            "log_loss": 0.5671,
+            "brier": 0.1915,
+            "accuracy": 0.7134,
+            "cal_intercept": 0.146,
+            "cal_slope": 1.0271,
+            "ece": 0.0314
+          },
+          "qualifying_grid": {
+            "n": 1832,
+            "log_loss": 0.5066,
+            "brier": 0.1645,
+            "accuracy": 0.7751,
+            "cal_intercept": 0.0583,
+            "cal_slope": 1.0415,
+            "ece": 0.0242
+          }
+        },
+        "model_minus_baseline_logloss_event_clustered": {
+          "base_rate": {
+            "mean_diff": -0.2262,
+            "se": 0.0148,
+            "events": 92
+          },
+          "championship_position_before": {
+            "mean_diff": -0.0668,
+            "se": 0.0095,
+            "events": 92
+          },
+          "points_before": {
+            "mean_diff": -0.0999,
+            "se": 0.0121,
+            "events": 92
+          },
+          "circuit_fit_ranking_asof": {
+            "mean_diff": -0.0992,
+            "se": 0.011,
+            "events": 92
+          },
+          "qualifying_grid": {
+            "mean_diff": -0.0383,
+            "se": 0.0079,
+            "events": 92
+          }
+        },
+        "verdict": {
+          "base_rate": "beats",
+          "championship_position_before": "beats",
+          "points_before": "beats",
+          "circuit_fit_ranking_asof": "beats",
+          "qualifying_grid": "beats"
+        },
+        "beats_all_baselines": true,
+        "teammate_subset": null,
+        "buckets": [
+          {
+            "bucket": "0.0-0.1",
+            "n": 85,
+            "mean_pred": 0.0838,
+            "observed": 0.0353
+          },
+          {
+            "bucket": "0.1-0.2",
+            "n": 391,
+            "mean_pred": 0.1547,
+            "observed": 0.1304
+          },
+          {
+            "bucket": "0.2-0.3",
+            "n": 264,
+            "mean_pred": 0.2424,
+            "observed": 0.25
+          },
+          {
+            "bucket": "0.3-0.4",
+            "n": 144,
+            "mean_pred": 0.3435,
+            "observed": 0.3819
+          },
+          {
+            "bucket": "0.4-0.5",
+            "n": 128,
+            "mean_pred": 0.4537,
+            "observed": 0.5547
+          },
+          {
+            "bucket": "0.5-0.6",
+            "n": 131,
+            "mean_pred": 0.5528,
+            "observed": 0.5954
+          },
+          {
+            "bucket": "0.6-0.7",
+            "n": 119,
+            "mean_pred": 0.6463,
+            "observed": 0.7059
+          },
+          {
+            "bucket": "0.7-0.8",
+            "n": 132,
+            "mean_pred": 0.76,
+            "observed": 0.9167
+          },
+          {
+            "bucket": "0.8-0.9",
+            "n": 289,
+            "mean_pred": 0.8503,
+            "observed": 0.8685
+          },
+          {
+            "bucket": "0.9-1.0",
+            "n": 149,
+            "mean_pred": 0.9321,
+            "observed": 0.9396
+          }
+        ],
+        "breakdowns": {
+          "street": {
+            "n": 337,
+            "log_loss": 0.4846,
+            "brier": 0.1561,
+            "accuracy": 0.7774,
+            "cal_intercept": 0.1728,
+            "cal_slope": 1.0651,
+            "ece": 0.0552
+          },
+          "permanent": {
+            "n": 1495,
+            "log_loss": 0.4644,
+            "brier": 0.149,
+            "accuracy": 0.788,
+            "cal_intercept": 0.203,
+            "cal_slope": 1.1812,
+            "ece": 0.0421
+          },
+          "speed_high": {
+            "n": 637,
+            "log_loss": 0.4868,
+            "brier": 0.1565,
+            "accuracy": 0.7802,
+            "cal_intercept": 0.1779,
+            "cal_slope": 1.0638,
+            "ece": 0.0407
+          },
+          "speed_medium": {
+            "n": 398,
+            "log_loss": 0.4735,
+            "brier": 0.1533,
+            "accuracy": 0.7864,
+            "cal_intercept": 0.1875,
+            "cal_slope": 1.1326,
+            "ece": 0.0559
+          },
+          "speed_low": {
+            "n": 678,
+            "log_loss": 0.4454,
+            "brier": 0.1413,
+            "accuracy": 0.7979,
+            "cal_intercept": 0.2215,
+            "cal_slope": 1.2716,
+            "ece": 0.0522
+          },
+          "rookie": {
+            "n": 107,
+            "log_loss": 0.4563,
+            "brier": 0.1495,
+            "accuracy": 0.7757,
+            "cal_intercept": 0.8482,
+            "cal_slope": 1.3029,
+            "ece": 0.1005
+          },
+          "veteran": {
+            "n": 1725,
+            "log_loss": 0.4689,
+            "brier": 0.1504,
+            "accuracy": 0.7867,
+            "cal_intercept": 0.1758,
+            "cal_slope": 1.1734,
+            "ece": 0.0421
+          }
+        }
+      },
+      "shadow_2026_to_date": {
+        "n_train": 6440,
+        "model": {
+          "n": 330,
+          "log_loss": 0.5143,
+          "brier": 0.1676,
+          "accuracy": 0.7667,
+          "cal_intercept": -0.1204,
+          "cal_slope": 0.8361,
+          "ece": 0.0616
+        },
+        "baselines": {
+          "base_rate": {
+            "n": 330,
+            "log_loss": 0.6905,
+            "brier": 0.2487,
+            "accuracy": 0.5455,
+            "cal_intercept": -0.1823,
+            "cal_slope": 0.0001,
+            "ece": 0.0268
+          },
+          "championship_position_before": {
+            "n": 330,
+            "log_loss": 0.5416,
+            "brier": 0.1802,
+            "accuracy": 0.7455,
+            "cal_intercept": -0.1466,
+            "cal_slope": 0.8904,
+            "ece": 0.0478
+          },
+          "points_before": {
+            "n": 330,
+            "log_loss": 0.5907,
+            "brier": 0.1997,
+            "accuracy": 0.7061,
+            "cal_intercept": -0.1757,
+            "cal_slope": 1.0454,
+            "ece": 0.079
+          },
+          "circuit_fit_ranking_asof": {
+            "n": 330,
+            "log_loss": 0.6114,
+            "brier": 0.2123,
+            "accuracy": 0.6455,
+            "cal_intercept": -0.1273,
+            "cal_slope": 0.866,
+            "ece": 0.0823
+          },
+          "qualifying_grid": {
+            "n": 330,
+            "log_loss": 0.526,
+            "brier": 0.171,
+            "accuracy": 0.7667,
+            "cal_intercept": -0.0651,
+            "cal_slope": 0.9038,
+            "ece": 0.0808
+          }
+        },
+        "teammate": null
+      }
+    }
+  }
+}

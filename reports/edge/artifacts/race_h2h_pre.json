@@ -1,0 +1,66 @@
+{
+  "version": "f1-edge-race-h2h-pre@0.1.0-research",
+  "status": "research (not an official pick model)",
+  "beats_all_baselines_walk_forward": true,
+  "verdict_vs_baselines": {
+    "coin_50_50": "beats",
+    "championship_position_before": "beats",
+    "points_before": "beats",
+    "circuit_fit_ranking_asof": "beats",
+    "teammate_h2h_record": "beats",
+    "bt_raw_uncalibrated": "beats"
+  },
+  "target": "race_h2h",
+  "kind": "pair",
+  "cutoff": "event_start",
+  "features": [
+    "r_bt",
+    "pair_q_h2h",
+    "con_gap_pole",
+    "cf_car_speed",
+    "rookie"
+  ],
+  "scale": [
+    1.47068104606,
+    0.588711989073,
+    1.72809088789,
+    0.341823128452,
+    0.370375353651
+  ],
+  "beta": [
+    0.855942245342,
+    0.447881556264,
+    -0.138901309485,
+    0.0663547662361,
+    -0.0788502391096
+  ],
+  "intercept": false,
+  "train_seasons": [
+    2011,
+    2025
+  ],
+  "dataset_sha256": "c1d7369aa60d0e5e09c249d9f8fa70f594421a9c084e8d0608119a8f6c84e3cf",
+  "feature_version": "f1-edge-features@0.1.0",
+  "bt_config": {
+    "quali": {
+      "tau_days": 120,
+      "window_days": 1095,
+      "lambda_driver": 0.5,
+      "lambda_rw": 1,
+      "lambda_car0": 0.5,
+      "iters": 12
+    },
+    "race": {
+      "tau_days": 365,
+      "window_days": 1095,
+      "lambda_driver": 2,
+      "lambda_rw": 4,
+      "lambda_car0": 0.5,
+      "iters": 12
+    }
+  },
+  "forbidden_features": [
+    "cf_score"
+  ],
+  "market_inputs": "none (sportsbook odds are never model features)"
+}

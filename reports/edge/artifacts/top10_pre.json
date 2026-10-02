@@ -1,0 +1,62 @@
+{
+  "version": "f1-edge-top10-pre@0.1.0-research",
+  "status": "research (not an official pick model)",
+  "beats_all_baselines_walk_forward": true,
+  "verdict_vs_baselines": {
+    "base_rate": "beats",
+    "championship_position_before": "beats",
+    "points_before": "beats",
+    "circuit_fit_ranking_asof": "beats"
+  },
+  "target": "top10",
+  "kind": "single",
+  "cutoff": "event_start",
+  "features": [
+    "r_bt",
+    "q_bt",
+    "champ_pos_before",
+    "race_gains"
+  ],
+  "scale": [
+    1.01342552404,
+    1.59521888912,
+    6.31739612978,
+    1.03520472992
+  ],
+  "beta": [
+    0.254362971008,
+    0.978523281156,
+    -0.304183496669,
+    0.176094527616,
+    -0.0911689534929
+  ],
+  "intercept": true,
+  "train_seasons": [
+    2011,
+    2025
+  ],
+  "dataset_sha256": "c1d7369aa60d0e5e09c249d9f8fa70f594421a9c084e8d0608119a8f6c84e3cf",
+  "feature_version": "f1-edge-features@0.1.0",
+  "bt_config": {
+    "quali": {
+      "tau_days": 120,
+      "window_days": 1095,
+      "lambda_driver": 0.5,
+      "lambda_rw": 1,
+      "lambda_car0": 0.5,
+      "iters": 12
+    },
+    "race": {
+      "tau_days": 365,
+      "window_days": 1095,
+      "lambda_driver": 2,
+      "lambda_rw": 4,
+      "lambda_car0": 0.5,
+      "iters": 12
+    }
+  },
+  "forbidden_features": [
+    "cf_score"
+  ],
+  "market_inputs": "none (sportsbook odds are never model features)"
+}
