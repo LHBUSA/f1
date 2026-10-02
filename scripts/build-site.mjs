@@ -33,7 +33,7 @@ ctx.newsModule = homeModule(newsPub, X);
 const carReg = loadCarPhotos();
 const peopleReg = loadPeople();
 const ownReg = loadOwnership();
-ctx.peopleFor = (cid, season) => ({ ...teamPeople(peopleReg, cid, season), ownership: ownershipForTeam(ownReg, cid) });
+ctx.peopleFor = (cid, season) => ({ ...teamPeople(peopleReg, cid, season), ownership: ownershipForTeam(ownReg, cid).filter((o) => o.current) });
 // People Intelligence V2: one profile per person with a visible role or a recorded ownership relationship
 const personIds = new Set([...peopleReg.roles.map((r) => r.personId), ...(ownReg.records || []).map((o) => o.entity?.personId).filter(Boolean)]);
 const profilesV2 = {};

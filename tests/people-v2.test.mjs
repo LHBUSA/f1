@@ -53,6 +53,7 @@ test('registry: every current role is current, every ended spell stays out of te
     for (const g of ['leadership', 'technical', 'raceEngineering', 'sporting', 'powerUnit', 'garageOps']) for (const r of P[g]) {
       assert.ok(!r.history && r.current === true && !r.effectiveTo && r.season === 2026, `${cid} ${r.personId} ${r.role} leaked into the team page`);
       assert.notEqual(r.roleGroup, 'ownership', `${cid} ${r.personId}: ownership title listed as leadership`);
+      assert.doesNotMatch(r.role, /^(co-)?founder\b|\bowner\b/i, `${cid} ${r.personId}: founder/owner title listed as a job`);
     }
   }
   for (const pid of Object.keys(reg.people)) for (const c of currentRoles(reg, pid, 2026)) {

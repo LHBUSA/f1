@@ -1,0 +1,1286 @@
+{
+  "_doc": "Team ownership graph (separate from job titles). relationship in founder|owner|co-owner|controlling shareholder|chairman|parent company|investor|manufacturer owner. chairman is governance, not ownership. percentage only when a source states it (percentage_note). valid_from/valid_to as precise as the source. Pages show high|medium records only; sources stay here (no per-fact links on pages).",
+  "version": "f1-ownership@1",
+  "retrieved": "2026-10-02",
+  "sources": {
+    "o-0a8b4412ac": {
+      "url": "https://www.haasf1team.com/season/team/gene-haas",
+      "publisher": "Haas F1 Team",
+      "type": "first_party",
+      "date": null,
+      "tier": "A"
+    },
+    "o-1361936d3c": {
+      "url": "https://www.the-race.com/business/who-actually-owns-each-f1-team/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2026-09-19",
+      "tier": "B"
+    },
+    "o-92d11f8b49": {
+      "url": "https://www.mercedesamgf1.com/en/news/2020/12/formula-one-mercedes-amg-petronas-f1-team-announcement/",
+      "publisher": "Mercedes-AMG Petronas F1 Team",
+      "type": "first_party",
+      "date": "2020-12-18",
+      "tier": "A"
+    },
+    "o-2bcd0c2cc1": {
+      "url": "https://the-race.com/formula-1/ineos-becomes-equal-mercedes-owner-wolff-signs-new-deal/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2020-12-18",
+      "tier": "B"
+    },
+    "o-97532d6186": {
+      "url": "https://www.the-race.com/formula-1/wolffs-300million-mercedes-stake-sale-what-you-need-to-know/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2025-11-21",
+      "tier": "B"
+    },
+    "o-2bd7ac340a": {
+      "url": "https://www.autosport.com/f1/news/f1-team-ownership-who-are-the-different-teams-owned-by/10617806/",
+      "publisher": "Autosport",
+      "type": "media",
+      "date": null,
+      "tier": "B"
+    },
+    "o-e52b85200e": {
+      "url": "https://www.autoweek.com/racing/formula-1/a1975646/daimler-acquires-full-control-mercedes-amg-f1-team/",
+      "publisher": "Autoweek",
+      "type": "media",
+      "date": "2012-11-20",
+      "tier": "B"
+    },
+    "o-72a2b2bf1f": {
+      "url": "http://www.autosport.com/news/report.php/id/89666",
+      "publisher": "Autosport",
+      "type": "media",
+      "date": "2011-02-28",
+      "tier": "B"
+    },
+    "o-de39b01ae6": {
+      "url": "https://www.autoweek.com/racing/formula-1/a2031616/mercedes-buys-brawn-gp-will-sell-stake-mclaren/",
+      "publisher": "Autoweek",
+      "type": "media",
+      "date": "2009-11-15",
+      "tier": "B"
+    },
+    "o-64fa6e76c1": {
+      "url": "https://news.bbc.co.uk/sport1/hi/motorsport/formula_one/8362295.stm",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2009-11-16",
+      "tier": "B"
+    },
+    "o-c599c219f8": {
+      "url": "https://www.skysports.com/f1/news/12433/13473390/toto-wolff-mercedes-team-principal-and-ceo-sells-15-per-cent-of-his-stake-to-american-billionaire-george-kurtz",
+      "publisher": "Sky Sports",
+      "type": "media",
+      "date": "2025-11-21",
+      "tier": "B"
+    },
+    "o-cc776599b3": {
+      "url": "https://apnews.com/article/f1-mercedes-wolff-kurtz-crowdstrike-90be01cf2f7a96870fde77af61cdd872",
+      "publisher": "AP",
+      "type": "media",
+      "date": "2025-11-21",
+      "tier": "B"
+    },
+    "o-bcd8a23bc8": {
+      "url": "https://www.ferrari.com/en-EN/corporate/shareholders-structure",
+      "publisher": "Ferrari N.V.",
+      "type": "first_party",
+      "date": "2026-02-04",
+      "tier": "A"
+    },
+    "o-78bd3bf786": {
+      "url": "https://www.mclaren.com/racing/latest-news/2025/mclaren-racing-consolidates-shareholder-structure/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2025-09-02",
+      "tier": "A"
+    },
+    "o-69995570f3": {
+      "url": "https://www.bbc.com/sport/formula1/55292974",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2020-12-13",
+      "tier": "B"
+    },
+    "o-6167ee54d4": {
+      "url": "https://www.bbc.com/sport/formula1/articles/cwypy6zpr39o",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2025-09-02",
+      "tier": "B"
+    },
+    "o-eda8584be7": {
+      "url": "https://www.bbc.co.uk/sport/formula1/37957967",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2016-11-11",
+      "tier": "B"
+    },
+    "o-93a672ee78": {
+      "url": "https://www.fia.com/news/fia-approves-mid-season-entry-racing-point-force-india",
+      "publisher": "FIA",
+      "type": "fia",
+      "date": null,
+      "tier": "A"
+    },
+    "o-8e4d819985": {
+      "url": "https://www.formula1.com/en/latest/article/new-york-jets-owner-woody-johnson-acquires-minority-stake-in-aston-martin.12t2EpDlBOTHhSU5VmRa3h",
+      "publisher": "Formula 1",
+      "type": "media",
+      "date": "2026-08-20",
+      "tier": "B"
+    },
+    "o-3a0d8d72b9": {
+      "url": "https://www.the-race.com/business/ex-us-ambassador-takes-stake-in-aston-martin-f1-team/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2026-08-20",
+      "tier": "B"
+    },
+    "o-3b84901579": {
+      "url": "https://www.bbc.co.uk/sport/formula1/53860010",
+      "publisher": "BBC Sport",
+      "type": "media",
+      "date": "2020-08-21",
+      "tier": "B"
+    },
+    "o-50ae9708c0": {
+      "url": "https://www.theguardian.com/sport/2020/aug/21/williams-f1-sold-to-us-investment-company-dorilton-capital",
+      "publisher": "The Guardian",
+      "type": "media",
+      "date": "2020-08-21",
+      "tier": "B"
+    },
+    "o-68a5066bc4": {
+      "url": "https://magazine.audi.com.au/article/audi-accelerates-f1-acquisition",
+      "publisher": "Audi Australia (Audi Magazine)",
+      "type": "first_party",
+      "date": "2024-03-11",
+      "tier": "A"
+    },
+    "o-da8316e6f6": {
+      "url": "https://www.audi.com/en/press-releases/audi-f1-project-strengthened-by-investment-from-qia-16415",
+      "publisher": "AUDI AG",
+      "type": "first_party",
+      "date": "2024-11-29",
+      "tier": "A"
+    },
+    "o-cfd062a4c4": {
+      "url": "https://www.formula1.com/en/latest/article/qatar-investment-authority-acquire-substantial-minority-share-in-future-audi.5L8Q5liKiGYQ25XqP8BE7C",
+      "publisher": "Formula 1",
+      "type": "media",
+      "date": "2024-11-29",
+      "tier": "B"
+    },
+    "o-19dee062e7": {
+      "url": "https://news.gm.com/home.detail.html/Pages/news/us/en/2025/jan/0109-twg.html",
+      "publisher": "General Motors",
+      "type": "first_party",
+      "date": "2025-01-09",
+      "tier": "A"
+    }
+  },
+  "records": [
+    {
+      "id": "own-haas-gene-haas",
+      "constructorId": "haas",
+      "entity": {
+        "kind": "person",
+        "name": "Gene Haas",
+        "personId": "gene-haas"
+      },
+      "relationship": "owner",
+      "ownership_type": "private individual",
+      "percentage": null,
+      "valid_from": "2014-04-11",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-0a8b4412ac",
+        "o-1361936d3c"
+      ],
+      "notes": "Founder of Haas F1 Team (team site: FIA licence granted 2014-04-11). The Race 2026: 'Gene Haas founded the team. Gene Haas controls the team.' No disclosed outside equity investor.",
+      "conflicts": [
+        "Autosport ownership explainer says the team is run and fully owned by Haas Automation (Gene Haas's machine-tool company) rather than Gene Haas personally; The Race cites the Companies House PSC as Gene Haas. Legal holding vehicle unresolved."
+      ]
+    },
+    {
+      "id": "own-haas-gene-haas-chairman",
+      "constructorId": "haas",
+      "entity": {
+        "kind": "person",
+        "name": "Gene Haas",
+        "personId": "gene-haas"
+      },
+      "relationship": "chairman",
+      "ownership_type": "governance role",
+      "percentage": null,
+      "valid_from": "2014",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-0a8b4412ac"
+      ],
+      "notes": "Team site describes him as 'Founder and chairman, Haas F1 Team' (governance role; ownership recorded separately)."
+    },
+    {
+      "id": "own-mercedes-mercedes-benz",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "company",
+        "name": "Mercedes-Benz Group AG (formerly Daimler AG); holding entity Mercedes-Benz Holdings UK",
+        "personId": null
+      },
+      "relationship": "co-owner",
+      "ownership_type": "manufacturer owner / equity partner",
+      "percentage": null,
+      "share_text": "one third (three equal parts)",
+      "valid_from": "2020-12-18",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-92d11f8b49",
+        "o-2bcd0c2cc1",
+        "o-1361936d3c"
+      ],
+      "notes": "Equal one-third partner since the INEOS deal (down from 60%). Companies House lists Mercedes-Benz Holdings UK as a PSC (per The Race 2026). Autosport: Daimler is now known as the Mercedes-Benz Group."
+    },
+    {
+      "id": "own-mercedes-ineos",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "company",
+        "name": "INEOS (INEOS Industries Holdings)",
+        "personId": null
+      },
+      "relationship": "co-owner",
+      "ownership_type": "equity partner",
+      "percentage": null,
+      "share_text": "one third (three equal parts)",
+      "valid_from": "2020-12-18",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-92d11f8b49",
+        "o-2bcd0c2cc1",
+        "o-1361936d3c"
+      ],
+      "notes": "Joined as a one-third equal shareholder; ultimately Sir Jim Ratcliffe (The Race 2026)."
+    },
+    {
+      "id": "own-mercedes-toto-wolff",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "person",
+        "name": "Toto Wolff (via Motorsport Invest Limited)",
+        "personId": "toto-wolff"
+      },
+      "relationship": "co-owner",
+      "ownership_type": "equity partner (personal holding company)",
+      "percentage": null,
+      "share_text": "one third (three equal parts)",
+      "valid_from": "2020-12-18",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-92d11f8b49",
+        "o-2bcd0c2cc1",
+        "o-97532d6186",
+        "o-1361936d3c"
+      ],
+      "notes": "Increased from 30% in the 2020 restructure. Since 2025-11 George Kurtz holds 15% of Wolff's holding company; that company's one-third is unchanged. Wolff is also team principal and CEO (governance, separate)."
+    },
+    {
+      "id": "own-mercedes-toto-wolff-2013",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "person",
+        "name": "Toto Wolff",
+        "personId": "toto-wolff"
+      },
+      "relationship": "co-owner",
+      "ownership_type": "equity partner",
+      "percentage": 30,
+      "percentage_note": "Autosport: Wolff 'purchased a 30% stake' in 2013; Mercedes 2020-12-18: 'Toto Wolff increase his current 30%'.",
+      "valid_from": "2013",
+      "valid_to": "2020-12-18",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-92d11f8b49",
+        "o-2bcd0c2cc1"
+      ],
+      "notes": "30% holding from his 2013 arrival until the 2020 INEOS restructure."
+    },
+    {
+      "id": "own-mercedes-daimler-60",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "company",
+        "name": "Daimler AG",
+        "personId": null
+      },
+      "relationship": "controlling shareholder",
+      "ownership_type": "manufacturer owner",
+      "percentage": 60,
+      "percentage_note": "Mercedes 2020-12-18: 'Daimler will reduce its current 60% shareholding'; Autosport: parent owned the remaining 60% from 2013.",
+      "valid_from": "2013",
+      "valid_to": "2020-12-18",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-92d11f8b49",
+        "o-2bcd0c2cc1"
+      ],
+      "notes": "60% majority after the Wolff/Lauda buy-ins of 2013."
+    },
+    {
+      "id": "own-mercedes-niki-lauda",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "person",
+        "name": "Niki Lauda",
+        "personId": "niki-lauda"
+      },
+      "relationship": "investor",
+      "ownership_type": "minority shareholder",
+      "percentage": 10,
+      "percentage_note": "Autosport: 'non-executive chairman of the board Niki Lauda buying 10%' (2013).",
+      "valid_from": "2013",
+      "valid_to": null,
+      "current": false,
+      "confidence": "medium",
+      "sources": [
+        "o-2bd7ac340a"
+      ],
+      "notes": "Also non-executive chairman (governance). Holding ended after his death in 2019; exact end date and buyer not verified.",
+      "conflicts": [
+        "Autosport says his 10% 'was returned to Mercedes' after he died, but Mercedes/The Race in Dec 2020 still give Daimler 60% and Wolff 30% at that date (10% elsewhere). Unresolved."
+      ]
+    },
+    {
+      "id": "own-mercedes-daimler-2012",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "company",
+        "name": "Daimler AG",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "manufacturer owner (full control)",
+      "percentage": null,
+      "valid_from": "2012-11",
+      "valid_to": "2013",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-e52b85200e",
+        "o-2bd7ac340a"
+      ],
+      "notes": "Full control after buying out Aabar, before the 2013 Wolff/Lauda buy-ins."
+    },
+    {
+      "id": "own-mercedes-aabar",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "fund",
+        "name": "Aabar Investments",
+        "personId": null
+      },
+      "relationship": "co-owner",
+      "ownership_type": "Abu Dhabi sovereign-linked minority investor",
+      "percentage": 40,
+      "percentage_note": "Autosport 2011-02-28: Daimler 60% / Aabar 40% after buying the remaining 24.9%; Autoweek 2012: 'the 40-percent shareholding that had been held by Aabar'.",
+      "valid_from": "2009-11-16",
+      "valid_to": "2012-11",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-72a2b2bf1f",
+        "o-e52b85200e",
+        "o-2bd7ac340a"
+      ],
+      "notes": "Bought 30% of Brawn GP alongside Daimler in Nov 2009 (Autosport), rose to 40% in Feb 2011, sold to Daimler in Nov 2012."
+    },
+    {
+      "id": "own-mercedes-daimler-brawn",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "company",
+        "name": "Daimler AG",
+        "personId": null
+      },
+      "relationship": "controlling shareholder",
+      "ownership_type": "manufacturer owner",
+      "percentage": 45.1,
+      "percentage_note": "Autosport: Daimler 'purchased a 45.1% stake in reigning world champions Brawn GP, while Aabar Investments acquired 30%'; Autoweek: Mercedes bought 'a 75.1 percent share' (combined with Aabar).",
+      "valid_from": "2009-11-16",
+      "valid_to": "2011-02-28",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-de39b01ae6",
+        "o-64fa6e76c1",
+        "o-2bd7ac340a"
+      ],
+      "notes": "Purchase of 2009 champions Brawn GP, relaunched as Mercedes GP for 2010. Daimler and Aabar moved to 60/40 in Feb 2011.",
+      "conflicts": [
+        "BBC 2009-11-16 says Mercedes would 'buy 75% of Brawn in partnership with an Abu Dhabi investment company'; Autoweek says 75.1% combined."
+      ]
+    },
+    {
+      "id": "own-mercedes-george-kurtz",
+      "constructorId": "mercedes",
+      "entity": {
+        "kind": "person",
+        "name": "George Kurtz",
+        "personId": "george-kurtz"
+      },
+      "relationship": "investor",
+      "ownership_type": "indirect minority investor (15% of Wolff's Motorsport Invest Limited)",
+      "percentage": null,
+      "share_text": "15% of the Wolff holding entity (indirect)",
+      "valid_from": "2025-11-20",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-c599c219f8",
+        "o-97532d6186",
+        "o-1361936d3c",
+        "o-cc776599b3"
+      ],
+      "notes": "Indirect stake; team governance unchanged (three one-third holders). Also joined the strategic steering committee as technology advisor.",
+      "conflicts": [
+        "AP headline says Wolff 'sells 15% stake' (reads as 15% of the team); Sky and The Race clarify it is 15% of Wolff's holding entity, about 5% of the team."
+      ]
+    },
+    {
+      "id": "own-ferrari-ferrari-nv",
+      "constructorId": "ferrari",
+      "entity": {
+        "kind": "company",
+        "name": "Ferrari N.V.",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "corporate parent (listed company)",
+      "percentage": null,
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-bcd8a23bc8",
+        "o-1361936d3c",
+        "o-2bd7ac340a"
+      ],
+      "notes": "Scuderia Ferrari sits inside Ferrari itself, not a separate F1 company (The Race); Autosport: Ferrari S.p.A runs its own F1 team. Ferrari N.V. is listed on NYSE and Euronext Milan (RACE)."
+    },
+    {
+      "id": "own-ferrari-exor",
+      "constructorId": "ferrari",
+      "entity": {
+        "kind": "company",
+        "name": "Exor N.V.",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "largest shareholder of parent (Ferrari N.V.)",
+      "percentage": null,
+      "share_text": "21.33% of Ferrari N.V. common shares",
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-bcd8a23bc8",
+        "o-1361936d3c"
+      ],
+      "notes": "Agnelli family investment company; loyalty voting shares raise its voting power.",
+      "conflicts": [
+        "Autosport ownership explainer gives an older split: public 67.09%, Exor 22.91%, Piero Ferrari 10%."
+      ]
+    },
+    {
+      "id": "own-ferrari-piero-ferrari",
+      "constructorId": "ferrari",
+      "entity": {
+        "kind": "person",
+        "name": "Piero Ferrari (via Trust Piero Ferrari)",
+        "personId": "piero-ferrari"
+      },
+      "relationship": "investor",
+      "ownership_type": "shareholder of parent (Ferrari N.V.)",
+      "percentage": null,
+      "share_text": "10.67% of Ferrari N.V. common shares",
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-bcd8a23bc8",
+        "o-1361936d3c",
+        "o-2bd7ac340a"
+      ],
+      "notes": "Holds via a trust; shareholders' agreement with Exor. Also vice chairman (governance, per Autosport).",
+      "conflicts": [
+        "Autosport gives Piero Ferrari 10%."
+      ]
+    },
+    {
+      "id": "own-mclaren-mclaren-group",
+      "constructorId": "mclaren",
+      "entity": {
+        "kind": "company",
+        "name": "McLaren Group Limited",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "corporate parent",
+      "percentage": null,
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-78bd3bf786",
+        "o-69995570f3"
+      ],
+      "notes": "McLaren Group Limited bought out all McLaren Racing minority shareholders on 2025-09-02 and owns McLaren Racing."
+    },
+    {
+      "id": "own-mclaren-mumtalakat",
+      "constructorId": "mclaren",
+      "entity": {
+        "kind": "fund",
+        "name": "Bahrain Mumtalakat Holding Company",
+        "personId": null
+      },
+      "relationship": "controlling shareholder",
+      "ownership_type": "sovereign wealth fund (majority shareholder)",
+      "percentage": null,
+      "valid_from": "2007",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-78bd3bf786",
+        "o-6167ee54d4",
+        "o-1361936d3c",
+        "o-2bd7ac340a",
+        "o-eda8584be7"
+      ],
+      "notes": "Bought into McLaren in 2007 (Autosport: first held 30%), owned 50% of McLaren Group by Nov 2016 (BBC), full ownership of McLaren Group in Mar 2024 (Autosport), majority shareholder of McLaren Racing alongside CYVN since Sep 2025."
+    },
+    {
+      "id": "own-mclaren-cyvn",
+      "constructorId": "mclaren",
+      "entity": {
+        "kind": "fund",
+        "name": "CYVN Holdings LLC",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "minority investor (non-controlling)",
+      "percentage": null,
+      "valid_from": "2025-09-02",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-78bd3bf786",
+        "o-6167ee54d4",
+        "o-1361936d3c"
+      ],
+      "notes": "Abu Dhabi investment company; with Mumtalakat holds 100% of McLaren Racing after the minority buy-out.",
+      "conflicts": [
+        "CYVN's non-controlling stake in McLaren Group may date from its Dec 2024 McLaren Automotive deal (not verified from a fetched source); valid_from uses the Sep 2025 McLaren Racing announcement."
+      ]
+    },
+    {
+      "id": "own-mclaren-msp-sports-capital",
+      "constructorId": "mclaren",
+      "entity": {
+        "kind": "fund",
+        "name": "MSP Sports Capital",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "minority investor",
+      "percentage": 33,
+      "percentage_note": "BBC 2020-12-13: 'initially bought 15% of the firm running McLaren's Formula 1 and IndyCar teams. It will rise to 33%'; BBC 2025-09-02: 'bought a 33% shareholding in McLaren Racing'.",
+      "valid_from": "2020-12",
+      "valid_to": "2025-09-02",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-69995570f3",
+        "o-6167ee54d4",
+        "o-78bd3bf786",
+        "o-2bd7ac340a"
+      ],
+      "notes": "15% initially (Dec 2020) rising to 33% by end of 2022 for GBP185m; bought out in Sep 2025 with O'Connor Capital Solutions funds, Ares and Caspian funds."
+    },
+    {
+      "id": "own-mclaren-ron-dennis",
+      "constructorId": "mclaren",
+      "entity": {
+        "kind": "person",
+        "name": "Ron Dennis",
+        "personId": "ron-dennis"
+      },
+      "relationship": "co-owner",
+      "ownership_type": "shareholder of McLaren Group",
+      "percentage": 25,
+      "percentage_note": "BBC 2016-11-11: 'Dennis, a 25% shareholder in McLaren Group'. Holding varied over time; 25% is the 2016 figure.",
+      "valid_from": "1981",
+      "valid_to": "2017",
+      "current": false,
+      "confidence": "medium",
+      "sources": [
+        "o-eda8584be7",
+        "o-2bd7ac340a"
+      ],
+      "notes": "Took control after the 1981 Project Four merger and buy-out of original shareholders (Autosport); sold his remaining 25% in 2017 (Autosport)."
+    },
+    {
+      "id": "own-mclaren-mansour-ojjeh",
+      "constructorId": "mclaren",
+      "entity": {
+        "kind": "person",
+        "name": "Mansour Ojjeh",
+        "personId": "mansour-ojjeh"
+      },
+      "relationship": "co-owner",
+      "ownership_type": "shareholder of McLaren Group",
+      "percentage": 25,
+      "percentage_note": "BBC 2016-11-11: 'the remaining 25% owned by Mansour Ojjeh' (Mumtalakat 50%, Dennis 25%).",
+      "valid_from": null,
+      "valid_to": null,
+      "current": false,
+      "confidence": "medium",
+      "sources": [
+        "o-eda8584be7"
+      ],
+      "notes": "25% at Nov 2016; start and end dates not verified."
+    },
+    {
+      "id": "own-mclaren-daimler",
+      "constructorId": "mclaren",
+      "entity": {
+        "kind": "company",
+        "name": "Daimler AG",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "manufacturer minority shareholder",
+      "percentage": 40,
+      "percentage_note": "Autoweek 2009-11-15: Mercedes 'agreed to sell its 40 percent shareholding in McLaren back to the McLaren Group over the next three years'.",
+      "valid_from": null,
+      "valid_to": "2011",
+      "current": false,
+      "confidence": "medium",
+      "sources": [
+        "o-de39b01ae6"
+      ],
+      "notes": "Phased sale back to McLaren Group due to complete by 2011, after Daimler bought Brawn. Start date (reported 1999/2000) not verified from a fetched source."
+    },
+    {
+      "id": "own-red-bull-red-bull-gmbh",
+      "constructorId": "red-bull",
+      "entity": {
+        "kind": "company",
+        "name": "Red Bull GmbH",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "corporate parent (privately held)",
+      "percentage": null,
+      "valid_from": "2005",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-1361936d3c"
+      ],
+      "notes": "Red Bull GmbH bought Jaguar Racing to create Red Bull Racing (Autosport); at UK level Red Bull Technology sits above the Milton Keynes operation (The Race).",
+      "conflicts": [
+        "Autosport says Jaguar was bought 'in 2005'; a BBC report dated 2004-11-15 (not fetchable) covers the purchase announcement. valid_from uses the first season."
+      ]
+    },
+    {
+      "id": "own-red-bull-mark-mateschitz",
+      "constructorId": "red-bull",
+      "entity": {
+        "kind": "person",
+        "name": "Mark Mateschitz",
+        "personId": "mark-mateschitz"
+      },
+      "relationship": "investor",
+      "ownership_type": "ultimate shareholder of parent (Red Bull GmbH)",
+      "percentage": null,
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-1361936d3c"
+      ],
+      "notes": "Holds the Mateschitz-side interest in Red Bull GmbH; Companies House lists him at 25-50% of Red Bull Technology (The Race).",
+      "conflicts": [
+        "Autosport: Red Bull GmbH has two shareholders, Chalerm Yoovidhya 51% and Mark Mateschitz 49%. The Race 2026: Mateschitz-side 49%, Yoovidhya-linked TC Agro 49%, Fides Trustees 2% (the 2% moved from Chalerm Yoovidhya personally)."
+      ]
+    },
+    {
+      "id": "own-red-bull-yoovidhya",
+      "constructorId": "red-bull",
+      "entity": {
+        "kind": "person",
+        "name": "Chalerm Yoovidhya (Yoovidhya family / TC Agro)",
+        "personId": "chalerm-yoovidhya"
+      },
+      "relationship": "investor",
+      "ownership_type": "ultimate shareholder of parent (Red Bull GmbH)",
+      "percentage": null,
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-1361936d3c"
+      ],
+      "notes": "Yoovidhya family interest in Red Bull GmbH.",
+      "conflicts": [
+        "Autosport: Chalerm Yoovidhya 51%; The Race 2026: TC Agro 49% plus Fides Trustees 2%."
+      ]
+    },
+    {
+      "id": "own-toro-rosso-red-bull-gmbh",
+      "constructorId": "toro-rosso",
+      "entity": {
+        "kind": "company",
+        "name": "Red Bull GmbH",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "corporate parent (privately held)",
+      "percentage": null,
+      "valid_from": "2006",
+      "valid_to": "2019",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-1361936d3c"
+      ],
+      "notes": "Red Bull GmbH bought the Minardi team for the 2006 season and renamed it Toro Rosso; AlphaTauri from 2020, RB/Racing Bulls from 2024 (Autosport). Same ultimate shareholders as Red Bull Racing.",
+      "conflicts": [
+        "Minardi purchase completion date (2005) not verified from a fetched source."
+      ]
+    },
+    {
+      "id": "own-alphatauri-red-bull-gmbh",
+      "constructorId": "alphatauri",
+      "entity": {
+        "kind": "company",
+        "name": "Red Bull GmbH",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "corporate parent (privately held)",
+      "percentage": null,
+      "valid_from": "2020",
+      "valid_to": "2023",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-1361936d3c"
+      ],
+      "notes": "Red Bull GmbH bought the Minardi team for the 2006 season and renamed it Toro Rosso; AlphaTauri from 2020, RB/Racing Bulls from 2024 (Autosport). Same ultimate shareholders as Red Bull Racing."
+    },
+    {
+      "id": "own-racing-bulls-red-bull-gmbh",
+      "constructorId": "racing-bulls",
+      "entity": {
+        "kind": "company",
+        "name": "Red Bull GmbH",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "corporate parent (privately held)",
+      "percentage": null,
+      "valid_from": "2024",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-1361936d3c"
+      ],
+      "notes": "Red Bull GmbH bought the Minardi team for the 2006 season and renamed it Toro Rosso; AlphaTauri from 2020, RB/Racing Bulls from 2024 (Autosport). Same ultimate shareholders as Red Bull Racing."
+    },
+    {
+      "id": "own-racing-point-racing-point-uk",
+      "constructorId": "racing-point",
+      "entity": {
+        "kind": "company",
+        "name": "Racing Point UK Limited (consortium led by Lawrence Stroll)",
+        "personId": null
+      },
+      "relationship": "owner",
+      "ownership_type": "investor consortium",
+      "percentage": null,
+      "valid_from": "2018-08",
+      "valid_to": "2020",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-93a672ee78",
+        "o-2bd7ac340a"
+      ],
+      "notes": "Bought Force India's business and assets from the administrators in Aug 2018 (FIA): 'the investment consortium led by Lawrence Stroll and the team's senior management'."
+    },
+    {
+      "id": "own-aston-martin-amr-gp-holdings",
+      "constructorId": "aston-martin",
+      "entity": {
+        "kind": "company",
+        "name": "AMR GP Holdings Limited",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "holding company",
+      "percentage": null,
+      "valid_from": "2021",
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-1361936d3c",
+        "o-2bd7ac340a"
+      ],
+      "notes": "The F1 business sits within AMR GP Holdings Limited (The Race); Autosport says Racing Point UK became AMR (GP) Holdings in 2021. Aston Martin Lagonda, the listed road-car company, does not own the team (The Race).",
+      "conflicts": [
+        "Autosport writes 'AMR Holdings GP Limited'; The Race writes 'AMR GP Holdings Limited'."
+      ]
+    },
+    {
+      "id": "own-aston-martin-lawrence-stroll",
+      "constructorId": "aston-martin",
+      "entity": {
+        "kind": "person",
+        "name": "Lawrence Stroll (via Racing Point UK Holdings Limited)",
+        "personId": "lawrence-stroll"
+      },
+      "relationship": "controlling shareholder",
+      "ownership_type": "private individual-led consortium",
+      "percentage": null,
+      "valid_from": "2021",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-1361936d3c",
+        "o-2bd7ac340a",
+        "o-8e4d819985",
+        "o-3a0d8d72b9"
+      ],
+      "notes": "Controls the team as 'Controlling Shareholder' under the articles while holding a minority of the economics (The Race). Also executive chairman (governance). Led the 2018 Racing Point consortium."
+    },
+    {
+      "id": "own-aston-martin-arctos",
+      "constructorId": "aston-martin",
+      "entity": {
+        "kind": "fund",
+        "name": "Arctos Partners",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "minority investor (private equity)",
+      "percentage": null,
+      "valid_from": "2023-11",
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-1361936d3c"
+      ],
+      "notes": "Bought a minority share in the team's holding company in Nov 2023 (Autosport); The Race calls Arctos 'a substantial shareholder'."
+    },
+    {
+      "id": "own-aston-martin-woody-johnson",
+      "constructorId": "aston-martin",
+      "entity": {
+        "kind": "person",
+        "name": "Woody Johnson (Robert Wood Johnson, via Green Racer LLC)",
+        "personId": "woody-johnson"
+      },
+      "relationship": "investor",
+      "ownership_type": "minority investor",
+      "percentage": null,
+      "valid_from": "2026-08-20",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-8e4d819985",
+        "o-3a0d8d72b9",
+        "o-1361936d3c"
+      ],
+      "notes": "Minority stake; became Vice Chairman of the team's board (governance) with no day-to-day management role."
+    },
+    {
+      "id": "own-aston-martin-hps",
+      "constructorId": "aston-martin",
+      "entity": {
+        "kind": "fund",
+        "name": "HPS Investment Partners",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "minority investor",
+      "percentage": null,
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-1361936d3c"
+      ],
+      "notes": "Named by The Race as a shareholder; entry date and size not verified."
+    },
+    {
+      "id": "own-aston-martin-pif",
+      "constructorId": "aston-martin",
+      "entity": {
+        "kind": "fund",
+        "name": "Public Investment Fund (Saudi Arabia)",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "minority investor (sovereign wealth fund)",
+      "percentage": null,
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-1361936d3c"
+      ],
+      "notes": "The Race says PIF 'has an interest'; entry date and size not verified."
+    },
+    {
+      "id": "own-aston-martin-adrian-newey",
+      "constructorId": "aston-martin",
+      "entity": {
+        "kind": "person",
+        "name": "Adrian Newey",
+        "personId": "adrian-newey"
+      },
+      "relationship": "investor",
+      "ownership_type": "employee shareholder (special share class)",
+      "percentage": null,
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-1361936d3c"
+      ],
+      "notes": "Equity interest through a special class of shares; also holds a senior technical role (separate)."
+    },
+    {
+      "id": "own-williams-dorilton-capital",
+      "constructorId": "williams",
+      "entity": {
+        "kind": "fund",
+        "name": "Dorilton Capital",
+        "personId": null
+      },
+      "relationship": "owner",
+      "ownership_type": "private investment firm",
+      "percentage": null,
+      "valid_from": "2020-08-21",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-3b84901579",
+        "o-50ae9708c0",
+        "o-1361936d3c",
+        "o-2bd7ac340a"
+      ],
+      "notes": "US private investment firm; acquired Williams after the strategic review of the then-listed Williams business (The Race). Matthew Savage, Dorilton chairman, chairs Williams (governance)."
+    },
+    {
+      "id": "own-williams-frank-williams",
+      "constructorId": "williams",
+      "entity": {
+        "kind": "person",
+        "name": "Frank Williams (Williams family)",
+        "personId": "frank-williams"
+      },
+      "relationship": "founder",
+      "ownership_type": "founder / controlling shareholder",
+      "percentage": null,
+      "valid_from": "1977",
+      "valid_to": "2020-08-21",
+      "current": false,
+      "confidence": "high",
+      "sources": [
+        "o-2bd7ac340a",
+        "o-50ae9708c0",
+        "o-3b84901579"
+      ],
+      "notes": "Co-founded the team with Patrick Head in 1977; family-owned for 43 years until the Dorilton sale (Guardian).",
+      "conflicts": [
+        "Williams was part-listed on the Frankfurt exchange (The Race); 'family-owned' means family-controlled."
+      ]
+    },
+    {
+      "id": "own-alpine-renault-group",
+      "constructorId": "alpine",
+      "entity": {
+        "kind": "company",
+        "name": "Renault Group",
+        "personId": null
+      },
+      "relationship": "controlling shareholder",
+      "ownership_type": "manufacturer owner",
+      "percentage": 76,
+      "percentage_note": "The Race 2026-09-19: 'Renault Group owns 76% of Alpine Racing Limited.' Autosport: the team sold 24% of its shares in June 2023.",
+      "valid_from": "2021",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-1361936d3c",
+        "o-2bd7ac340a"
+      ],
+      "notes": "Renault ran the Enstone team under its own name until 2021, then as Alpine (Autosport). Its holding before June 2023 is not stated as a number here."
+    },
+    {
+      "id": "own-alpine-otro-capital",
+      "constructorId": "alpine",
+      "entity": {
+        "kind": "fund",
+        "name": "Otro Capital-led investor group (incl. RedBird Capital Partners, Maximum Effort Investments)",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "minority investor group",
+      "percentage": 24,
+      "percentage_note": "The Race 2026: 'An investor group led by Otro Capital owns 24%'; Autosport: 'sold 24% of its shares to US-based investment group Otro Capital, which includes RedBird Capital Partners and Maximum Effort Investments for just over EUR200m'.",
+      "valid_from": "2023-06",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-1361936d3c",
+        "o-2bd7ac340a"
+      ],
+      "notes": "EUR200m, valuing Alpine Racing at about $900m (The Race); the group includes athletes and celebrities (e.g. Ryan Reynolds, Patrick Mahomes).",
+      "conflicts": [
+        "The Race 2026 says the saga of the 24% is 'likely to conclude in the coming months' and lists Otro as an 'outgoing Alpine F1 investor'; exit not confirmed from a fetched source."
+      ]
+    },
+    {
+      "id": "own-alfa-romeo-sauber-audi",
+      "constructorId": "alfa-romeo-sauber",
+      "entity": {
+        "kind": "company",
+        "name": "AUDI AG",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "manufacturer minority shareholder",
+      "percentage": 25,
+      "percentage_note": "Autosport: 'Audi then acquired a 25% stake in early 2023'.",
+      "valid_from": "2023",
+      "valid_to": null,
+      "current": false,
+      "confidence": "medium",
+      "sources": [
+        "o-2bd7ac340a"
+      ],
+      "notes": "First step of Audi's takeover of Sauber Group ahead of its 2026 works entry.",
+      "conflicts": [
+        "CNBC (2023-01-31, fetch blocked) describes it as a 'minority stake' in the headline."
+      ]
+    },
+    {
+      "id": "own-kick-sauber-audi",
+      "constructorId": "kick-sauber",
+      "entity": {
+        "kind": "company",
+        "name": "AUDI AG",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "works manufacturer (100% takeover)",
+      "percentage": null,
+      "share_text": "decision to acquire 100% announced Mar 2024",
+      "valid_from": "2024-03",
+      "valid_to": "2025",
+      "current": false,
+      "confidence": "medium",
+      "sources": [
+        "o-68a5066bc4",
+        "o-da8316e6f6"
+      ],
+      "notes": "Takeover decision announced Mar 2024 (Audi's QIA release refers to 'the complete takeover of Sauber in March').",
+      "conflicts": [
+        "Completion date of the 100% acquisition (reported Jan 2025) not verified from a fetched source."
+      ]
+    },
+    {
+      "id": "own-audi-audi-ag",
+      "constructorId": "audi",
+      "entity": {
+        "kind": "company",
+        "name": "AUDI AG",
+        "personId": null
+      },
+      "relationship": "parent company",
+      "ownership_type": "works manufacturer owner",
+      "percentage": null,
+      "valid_from": "2026",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-da8316e6f6",
+        "o-68a5066bc4",
+        "o-1361936d3c"
+      ],
+      "notes": "Audi owns Sauber Holding AG (which runs the Audi F1 team) alongside QIA's significant minority stake."
+    },
+    {
+      "id": "own-audi-qia",
+      "constructorId": "audi",
+      "entity": {
+        "kind": "fund",
+        "name": "Qatar Investment Authority",
+        "personId": null
+      },
+      "relationship": "investor",
+      "ownership_type": "minority investor (sovereign wealth fund)",
+      "percentage": null,
+      "valid_from": "2024-11-29",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-da8316e6f6",
+        "o-cfd062a4c4",
+        "o-1361936d3c"
+      ],
+      "notes": "Definitive agreements signed 2024-11-29 subject to customary regulatory approvals (closing date not verified); signed while the team raced as Kick Sauber.",
+      "conflicts": [
+        "The Race 2026 reports Audi is looking at offers for 33% of the team (via Joe Saward); unconfirmed."
+      ]
+    },
+    {
+      "id": "own-cadillac-twg-motorsports",
+      "constructorId": "cadillac",
+      "entity": {
+        "kind": "company",
+        "name": "TWG Motorsports (TWG Global)",
+        "personId": null
+      },
+      "relationship": "co-owner",
+      "ownership_type": "investment group (founding partner)",
+      "percentage": null,
+      "valid_from": "2024",
+      "valid_to": null,
+      "current": true,
+      "confidence": "high",
+      "sources": [
+        "o-19dee062e7",
+        "o-1361936d3c"
+      ],
+      "notes": "GM release 2025-01-09: TWG Motorsports 'in 2024 founded the Cadillac Formula 1 team in partnership with General Motors'. UK company: TWG Cadillac Formula 1 Team Limited."
+    },
+    {
+      "id": "own-cadillac-mark-walter",
+      "constructorId": "cadillac",
+      "entity": {
+        "kind": "person",
+        "name": "Mark Walter",
+        "personId": "mark-walter"
+      },
+      "relationship": "controlling shareholder",
+      "ownership_type": "private individual (TWG Global)",
+      "percentage": null,
+      "valid_from": null,
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-1361936d3c"
+      ],
+      "notes": "Leads TWG Global. The Race (2026-09) notes doubt over TWG's long-term involvement after Walter sold other sports assets; TWG denied reports the F1 assets are for sale.",
+      "conflicts": [
+        "Paddock-insider claim (The Race): GM has options up to 30%, Dan Towriss 3%, Walter the rest. Unverified and not recorded as percentages."
+      ]
+    },
+    {
+      "id": "own-cadillac-general-motors",
+      "constructorId": "cadillac",
+      "entity": {
+        "kind": "company",
+        "name": "General Motors",
+        "personId": null
+      },
+      "relationship": "co-owner",
+      "ownership_type": "manufacturer partner / equity owner",
+      "percentage": null,
+      "valid_from": "2024",
+      "valid_to": null,
+      "current": true,
+      "confidence": "medium",
+      "sources": [
+        "o-19dee062e7",
+        "o-1361936d3c"
+      ],
+      "notes": "Founding partner (GM release); per The Race, TWG CEO Dan Towriss has publicly confirmed GM is an equity owner. GM and TWG formed GM Performance Power Units LLC (2025-01-09) for works power units.",
+      "conflicts": [
+        "Public descriptions vary between 'TWG owning the team in partnership with GM' and 'a TWG-owned operation backed by GM' (The Race)."
+      ]
+    }
+  ],
+  "unverified": [
+    "Haas: whether the legal owner is Gene Haas personally (The Race, Companies House PSC) or Haas Automation (Autosport) is unresolved; no exact % published (only the 75%+ PSC band).",
+    "Mercedes: what happened to Niki Lauda's 10% after his death in 2019 (Autosport says returned to Mercedes; Dec 2020 sources still show Daimler 60% / Wolff 30%).",
+    "Mercedes: Daimler AG -> Mercedes-Benz Group AG rename only sourced via Autosport wording; no first-party rename release fetched.",
+    "Red Bull GmbH ultimate split conflicts (Autosport 51% Yoovidhya / 49% Mateschitz vs The Race 49/49/2 Fides Trustees); recorded without percentages.",
+    "Red Bull purchases of Jaguar (BBC, Nov 2004) and Minardi (2005): source pages not fetchable; dates rest on Autosport's summary.",
+    "McLaren: Mumtalakat/CYVN split undisclosed; CYVN entry into McLaren Group (Dec 2024 McLaren Automotive deal) and Mumtalakat's Mar 2024 full control only via Autosport/Wikipedia-linked refs not fetched (BBC business-68639320, Reuters).",
+    "Aston Martin: % for Stroll (25-50% band), Arctos, HPS, PIF, Woody Johnson and Newey (~4.7% estimate) not disclosed; HPS and PIF entry dates unknown.",
+    "Alpine: possible Otro-led group exit (2026) and Mercedes' withdrawn talks over an Alpine minority stake (The Athletic, 2026) not verified; Renault's 2016 purchase of Lotus F1 (renault-2016 id) not sourced here.",
+    "Audi: Jan 2025 completion of the 100% Sauber takeover and the QIA closing date not verified; QIA % undisclosed; earlier Sauber owners (Longbow Finance from 2016, per Autosport) not recorded.",
+    "Cadillac: exact GM vs TWG/Walter vs Towriss equity split not public; paddock claim (GM options to 30%, Towriss 3%) unverified and not recorded.",
+    "Williams: Dorilton's exact holding structure is private (UK company lists no registrable PSC, per The Race); Toto Wolff's former Williams stake (2009) not recorded.",
+    "Ferrari: Fiat-era ownership history not recorded (no non-Wikipedia source fetched).",
+    "Reuters and AP pages could not be fetched (blocked); AP is cited only for its headline wording in the Kurtz conflict note."
+  ]
+}

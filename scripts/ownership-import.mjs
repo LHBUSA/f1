@@ -18,6 +18,18 @@ const sid = (s) => {
   sources[id] ??= { url: s.url, publisher: s.publisher || null, type: s.type || 'media', date: s.date || null, tier: s.tier || TIER[s.type] || 'B' };
   return id;
 };
+// Editorial curation (2026-10-02): a share is printed the way the source states it. "One third" is not turned into
+// 33.33; a stake in a parent or holding entity is never shown as a stake in the team itself; an announced decision is
+// not a completed acquisition.
+const CURATE = {
+  'own-mercedes-mercedes-benz': { percentage: null, share_text: 'one third (three equal parts)' },
+  'own-mercedes-ineos': { percentage: null, share_text: 'one third (three equal parts)' },
+  'own-mercedes-toto-wolff': { percentage: null, share_text: 'one third (three equal parts)' },
+  'own-mercedes-george-kurtz': { percentage: null, share_text: '15% of the Wolff holding entity (indirect)' },
+  'own-ferrari-exor': { percentage: null, share_text: '21.33% of Ferrari N.V. common shares' },
+  'own-ferrari-piero-ferrari': { percentage: null, share_text: '10.67% of Ferrari N.V. common shares' },
+  'own-kick-sauber-audi': { percentage: null, share_text: 'decision to acquire 100% announced Mar 2024', confidence: 'medium' },
+};
 const records = [];
 const rejected = [];
 for (const o of R.records || []) {
@@ -25,10 +37,11 @@ for (const o of R.records || []) {
   const src = (o.sources || []).filter((s) => s?.url && !BAD.test(s.url)).map(sid);
   if (!ALLOWED.has(rel)) { rejected.push(`${o.id}: relationship ${rel}`); continue; }
   if (!src.length) { rejected.push(`${o.id}: no usable source`); continue; }
+  Object.assign(o, CURATE[o.id] || {});
   const pct = typeof o.percentage === 'number' && o.percentage_note ? o.percentage : null;
   records.push({
     id: o.id, constructorId: o.constructorId, entity: { kind: o.entity?.kind || 'company', name: o.entity?.name, personId: o.entity?.personId || null },
-    relationship: rel, ownership_type: o.ownership_type || null, percentage: pct, ...(pct != null ? { percentage_note: o.percentage_note } : {}),
+    relationship: rel, ownership_type: o.ownership_type || null, percentage: pct, ...(pct != null ? { percentage_note: o.percentage_note } : {}), ...(o.share_text ? { share_text: o.share_text } : {}),
     valid_from: o.valid_from || null, valid_to: o.valid_to || null, current: o.current === true && !o.valid_to,
     confidence: o.confidence || 'medium', sources: src, ...(o.notes ? { notes: o.notes } : {}), ...(o.conflicts?.length ? { conflicts: o.conflicts } : {}),
     ...(!['high', 'medium'].includes(o.confidence) ? { held: 'low confidence' } : {}),

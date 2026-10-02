@@ -141,7 +141,8 @@ export const isOwnershipRelation = (rel) => OWNER_RELATIONS.has(rel);
 // chairman is governance: it stays in the registry but is never rendered as an ownership relationship
 const ownVisible = (o) => (o.sources || []).length && SHOWN_CONF.has(o.confidence) && !o.held && isOwnershipRelation(o.relationship);
 export function ownershipForTeam(own, constructorId) {
-  return (own.records || []).filter((o) => o.constructorId === constructorId && ownVisible(o)).sort((a, b) => (b.current === true) - (a.current === true) || String(b.valid_from || '').localeCompare(String(a.valid_from || '')));
+  const W = { 'parent company': 0, 'manufacturer owner': 0, owner: 1, founder: 1, 'controlling shareholder': 2, 'co-owner': 3, investor: 4 };
+  return (own.records || []).filter((o) => o.constructorId === constructorId && ownVisible(o)).sort((a, b) => (b.current === true) - (a.current === true) || (W[a.relationship] ?? 5) - (W[b.relationship] ?? 5) || String(b.valid_from || '').localeCompare(String(a.valid_from || '')));
 }
 export function ownershipForPerson(own, personId) {
   return (own.records || []).filter((o) => o.entity?.personId === personId && ownVisible(o));

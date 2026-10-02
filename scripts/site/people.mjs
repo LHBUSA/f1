@@ -87,7 +87,7 @@ function carsHtml(ctx, prof) {
 function ownershipHtml(ctx, prof) {
   if (!prof.ownership.length) return '';
   return `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Ownership</span><h2>Team ownership</h2></div></div>
-  <ul class="role-list">${prof.ownership.map((o) => `<li><b>${esc(capital(o.relationship))}</b> · <a href="/teams/${esc(o.constructorId)}">${esc(ctx.conById[o.constructorId]?.name || o.constructorId)}</a>${o.valid_from ? ` · since ${esc(fmtPartial(o.valid_from))}` : ''}${o.valid_to ? ` – ${esc(fmtPartial(o.valid_to))}` : ''}${o.percentage != null ? ` · ${esc(String(o.percentage))}% (publicly stated)` : ''}${o.confidence === 'medium' ? ' <span class="tag">reported</span>' : ''}</li>`).join('')}</ul>
+  <ul class="role-list">${prof.ownership.map((o) => `<li><b>${esc(capital(o.relationship))}</b> · <a href="/teams/${esc(o.constructorId)}">${esc(ctx.conById[o.constructorId]?.name || o.constructorId)}</a>${o.valid_from ? ` · since ${esc(fmtPartial(o.valid_from))}` : ''}${o.valid_to ? ` – ${esc(fmtPartial(o.valid_to))}` : ''}${o.share_text ? ` · ${esc(o.share_text)}` : o.percentage != null ? ` · ${esc(String(o.percentage))}% (publicly stated)` : ''}${o.confidence === 'medium' ? ' <span class="tag">reported</span>' : ''}</li>`).join('')}</ul>
   <p class="fine">Ownership is recorded separately from job titles: a chairman, CEO or team principal is shown as an owner only where a source states an ownership relationship. Percentages appear only when publicly stated.</p></div></section>`;
 }
 const capital = (s) => String(s || '').replace(/^./, (c) => c.toUpperCase());

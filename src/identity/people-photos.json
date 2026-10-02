@@ -412,6 +412,102 @@
         "192": "marc-hynes-192.webp"
       },
       "notes": "Older photo (2014-04-19); prefer a 2022+ replacement when available. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "andrew-shovlin": {
+      "name": "Andrew Shovlin",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/9/95/Podium_Mexican_GP_2015.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Podium_Mexican_GP_2015.jpg",
+      "photographer": "Luis Urquiza",
+      "credit": "Luis Urquiza / Wikimedia Commons, CC BY-SA 2.0",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "rightsStatus": "cleared",
+      "sha1": "a7fb82053f3ebcae863088d3c393796a781cd866",
+      "capturedAt": "2015-11-01",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": {
+        "box": [
+          815,
+          1075,
+          200
+        ]
+      },
+      "files": {
+        "96": "andrew-shovlin-96.webp",
+        "192": "andrew-shovlin-192.webp"
+      },
+      "notes": "Viewed original + crop: Shovlin (Mercedes, glasses, white team shirt) on 2015 Mexican GP podium left of Hamilton; identity per Commons extract File:Podium Mexican GP 2015 (cropped - Shovlin).jpg. Face clear but small: crop only 200px (LOW-RES). Flickr luajr, FlickreviewR passed cc-by-sa-2.0."
+    },
+    "pat-symonds": {
+      "name": "Pat Symonds",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Silverstone_Sponsor_Driving_Day_-_Martini_May_2015_%2819324819696%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Silverstone_Sponsor_Driving_Day_-_Martini_May_2015_(19324819696).jpg",
+      "photographer": "United Autosports",
+      "credit": "United Autosports / Wikimedia Commons, CC BY-SA 2.0",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "rightsStatus": "cleared",
+      "sha1": "22551577eca4085b8e6c0ddf5eacfc3d5afa2f0c",
+      "capturedAt": "2015-05-27",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": {
+        "box": [
+          2850,
+          60,
+          1600
+        ]
+      },
+      "files": {
+        "96": "pat-symonds-96.webp",
+        "192": "pat-symonds-192.webp"
+      },
+      "notes": "Viewed: Symonds (Williams Martini Racing lanyard, then Williams CTO) with Zak Brown at Silverstone 27 May 2015; large sharp face, crop excludes Brown. In Commons category Pat Symonds. FLAG: author is United Autosports (Zak Brown racing team) own Flickr account, CC BY-SA 2.0, FlickreviewR passed - a genuine owner-licensed release, but it is team-account media; drop if team-account photos are not acceptable."
+    },
+    "guenther-steiner": {
+      "name": "Guenther Steiner",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/4/45/Guenther_Steiner_2017_United_States_GP.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Guenther_Steiner_2017_United_States_GP.jpg",
+      "photographer": "Steve from Austin, TX, USA (Flickr: mrlaugh)",
+      "credit": "Steve from Austin, TX, USA (Flickr: mrlaugh) / Wikimedia Commons, CC BY-SA 2.0",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "rightsStatus": "cleared",
+      "sha1": "819392d223eebd233fad16b79390679ed4b17108",
+      "capturedAt": "2017-10-21",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "guenther-steiner-96.webp",
+        "192": "guenther-steiner-192.webp"
+      },
+      "notes": "Viewed: Steiner in Haas team shirt at 2017 US GP (COTA), single subject, face clear, 2083x3125 portrait. Commons crop of Flickr 37949011292 (Gene Haas and Guenther Steiner), FlickreviewR passed cc-by-sa-2.0. Preferred over File:Günther Steiner at the 2022 Austrian Grand Prix.jpg (also valid CC BY-SA 4.0 own work) because that file stores pixels landscape with an EXIF rotation flag."
+    },
+    "pedro-de-la-rosa": {
+      "name": "Pedro de la Rosa",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Pedro_de_la_Rosa_2010_Malaysia.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pedro_de_la_Rosa_2010_Malaysia.jpg",
+      "photographer": "Morio",
+      "credit": "Morio / Wikimedia Commons, CC BY-SA 3.0",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "rightsStatus": "cleared",
+      "sha1": "82df1e7a89ab687bf3002bf190ee12111e01fed2",
+      "capturedAt": "2010-04-04",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "pedro-de-la-rosa-96.webp",
+        "192": "pedro-de-la-rosa-192.webp"
+      },
+      "notes": "Viewed: tight headshot of de la Rosa in BMW Sauber cap at 2010 Malaysian GP autograph session; single subject, face very clear; Wikidata P18. Own work (User:Morio), dual GFDL / CC BY-SA 3.0 (using CC BY-SA 3.0). Photo is 16 years old."
     }
   },
   "held": {
