@@ -67,10 +67,25 @@
           4553,
           1258
         ],
-        "facing": "left"
+        "facing": "left",
+        "masterSha1": "da57ff6dcec058dd2e909b39af216c98b79499b4"
       },
       "approvedBy": "owner",
-      "approvedAt": "2026-10-02"
+      "approvedAt": "2026-10-02",
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2026-mercedes-w17-cutout-master.png",
+          "aspect": [
+            4553,
+            1258
+          ]
+        },
+        "hotspots": []
+      }
     }
   ]
 }

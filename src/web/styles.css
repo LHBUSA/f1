@@ -453,5 +453,6 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .hero.has-car{position:relative}
 .team-car{margin:10px -8px 0;pointer-events:none}
 .team-car img{display:block;width:100%;height:auto;-webkit-mask-image:linear-gradient(90deg,#000 66%,transparent 100%);mask-image:linear-gradient(90deg,#000 66%,transparent 100%);filter:drop-shadow(0 16px 22px rgba(0,0,0,.65))}
+.team-car picture{display:block;position:relative;isolation:isolate}.team-car picture::before{content:"";position:absolute;inset:22% 4% 2% 4%;z-index:-1;background:radial-gradient(ellipse at 50% 62%,color-mix(in srgb,var(--tc) 20%,transparent),transparent 70%);pointer-events:none}
 .team-car figcaption{pointer-events:auto;font-size:11px;color:var(--faint);margin:2px 8px 0}.team-car figcaption a{color:var(--muted)}
 @media(min-width:1024px){.hero.has-car>.wrap{position:static}.hero.has-car .team-car{position:absolute;right:max(16px,calc((100vw - var(--wrap))/2 + 8px));top:6px;width:min(46%,640px);margin:0}.hero.has-car .hero-meta,.hero.has-car .lineage{max-width:52%}}
