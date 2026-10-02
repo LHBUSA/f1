@@ -1,0 +1,420 @@
+{
+  "_doc": "Personnel photographs (faces). Cleared = free licence verified on Wikimedia Commons (or VRT-ticketed permission), SHA-1 matched, subject checked. Derivatives are square crops only; attribution keeps photographer + licence + \"cropped\". Anything not cleared renders as initials.",
+  "version": "f1-people-photos@1",
+  "photos": {
+    "toto-wolff": {
+      "name": "Toto Wolff",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Toto_Wolff_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_%28028A8435%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Toto_Wolff_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_(028A8435).jpg",
+      "photographer": "Yu Chu Chin",
+      "credit": "Yu Chu Chin / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "501c519a45f7079e9e4ee1b9da299b05482b26d9",
+      "capturedAt": "2026-03-07",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "toto-wolff-96.webp",
+        "192": "toto-wolff-192.webp"
+      },
+      "notes": "Wearing sunglasses; 2026 Australian GP. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "james-allison": {
+      "name": "James Allison",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4d/James_Allison_in_2014_%28cropped%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:James_Allison_in_2014_(cropped).jpg",
+      "photographer": "Original: chdphd / Derivative work: Danyele",
+      "credit": "Original: chdphd / Derivative work: Danyele / Wikimedia Commons, CC BY-SA 2.0",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "rightsStatus": "cleared",
+      "sha1": "718ae29a155f39ca5bb5b2529adab0f258830da6",
+      "capturedAt": "2014-01-28 11:52:53",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": {
+        "box": [
+          180,
+          300,
+          900
+        ]
+      },
+      "files": {
+        "96": "james-allison-96.webp",
+        "192": "james-allison-192.webp"
+      },
+      "notes": "Commons crop of a larger original; credit the original author. Older photo (2014-01-28); prefer a 2022+ replacement when available. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "peter-bonnington": {
+      "name": "Peter Bonnington",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/9/98/Peter_Bonnington_2024.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Peter_Bonnington_2024.jpg",
+      "photographer": "Liauzh",
+      "credit": "Liauzh / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "75b96cf412ec9fb8551a01fe48f3a983ece40749",
+      "capturedAt": "2024-04-20 20:28:30",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "peter-bonnington-96.webp",
+        "192": "peter-bonnington-192.webp"
+      },
+      "notes": "Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "frederic-vasseur": {
+      "name": "Frédéric Vasseur",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/1/15/MJXKPW_240117_SF_F1_FVasseur_Red_PR_AN_076161-1920x0_YRHUGH_%28close-up%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:MJXKPW_240117_SF_F1_FVasseur_Red_PR_AN_076161-1920x0_YRHUGH_(close-up).jpg",
+      "photographer": "Original: Race Service for Ferrari Spa / Derivative work: Danyele",
+      "credit": "Original: Race Service for Ferrari Spa / Derivative work: Danyele / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "09465d92c139d42018b18b5a40739af168dac5a0",
+      "capturedAt": "2024-03-06",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "frederic-vasseur-96.webp",
+        "192": "frederic-vasseur-192.webp"
+      },
+      "notes": "Commons crop of a larger original; credit the original author. Backup own-work alternative: File:Formula1Gabelhofen2022 (09).jpg (CC BY-SA 4.0, 2022). Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "diego-ioverno": {
+      "name": "Diego Ioverno",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Podium_2015_Malaysia_2_%28cropped%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Podium_2015_Malaysia_2_(cropped).jpg",
+      "photographer": "Morio",
+      "credit": "Morio / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "56d825203abf641ba291be598952b340982d963f",
+      "capturedAt": "2015-03-29",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "diego-ioverno-96.webp",
+        "192": "diego-ioverno-192.webp"
+      },
+      "notes": "Commons crop of a larger original; credit the original author. Older photo (2015-03-29); prefer a 2022+ replacement when available. Cropped from 2015 Malaysian GP podium (Ioverno then Ferrari chief mechanic). Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "zak-brown": {
+      "name": "Zak Brown",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Zak_Brown_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_%28028A7946%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zak_Brown_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_(028A7946).jpg",
+      "photographer": "Yu Chu Chin",
+      "credit": "Yu Chu Chin / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "0677f32455d54df60be537c6a0967db611fb1a65",
+      "capturedAt": "2026-03-06",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "zak-brown-96.webp",
+        "192": "zak-brown-192.webp"
+      },
+      "notes": "Alternate CC0 \"ZB-HEADSHOT-2026.jpg\" (author McLaren Racing, no VRT) rejected; this own-work photo used instead. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "andrea-stella": {
+      "name": "Andrea Stella",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Andrea_Stella_2024_%28cropped%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Andrea_Stella_2024_(cropped).jpg",
+      "photographer": "Liauzh",
+      "credit": "Liauzh / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "f0e05420fc77bbbe3009dd8e1097cc1398254bc7",
+      "capturedAt": "2024-04-20 20:50:28",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "andrea-stella-96.webp",
+        "192": "andrea-stella-192.webp"
+      },
+      "notes": "Commons crop of a larger original; credit the original author. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "tom-stallard": {
+      "name": "Tom Stallard",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/7/79/Tom_Stallard.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tom_Stallard.jpg",
+      "photographer": "Gymate",
+      "credit": "Gymate / Wikimedia Commons, CC BY 4.0",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "0dbfed6bfd88f12c59634318e7cc17459d1da9a6",
+      "capturedAt": "2026-07-23 18:21:08",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "tom-stallard-96.webp",
+        "192": "tom-stallard-192.webp"
+      },
+      "notes": "Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "laurent-mekies": {
+      "name": "Laurent Mekies",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Laurent_Mekies_%2854917242735%29_%28cropped%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Laurent_Mekies_(54917242735)_(cropped).jpg",
+      "photographer": "Web Summit",
+      "credit": "Web Summit / Wikimedia Commons, CC BY 4.0",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "3cd31c24fa77b1178288b3e48d342e80705ae879",
+      "capturedAt": "2025-11-11 15:25",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "laurent-mekies-96.webp",
+        "192": "laurent-mekies-192.webp"
+      },
+      "notes": "Commons crop of a larger original; credit the original author. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "peter-bayer": {
+      "name": "Peter Bayer",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/4/41/2026_Chinese_GP_-_Peter_Bayer.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2026_Chinese_GP_-_Peter_Bayer.jpg",
+      "photographer": "Liauzh",
+      "credit": "Liauzh / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "30fd7cb90b3510ce79a3f96ef52a7035171f7cda",
+      "capturedAt": "2026-03-15 14:56:19",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "peter-bayer-96.webp",
+        "192": "peter-bayer-192.webp"
+      },
+      "notes": "Profile view; face clear. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "flavio-briatore": {
+      "name": "Flavio Briatore",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/1/11/Flavio_Briatore_Chinese_GP_2008.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flavio_Briatore_Chinese_GP_2008.jpg",
+      "photographer": "Bert van Dijk",
+      "credit": "Bert van Dijk / Wikimedia Commons, CC BY-SA 2.0",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "rightsStatus": "cleared",
+      "sha1": "3a08fcf4c535b8c9c40d51798cf518b7d259e0ec",
+      "capturedAt": "2008-10-19",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "flavio-briatore-96.webp",
+        "192": "flavio-briatore-192.webp"
+      },
+      "notes": "Older photo (2008-10-19); prefer a 2022+ replacement when available. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "mattia-binotto": {
+      "name": "Mattia Binotto",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/2/27/Mattia_Binotto%2C_2022_%28headshot%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mattia_Binotto,_2022_(headshot).jpg",
+      "photographer": "Original: Callo Albanese per Ferrari Spa / Derivative work: Danyele",
+      "credit": "Original: Callo Albanese per Ferrari Spa / Derivative work: Danyele / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "34d3d3cdbba2a6af2eaaa160c1847fdc3bacee3f",
+      "capturedAt": "2022-02-16 15:21:38",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "mattia-binotto-96.webp",
+        "192": "mattia-binotto-192.webp"
+      },
+      "notes": "Commons crop of a larger original; credit the original author. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "allan-mcnish": {
+      "name": "Allan McNish",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Allan-McNish-FormulaE-2019-Audi.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Allan-McNish-FormulaE-2019-Audi.jpg",
+      "photographer": "AndrewHenkelman",
+      "credit": "AndrewHenkelman / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "5a61558791b2480929158f19d33dfe6801bf1b64",
+      "capturedAt": "2019-07-13",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "allan-mcnish-96.webp",
+        "192": "allan-mcnish-192.webp"
+      },
+      "notes": "Older photo (2019-07-13); prefer a 2022+ replacement when available. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "gene-haas": {
+      "name": "Gene Haas",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Gene_Haas_2017_United_States_GP.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gene_Haas_2017_United_States_GP.jpg",
+      "photographer": "Steve from Austin, TX, USA",
+      "credit": "Steve from Austin, TX, USA / Wikimedia Commons, CC BY-SA 2.0",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "rightsStatus": "cleared",
+      "sha1": "22dc157cb4ee2d575e6247a71c967692eb8c5276",
+      "capturedAt": "2017-10-21 14:06",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": {
+        "box": [
+          364,
+          150,
+          1070
+        ]
+      },
+      "files": {
+        "96": "gene-haas-96.webp",
+        "192": "gene-haas-192.webp"
+      },
+      "notes": "Older photo (2017-10-21); prefer a 2022+ replacement when available. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "adrian-newey": {
+      "name": "Adrian Newey",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/9/99/Adrian_Newey_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_%28028A8662%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Adrian_Newey_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_(028A8662).jpg",
+      "photographer": "Yu Chu Chin",
+      "credit": "Yu Chu Chin / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "ba823046a5cbf184ba1b271921179701b31d4f8a",
+      "capturedAt": "2026-03-08",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "adrian-newey-96.webp",
+        "192": "adrian-newey-192.webp"
+      },
+      "notes": "Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "lawrence-stroll": {
+      "name": "Lawrence Stroll",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Lawrence_Stroll_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_%28028A7967%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lawrence_Stroll_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_(028A7967).jpg",
+      "photographer": "Yu Chu Chin",
+      "credit": "Yu Chu Chin / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "rightsStatus": "cleared",
+      "sha1": "404d45c1d8a7fab5fafed7bf74eb686ad83e8eb9",
+      "capturedAt": "2026-03-06",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "lawrence-stroll-96.webp",
+        "192": "lawrence-stroll-192.webp"
+      },
+      "notes": "Profile view; face clear. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "pat-fry": {
+      "name": "Pat Fry",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Pat_Fry.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pat_Fry.jpg",
+      "photographer": "chdphd",
+      "credit": "chdphd / Wikimedia Commons, CC BY-SA 2.0",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "rightsStatus": "cleared",
+      "sha1": "32e5450cda6c7b2024bae8e1f0e7e09e3dedca48",
+      "capturedAt": "2014-01-28 11:52:53",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "pat-fry-96.webp",
+        "192": "pat-fry-192.webp"
+      },
+      "notes": "Commons crop of a larger original; credit the original author. Older photo (2014-01-28); prefer a 2022+ replacement when available. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "sven-smeets": {
+      "name": "Sven Smeets",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Sven_Smeets_2016-11-18_001.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sven_Smeets_2016-11-18_001.jpg",
+      "photographer": "Volkswagen Motorsport",
+      "credit": "Volkswagen Motorsport / Wikimedia Commons, CC BY 3.0",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "rightsStatus": "cleared",
+      "sha1": "24337ee3d1c74df9ac06fd1a7d552e8ee1441e3b",
+      "capturedAt": "2016-11-18 16:42:44",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "sven-smeets-96.webp",
+        "192": "sven-smeets-192.webp"
+      },
+      "notes": "Older photo (2016-11-18); prefer a 2022+ replacement when available. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    },
+    "marc-hynes": {
+      "name": "Marc Hynes",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Marc_hynes_doningtonpark2014.JPG",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marc_hynes_doningtonpark2014.JPG",
+      "photographer": "Robk23oxf",
+      "credit": "Robk23oxf / Wikimedia Commons, CC BY-SA 3.0",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "rightsStatus": "cleared",
+      "sha1": "6bbed0c89bb930829e6659026011d520ae9309e1",
+      "capturedAt": "2014-04-19 10:41:18",
+      "season": 2026,
+      "acquiredAt": "2026-10-02",
+      "modified": true,
+      "crop": "attention",
+      "files": {
+        "96": "marc-hynes-96.webp",
+        "192": "marc-hynes-192.webp"
+      },
+      "notes": "Older photo (2014-04-19); prefer a 2022+ replacement when available. Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+    }
+  },
+  "held": {
+    "pedro-de-la-rosa": "only free photo is 2006 with sunglasses; not a usable current headshot"
+  }
+}

@@ -39,7 +39,7 @@ test('displayed personnel roles are sourced, current, unique and point at real p
     assert.ok(people.people[r.personId], `unknown person ${r.personId}`);
     assert.ok(r.sources?.length, `${r.personId} ${r.role} has no source`);
     for (const s of r.sources) assert.ok(people.sources[s]?.url, `${r.personId} source ${s} unresolved`);
-    assert.ok(['leadership', 'technical', 'race_engineering', 'garage_operations', 'power_unit'].includes(r.roleGroup), r.roleGroup);
+    assert.ok(['leadership', 'technical', 'race_engineering', 'garage_operations', 'power_unit', 'sporting'].includes(r.roleGroup), r.roleGroup);
     const k = `${r.personId}|${r.constructorId}|${r.season}|${r.role}|${r.driverId}`;
     assert.ok(!keys.has(k), `duplicate role ${k}`);
     keys.add(k);
@@ -67,4 +67,14 @@ test('machine facts are sourced and regulation facts are labelled as such', () =
   }
   const p = teamPeople(people, 'mercedes', 2026);
   assert.ok(p.leadership.length && p.technical.length);
+});
+
+test('driver chains never list the same person twice in one step', () => {
+  for (const cid of new Set(people.roles.map((r) => r.constructorId))) {
+    const P = teamPeople(people, cid, 2026);
+    for (const [d, ch] of Object.entries(P.driverChains)) for (const k of ['raceEngineers', 'performanceEngineers', 'mechanics']) {
+      const ids = ch[k].map((r) => r.personId);
+      assert.equal(new Set(ids).size, ids.length, `${cid} ${d} ${k} duplicate`);
+    }
+  }
 });

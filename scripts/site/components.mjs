@@ -92,7 +92,8 @@ export function dnaPanel(dna, { color = 'ff4d2e', title = 'Driver DNA', note = '
       return `<div class="dna-row"><div class="dna-top"><h4>${esc(d.label)}</h4>${confBadge(d.confidence)}</div>${pctBar(d.percentile)}<details class="dna-detail"><summary>n=${d.sample_size}${d.population ? ` · vs ${esc(d.population)}` : ''}</summary><p>${esc(d.basis)}</p><dl>${raw}</dl></details></div>`;
     })
     .join('');
-  const unavailable = dna.unavailable ? `<div class="unavail" aria-label="Unavailable dimensions">${Object.entries(dna.unavailable).map(([k, why]) => `<span title="${esc(why)}">${esc(k.replace(/_/g, ' '))}: not sourced</span>`).join('')}</div>` : '';
+  // Unmeasured dimensions are not listed on the page (owner 2026-10-02); they stay in the DNA payload for methodology.
+  const unavailable = '';
   return `<div class="split even"><div>${Object.keys(populated).length >= 3 ? dnaRadar(populated, color) : '<div class="empty">Fewer than three dimensions meet the minimum sample.</div>'}<p class="fine">${esc(title)} · ${esc(dna.window || dna.season || '')} · ${esc(dna.version)} · as of ${esc(fmtDate(dna.as_of))}${note ? ' · ' + esc(note) : ''}</p>${unavailable}</div><div class="dna">${rows}</div></div>`;
 }
 

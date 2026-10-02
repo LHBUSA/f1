@@ -444,6 +444,132 @@
     },
     "peter-crolla": {
       "name": "Peter Crolla"
+    },
+    "kyle-moreira": {
+      "name": "Kyle Moreira"
+    },
+    "charlie-hooper": {
+      "name": "Charlie Hooper"
+    },
+    "jono-brookes": {
+      "name": "Jono Brookes"
+    },
+    "paul-barnes": {
+      "name": "Paul Barnes"
+    },
+    "jonny-rickett": {
+      "name": "Jonny Rickett"
+    },
+    "andrew-salt": {
+      "name": "Andrew Salt"
+    },
+    "amir-sampat": {
+      "name": "Amir Sampat"
+    },
+    "luigi-de-martino-norante": {
+      "name": "Luigi de Martino Norante"
+    },
+    "mark-ingham": {
+      "name": "Mark Ingham"
+    },
+    "katsuhide-kuwahara": {
+      "name": "Katsuhide 'Katsu' Kuwahara"
+    },
+    "riccardo-musconi": {
+      "name": "Riccardo Musconi"
+    },
+    "evan-short": {
+      "name": "Evan Short"
+    },
+    "simone-resta": {
+      "name": "Simone Resta"
+    },
+    "giacomo-tortora": {
+      "name": "Giacomo Tortora"
+    },
+    "matt-deane": {
+      "name": "Matt Deane"
+    },
+    "rachel-nash": {
+      "name": "Rachel Nash"
+    },
+    "luca-diella": {
+      "name": "Luca Diella"
+    },
+    "ravin-jain": {
+      "name": "Ravin Jain"
+    },
+    "guillaume-dezoteux": {
+      "name": "Guillaume Dezoteux"
+    },
+    "jon-caller": {
+      "name": "Jon Caller"
+    },
+    "mike-payne": {
+      "name": "Mike Payne"
+    },
+    "hannah-schmitz": {
+      "name": "Hannah Schmitz"
+    },
+    "curtis-stones": {
+      "name": "Curtis Stones"
+    },
+    "mikey-brown": {
+      "name": "Mikey Brown"
+    },
+    "harry-rush": {
+      "name": "Harry Rush"
+    },
+    "harvey-south": {
+      "name": "Harvey South"
+    },
+    "scott-taggart": {
+      "name": "Scott Taggart"
+    },
+    "marc-cox": {
+      "name": "Marc Cox"
+    },
+    "angelos-tsiaparas": {
+      "name": "Angelos Tsiaparas"
+    },
+    "richard-frith": {
+      "name": "Richard Frith"
+    },
+    "sam-edmonds": {
+      "name": "Sam Edmonds"
+    },
+    "ben-howard": {
+      "name": "Ben Howard"
+    },
+    "ed-regan": {
+      "name": "Ed Regan"
+    },
+    "stefano-nitti": {
+      "name": "Stefano Nitti"
+    },
+    "stefano-sordo": {
+      "name": "Stefano Sordo"
+    },
+    "alessandro-cinelli": {
+      "name": "Alessandro Cinelli"
+    },
+    "nathan-divey": {
+      "name": "Nathan Divey"
+    },
+    "daniela-klausser": {
+      "name": "Daniela Klausser"
+    },
+    "toby-brown": {
+      "name": "Toby Brown"
+    },
+    "matt-thompson": {
+      "name": "Matt Thompson"
+    },
+    "elliot-parkes": {
+      "name": "Elliot Parkes"
+    },
+    "dan-martin": {
+      "name": "Dan Martin"
     }
   },
   "sources": {
@@ -1406,6 +1532,450 @@
       "publisher": "Motorsport Week",
       "type": "media",
       "date": "2025-02-04"
+    },
+    "s-f56cf5a741": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/hungarian-grand-prix/race-report/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2026-07-26"
+    },
+    "s-724f73fecf": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/who-sits-on-mclarens-pit-wall/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2026-07-15"
+    },
+    "s-6c08de8236": {
+      "url": "https://www.mclaren.com/racing/formula-1/2025/rotation-role-selection-and-plenty-of-practice-behind-the-scenes-of-a-well-executed-pit-stop/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2025-06-18"
+    },
+    "s-0e6ca8c6db": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/my-first-race-the-team/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2026-06-03"
+    },
+    "s-345bf6598e": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/paddock-life-working-a-formula-1-grand-prix/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2026-03-25"
+    },
+    "s-ba27e4fb04": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/azerbaijan-grand-prix/preview/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2026-09-21"
+    },
+    "s-4e2a55064e": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/barcelona-catalunya-grand-prix/randy-singh-debriefs-friday-in-barcelona/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": null
+    },
+    "s-b96348945a": {
+      "url": "https://www.mclaren.com/racing/formula-1/2026/how-the-mclaren-mastercard-formula-1-team-prepares-for-race-day/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2026-06-24"
+    },
+    "s-04a376efec": {
+      "url": "https://www.grandprix.com/news/hamilton-awaits-engineer-arrival-from-mclaren.html",
+      "publisher": "GrandPrix.com (GMM)",
+      "type": "media",
+      "date": "2026-01-26"
+    },
+    "s-08f6c64e38": {
+      "url": "https://www.mclaren.com/racing/formula-1/2025/meet-those-who-celebrated-mclarens-two-most-recent-title-wins/",
+      "publisher": "McLaren Racing",
+      "type": "first_party",
+      "date": "2025-01-21"
+    },
+    "s-ed29961161": {
+      "url": "https://www.mercedesamgf1.com/news/suzuka-stories-i-slept-under-the-grandstand-to-watch-the-grand-prix",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-03-20"
+    },
+    "s-60be554aa9": {
+      "url": "https://www.mercedesamgf1.com/news/history-made-as-kimi-takes-first-win-in-1-2",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-03-15"
+    },
+    "s-4a346916d4": {
+      "url": "https://www.mercedesamgf1.com/news/always-remember-to-dream-big-what-the-chinese-gp-means-to-me",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-03-11"
+    },
+    "s-578c7417b0": {
+      "url": "https://www.gpblog.com/en/exclusive-news/mercedes-makes-decision-on-race-engineers-for-russell-and-antonelli",
+      "publisher": "GPblog",
+      "type": "media",
+      "date": "2026-01-12"
+    },
+    "s-cc02b5c0d8": {
+      "url": "https://www.espn.com/f1/story/_/id/48852291/canada-grand-prix-mercedes-george-russell-wins-sprint-lando-norris-kimi-antonelli",
+      "publisher": "ESPN",
+      "type": "espn",
+      "date": "2026-05-23"
+    },
+    "s-ea8283aed0": {
+      "url": "https://www.gpfans.com/en/f1-news/1076588/f1-race-engineers/",
+      "publisher": "GPFans",
+      "type": "media",
+      "date": "2026-02-19"
+    },
+    "s-c39660db1d": {
+      "url": "https://www.youtube.com/watch?v=7eTqO7rRUCI",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team (YouTube)",
+      "type": "first_party",
+      "date": "2026-07-08"
+    },
+    "s-43610c4188": {
+      "url": "https://www.youtube.com/watch?v=p0p4MUxu5PM",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team (YouTube)",
+      "type": "first_party",
+      "date": "2026-06-19"
+    },
+    "s-fb08bbebee": {
+      "url": "https://www.mercedesamgf1.com/races/las-vegas-grand-prix-2024",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": null
+    },
+    "s-db94784e6a": {
+      "url": "https://www.youtube.com/watch?v=gnLUrFNrA80",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team (YouTube)",
+      "type": "first_party",
+      "date": "2026-05-29"
+    },
+    "s-47a0da1841": {
+      "url": "https://www.mercedesamgf1.com/news/nu-silver-arrows-radio-show-five-key-things-to-watch-out-for-in-episode-three",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-05-29"
+    },
+    "s-a41b1d7f63": {
+      "url": "https://www.youtube.com/watch?v=VaUxOF7B40I",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team (YouTube)",
+      "type": "first_party",
+      "date": "2026-05-08"
+    },
+    "s-cf35960d7c": {
+      "url": "https://www.mercedesamgf1.com/news/nu-silver-arrows-radio-show-five-key-things-to-watch-out-for-in-episode-two",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-05-08"
+    },
+    "s-5ee9253bff": {
+      "url": "https://www.youtube.com/watch?v=nJI-fEbFFkU",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team (YouTube)",
+      "type": "first_party",
+      "date": "2026-07-30"
+    },
+    "s-54e5650ab3": {
+      "url": "https://www.mercedesamgf1.com/reports/race-report-brilliant-1-2-at-monza",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": null
+    },
+    "s-926141790d": {
+      "url": "https://www.mercedesamgf1.com/news/watch-celebrating-mulberry-stem-academy-programme-graduation",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-04-17"
+    },
+    "s-92e616f401": {
+      "url": "https://www.mercedesamgf1.com/news/in-pictures-mulberry-stem-academy-students-visit-brackley",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2026-09-18"
+    },
+    "s-b734cf48cc": {
+      "url": "https://www.youtube.com/watch?v=Ie-KCHHSUo4",
+      "publisher": "WIRED (YouTube, Tech Support)",
+      "type": "media",
+      "date": "2026-03-05"
+    },
+    "s-f066c0ac13": {
+      "url": "https://www.mercedesamgf1.com/news/episode-four-the-chassis-the-next-generation-of-racing",
+      "publisher": "Mercedes-AMG PETRONAS F1 Team",
+      "type": "first_party",
+      "date": "2025-12-18"
+    },
+    "s-d07ca23b79": {
+      "url": "https://www.crash.net/f1/news/1088537/1/frontrunner-be-lewis-hamiltons-new-ferrari-race-engineer-f1-2026-emerges",
+      "publisher": "Crash.net",
+      "type": "media",
+      "date": "2026-01-19"
+    },
+    "s-5bf5ef2d77": {
+      "url": "https://sports.yahoo.com/articles/luca-diella-frontrunner-lewis-hamilton-112600173.html",
+      "publisher": "The Independent (via Yahoo Sports)",
+      "type": "media",
+      "date": "2026-01-19"
+    },
+    "s-6f570d302f": {
+      "url": "https://www.sportbible.com/formula-1/lewis-hamilton-ferrari-replacement-f1-statement-877187-20260917",
+      "publisher": "SPORTbible",
+      "type": "media",
+      "date": "2026-09-17"
+    },
+    "s-5824d16e66": {
+      "url": "https://www.youtube.com/watch?v=6ieY7MTk0tg",
+      "publisher": "HypoVereinsbank - UniCredit (Ferrari partner) YouTube",
+      "type": "media",
+      "date": "2025-12-08"
+    },
+    "s-8c72d1f49c": {
+      "url": "https://www.planetf1.com/news/ferrari-performance-chief-technical-dezoteux-suppliers-2026",
+      "publisher": "PlanetF1",
+      "type": "media",
+      "date": "2026-02-04"
+    },
+    "s-498b49af3c": {
+      "url": "https://www.redbull.com/int-en/the-people-behind-the-f1-paddock",
+      "publisher": "Red Bull (redbull.com)",
+      "type": "first_party",
+      "date": "2026-02-20"
+    },
+    "s-1249b51de3": {
+      "url": "https://racingnews365.com/red-bull-make-key-appointment-after-max-verstappen-team-changes",
+      "publisher": "RacingNews365",
+      "type": "media",
+      "date": "2026-01-19"
+    },
+    "s-f6c8966be0": {
+      "url": "https://www.planetf1.com/news/max-verstappen-number-one-mechanic-matt-caller-set-for-audi-f1-2026-switch",
+      "publisher": "PlanetF1",
+      "type": "media",
+      "date": "2025-10-08"
+    },
+    "s-b731162a14": {
+      "url": "https://www.the-race.com/formula-1/audi-grabs-verstappens-lead-mechanic-for-2026-f1-role/",
+      "publisher": "The Race",
+      "type": "media",
+      "date": "2025-10-04"
+    },
+    "s-e1ec469569": {
+      "url": "https://www.motorsport.com/f1/news/lambiase-to-remain-as-verstappens-race-engineer-for-f1-2026/10788339/",
+      "publisher": "Motorsport.com",
+      "type": "media",
+      "date": "2026-01-06"
+    },
+    "s-09b1f5ab84": {
+      "url": "https://www.motorsportweek.com/2026/07/19/max-verstappen-new-red-bull-f1-engineer/",
+      "publisher": "Motorsport Week",
+      "type": "media",
+      "date": "2026-07-19"
+    },
+    "s-6bf4056203": {
+      "url": "https://www.gpfans.com/en/f1-news/1090339/max-verstappen-red-bull-f1-race-engineer-tom-hart-debut-gianpiero-lambiase/",
+      "publisher": "GPFans",
+      "type": "media",
+      "date": "2026-09-16"
+    },
+    "s-e57cda269b": {
+      "url": "https://racingnews365.com/max-verstappen-suffers-major-red-bull-blow-with-three-key-departures",
+      "publisher": "RacingNews365",
+      "type": "media",
+      "date": "2025-11-22"
+    },
+    "s-28a0c08967": {
+      "url": "https://www.si.com/onsi/f1/from-the-pit-wall-to-albert-park-hannah-schmitz-on-her-16-years-at-red-bull-racing",
+      "publisher": "Sports Illustrated (On SI)",
+      "type": "media",
+      "date": "2026-03-04"
+    },
+    "s-c14d517d44": {
+      "url": "https://www.redbull.com/us-en/hannah-schmitz-oracle-red-bull-racing-strategist",
+      "publisher": "Red Bull (redbull.com)",
+      "type": "first_party",
+      "date": "2026-06-01"
+    },
+    "s-76b1b130ec": {
+      "url": "https://www.astonmartinf1.com/en-GB/news/feature/things-you-cant-teach-an-F1-mechanic",
+      "publisher": "Aston Martin Aramco F1 Team",
+      "type": "first_party",
+      "date": "2026-09-11"
+    },
+    "s-809cedaee8": {
+      "url": "https://www.astonmartinf1.com/en-GB/news/feature/curtis-stones-the-chief-mechanic-sticking-to-the-facts",
+      "publisher": "Aston Martin Aramco F1 Team",
+      "type": "first_party",
+      "date": "2024-06-06"
+    },
+    "s-99db233e67": {
+      "url": "https://www.astonmartinf1.com/en-GB/news/feature/insider-how-to-manage-f1-race-disruptions",
+      "publisher": "Aston Martin Cognizant F1 Team",
+      "type": "first_party",
+      "date": "2021-12-08"
+    },
+    "s-cdf3a3bd67": {
+      "url": "https://www.astonmartinf1.com/en-GB/news/feature/the-mechanic-a-documentary-on-the-commitment-beyond-the-spotlight",
+      "publisher": "Aston Martin Aramco F1 Team",
+      "type": "first_party",
+      "date": "2026-01-23"
+    },
+    "s-f9773bf0a9": {
+      "url": "https://www.skysports.com/f1/video/12870/13457722/we-are-family-alonso-sits-down-with-his-no-1-mechanic",
+      "publisher": "Sky Sports",
+      "type": "media",
+      "date": "2025-10-25"
+    },
+    "s-1fd4fabb62": {
+      "url": "https://www.astonmartinf1.com/en-GB/news/feature/from-apprentice-to-aston-martin-aramco-number-one-mechanic",
+      "publisher": "Aston Martin Aramco F1 Team",
+      "type": "first_party",
+      "date": "2025-10-21"
+    },
+    "s-146719da37": {
+      "url": "https://www.youtube.com/watch?v=IM94IcdtbdU",
+      "publisher": "Aston Martin Aramco F1 Team (YouTube)",
+      "type": "first_party",
+      "date": "2025-10-23"
+    },
+    "s-251a51c8e4": {
+      "url": "https://www.astonmartinf1.com/en-GB/news/feature/insider-the-role-of-a-no-1-mechanic-in-F1-explained",
+      "publisher": "Aston Martin Aramco F1 Team",
+      "type": "first_party",
+      "date": "2022-04-14"
+    },
+    "s-ce17ed60bc": {
+      "url": "https://f1i.com/news/528639-long-serving-mclaren-chief-mechanic-joins-aston-martin.html",
+      "publisher": "F1i",
+      "type": "media",
+      "date": "2025-01-02"
+    },
+    "s-ba83f329a4": {
+      "url": "https://www.williamsf1.com/articles/f587528d-db36-473e-92a1-023c96e91083/what-the-2026-cars-will-demand-from-drivers-and-what-fans-can-expect-to-see",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": "2026-02-10"
+    },
+    "s-bb67fded7e": {
+      "url": "https://www.williamsf1.com/articles/f0f02740-4424-4511-83b3-845501e23d69/report-australia-friday-2026",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": "2026-03-06"
+    },
+    "s-0a62eb7ab9": {
+      "url": "https://www.motorsport.com/f1/news/f1-williams-admits-to-recharging-batteries-by-burning-fuel/10795251/",
+      "publisher": "Motorsport.com",
+      "type": "media",
+      "date": "2026-02-04"
+    },
+    "s-cce98c37ca": {
+      "url": "https://www.williamsf1.com/articles/a1f4be1b-fa7c-479c-908b-0621109c33b0/report-hungary-friday-2026",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": "2026-07-24"
+    },
+    "s-33e4200bed": {
+      "url": "https://www.youtube.com/watch?v=09mpgADXAZo",
+      "publisher": "Atlassian Williams F1 Team (YouTube)",
+      "type": "first_party",
+      "date": "2024-12-18"
+    },
+    "s-61eed9516b": {
+      "url": "https://www.williamsf1.com/posts/d034b17d-ce9a-418a-8dca-a8ab6bf8ff61/garage-insider-episode-8-sam-edmonds",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": null
+    },
+    "s-ad7f4dd1e2": {
+      "url": "https://www.williamsf1.com/articles/3ea99e05-24ce-437f-8c2e-b2c474e1b905/everybody-has-worked-throughout-and-pushed-the-boundaries",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": "2024-11-18"
+    },
+    "s-8b6b2522a6": {
+      "url": "https://www.williamsf1.com/videos/506c3065-d5be-4c4a-8f4b-7c6f02c92767/3-minute-missions-ben-howard",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": null
+    },
+    "s-9649742544": {
+      "url": "https://www.williamsf1.com/articles/02a83d24-0b78-45d7-b4d4-761126af18f8/who-are-williams-racing-race-engineers",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": "2024-11-07"
+    },
+    "s-c021b0c839": {
+      "url": "https://www.youtube.com/watch?v=ZwAEGfUWNwc",
+      "publisher": "Atlassian Williams F1 Team (YouTube)",
+      "type": "first_party",
+      "date": "2024-12-03"
+    },
+    "s-52fcac1c00": {
+      "url": "https://www.planetf1.com/news/audi-f1-announce-stefano-sordo-performance-director",
+      "publisher": "PlanetF1",
+      "type": "media",
+      "date": "2024-06-10"
+    },
+    "s-4ef5b028ec": {
+      "url": "https://racingnews365.com/audi-f1-make-key-move-for-aero-leader-behind-red-bull-and-vettel-domination",
+      "publisher": "RacingNews365",
+      "type": "media",
+      "date": "2024-06-10"
+    },
+    "s-c85d05515a": {
+      "url": "https://www.motorsport.com/f1/news/alfa-romeo-aero-chief-ferrari/4504222/",
+      "publisher": "Motorsport.com",
+      "type": "media",
+      "date": "2019-07-30"
+    },
+    "s-256ac76c1c": {
+      "url": "https://www.autosport.com/f1/news/no-nine-to-five-cruise-the-rewarding-challenge-of-assembling-cadillacs-trackside-team-from-scratch/10847076/",
+      "publisher": "Autosport",
+      "type": "media",
+      "date": "2026-08-18"
+    },
+    "s-8a8aad6a90": {
+      "url": "https://www.haasf1team.com/news/staff-spotlight-daniela-klausser-performance-engineer",
+      "publisher": "TGR Haas F1 Team",
+      "type": "first_party",
+      "date": "2026-06-22"
+    },
+    "s-5f10d1bc70": {
+      "url": "https://www.motorsport.com/f1/news/exclusive-behind-the-scenes-of-the-critical-150-minute-test-facing-f1-mechanics-every-race/10673582/",
+      "publisher": "Motorsport.com",
+      "type": "media",
+      "date": "2024-11-16"
+    },
+    "s-effe97e879": {
+      "url": "https://www.haasf1team.com/news/tgr-haas-f1-team-and-ucm-launch-first-its-kind-research-project-elite-team-performance",
+      "publisher": "TGR Haas F1 Team",
+      "type": "first_party",
+      "date": "2026-04-22"
+    },
+    "s-7b38515e8c": {
+      "url": "https://www.williamsf1.com/articles/eeb5dea9-eaa9-4d5f-9818-ce09624c752f/report-belgium-friday-2026",
+      "publisher": "Williams Racing",
+      "type": "first_party",
+      "date": "2026-07-17"
+    },
+    "s-0ad7216ed4": {
+      "url": "https://www.haasf1team.com/news/tgr-haas-f1-team-visits-city-ferrara-ahead-italian-grand-prix",
+      "publisher": "TGR Haas F1 Team",
+      "type": "first_party",
+      "date": "2026-08-31"
+    },
+    "s-0bd38caf4b": {
+      "url": "https://www.haasf1team.com/news/creating-unforgettable-moments-miami-grand-prix-starlight-childrens-foundation",
+      "publisher": "TGR Haas F1 Team",
+      "type": "first_party",
+      "date": "2026-05-02"
+    },
+    "s-815413eca4": {
+      "url": "https://www.haasf1team.com/news/australian-grand-prix-her-corner-initiative-see-albert-park-circuit-recognize-women-stem",
+      "publisher": "TGR Haas F1 Team",
+      "type": "first_party",
+      "date": "2026-02-24"
     }
   },
   "roles": [
@@ -1528,9 +2098,10 @@
       "current": true,
       "sources": [
         "msport-engineers-2026",
-        "rn365-engineers-2026"
+        "rn365-engineers-2026",
+        "s-60be554aa9"
       ],
-      "confidence": "medium",
+      "confidence": "high",
       "display": true,
       "conflicts": [
         {
@@ -1564,7 +2135,7 @@
     {
       "personId": "ron-meadows",
       "role": "Sporting Director",
-      "roleGroup": "race_engineering",
+      "roleGroup": "sporting",
       "rank": 3,
       "constructorId": "mercedes",
       "driverId": null,
@@ -1695,7 +2266,7 @@
       "confidence": "low",
       "display": false,
       "notes": "Title from Ferrari's Sept 2024 structure announcement; no 2026-dated non-wiki source found. Possibly stale; verify.",
-      "held": "low confidence (single/old source)"
+      "held": "possibly stale: no 2026 source; overlapping 2026 hire (Head of Performance Operations)"
     },
     {
       "personId": "matteo-togninalli",
@@ -1718,7 +2289,7 @@
     {
       "personId": "diego-ioverno",
       "role": "Head of Chassis Operations and Sporting Director",
-      "roleGroup": "leadership",
+      "roleGroup": "sporting",
       "rank": 3,
       "constructorId": "ferrari",
       "driverId": null,
@@ -1968,8 +2539,8 @@
     },
     {
       "personId": "randeep-singh",
-      "role": "Racing Director",
-      "roleGroup": "leadership",
+      "role": "Senior Racing Director",
+      "roleGroup": "sporting",
       "rank": 3,
       "constructorId": "mclaren",
       "driverId": null,
@@ -1979,16 +2550,18 @@
       "current": true,
       "sources": [
         "s-df80825679",
-        "s-8fac07a014"
+        "s-8fac07a014",
+        "s-724f73fecf",
+        "s-4e2a55064e"
       ],
-      "confidence": "medium",
+      "confidence": "high",
       "display": true,
       "notes": "Courtenay reports to him (Motorsport Week 2026-01-04)."
     },
     {
       "personId": "will-courtenay",
       "role": "Sporting Director",
-      "roleGroup": "leadership",
+      "roleGroup": "sporting",
       "rank": 4,
       "constructorId": "mclaren",
       "driverId": null,
@@ -1998,9 +2571,10 @@
       "current": true,
       "sources": [
         "s-56e5dfeb15",
-        "s-df80825679"
+        "s-df80825679",
+        "s-724f73fecf"
       ],
-      "confidence": "medium",
+      "confidence": "high",
       "display": true,
       "notes": "Ex-Red Bull Head of Race Strategy; released early, started at McLaren at the start of 2026 (announced on LinkedIn ~2026-01-04; F1.com 2026-01-05). effectiveFrom approximate."
     },
@@ -2018,9 +2592,10 @@
       "sources": [
         "s-e7a2e96cc5",
         "s-8331690a79",
-        "s-dc6fdc4fbe"
+        "s-dc6fdc4fbe",
+        "s-724f73fecf"
       ],
-      "confidence": "medium",
+      "confidence": "high",
       "display": true,
       "notes": "Norris's race engineer since 2019, continuing in 2026; also oversees McLaren race engineering."
     },
@@ -2038,9 +2613,10 @@
       "sources": [
         "s-e7a2e96cc5",
         "s-8331690a79",
-        "s-dc6fdc4fbe"
+        "s-dc6fdc4fbe",
+        "s-b96348945a"
       ],
-      "confidence": "medium",
+      "confidence": "high",
       "display": true,
       "notes": "Piastri's race engineer since 2023, continuing in 2026."
     },
@@ -2267,7 +2843,7 @@
       "confidence": "low",
       "display": false,
       "notes": "ESPN sources (2026-07-20): chosen as Verstappen's next race engineer to replace Lambiase, likely full role in 2027, possibly some late-2026 races; reversed a planned move to Williams. Which driver he performance-engineers now is not stated.",
-      "held": "low confidence (single/old source)"
+      "held": "superseded by driver-specific record (performance engineer, Max Verstappen)"
     },
     {
       "personId": "tom-mccullough",
@@ -2293,7 +2869,7 @@
     {
       "personId": "stephen-knowles",
       "role": "Acting Head Of Sporting",
-      "roleGroup": "leadership",
+      "roleGroup": "sporting",
       "rank": 2,
       "constructorId": "red-bull",
       "driverId": null,
@@ -2594,7 +3170,7 @@
     {
       "personId": "marco-perrone",
       "role": "Head of Sporting Direction",
-      "roleGroup": "leadership",
+      "roleGroup": "sporting",
       "rank": 3,
       "constructorId": "racing-bulls",
       "driverId": null,
@@ -2696,7 +3272,7 @@
     {
       "personId": "dave-greenwood",
       "role": "Racing Director",
-      "roleGroup": "leadership",
+      "roleGroup": "sporting",
       "rank": 3,
       "constructorId": "alpine",
       "driverId": null,
@@ -2957,7 +3533,7 @@
     {
       "personId": "allan-mcnish",
       "role": "Racing Director and Director of Driver Development Programme",
-      "roleGroup": "leadership",
+      "roleGroup": "sporting",
       "rank": 3,
       "constructorId": "audi",
       "driverId": null,
@@ -2996,7 +3572,7 @@
     {
       "personId": "inaki-rueda",
       "role": "Sporting Director",
-      "roleGroup": "leadership",
+      "roleGroup": "sporting",
       "rank": 4,
       "constructorId": "audi",
       "driverId": null,
@@ -3104,7 +3680,7 @@
     {
       "personId": "lee-stevenson",
       "role": "Team Manager",
-      "roleGroup": "garage_operations",
+      "roleGroup": "sporting",
       "rank": 1,
       "constructorId": "audi",
       "driverId": null,
@@ -3252,7 +3828,7 @@
     {
       "personId": "mark-lowe",
       "role": "Sporting Director",
-      "roleGroup": "garage_operations",
+      "roleGroup": "sporting",
       "rank": 1,
       "constructorId": "haas",
       "driverId": null,
@@ -3262,9 +3838,10 @@
       "current": true,
       "sources": [
         "s-74c6a58d61",
-        "s-130d8393ae"
+        "s-130d8393ae",
+        "s-0bd38caf4b"
       ],
-      "confidence": "medium",
+      "confidence": "high",
       "display": true,
       "notes": "Appointed Jan 2025. Motorsport.com (c. Feb 2026, on 2026 pit crews) quotes him as Haas sporting director."
     },
@@ -3282,9 +3859,10 @@
       "sources": [
         "s-8331690a79",
         "s-e7a2e96cc5",
-        "s-130d8393ae"
+        "s-130d8393ae",
+        "s-815413eca4"
       ],
-      "confidence": "medium",
+      "confidence": "high",
       "display": true,
       "conflicts": [
         {
@@ -3384,12 +3962,12 @@
       "effectiveTo": null,
       "current": true,
       "sources": [
-        "s-130d8393ae"
+        "s-130d8393ae",
+        "s-0ad7216ed4"
       ],
-      "confidence": "low",
-      "display": false,
-      "notes": "Only source is from Jan 2025 (2025 restructure). No 2026 confirmation found.",
-      "held": "low confidence (single/old source)"
+      "confidence": "high",
+      "display": true,
+      "notes": "Only source is from Jan 2025 (2025 restructure). No 2026 confirmation found."
     },
     {
       "personId": "damien-brayshaw",
@@ -3560,7 +4138,7 @@
     {
       "personId": "andy-stevenson",
       "role": "Sporting Director",
-      "roleGroup": "garage_operations",
+      "roleGroup": "sporting",
       "rank": 1,
       "constructorId": "aston-martin",
       "driverId": null,
@@ -3958,7 +4536,7 @@
     {
       "personId": "sven-smeets",
       "role": "Sporting Director",
-      "roleGroup": "garage_operations",
+      "roleGroup": "sporting",
       "rank": 1,
       "constructorId": "williams",
       "driverId": null,
@@ -3977,7 +4555,7 @@
     {
       "personId": "dave-redding",
       "role": "Team Manager",
-      "roleGroup": "garage_operations",
+      "roleGroup": "sporting",
       "rank": 2,
       "constructorId": "williams",
       "driverId": null,
@@ -3993,7 +4571,7 @@
     },
     {
       "personId": "paul-williams",
-      "role": "Chief Engineer, Trackside Performance",
+      "role": "Chief Trackside Engineer",
       "roleGroup": "race_engineering",
       "rank": 1,
       "constructorId": "williams",
@@ -4005,7 +4583,8 @@
       "sources": [
         "s-e43b991598",
         "s-139f2b9b89",
-        "s-f15a984fd6"
+        "s-f15a984fd6",
+        "s-7b38515e8c"
       ],
       "confidence": "high",
       "display": true,
@@ -4459,7 +5038,7 @@
     {
       "personId": "peter-crolla",
       "role": "Team Manager",
-      "roleGroup": "garage_operations",
+      "roleGroup": "sporting",
       "rank": 1,
       "constructorId": "cadillac",
       "driverId": null,
@@ -4475,6 +5054,1029 @@
       "confidence": "medium",
       "display": true,
       "notes": "Joined from Haas; The Race (2026-06-11) refers to him as Cadillac Team Manager during 2026. effectiveFrom per media (first day 1 April 2025)."
+    },
+    {
+      "personId": "kyle-moreira",
+      "role": "Number 1 Mechanic (Lando Norris, car #1)",
+      "roleGroup": "garage_operations",
+      "rank": 50,
+      "constructorId": "mclaren",
+      "driverId": "lando-norris",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-f56cf5a741"
+      ],
+      "confidence": "high",
+      "notes": "McLaren 2026 Hungarian GP race report: Lando was joined on the podium by his Number 1 Mechanic Kyle Moreira, who collected the Constructors' trophy for the team. (A LinkedIn profile, not used as a source, also lists him as No. 1 Mechanic since 2022.)",
+      "display": true
+    },
+    {
+      "personId": "charlie-hooper",
+      "role": "Senior Car Operations Director",
+      "roleGroup": "garage_operations",
+      "rank": 51,
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-724f73fecf",
+        "s-6c08de8236"
+      ],
+      "confidence": "high",
+      "notes": "Sits on the pit wall between the two race engineers as liaison between race engineering and the pit crew; calls the crew out for each stop (driver, tyres, wing adjustment, prep time) and counts down time penalties. 2025 McLaren pit-stop feature (title then 'Car Operations & Engineering Director') shows him running pit-crew selection, the rotation squad, practice plans and kit feedback. Effectively McLaren's pit-crew / car-operations lead.",
+      "display": true
+    },
+    {
+      "personId": "jono-brookes",
+      "role": "Operations Director",
+      "roleGroup": "garage_operations",
+      "rank": 52,
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-0e6ca8c6db"
+      ],
+      "confidence": "high",
+      "notes": "Named Operations Director in McLaren's 2026 '1000th GP' team feature; began as a number two mechanic on the test team (first race 2001 Monaco). Remit beyond the title not stated.",
+      "display": true
+    },
+    {
+      "personId": "paul-barnes",
+      "role": "Senior Director, F1 Operations and Commercial Liaison",
+      "roleGroup": "garage_operations",
+      "rank": 53,
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-724f73fecf"
+      ],
+      "confidence": "high",
+      "notes": "Per McLaren: responsible for travel logistics/team services and, over a race weekend, the cars' electronic systems configuration, supporting IT, car data collection/distribution and radio comms. Sits on the pit wall in practice/Qualifying; moves to the garage engineering island on Sundays when Zak Brown attends. Joined 2001; trackside car systems technician from 2005.",
+      "display": true
+    },
+    {
+      "personId": "jonny-rickett",
+      "role": "Manager, Car Support and Infrastructure",
+      "roleGroup": "garage_operations",
+      "rank": 54,
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-345bf6598e"
+      ],
+      "confidence": "high",
+      "notes": "Car support / garage technicians build the garage, services and pit gantry. The article mixes 'active and former' race-team members; he speaks as current race team (quotes on 2024 Abu Dhabi title-deciding stop), but current trackside status is implied, not explicit.",
+      "display": true
+    },
+    {
+      "personId": "andrew-salt",
+      "role": "Manager, Car Assembly and Hydraulics",
+      "roleGroup": "technical",
+      "rank": 55,
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-345bf6598e"
+      ],
+      "confidence": "high",
+      "notes": "Factory-based now (per article) after eight seasons as a race mechanic; former Number One mechanic for Carlos Sainz (2 yrs) and Daniel Ricciardo (2 yrs); earlier Number Two on Button and Alonso cars. Not a 2026 trackside role.",
+      "display": true
+    },
+    {
+      "personId": "amir-sampat",
+      "role": "Performance Engineer (predominantly Oscar Piastri's car)",
+      "roleGroup": "race_engineering",
+      "rank": 56,
+      "constructorId": "mclaren",
+      "driverId": "oscar-piastri",
+      "season": 2026,
+      "effectiveFrom": "2026-03-08",
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-0e6ca8c6db"
+      ],
+      "confidence": "high",
+      "notes": "Trackside debut at the 2026 Australian GP after two years in Mission Control. Focus on the new power unit plus fuel, skid wear and car weight; 'predominantly works on Oscar Piastri's side of the garage'. McLaren does not call him THE lead performance engineer for #81, so treat as one of Piastri's performance engineers (PU-focused).",
+      "display": true
+    },
+    {
+      "personId": "luigi-de-martino-norante",
+      "role": "Head of Aero Performance",
+      "roleGroup": "technical",
+      "rank": 57,
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-0e6ca8c6db",
+        "s-ba27e4fb04"
+      ],
+      "confidence": "high",
+      "notes": "Titled 'Head of Aero Performance' (2026-06-03) and 'Head of Track Aero Performance' (Azerbaijan preview 2026-09-21). Joined July 2018; former dedicated aero performance engineer for Carlos Sainz. Not the aero department head (Prodromou is CTO Aerodynamics).",
+      "display": true
+    },
+    {
+      "personId": "will-joseph",
+      "role": "Race Engineer (Lando Norris, LN1)",
+      "roleGroup": "race_engineering",
+      "rank": 59,
+      "constructorId": "mclaren",
+      "driverId": "lando-norris",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-724f73fecf",
+        "s-b96348945a"
+      ],
+      "confidence": "high",
+      "notes": "CORRECTED RECORD (confidence upgrade medium->high): McLaren first-party 2026 names him Lando's Race Engineer. 'Director of Race Engineering' not re-confirmed first-party in the 2026 sources read.",
+      "display": true
+    },
+    {
+      "personId": "tom-stallard",
+      "role": "Race Engineer (Oscar Piastri, OP81)",
+      "roleGroup": "race_engineering",
+      "rank": 60,
+      "constructorId": "mclaren",
+      "driverId": "oscar-piastri",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-724f73fecf",
+        "s-b96348945a"
+      ],
+      "confidence": "high",
+      "notes": "CORRECTED RECORD (confidence upgrade medium->high): McLaren first-party 2026 names him Oscar's Race Engineer.",
+      "display": true
+    },
+    {
+      "personId": "cedric-michel-grosjean",
+      "role": "Lead Performance Engineer (former)",
+      "roleGroup": "race_engineering",
+      "rank": 61,
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": false,
+      "sources": [
+        "s-04a376efec"
+      ],
+      "confidence": "low",
+      "notes": "DEPARTURE: described as 'formerly a lead performance engineer at McLaren' (almost nine years), part of the engineering group supporting Piastri in 2023; on gardening leave and expected to join Ferrari (Hamilton). Not McLaren staff in 2026. Single media source.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "mark-ingham",
+      "role": "Design Director",
+      "roleGroup": "technical",
+      "rank": 62,
+      "constructorId": "mclaren",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-08f6c64e38"
+      ],
+      "confidence": "low",
+      "notes": "Last documented 2025-01-21 (first-party). No 2026 source found.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "katsuhide-kuwahara",
+      "role": "Performance Engineer (George Russell)",
+      "roleGroup": "race_engineering",
+      "rank": 63,
+      "constructorId": "mercedes",
+      "driverId": "george-russell",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-ed29961161"
+      ],
+      "confidence": "high",
+      "notes": "Mercedes first-party (2026-03-20): 'will be trackside as George's performance engineer in 2026'; full-time on Russell's side of the garage since Imola 2024 (some races in 2023). Ex-Toyota Super GT/WEC, then Racing Point simulator test engineer from 2020; hired by Shovlin and Musconi.",
+      "display": true
+    },
+    {
+      "personId": "peter-bonnington",
+      "role": "Head of Race Engineering; Race Engineer (Kimi Antonelli)",
+      "roleGroup": "race_engineering",
+      "rank": 64,
+      "constructorId": "mercedes",
+      "driverId": "kimi-antonelli",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-60be554aa9",
+        "s-4a346916d4",
+        "s-578c7417b0",
+        "s-cc02b5c0d8"
+      ],
+      "confidence": "high",
+      "conflicts": [
+        {
+          "claim": "RacingNews365 says Bonnington was promoted to 'head of trackside performance' (title conflicts with first-party 'Head of Race Engineering')",
+          "url": "https://racingnews365.com/meet-the-2026-f1-race-engineers",
+          "date": "2026-03-01"
+        }
+      ],
+      "notes": "CORRECTED RECORD: EXISTING.txt has only 'Race Engineer' (conf medium). Mercedes 2026 race report (China, 2026-03-15) calls him 'Head of Race Engineering and Kimi's race engineer'; he represented the team on the podium for Antonelli's first win. GPblog (2026-01-12) says Mercedes confirmed him as Antonelli's race engineer combined with Head of Race Engineering.",
+      "display": true
+    },
+    {
+      "personId": "marcus-dudley",
+      "role": "Senior Race Engineer (George Russell)",
+      "roleGroup": "race_engineering",
+      "rank": 65,
+      "constructorId": "mercedes",
+      "driverId": "george-russell",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-578c7417b0",
+        "s-8331690a79",
+        "s-ea8283aed0",
+        "s-c39660db1d"
+      ],
+      "confidence": "medium",
+      "notes": "CORRECTED RECORD (title detail): GPblog (2026-01-12) reports Mercedes confirmed Dudley as Russell's 'Senior Race Engineer' for 2026; RN365/GPFans agree he continues as Russell's race engineer (since 2023). Appears as 'Marcus' alongside George, Bradley and Shov in Mercedes' Nu Silver Arrows Radio Show ep.5 (2026-07-08). Title 'Senior Race Engineer' from one media source.",
+      "display": true
+    },
+    {
+      "personId": "riccardo-musconi",
+      "role": "Head of Virtual World Simulation",
+      "roleGroup": "technical",
+      "rank": 66,
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-43610c4188",
+        "s-fb08bbebee"
+      ],
+      "confidence": "high",
+      "notes": "Mercedes YouTube (2026-06-19, Nu Silver Arrows Radio Show ep.4): 'Riccardo Musconi, Head of Virtual World Simulation'. Previously Head of Trackside Performance (mercedesamgf1.com Las Vegas GP race page, 2023/2024) and Russell's 2022 race engineer. Now factory simulation, not trackside performance.",
+      "display": true
+    },
+    {
+      "personId": "evan-short",
+      "role": "Head of Trackside Electronics and Controls",
+      "roleGroup": "technical",
+      "rank": 67,
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-db94784e6a",
+        "s-47a0da1841"
+      ],
+      "confidence": "high",
+      "notes": "Mercedes YouTube/article (2026-05-29, radio show ep.3 on the Canadian GP): Head of Trackside Electronics and Controls.",
+      "display": true
+    },
+    {
+      "personId": "simone-resta",
+      "role": "Deputy Technical Director",
+      "roleGroup": "technical",
+      "rank": 68,
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-a41b1d7f63",
+        "s-cf35960d7c",
+        "s-5ee9253bff",
+        "s-54e5650ab3"
+      ],
+      "confidence": "high",
+      "notes": "Mercedes first-party 2026 (radio show eps 2 and 6; Monza race report: represented the team on the podium at his home race).",
+      "display": true
+    },
+    {
+      "personId": "giacomo-tortora",
+      "role": "Director of Car Design",
+      "roleGroup": "technical",
+      "rank": 69,
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-926141790d",
+        "s-92e616f401"
+      ],
+      "confidence": "high",
+      "notes": "Mercedes first-party 2026 (Mulberry STEM Academy pieces, 2026-04-17 and 2026-09-18). Closest Mercedes equivalent of a Chief Designer title found.",
+      "display": true
+    },
+    {
+      "personId": "matt-deane",
+      "role": "Head of Race Team Garage Operations and Heritage",
+      "roleGroup": "garage_operations",
+      "rank": 70,
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-b734cf48cc"
+      ],
+      "confidence": "medium",
+      "notes": "WIRED Tech Support video (2026-03-05) introduces him with this title and as an F1 'lead mechanic' (video titled 'F1 Chief Mechanic Answers...'). Older Mercedes videos call him Chief Mechanic (My Job in 60 Seconds, ~2021; Einhell Performance Insights ~2024). Single 2026 media source but the title is given in an interview with him; first-party 2026 confirmation not found.",
+      "display": true
+    },
+    {
+      "personId": "rachel-nash",
+      "role": "Head of F1 Regulation Analysis",
+      "roleGroup": "sporting",
+      "rank": 71,
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-f066c0ac13"
+      ],
+      "confidence": "low",
+      "notes": "Last documented 2025-12-18 (Mercedes Road to 2026 chassis episode, first-party). No 2026-dated source found.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "luca-diella",
+      "role": "Performance Engineer (Lewis Hamilton)",
+      "roleGroup": "race_engineering",
+      "rank": 72,
+      "constructorId": "ferrari",
+      "driverId": "lewis-hamilton",
+      "season": 2026,
+      "effectiveFrom": "2025-07-01",
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-d07ca23b79",
+        "s-5bf5ef2d77",
+        "s-6f570d302f"
+      ],
+      "confidence": "medium",
+      "notes": "Crash.net and The Independent (both 2026-01-19, citing Gazzetta dello Sport) call him Hamilton's current performance engineer; joined Hamilton's garage before the 2025 Belgian GP (ex-Mercedes PU performance engineer for Hamilton). Was tipped as Adami's RE replacement but Carlo Santi took the RE role. SPORTbible 2026-09-17: Diella (ex-Mercedes) joined as a trackside engineer for Ferrari's 2026 campaign. No in-season 2026 source restates the exact 'performance engineer' title. effectiveFrom approximate (July 2025).",
+      "display": true
+    },
+    {
+      "personId": "ravin-jain",
+      "role": "Head of Race Strategy",
+      "roleGroup": "sporting",
+      "rank": 73,
+      "constructorId": "ferrari",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-5824d16e66"
+      ],
+      "confidence": "medium",
+      "notes": "UniCredit/HypoVereinsbank (Ferrari partner) video 2025-12-08 titles him 'Head of Race Strategy - Scuderia Ferrari HP'; Scuderia Fans 2026-04-17 calls him Ferrari's Head of Strategy and quotes a Ferrari video on the 2026 opening races. Start date not confirmed from a fetched source (widely reported as 2023, replacing Inaki Rueda). Scuderia Fans is a fan-run news site; treat as low-medium.",
+      "display": true
+    },
+    {
+      "personId": "guillaume-dezoteux",
+      "role": "Head of Performance Operations",
+      "roleGroup": "race_engineering",
+      "rank": 74,
+      "constructorId": "ferrari",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": "2026-02-01",
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-8c72d1f49c"
+      ],
+      "confidence": "low",
+      "notes": "PlanetF1 2026-02-04: joined Ferrari that week from Racing Bulls (Head of Vehicle Performance, ~18 years in Red Bull family), reporting to Matteo Togninalli (Head of Trackside Engineering). Single media source; nearest published match to the 'Head of Vehicle Performance' target role at Ferrari (existing Marco Adurno record is from Sept 2024).",
+      "display": false,
+      "held": "low confidence"
+    },
+    {
+      "personId": "jon-caller",
+      "role": "Chief Mechanic (car #1 / Max Verstappen)",
+      "roleGroup": "garage_operations",
+      "rank": 75,
+      "constructorId": "red-bull",
+      "driverId": "max-verstappen",
+      "season": 2026,
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-498b49af3c",
+        "s-1249b51de3",
+        "s-f6c8966be0"
+      ],
+      "confidence": "high",
+      "notes": "redbull.com (updated 2026-02-20) states that in 2026 Jon Caller serves as chief mechanic for Max Verstappen. Red Bull uses 'chief mechanic' per car, i.e. the number one mechanic role. RN365 2026-01-19: moved across from Yuki Tsunoda's car (2025) to replace twin brother Matt Caller. effectiveFrom approximate (start of 2026 season).",
+      "display": true
+    },
+    {
+      "personId": "mike-payne",
+      "role": "Chief Mechanic (Isack Hadjar's car)",
+      "roleGroup": "garage_operations",
+      "rank": 76,
+      "constructorId": "red-bull",
+      "driverId": "isack-hadjar",
+      "season": 2026,
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-498b49af3c",
+        "s-1249b51de3"
+      ],
+      "confidence": "high",
+      "notes": "redbull.com (updated 2026-02-20): appointed chief mechanic for Isack Hadjar in 2026. RN365 2026-01-19: joined Red Bull in January 2026 from Aston Martin (May 2021-end 2025), previously six years at Williams. During rounds 12-14 Liam Lawson drove this car while Hadjar was injured; no source states the crew changed.",
+      "display": true
+    },
+    {
+      "personId": "matthew-caller",
+      "role": "Number One Mechanic (Max Verstappen)",
+      "roleGroup": "garage_operations",
+      "rank": 77,
+      "constructorId": "red-bull",
+      "driverId": "max-verstappen",
+      "season": 2025,
+      "effectiveFrom": "2022-08-01",
+      "effectiveTo": "2025-12-31",
+      "current": false,
+      "sources": [
+        "s-b731162a14",
+        "s-f6c8966be0",
+        "s-e1ec469569",
+        "s-498b49af3c"
+      ],
+      "confidence": "high",
+      "notes": "Historical: Verstappen's number one mechanic from August 2022 (joined 2015 as number two mechanic) per The Race. Left for Audi at end of 2025 (Motorsport.com 2026-01-06; redbull.com 2026 says Jon Caller now holds the role). effectiveTo approximate (end of 2025 season).",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "tom-hart",
+      "role": "Performance Engineer (Max Verstappen); Verstappen's race engineer from 2027",
+      "roleGroup": "race_engineering",
+      "rank": 78,
+      "constructorId": "red-bull",
+      "driverId": "max-verstappen",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-e1ec469569",
+        "s-251b236b06",
+        "s-09b1f5ab84",
+        "s-6bf4056203",
+        "s-e57cda269b"
+      ],
+      "confidence": "medium",
+      "conflicts": [
+        {
+          "claim": "Hart moved from Verstappen-only PE role to a new role looking after both Verstappen and Hadjar",
+          "url": "https://www.motorsportweek.com/2026/07/19/max-verstappen-new-red-bull-f1-engineer/",
+          "date": "2026-07-19"
+        },
+        {
+          "claim": "Hart to leave for Williams after 2026 (later reversed)",
+          "url": "https://racingnews365.com/max-verstappen-suffers-major-red-bull-blow-with-three-key-departures",
+          "date": "2025-11-22"
+        }
+      ],
+      "notes": "CORRECTION of EXISTING record (driverId was unknown): Motorsport.com 2026-01-06 names him as Verstappen's performance engineer for 2026; ESPN 2026-07-20 says he is 'currently a performance engineer' and has been chosen as Verstappen's next race engineer (full role expected 2027) after reversing a move to Williams. Motorsport Week 2026-07-19 says he moved from Verstappen's PE role to one covering both Verstappen and Hadjar (single source - conflict). GPFans 2026-09-16 (citing De Telegraaf, low): ran Verstappen's race engineering in one Monza practice session and slated to engineer him fully at Austin, Sao Paulo and Las Vegas 2026.",
+      "display": true
+    },
+    {
+      "personId": "hannah-schmitz",
+      "role": "Head of Race Strategy",
+      "roleGroup": "sporting",
+      "rank": 79,
+      "constructorId": "red-bull",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-28a0c08967",
+        "s-c14d517d44"
+      ],
+      "confidence": "medium",
+      "conflicts": [
+        {
+          "claim": "Schmitz is Principal Strategy Engineer; Will Courtenay is Head of Race Strategy",
+          "url": "https://www.redbull.com/us-en/hannah-schmitz-oracle-red-bull-racing-strategist",
+          "date": "2026-06-01"
+        }
+      ],
+      "notes": "SI 2026-03-04: promoted to Head of Race Strategy for 2026. redbull.com article dated 2026-06-01 still calls her Principal Strategy Engineer and names Will Courtenay as Head of Race Strategy - that text appears to be carried over from an older version (Courtenay moved to McLaren). Title treated as Head of Race Strategy; verify on redbullracing.com team bio (blank per earlier research). effectiveFrom approximate.",
+      "display": true
+    },
+    {
+      "personId": "curtis-stones",
+      "role": "Chief Mechanic",
+      "roleGroup": "garage_operations",
+      "rank": 80,
+      "constructorId": "aston-martin",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-76b1b130ec",
+        "s-809cedaee8",
+        "s-99db233e67"
+      ],
+      "confidence": "high",
+      "notes": "Leads both trackside car crews and the pit crew. A 2024 team feature says he took the role about five years earlier (c.2019). The 2026-09-11 team article names him Chief Mechanic over both crews.",
+      "display": true
+    },
+    {
+      "personId": "mikey-brown",
+      "role": "No.1 Mechanic (car of Fernando Alonso)",
+      "roleGroup": "garage_operations",
+      "rank": 81,
+      "constructorId": "aston-martin",
+      "driverId": "fernando-alonso",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-76b1b130ec",
+        "s-cdf3a3bd67",
+        "s-f9773bf0a9"
+      ],
+      "confidence": "high",
+      "notes": "Named as Alonso's No.1 mechanic in the team documentary 'The Mechanic' (Jan 2026) and in the 2026-09-11 team mechanics feature.",
+      "display": true
+    },
+    {
+      "personId": "harry-rush",
+      "role": "No.1 Mechanic (car of Lance Stroll)",
+      "roleGroup": "garage_operations",
+      "rank": 82,
+      "constructorId": "aston-martin",
+      "driverId": "lance-stroll",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-76b1b130ec",
+        "s-cdf3a3bd67",
+        "s-1fd4fabb62",
+        "s-146719da37"
+      ],
+      "confidence": "high",
+      "notes": "Leads Stroll's car crew. About 10 years with the Silverstone team as of Oct 2025.",
+      "display": true
+    },
+    {
+      "personId": "harvey-south",
+      "role": "No.2 Mechanic / floating mechanic (car of Lance Stroll)",
+      "roleGroup": "garage_operations",
+      "rank": 83,
+      "constructorId": "aston-martin",
+      "driverId": "lance-stroll",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-76b1b130ec"
+      ],
+      "confidence": "high",
+      "notes": "Only one source: a first-party mention in the 2026-09-11 mechanics feature.",
+      "display": true
+    },
+    {
+      "personId": "scott-taggart",
+      "role": "No.1 Mechanic (car of Lance Stroll, No.18)",
+      "roleGroup": "garage_operations",
+      "rank": 84,
+      "constructorId": "aston-martin",
+      "driverId": "lance-stroll",
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": false,
+      "sources": [
+        "s-251a51c8e4"
+      ],
+      "confidence": "low",
+      "notes": "Historical: Stroll's No.1 mechanic in 2022. Harry Rush holds that role on the car in 2025-2026 sources. Taggart's current role is unknown.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "marc-cox",
+      "role": "Chief Mechanic, Evolution programme (previous-car tests/demos)",
+      "roleGroup": "garage_operations",
+      "rank": 85,
+      "constructorId": "aston-martin",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": "2025-01-01",
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-ce17ed60bc"
+      ],
+      "confidence": "low",
+      "notes": "Formerly at McLaren, where he was Norris's No.1 mechanic. This role runs the previous-car test and demo programme, not the race team. Last documented 2025-01-02. No 2026 source.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "angelos-tsiaparas",
+      "role": "Chief Engineer",
+      "roleGroup": "technical",
+      "rank": 86,
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-ba83f329a4",
+        "s-bb67fded7e",
+        "s-0a62eb7ab9"
+      ],
+      "confidence": "high",
+      "conflicts": [
+        {
+          "claim": "Title given as 'Head of Trackside Engineering'",
+          "url": "https://www.motorsport.com/f1/news/f1-williams-admits-to-recharging-batteries-by-burning-fuel/10795251/",
+          "date": "2026-02-04"
+        }
+      ],
+      "notes": "Team spokesperson at the 2026 Australian GP Friday (FP1/FP2 issues on both cars). F1.com videos also call him Williams Chief Engineer (Australia and Japan 2026). Wikipedia (discovery only) says he became FW48 chief engineer in July 2024.",
+      "display": true
+    },
+    {
+      "personId": "richard-frith",
+      "role": "Head of Performance Systems",
+      "roleGroup": "technical",
+      "rank": 87,
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-cce98c37ca"
+      ],
+      "confidence": "high",
+      "notes": "Trackside spokesperson at the 2026 Hungarian GP Friday (tyre management analysis).",
+      "display": true
+    },
+    {
+      "personId": "sam-edmonds",
+      "role": "Chief Mechanic",
+      "roleGroup": "garage_operations",
+      "rank": 88,
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-33e4200bed",
+        "s-61eed9516b"
+      ],
+      "confidence": "low",
+      "conflicts": [
+        {
+          "claim": "Ben Howard is also titled 'Chief Mechanic' (led the Grove rebuild before Las Vegas 2024)",
+          "url": "https://www.williamsf1.com/articles/3ea99e05-24ce-437f-8c2e-b2c474e1b905/everybody-has-worked-throughout-and-pushed-the-boundaries",
+          "date": "2024-11-18"
+        }
+      ],
+      "notes": "Garage Insider ep.8 (Qatar 2024 weekend) shows him as Chief Mechanic running the trackside garage. A separate team video lists him as Car Assembly Supervisor. Last documented 2024-12-18. No 2026 confirmation.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "ben-howard",
+      "role": "Chief Mechanic",
+      "roleGroup": "garage_operations",
+      "rank": 89,
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-ad7f4dd1e2",
+        "s-8b6b2522a6"
+      ],
+      "confidence": "low",
+      "conflicts": [
+        {
+          "claim": "Sam Edmonds is titled Chief Mechanic (trackside, Qatar 2024)",
+          "url": "https://www.youtube.com/watch?v=09mpgADXAZo",
+          "date": "2024-12-18"
+        }
+      ],
+      "notes": "Led the Nov 2024 overnight rebuild at Grove. Sources do not say whether this is a trackside or factory chief mechanic role. Last documented 2024-11-18. No 2026 source.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "ed-regan",
+      "role": "Rotation Race Engineer",
+      "roleGroup": "race_engineering",
+      "rank": 90,
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-9649742544"
+      ],
+      "confidence": "low",
+      "notes": "Joined mid-2023. Stood in for both cars at some 2024 races. Last documented 2024-11-07.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "stefano-nitti",
+      "role": "Senior Trackside Aero Performance Engineer",
+      "roleGroup": "race_engineering",
+      "rank": 91,
+      "constructorId": "williams",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-c021b0c839"
+      ],
+      "confidence": "low",
+      "notes": "Garage Insider episode. An aero performance role, not a per-driver performance engineer. Last documented 2024-12-03.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "stefano-sordo",
+      "role": "Performance Director",
+      "roleGroup": "technical",
+      "rank": 92,
+      "constructorId": "audi",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-52fcac1c00",
+        "s-4ef5b028ec"
+      ],
+      "confidence": "low",
+      "notes": "Appointed Performance Director at Sauber (Audi works team from 2026) in June 2024; PlanetF1 says he reports to James Key. Two outlets agree on the appointment, but no 2026 source says he still holds the role (last documented 2024-06-10), so confidence is low. He is not in the 2026 press pack's trackside list.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "alessandro-cinelli",
+      "role": "Head of Aerodynamics",
+      "roleGroup": "technical",
+      "rank": 93,
+      "constructorId": "audi",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": "2019-08-19",
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-c85d05515a"
+      ],
+      "confidence": "low",
+      "notes": "Appointed Head of Aerodynamics at Sauber (then Alfa Romeo), starting 2019-08-19. Last documented 2019-07-30. Wikipedia (discovery only) lists him as R26 Head of Aerodynamics and also as 'Head of Aerodynamic Operations and Technology', so his title may have changed. No 2026 source found.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "nathan-divey",
+      "role": "Chief Mechanic",
+      "roleGroup": "garage_operations",
+      "rank": 94,
+      "constructorId": "cadillac",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-256ac76c1c"
+      ],
+      "confidence": "low",
+      "notes": "Autosport (Filip Cleeren, 2026-08-18) names 'chief mechanic Nathan Divey' among the new hires who planned the road to Melbourne with race team manager Peter Crolla. A GM newsroom article (news.gm.com, 2026-02-10, 'Inside the dash to build the first Cadillac Formula 1 car') is indexed as quoting him as Chief Mechanic, but it returned 403 and could not be read, so it is not cited. Search snippets also describe him as Hamilton's former Mercedes No.1 mechanic; only social/LinkedIn sources say so, and that is not used.",
+      "display": false,
+      "held": "low confidence"
+    },
+    {
+      "personId": "daniela-klausser",
+      "role": "Performance Engineer",
+      "roleGroup": "race_engineering",
+      "rank": 95,
+      "constructorId": "haas",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-8a8aad6a90"
+      ],
+      "confidence": "high",
+      "notes": "First-party staff spotlight from 2026 titles her 'Performance Engineer': a trackside role doing setup and data work alongside the race engineer. The article does not say which car or driver she works with, so driverId is null. She was previously a Formula E performance engineer with Mercedes-EQ.",
+      "display": true
+    },
+    {
+      "personId": "toby-brown",
+      "role": "Chief Mechanic",
+      "roleGroup": "garage_operations",
+      "rank": 96,
+      "constructorId": "haas",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-5f10d1bc70"
+      ],
+      "confidence": "low",
+      "notes": "Named as Haas chief mechanic in a Motorsport.com feature on the 2024 Mexican GP. Last documented 2024-11-16; no 2026 source found.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "matt-thompson",
+      "role": "Number One Mechanic",
+      "roleGroup": "garage_operations",
+      "rank": 97,
+      "constructorId": "haas",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-5f10d1bc70"
+      ],
+      "confidence": "low",
+      "notes": "Number one mechanic on car 27 (Hulkenberg) in 2024. Hulkenberg left Haas after 2024, and no source says which 2026 car (Ocon #31 or Bearman #87) Thompson runs, or whether he is still at Haas. Last documented 2024-11-16.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "elliot-parkes",
+      "role": "Number One Mechanic",
+      "roleGroup": "garage_operations",
+      "rank": 98,
+      "constructorId": "haas",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": null,
+      "sources": [
+        "s-5f10d1bc70"
+      ],
+      "confidence": "low",
+      "notes": "Number one mechanic on car 20 (Magnussen) in 2024. No source gives a 2026 car assignment or confirms he is still at the team. Last documented 2024-11-16.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "dan-martin",
+      "role": "Lead Performance Coach",
+      "roleGroup": "garage_operations",
+      "rank": 99,
+      "constructorId": "haas",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-effe97e879"
+      ],
+      "confidence": "high",
+      "notes": "Human-performance lead for the travelling team. His quote cites the physical nature of race-team roles. He is not documented as a pit-stop technique coach. Include only if human-performance staff count as pit-crew leadership.",
+      "display": true
+    },
+    {
+      "personId": "guillaume-dezoteux",
+      "role": "Head of Vehicle Performance (departed)",
+      "roleGroup": "race_engineering",
+      "rank": 100,
+      "constructorId": "racing-bulls",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": "2026-02-01",
+      "current": false,
+      "sources": [
+        "s-8c72d1f49c"
+      ],
+      "confidence": "low",
+      "notes": "PlanetF1 2026-02-04: left Racing Bulls (Head of Vehicle Performance) after ~18 years in the Red Bull family to become Ferrari's Head of Performance Operations. Fills the 'headOfVehiclePerformance' gap with a departure; current Racing Bulls holder not publicly named. effectiveTo approximate.",
+      "display": false,
+      "held": "stale / not current"
+    },
+    {
+      "personId": "peter-bonnington",
+      "role": "Head of Race Engineering",
+      "roleGroup": "race_engineering",
+      "rank": 1,
+      "constructorId": "mercedes",
+      "driverId": null,
+      "season": 2026,
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "current": true,
+      "sources": [
+        "s-60be554aa9"
+      ],
+      "confidence": "high",
+      "display": true
     }
   ],
   "garage": {

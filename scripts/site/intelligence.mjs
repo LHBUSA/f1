@@ -73,7 +73,7 @@ function constructorModule(X, F) {
 }
 
 function dnaModule(X, F, n = 5) {
-  return `<div class="grid g4 idna">${M.dnaLeaders(X, F, n).map((d) => `<div class="card"><span class="kicker">${esc(d.label)}</span>${d.rows.length ? `<ol class="irank">${d.rows.map((r) => `<li>${who(X, r.driver_id)}<b>${r.dim.percentile}</b></li>`).join('')}</ol><p class="fine">${esc(d.rows[0].dim.population || '')} · ${esc(d.rows[0].dim.basis || '')}</p>` : '<p class="muted">Not enough sample this window.</p>'}</div>`).join('')}</div><p class="fine">Driver DNA current window ${esc(Object.values(X.dnaDriver).find((d) => d.current?.window)?.current?.window || '')}. Percentiles within drivers meeting each dimension's minimum sample; low-confidence rows omitted. Start performance and wet-race results are not sourced and are not shown.</p>`;
+  return `<div class="grid g4 idna">${M.dnaLeaders(X, F, n).map((d) => `<div class="card"><span class="kicker">${esc(d.label)}</span>${d.rows.length ? `<ol class="irank">${d.rows.map((r) => `<li>${who(X, r.driver_id)}<b>${r.dim.percentile}</b></li>`).join('')}</ol><p class="fine">${esc(d.rows[0].dim.population || '')} · ${esc(d.rows[0].dim.basis || '')}</p>` : '<p class="muted">Not enough sample this window.</p>'}</div>`).join('')}</div><p class="fine">Driver DNA current window ${esc(Object.values(X.dnaDriver).find((d) => d.current?.window)?.current?.window || '')}. Percentiles within drivers meeting each dimension's minimum sample; low-confidence rows omitted.</p>`;
 }
 
 function champModule(X, F, { full = false } = {}) {

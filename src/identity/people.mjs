@@ -33,13 +33,20 @@ export function teamPeople(reg, constructorId, season) {
     else if (/mechanic|car chief|crew chief/i.test(r.role) || r.roleGroup === 'garage_operations') d.mechanics.push(r);
     else d.other.push(r);
   }
-  for (const d of Object.values(byDriver)) d.raceEngineers.sort((a, b) => /^senior/i.test(a.role) - /^senior/i.test(b.role));
+  // one entry per person per step (a person can carry two titles for the same car, e.g. Race Engineer + Senior Race
+  // Engineer): keep the higher-confidence row
+  const RANK = { high: 3, medium: 2, low: 1 };
+  const uniq = (rs) => Object.values(rs.reduce((m, r) => { const p = m[r.personId]; if (!p || (RANK[r.confidence] || 0) > (RANK[p.confidence] || 0)) m[r.personId] = r; return m; }, {}));
+  for (const d of Object.values(byDriver)) {
+    for (const k of ['raceEngineers', 'performanceEngineers', 'mechanics', 'other']) d[k] = uniq(d[k]);
+    d.raceEngineers.sort((a, b) => /^senior/i.test(a.role) - /^senior/i.test(b.role));
+  }
   return {
     leadership: group('leadership'),
     technical: group('technical'),
     raceEngineering: group('race_engineering'),
     sporting: group('sporting'),
-    driverEngineers: roles.filter((r) => r.driverId && r.roleGroup === 'race_engineering' && /race engineer/i.test(r.role)),
+    driverEngineers: Object.entries(byDriver).flatMap(([, d]) => d.raceEngineers),
     driverChains: byDriver,
     powerUnit: group('power_unit'),
     garageOps: group('garage_operations'),
