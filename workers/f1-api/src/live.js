@@ -16,7 +16,12 @@ export class LiveHub {
     this.snapshot = null;
     this.inflight = null;
   }
-  async fetch() {
+  async fetch(req) {
+    // unflushed recorder frames (the live tail R2 does not have yet)
+    if (req && new URL(req.url).pathname === '/buffer') {
+      const b = (await this.state.storage.get('obs-buf')) || null;
+      return json(b ? { session: b.session, meta: b.meta, frames: b.frames } : { session: null, frames: [] });
+    }
     if (!this.snapshot) this.snapshot = (await this.state.storage.get('snapshot')) || null;
     // the recorder runs on its own alarm; any request (the */10 cron included) re-arms it if it ever lapsed
     if (!(await this.state.storage.getAlarm())) await this.state.storage.setAlarm(Date.now() + 1000);

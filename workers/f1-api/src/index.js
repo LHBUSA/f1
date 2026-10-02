@@ -5,6 +5,9 @@ import { LiveHub } from './live.js';
 import { ingestCurrent } from './ingest.js';
 import { forecast } from './weather.js';
 import { doc, putFile, activate, currentVersion } from './projection.js';
+import { f1Access } from './access.js';
+import { normalizeFrames, sessionPublicId, coverage, SESSION_TYPE } from './frames.js';
+import { deriveIncidents, INCIDENT_TAXONOMY_VERSION } from '../../../src/core/incidents.mjs';
 
 export { LiveHub };
 
@@ -15,6 +18,42 @@ function respond(req, data, { status = 200, cache = 'public, max-age=300' } = {}
   const h = { 'content-type': 'application/json; charset=utf-8', 'cache-control': cache, vary: 'Origin', 'x-propsports-service': 'f1' };
   if (origin && ALLOWED_ORIGINS.has(origin)) h['access-control-allow-origin'] = origin;
   return new Response(JSON.stringify(data), { status, headers: h });
+}
+// premium/session-bound responses: never shared caches, credentials allowed only for the F1 site origin
+function respondPrivate(req, data, status = 200) {
+  const origin = req.headers.get('origin');
+  const h = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store', vary: 'Origin, Cookie', 'x-propsports-service': 'f1', 'x-robots-tag': 'noindex' };
+  if (origin && ALLOWED_ORIGINS.has(origin)) { h['access-control-allow-origin'] = origin; h['access-control-allow-credentials'] = 'true'; }
+  return new Response(JSON.stringify(data), { status, headers: h });
+}
+const FREE_WINDOW_MS = 8 * 60e3;
+const sessionsMemo = { at: 0, list: null };
+// recorded sessions (R2 observations/espn-<competition>/index.json) -> public ids + coverage
+async function recordedSessions(env, internal) {
+  if (sessionsMemo.list && Date.now() - sessionsMemo.at < 60e3) return sessionsMemo.list;
+  const l = await env.DATA.list({ prefix: 'observations/', delimiter: '/' });
+  const out = [];
+  for (const pre of l.delimitedPrefixes || []) {
+    const o = await env.DATA.get(`${pre}index.json`);
+    if (!o) continue;
+    const idx = await o.json();
+    const id = sessionPublicId(idx.meta, internal);
+    if (!id) continue;
+    out.push({ id, upstream: String(idx.session), type: SESSION_TYPE[idx.meta?.type] || null, event_id: internal.event_by_upstream?.[String(idx.meta?.event_id)] || null, event_name: idx.meta?.event_name?.replace(/^.*?(?=(?:[A-Z][a-z]+ )*Grand Prix)/, '') || null, frames: idx.frames, chunks: idx.chunks, first_t: idx.first_t, last_t: idx.last_t, last_state: idx.last_state, recorder: idx.recorder });
+  }
+  sessionsMemo.at = Date.now();
+  sessionsMemo.list = out.sort((a, b) => String(b.first_t).localeCompare(String(a.first_t)));
+  return sessionsMemo.list;
+}
+// all frames of a recorded session: R2 chunks in order + the DO's unflushed tail
+async function sessionFrames(env, upstream, buffer) {
+  const dir = `observations/espn-${upstream}`;
+  const idxObj = await env.DATA.get(`${dir}/index.json`);
+  const idx = idxObj ? await idxObj.json() : { chunks: 0, meta: buffer?.meta || null };
+  const frames = [];
+  for (let i = 1; i <= (idx.chunks || 0); i++) { const c = await env.DATA.get(`${dir}/chunk-${String(i).padStart(5, '0')}.json`); if (c) frames.push(...(await c.json()).frames); }
+  if (buffer?.session === upstream) for (const f of buffer.frames || []) if (!frames.length || f.t > frames.at(-1).t) frames.push(f);
+  return { frames, meta: idx.meta || buffer?.meta || null, recorder: idx.recorder || null };
 }
 const authorized = (req, token) => !!token && (req.headers.get('authorization') || '') === `Bearer ${token}`;
 const err = (req, status, error) => respond(req, { error }, { status, cache: 'no-store' });
@@ -35,9 +74,54 @@ export default {
         const li = last ? await last.json() : null;
         return respond(req, { ok: !!v, service: 'propsports-f1', projection_version: v, last_refresh: li?.at || null, dataset_version: li?.dataset_version || null, time: new Date().toISOString() }, { cache: 'no-store' });
       }
+      // ---------- PBEcast: free tier (public, cacheable) ----------
       if (p === '/live') {
         const r = await env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/state');
-        return respond(req, await publicLive(env, await r.json()), { cache: 'public, max-age=5' });
+        return respond(req, await publicLive(env, await r.json(), { full: false }), { cache: 'public, max-age=5' });
+      }
+      if (p === '/live/frames') {
+        // the live tail only (FREE_WINDOW_MS): enough to move cars, never a replay
+        const internal = await doc(env, 'internal');
+        const b = await (await env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/buffer')).json();
+        const snap = await (await env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/state')).json();
+        const sid = b.session || snap?._frame?.session || null;
+        if (!sid || snap.state !== 'live') return respond(req, { state: snap.state || 'idle', session_id: null, frames: [] }, { cache: 'public, max-age=5' });
+        const all = await sessionFrames(env, sid, b);
+        const since = Math.max(Date.now() - FREE_WINDOW_MS, Date.parse(q.get('since') || 0) || 0);
+        const frames = normalizeFrames(all.frames.filter((f) => Date.parse(f.t) > since), internal, { full: false });
+        return respond(req, { state: 'live', session_id: sessionPublicId(all.meta, internal), window_s: FREE_WINDOW_MS / 1000, frames }, { cache: 'public, max-age=5' });
+      }
+      if (p === '/replay') {
+        const internal = await doc(env, 'internal');
+        return respond(req, { sessions: await recordedSessions(env, internal) }, { cache: 'public, max-age=60' });
+      }
+      if (p === '/membership') {
+        const a = await f1Access(req, env);
+        return respondPrivate(req, { membership: a.membership, signed_in: a.signed_in === true, verification: a.reason });
+      }
+      // ---------- PBEcast: All Access (server-enforced; private, never cached) ----------
+      if (p === '/live/full' || p.startsWith('/replay/') || p.startsWith('/incidents/')) {
+        const a = await f1Access(req, env);
+        if (!a.granted && !p.startsWith('/incidents/')) return respondPrivate(req, { error: 'all_access_required', feature: p === '/live/full' ? 'pbecast_advanced' : 'pbecast_replay', membership: a.membership }, 403);
+        const internal = await doc(env, 'internal');
+        if (p === '/live/full') {
+          const r = await env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/state');
+          return respondPrivate(req, await publicLive(env, await r.json(), { full: true }));
+        }
+        const pub = p.split('/')[2];
+        if (!/^\d{4}-[a-z0-9-]+$/.test(pub || '')) return err(req, 400, 'bad session id');
+        const idx = (await recordedSessions(env, internal)).find((s) => s.id === pub);
+        if (!idx) return respondPrivate(req, { error: 'not_recorded', session_id: pub }, 404);
+        const b = await (await env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/buffer')).json();
+        const all = await sessionFrames(env, idx.upstream, b.session === idx.upstream ? b : null);
+        const full = normalizeFrames(all.frames, internal, { full: true });
+        const teamOf = (id) => internal.team_by_driver?.[id] || null;
+        const events = deriveIncidents(full, { sessionId: pub, teamOf });
+        if (p.startsWith('/incidents/')) {
+          // major live safety/status events are free; the full timeline is All Access
+          return a.granted ? respondPrivate(req, { session_id: pub, taxonomy: INCIDENT_TAXONOMY_VERSION, events, tier: 'all_access' }) : respond(req, { session_id: pub, taxonomy: INCIDENT_TAXONOMY_VERSION, events: events.filter((e) => e.free), tier: 'free' }, { cache: 'public, max-age=10' });
+        }
+        return respondPrivate(req, { session_id: pub, meta: { type: idx.type, event_id: idx.event_id, event_name: idx.event_name, laps_total: all.meta?.laps_total ?? null }, coverage: coverage(all.frames), frames: full, events, recorder: all.recorder || null });
       }
       if (p === '/weather') {
         const slug = q.get('circuit') || '';
@@ -216,7 +300,7 @@ export default {
 };
 
 // Live snapshot → public payload (public driver/event/session ids, no upstream ids or error text).
-async function publicLive(env, s) {
+async function publicLive(env, s, { full = false } = {}) {
   const internal = (await doc(env, 'internal')) || { driver_by_upstream: {}, event_by_upstream: {} };
   const evSlug = s.event ? internal.event_by_upstream[String(s.event.id)] || null : null;
   const TYPE = { FP1: 'fp1', FP2: 'fp2', FP3: 'fp3', Qual: 'qualifying', SS: 'sprint-qualifying', SR: 'sprint', Race: 'race' };
@@ -226,9 +310,13 @@ async function publicLive(env, s) {
     session: s.session ? { id: evSlug && TYPE[s.session.type] ? `${evSlug}-${TYPE[s.session.type]}` : null, type: TYPE[s.session.type] || null, label: s.session.label, start_utc: s.session.start, state: s.session.state, lap: s.session.lap, laps_total: s.session.laps_total, flag: s.session.flag, status: s.session.status } : null,
     tower: (s.tower || []).map((r) => {
       const d = internal.driver_by_upstream[r.id];
-      return { pos: r.pos, driver_id: d?.id || null, name: d?.name || r.name, code: d?.code || null, number: r.num, team: r.team, color: r.color, gap: r.gap, laps: r.laps, pits: r.pits, best: r.best, fastest: !!r.fastest, status: r.status };
+      const row = { pos: r.pos, driver_id: d?.id || null, name: d?.name || r.name, code: d?.code || null, number: r.num, team: r.team, color: r.color, laps: r.laps, status: r.status };
+      // gaps, pit counts and lap times are All Access fields: they are not in the free payload at all
+      return full ? { ...row, gap: r.gap, pits: r.pits, best: r.best, fastest: !!r.fastest } : row;
     }),
-    feed: (s.feed || []).map((f) => ({ t: f.t, lap: f.lap, kind: f.kind, kind_label: f.kind_label, text: f.text })),
+    // free feed: major race-state and status events only; the full feed (pits, position changes, laps) is All Access
+    feed: (s.feed || []).filter((f) => full || ['flag', 'ret'].includes(f.kind)).map((f) => ({ t: f.t, lap: f.lap, kind: f.kind, kind_label: f.kind_label, text: f.text })),
+    tier: full ? 'all_access' : 'free',
     next: s.next ? { event: s.next.event, label: s.next.label, start_utc: s.next.start } : null,
     updated_at: s.updated_at || s.checked_at || null,
     checked_at: s.checked_at || null,

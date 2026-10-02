@@ -10,6 +10,8 @@
   "limits": { "cpu_ms": 60000 },
   "triggers": { "crons": ["*/10 * * * *"] },
   "r2_buckets": [{ "binding": "DATA", "bucket_name": "f1-data" }],
+  // network membership authority (All Access): same binding every All-Access-only sport uses
+  "services": [{ "binding": "AUTH", "service": "propbetedge-auth-magic" }],
   "durable_objects": { "bindings": [{ "name": "LIVE", "class_name": "LiveHub" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LiveHub"] }]
 }

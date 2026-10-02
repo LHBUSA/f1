@@ -194,6 +194,8 @@ const internal = {
   event_by_upstream: Object.fromEntries(events.map((e) => [e.id.replace(/^espn-/, ''), e.slug])),
   media: Object.fromEntries(drivers.filter((d) => careers[d.id]?.entries).map((d) => [d.slug, { headshot: mediaOk(d.headshot_url) ? d.headshot_url : null, flag: mediaOk(d.flag_url) ? d.flag_url : null }])),
   circuits_geo: Object.fromEntries(circuits.filter((c) => c.lat != null).map((c) => [c.slug, { lat: c.lat, lon: c.lon }])),
+  // current team per public driver id (PBEcast identity + incident constructor ids)
+  team_by_driver: Object.fromEntries(files.drivers.filter((d) => d.team_season === cur && d.team_id).map((d) => [d.id, d.team_id])),
 };
 
 // Leak check: no upstream names/hosts/ids in public documents.

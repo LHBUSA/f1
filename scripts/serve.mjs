@@ -8,6 +8,15 @@ const API = process.env.F1_API || 'https://f1-api.propbetedge.ai';
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.xml': 'application/xml', '.txt': 'text/plain' };
 http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
+  // same-origin premium proxy (mirrors the Vercel rewrite /pbe/f1/* -> PropSports /v1/f1/*), cookie forwarded
+  if (url.pathname.startsWith('/pbe/f1/')) {
+    try {
+      const r = await fetch((process.env.F1_PRIV || 'https://propsports.proptechusa.ai') + url.pathname.replace(/^\/pbe\/f1/, '/v1/f1') + url.search, { headers: { cookie: req.headers.cookie || '' } });
+      res.writeHead(r.status, { 'content-type': r.headers.get('content-type') || 'application/json' });
+      res.end(Buffer.from(await r.arrayBuffer()));
+    } catch { res.writeHead(502); res.end('{}'); }
+    return;
+  }
   if (url.pathname.startsWith('/api/')) {
     try {
       const r = await fetch(API + url.pathname.replace(/^\/api/, '') + url.search);

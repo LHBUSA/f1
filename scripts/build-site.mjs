@@ -9,6 +9,7 @@ import { lineageChain } from '../src/core/constructors.mjs';
 import { loadProjection } from '../src/news/data.mjs';
 import { articlePage } from '../src/news/render.mjs';
 import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
+import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
 
 const DIST = path.resolve('dist');
 const t0 = Date.now();
@@ -46,7 +47,14 @@ if (fs.existsSync(BD_SRC)) {
   fs.mkdirSync(path.join(DIST, 'media/backdrop'), { recursive: true });
   for (const f of fs.readdirSync(BD_SRC).filter((x) => /\.(avif|webp)$/.test(x))) fs.copyFileSync(path.join(BD_SRC, f), path.join(DIST, 'media/backdrop', f));
 } else console.warn('build-site: no backdrop assets at', BD_SRC);
-const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js` };
+// PBEcast V2 bundle: the shared progress model + the client, content-hashed (loaded on PBEcast pages only)
+const prog = fs.readFileSync('src/core/progress.mjs', 'utf8');
+const progHash = crypto.createHash('sha256').update(prog).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/progress.${progHash}.js`), prog);
+const pc = fs.readFileSync('src/web/pbecast.js', 'utf8').replace("from './progress.js'", `from './progress.${progHash}.js'`);
+const pcHash = crypto.createHash('sha256').update(pc).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/pbecast.${pcHash}.js`), pc);
+const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];
@@ -78,7 +86,8 @@ emit(P.standingsPage(ctx, ctx.currentSeason));
 for (const y of seasons) if (y !== ctx.currentSeason && ctx.standingsBy[`${y}|driver`]) emit(P.standingsPage(ctx, y));
 emit(P.matchupsIndex(ctx));
 for (const k of Object.keys(ctx.matchups)) emit(P.matchupPage(ctx, k));
-emit(P.pbecast(ctx));
+emit(pbecastHub(X, ctx.nextEvent ? X.event[ctx.nextEvent.slug] : null));
+for (const ev of X.raceEvents(ctx.currentSeason)) emit(pbecastEventPage(X, ev));
 emit(methodology(ctx));
 emit(coveragePage(ctx));
 for (const p of P.intelligencePages(ctx, X, newsPub)) emit(p);

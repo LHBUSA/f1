@@ -116,7 +116,7 @@ const NETWORK = [
   ['https://boxing.propbetedge.ai', 'Boxing'],
 ];
 
-export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg, ogImage = null, ogImageAlt = null, article = null }) {
+export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg, ogImage = null, ogImageAlt = null, article = null, pbecast = false }) {
   const canonical = SITE + (path === '/' ? '/' : path.replace(/\/$/, ''));
   const fullTitle = path === '/' ? title : `${title} | PropBetEdge F1`;
   const active = section || '/' + (path.split('/')[1] || '');
@@ -161,6 +161,7 @@ ${article ? `<meta property="article:published_time" content="${esc(article.publ
 ${heroPreload}
 <link rel="stylesheet" href="${assets.css}">
 <script src="${assets.js}" defer></script>
+${pbecast && assets.pbecast ? `<script type="module" src="${assets.pbecast}"></script>` : ''}
 ${ld}
 </head>
 <body data-path="${esc(path)}" class="bg-${bgClass}">

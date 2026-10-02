@@ -4,7 +4,11 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/news/:slug(\\d{4}-[a-z0-9-]+-grand-prix)", "destination": "/races/:slug", "permanent": true }
+    {
+      "source": "/news/:slug(\\d{4}-[a-z0-9-]+-grand-prix)",
+      "destination": "/races/:slug",
+      "permanent": true
+    }
   ],
   "headers": [
     {
@@ -40,6 +44,12 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/pbe/f1/:path*",
+      "destination": "https://propsports.proptechusa.ai/v1/f1/:path*"
     }
   ]
 }
