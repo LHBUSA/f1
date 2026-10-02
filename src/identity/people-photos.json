@@ -90,7 +90,10 @@
         "96": "frederic-vasseur-96.webp",
         "192": "frederic-vasseur-192.webp"
       },
-      "notes": "Commons crop of a larger original; credit the original author. Backup own-work alternative: File:Formula1Gabelhofen2022 (09).jpg (CC BY-SA 4.0, 2022). Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified."
+      "notes": "Commons crop of a larger original; credit the original author. Backup own-work alternative: File:Formula1Gabelhofen2022 (09).jpg (CC BY-SA 4.0, 2022). Visually checked: correct person, face visible, head-and-shoulders croppable. Commons sha1 verified.",
+      "rightsEvidence": {
+        "ownerDecision": "KEEP (owner 2026-10-02): cleared Commons file; attribution preserved exactly (Original: Race Service for Ferrari Spa / Derivative work: Danyele / Wikimedia Commons, CC BY-SA 4.0)"
+      }
     },
     "diego-ioverno": {
       "name": "Diego Ioverno",
@@ -465,7 +468,16 @@
         "96": "pat-symonds-96.webp",
         "192": "pat-symonds-192.webp"
       },
-      "notes": "Viewed: Symonds (Williams Martini Racing lanyard, then Williams CTO) with Zak Brown at Silverstone 27 May 2015; large sharp face, crop excludes Brown. In Commons category Pat Symonds. FLAG: author is United Autosports (Zak Brown racing team) own Flickr account, CC BY-SA 2.0, FlickreviewR passed - a genuine owner-licensed release, but it is team-account media; drop if team-account photos are not acceptable."
+      "notes": "Viewed: Symonds (Williams Martini Racing lanyard, then Williams CTO) with Zak Brown at Silverstone 27 May 2015; large sharp face, crop excludes Brown. In Commons category Pat Symonds. Rights: FlickreviewR passed 2021-07-04 (cc-by-sa-2.0); owner approved 2026-10-02.",
+      "rightsEvidence": {
+        "flickreviewR": {
+          "status": "passed",
+          "reviewdate": "2021-07-04",
+          "license": "cc-by-sa-2.0",
+          "sourceurl": "https://flickr.com/photos/48092258@N06/19324819696"
+        },
+        "ownerDecision": "KEEP (owner 2026-10-02): team-owned Flickr account published under a verified CC BY-SA licence; no endorsement implied"
+      }
     },
     "guenther-steiner": {
       "name": "Guenther Steiner",
