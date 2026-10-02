@@ -1,300 +1,232 @@
-// f1-api: live state (LiveHub Durable Object), weather, dataset distribution for the site build,
-// and the current-season ingest cron. Source: ESPN (live + results), MET Norway (forecasts).
-import { extractSeason, extractDrivers, extractVenues } from '../../../src/core/extract.mjs';
+// F1 data plane (isolated service). Public contract: propsports.proptechusa.ai/v1/f1/* (mounted by the
+// PropSports site; this Worker is the origin). Owns collection, raw archive, normalization, live state,
+// weather and the published F1 projection. Public payloads carry public ids only — no upstream names/ids.
+import { LiveHub } from './live.js';
+import { ingestCurrent } from './ingest.js';
+import { forecast } from './weather.js';
+import { doc, putFile, activate, currentVersion } from './projection.js';
 
-const ESPN_CORE = 'https://sports.core.api.espn.com/v2/sports/racing/leagues/f1';
-const UA = 'PropBetEdge-F1/1.0 (+https://f1.propbetedge.ai)';
-const SESSION_LABEL = { FP1: 'Practice 1', FP2: 'Practice 2', FP3: 'Practice 3', Qual: 'Qualifying', SS: 'Sprint Qualifying', SR: 'Sprint', Race: 'Grand Prix' };
+export { LiveHub };
 
-const json = (data, status = 200, headers = {}) =>
-  new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': 'https://f1.propbetedge.ai', ...headers } });
+const ALLOWED_ORIGINS = new Set(['https://f1.propbetedge.ai', 'https://propsports.proptechusa.ai', 'http://127.0.0.1:4173', 'http://localhost:4173']);
 
-function authorized(req, token) {
-  const h = req.headers.get('authorization') || '';
-  return !!token && h === `Bearer ${token}`;
+function respond(req, data, { status = 200, cache = 'public, max-age=300' } = {}) {
+  const origin = req.headers.get('origin');
+  const h = { 'content-type': 'application/json; charset=utf-8', 'cache-control': cache, vary: 'Origin', 'x-propsports-service': 'f1' };
+  if (origin && ALLOWED_ORIGINS.has(origin)) h['access-control-allow-origin'] = origin;
+  return new Response(JSON.stringify(data), { status, headers: h });
 }
+const authorized = (req, token) => !!token && (req.headers.get('authorization') || '') === `Bearer ${token}`;
+const err = (req, status, error) => respond(req, { error }, { status, cache: 'no-store' });
 
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
-    const p = url.pathname.replace(/\/+$/, '') || '/';
+    let p = url.pathname.replace(/\/+$/, '') || '/';
+    if (req.method === 'OPTIONS') return respond(req, {}, { status: 204, cache: 'max-age=86400' });
+    if (!p.startsWith('/v1/f1')) return err(req, 404, 'not found');
+    p = p.slice('/v1/f1'.length) || '/';
+    const q = url.searchParams;
     try {
-      if (p === '/v1/health') return json({ ok: true, service: 'f1-api', time: new Date().toISOString() }, 200, { 'cache-control': 'no-store' });
-      if (p === '/v1/live') {
-        const stub = env.LIVE.get(env.LIVE.idFromName('global'));
-        const r = await stub.fetch('https://live/state');
-        return new Response(r.body, { status: r.status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=5', 'access-control-allow-origin': 'https://f1.propbetedge.ai' } });
+      // ---------- operational ----------
+      if (p === '/health') {
+        const v = await currentVersion(env);
+        const last = await env.DATA.get('state/last-ingest.json');
+        const li = last ? await last.json() : null;
+        return respond(req, { ok: !!v, service: 'propsports-f1', projection_version: v, last_refresh: li?.at || null, dataset_version: li?.dataset_version || null, time: new Date().toISOString() }, { cache: 'no-store' });
       }
-      const wm = p.match(/^\/v1\/weather\/([a-z0-9-]+)$/);
-      if (wm) return weather(wm[1], url, env, ctx);
-      if (p === '/v1/dataset/manifest' || p.startsWith('/v1/dataset/')) {
-        if (!authorized(req, env.DATASET_TOKEN)) return json({ error: 'unauthorized' }, 401);
-        if (p === '/v1/dataset/manifest') {
+      if (p === '/live') {
+        const r = await env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/state');
+        return respond(req, await publicLive(env, await r.json()), { cache: 'public, max-age=5' });
+      }
+      if (p === '/weather') {
+        const slug = q.get('circuit') || '';
+        const internal = await doc(env, 'internal');
+        const geo = internal?.circuits_geo?.[slug];
+        if (!geo) return respond(req, { circuit: slug, days: [], note: 'no coordinates for this circuit' });
+        const w = await forecast(geo, (q.get('from') || '').slice(0, 10), (q.get('to') || '').slice(0, 10), ctx);
+        return respond(req, { circuit: slug, ...w }, { cache: 'public, max-age=1800' });
+      }
+      const media = p.match(/^\/media\/(headshot|flag)\/([a-z0-9-]+)$/);
+      if (media) return mediaProxy(req, env, ctx, media[1], media[2]);
+
+      // ---------- protected ----------
+      if (p === '/dataset' || p.startsWith('/dataset/')) {
+        if (!authorized(req, env.DATASET_TOKEN)) return err(req, 401, 'unauthorized');
+        if (p === '/dataset' || p === '/dataset/manifest') {
           const list = await env.DATA.list({ prefix: 'fragments/' });
-          return json({ objects: list.objects.map((o) => ({ key: o.key, size: o.size, uploaded: o.uploaded })) }, 200, { 'cache-control': 'no-store' });
+          return respond(req, { objects: list.objects.map((o) => ({ key: o.key, size: o.size, uploaded: o.uploaded })) }, { cache: 'no-store' });
         }
-        const key = decodeURIComponent(p.slice('/v1/dataset/'.length));
-        if (!/^fragments\/[a-z0-9._-]+$/.test(key)) return json({ error: 'bad key' }, 400);
+        const key = decodeURIComponent(p.slice('/dataset/'.length));
+        if (!/^fragments\/[a-z0-9._-]+$/.test(key)) return err(req, 400, 'bad key');
         const obj = await env.DATA.get(key);
-        if (!obj) return json({ error: 'not found' }, 404);
-        return new Response(obj.body, { headers: { 'content-type': obj.httpMetadata?.contentType || 'application/json', 'content-encoding': obj.httpMetadata?.contentEncoding || '', 'cache-control': 'no-store' } });
+        if (!obj) return err(req, 404, 'not found');
+        return new Response(obj.body, { headers: { 'content-type': obj.httpMetadata?.contentType || 'application/json', 'cache-control': 'no-store', ...(obj.httpMetadata?.contentEncoding ? { 'content-encoding': obj.httpMetadata.contentEncoding } : {}) } });
+      }
+      const pf = p.match(/^\/admin\/projection\/([a-f0-9]{16})\/([a-z0-9-]+)$/);
+      if (pf && req.method === 'PUT') {
+        if (!authorized(req, env.PUBLISH_TOKEN)) return err(req, 401, 'unauthorized');
+        await putFile(env, pf[1], pf[2], await req.arrayBuffer());
+        return respond(req, { ok: true }, { cache: 'no-store' });
+      }
+      const pa = p.match(/^\/admin\/projection\/([a-f0-9]{16})\/activate$/);
+      if (pa && req.method === 'POST') {
+        if (!authorized(req, env.PUBLISH_TOKEN)) return err(req, 401, 'unauthorized');
+        return respond(req, await activate(env, pa[1], await req.json()), { cache: 'no-store' });
       }
       if (p === '/admin/ingest' && req.method === 'POST') {
-        if (!authorized(req, env.ADMIN_TOKEN)) return json({ error: 'unauthorized' }, 401);
-        const res = await ingestCurrent(env, { force: url.searchParams.get('force') === '1', trigger: url.searchParams.get('deploy') === '1' });
-        return json(res, 200, { 'cache-control': 'no-store' });
+        if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
+        return respond(req, await ingestCurrent(env, { force: q.get('force') === '1', trigger: q.get('deploy') === '1' }), { cache: 'no-store' });
       }
-      return json({ error: 'not found' }, 404);
+      if (p === '/admin/deploy-ledger') {
+        if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
+        const o = await env.DATA.get('state/deploy-ledger.json');
+        return respond(req, o ? await o.json() : {}, { cache: 'no-store' });
+      }
+
+      // ---------- public projection routes ----------
+      const meta = await doc(env, 'meta');
+      if (!meta) return err(req, 503, 'projection not published');
+      const season = (s) => (s && /^\d{4}$/.test(s) ? Number(s) : meta.current_season);
+      if (p === '/season') {
+        const y = season(q.get('season'));
+        const [evs, st] = await Promise.all([doc(env, `events-${y}`), doc(env, `standings-${y}`)]);
+        if (!evs) return err(req, 404, 'season not found');
+        return respond(req, { season: y, events: evs.map(({ sessions, ...e }) => ({ ...e, sessions: sessions.map(({ results, ...s }) => s) })), standings: st ? { drivers: st.drivers.slice(0, 10), constructors: st.constructors } : null });
+      }
+      if (p === '/seasons') return respond(req, await doc(env, 'seasons'));
+      if (p === '/drivers') {
+        let list = await doc(env, 'drivers');
+        if (q.get('season')) {
+          const y = Number(q.get('season'));
+          list = list.filter((d) => d.career.first_season <= y && d.career.last_season >= y);
+        }
+        if (q.get('active') === '1') list = list.filter((d) => d.career.last_season >= meta.current_season);
+        return respond(req, list);
+      }
+      let m;
+      if ((m = p.match(/^\/drivers\/([a-z0-9-]+)$/))) {
+        const d = (await doc(env, 'drivers')).find((x) => x.id === m[1]);
+        if (!d) return err(req, 404, 'driver not found');
+        const dna = (await doc(env, 'dna-driver'))[d.id] || null;
+        return respond(req, { ...d, dna });
+      }
+      if (p === '/constructors') return respond(req, await doc(env, 'constructors'));
+      if ((m = p.match(/^\/constructors\/([a-z0-9-]+)$/))) {
+        const c = (await doc(env, 'constructors')).find((x) => x.id === m[1]);
+        if (!c) return err(req, 404, 'constructor not found');
+        return respond(req, { ...c, dna: (await doc(env, 'dna-constructor'))[c.id] || null });
+      }
+      if (p === '/events') {
+        const evs = await doc(env, `events-${season(q.get('season'))}`);
+        if (!evs) return err(req, 404, 'season not found');
+        return respond(req, evs.map(({ sessions, ...e }) => ({ ...e, sessions: sessions.map(({ results, ...s }) => s) })));
+      }
+      if ((m = p.match(/^\/events\/((\d{4})-[a-z0-9-]+)$/))) {
+        const ev = (await doc(env, `events-${m[2]}`))?.find((e) => e.id === m[1]);
+        return ev ? respond(req, ev) : err(req, 404, 'event not found');
+      }
+      if (p === '/sessions') {
+        const ev = q.get('event');
+        const y = ev ? Number(ev.slice(0, 4)) : season(q.get('season'));
+        const evs = (await doc(env, `events-${y}`)) || [];
+        const list = evs.filter((e) => !ev || e.id === ev).flatMap((e) => e.sessions.map(({ results, ...s }) => s));
+        return respond(req, list);
+      }
+      if ((m = p.match(/^\/sessions\/((\d{4})-[a-z0-9-]+)$/))) {
+        const evs = (await doc(env, `events-${m[2]}`)) || [];
+        for (const e of evs) for (const s of e.sessions) if (s.id === m[1]) return respond(req, s);
+        return err(req, 404, 'session not found');
+      }
+      if (p === '/standings/drivers' || p === '/standings/constructors') {
+        const y = season(q.get('season'));
+        const st = await doc(env, `standings-${y}`);
+        if (!st) return err(req, 404, 'season not found');
+        const kind = p.endsWith('drivers') ? 'drivers' : 'constructors';
+        return respond(req, { season: y, standings: st[kind], progression: q.get('progression') === '1' ? (st.progression || []).map((r) => ({ event_id: r.event_id, round: r.round, totals: r[kind] })) : undefined, note: st.progression_note || null });
+      }
+      if (p === '/results') {
+        const y = season(q.get('season'));
+        const evs = (await doc(env, `events-${y}`)) || [];
+        const type = q.get('session_type') || 'race';
+        const ev = q.get('event');
+        const out = evs.filter((e) => !ev || e.id === ev).map((e) => ({ event_id: e.id, round: e.round, name: e.name, session: e.sessions.find((s) => s.type === type) || null })).filter((x) => x.session?.results?.length);
+        return respond(req, out);
+      }
+      if (p === '/circuits') return respond(req, await doc(env, 'circuits'));
+      if ((m = p.match(/^\/circuits\/([a-z0-9-]+)$/))) {
+        const c = (await doc(env, 'circuits')).find((x) => x.id === m[1]);
+        return c ? respond(req, { ...c, dna: (await doc(env, 'dna-circuit'))[c.id] || null }) : err(req, 404, 'circuit not found');
+      }
+      if ((m = p.match(/^\/dna\/driver\/([a-z0-9-]+)$/))) {
+        const d = (await doc(env, 'dna-driver'))[m[1]];
+        return d ? respond(req, { driver_id: m[1], ...d }) : err(req, 404, 'no DNA for this driver');
+      }
+      if ((m = p.match(/^\/dna\/constructor\/([a-z0-9-]+)$/))) {
+        const d = (await doc(env, 'dna-constructor'))[m[1]];
+        if (!d) return err(req, 404, 'no DNA for this constructor');
+        const y = q.get('season');
+        return respond(req, { constructor_id: m[1], seasons: y ? { [y]: d[y] || null } : d });
+      }
+      if ((m = p.match(/^\/dna\/circuit\/([a-z0-9-]+)$/))) {
+        const d = (await doc(env, 'dna-circuit'))[m[1]];
+        return d ? respond(req, d) : err(req, 404, 'no DNA for this circuit');
+      }
+      if ((m = p.match(/^\/fit\/((\d{4})-[a-z0-9-]+)$/))) {
+        const f = (await doc(env, 'fit'))[m[1]];
+        return f ? respond(req, f) : err(req, 404, 'no Circuit Fit for this event');
+      }
+      if ((m = p.match(/^\/matchup\/([a-z0-9-]+)\/([a-z0-9-]+)$/))) {
+        const [a, b] = [m[1], m[2]].sort();
+        const x = (await doc(env, 'matchups'))[`${a}|${b}`];
+        return x ? respond(req, x) : err(req, 404, 'no shared races for this pair');
+      }
+      return err(req, 404, 'not found');
     } catch (e) {
-      return json({ error: 'internal', message: String(e?.message || e).slice(0, 200) }, 500, { 'cache-control': 'no-store' });
+      console.error('f1 route error', p, e?.stack || e);
+      return err(req, 500, 'internal error');
     }
   },
   async scheduled(event, env, ctx) {
     ctx.waitUntil(ingestCurrent(env, { trigger: true }).catch((e) => console.error('ingest failed', e?.message || e)));
-    // Keep the live hub warm during sessions so the feed is built even without viewers.
     ctx.waitUntil(env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/state').catch(() => {}));
   },
 };
 
-// ---------------- Weather (MET Norway, CC BY 4.0) ----------------
-async function weather(slug, url, env, ctx) {
-  const meta = await env.DATA.get('meta/circuits.json');
-  if (!meta) return json({ circuit: slug, days: [], note: 'no circuit index' });
-  const circuits = await meta.json();
-  const c = circuits[slug];
-  if (!c || c.lat == null) return json({ circuit: slug, days: [], note: 'no coordinates for this circuit' });
-  const lat = Number(c.lat).toFixed(3);
-  const lon = Number(c.lon).toFixed(3);
-  const cacheKey = new Request(`https://f1-api.propbetedge.ai/cache/weather/${lat},${lon}`);
-  const cache = caches.default;
-  let fc = await cache.match(cacheKey);
-  if (!fc) {
-    const r = await fetch(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`, { headers: { 'User-Agent': UA } });
-    if (!r.ok) return json({ circuit: slug, days: [], note: `forecast source unavailable (${r.status})` }, 200, { 'cache-control': 'no-store' });
-    fc = new Response(await r.text(), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' } });
-    ctx.waitUntil(cache.put(cacheKey, fc.clone()));
-  }
-  const data = await fc.json();
-  const from = (url.searchParams.get('from') || '').slice(0, 10);
-  const to = (url.searchParams.get('to') || '').slice(0, 10);
-  const days = {};
-  for (const t of data.properties?.timeseries || []) {
-    const d = t.time.slice(0, 10);
-    if ((from && d < from) || (to && d > to)) continue;
-    const det = t.data.instant.details;
-    const x = (days[d] ||= { date: d, t_max: -99, t_min: 99, precip_mm: 0, wind_ms: 0, _h: new Set() });
-    x.t_max = Math.max(x.t_max, det.air_temperature);
-    x.t_min = Math.min(x.t_min, det.air_temperature);
-    x.wind_ms = Math.max(x.wind_ms, det.wind_speed ?? 0);
-    const p1 = t.data.next_1_hours?.details?.precipitation_amount;
-    const p6 = t.data.next_6_hours?.details?.precipitation_amount;
-    const hour = Number(t.time.slice(11, 13));
-    if (p1 != null) { if (!x._h.has(hour)) { x.precip_mm += p1; x._h.add(hour); } }
-    else if (p6 != null && hour % 6 === 0) { x.precip_mm += p6; for (let h = hour; h < hour + 6; h++) x._h.add(h); }
-  }
-  const out = Object.values(days).map(({ _h, ...d }) => ({ ...d, precip_mm: Math.round(d.precip_mm * 10) / 10 }));
-  return json({ circuit: slug, source: 'MET Norway Locationforecast 2.0', licence: 'CC BY 4.0', updated_at: data.properties?.meta?.updated_at, days: out }, 200, { 'cache-control': 'public, max-age=1800' });
+// Live snapshot → public payload (public driver/event/session ids, no upstream ids or error text).
+async function publicLive(env, s) {
+  const internal = (await doc(env, 'internal')) || { driver_by_upstream: {}, event_by_upstream: {} };
+  const evSlug = s.event ? internal.event_by_upstream[String(s.event.id)] || null : null;
+  const TYPE = { FP1: 'fp1', FP2: 'fp2', FP3: 'fp3', Qual: 'qualifying', SS: 'sprint-qualifying', SR: 'sprint', Race: 'race' };
+  return {
+    state: s.state === 'unavailable' ? 'unavailable' : s.state,
+    event: s.event ? { id: evSlug, name: s.event.name } : null,
+    session: s.session ? { id: evSlug && TYPE[s.session.type] ? `${evSlug}-${TYPE[s.session.type]}` : null, type: TYPE[s.session.type] || null, label: s.session.label, start_utc: s.session.start, state: s.session.state, lap: s.session.lap, laps_total: s.session.laps_total, flag: s.session.flag, status: s.session.status } : null,
+    tower: (s.tower || []).map((r) => {
+      const d = internal.driver_by_upstream[r.id];
+      return { pos: r.pos, driver_id: d?.id || null, name: d?.name || r.name, code: d?.code || null, number: r.num, team: r.team, color: r.color, gap: r.gap, laps: r.laps, pits: r.pits, best: r.best, fastest: !!r.fastest, status: r.status };
+    }),
+    feed: (s.feed || []).map((f) => ({ t: f.t, lap: f.lap, kind: f.kind, kind_label: f.kind_label, text: f.text })),
+    next: s.next ? { event: s.next.event, label: s.next.label, start_utc: s.next.start } : null,
+    updated_at: s.updated_at || s.checked_at || null,
+    checked_at: s.checked_at || null,
+  };
 }
 
-// ---------------- Current-season ingest (R2 doc store) ----------------
-async function ingestCurrent(env, { force = false, trigger = false } = {}) {
-  const year = new Date().getUTCFullYear();
-  const storeKey = `raw/season-${year}.json`;
-  const storeObj = await env.DATA.get(storeKey);
-  const store = storeObj ? await storeObj.json() : {};
-  let fetched = 0;
-  const budget = 700;
-  const norm = (u) => {
-    const x = new URL(u.replace(/^http:/, 'https:'));
-    x.searchParams.delete('lang');
-    x.searchParams.delete('region');
-    return x.toString();
-  };
-  const get = async (u, { maxAgeMs = Infinity } = {}) => {
-    const k = norm(u);
-    const hit = store[k];
-    if (hit && (Date.now() - Date.parse(hit.capturedAt) < (force ? 0 : maxAgeMs) || fetched >= budget)) return hit.notFound ? null : hit;
-    if (fetched >= budget) return null;
-    fetched++;
-    const r = await fetch(k, { headers: { 'User-Agent': UA, Accept: 'application/json' } });
-    if (r.status === 401 || r.status === 403) throw new Error(`ESPN access barrier ${r.status}`);
-    if (r.status === 404) {
-      store[k] = { url: k, capturedAt: new Date().toISOString(), notFound: true };
-      return null;
-    }
-    if (!r.ok) return hit || null;
-    const data = await r.json();
-    const env2 = { url: k, capturedAt: new Date().toISOString(), data };
-    store[k] = env2;
-    return env2;
-  };
-  const ingestedAt = new Date().toISOString();
-  const frag = await extractSeason(year, get, { ingestedAt, concurrency: 6 });
-  const prevObj = await env.DATA.get(`fragments/season-${year}.json`);
-  const prev = prevObj ? await prevObj.json() : null;
-  const completed = (f) => new Set((f?.sessions || []).filter((s) => s.state === 'completed').map((s) => s.id));
-  const before = completed(prev);
-  const newly = [...completed(frag)].filter((id) => !before.has(id));
-  const standingsChanged = JSON.stringify((prev?.standings || []).map((s) => [s.subject_id, s.name_raw, s.points])) !== JSON.stringify(frag.standings.map((s) => [s.subject_id, s.name_raw, s.points]));
-  // Drivers & venues for the current season (weekly refresh).
-  const drivers = await extractDrivers(frag.athlete_ids, get, { ingestedAt, maxAgeMs: 7 * 86400e3, concurrency: 6 });
-  const venues = await extractVenues(frag.venue_refs, get, { ingestedAt, maxAgeMs: 30 * 86400e3 });
-  await env.DATA.put(storeKey, JSON.stringify(store), { httpMetadata: { contentType: 'application/json' } });
-  const put = (k, v) => env.DATA.put(k, JSON.stringify(v), { httpMetadata: { contentType: 'application/json' } });
-  // Never publish a partial fragment: if the per-run budget ran out, the doc store keeps filling next run.
-  if (frag.events.length && fetched < budget) {
-    await put(`fragments/season-${year}.json`, frag);
-    await put(`fragments/drivers-current.json`, drivers);
-    await put(`fragments/venues-current.json`, venues);
+// Headshot/flag proxy: the site never loads images from an upstream host. Cached in R2 after first fetch.
+async function mediaProxy(req, env, ctx, kind, slug) {
+  const key = `media/${kind}/${slug}`;
+  let obj = await env.DATA.get(key);
+  if (!obj) {
+    const internal = await doc(env, 'internal');
+    const src = internal?.media?.[slug]?.[kind];
+    if (!src) return new Response('not found', { status: 404 });
+    const r = await fetch(src, { headers: { 'User-Agent': 'PropBetEdge-F1/1.0 (+https://f1.propbetedge.ai)' } });
+    const type = r.headers.get('content-type') || '';
+    if (!r.ok || !type.startsWith('image/')) return new Response('not found', { status: 404 });
+    const buf = await r.arrayBuffer();
+    ctx.waitUntil(env.DATA.put(key, buf, { httpMetadata: { contentType: type } }));
+    return new Response(buf, { headers: { 'content-type': type, 'cache-control': 'public, max-age=604800', 'access-control-allow-origin': '*' } });
   }
-  let deploy = null;
-  if (trigger && (newly.length || standingsChanged) && env.DEPLOY_HOOK_URL) {
-    const lastObj = await env.DATA.get('state/last-deploy.json');
-    const last = lastObj ? await lastObj.json() : null;
-    if (!last || Date.now() - Date.parse(last.at) > 20 * 60 * 1000) {
-      const r = await fetch(env.DEPLOY_HOOK_URL, { method: 'POST' });
-      deploy = { status: r.status, newly, standingsChanged };
-      await put('state/last-deploy.json', { at: new Date().toISOString(), ...deploy });
-    } else deploy = { skipped: 'throttled', newly };
-  }
-  const summary = { at: ingestedAt, season: year, fetched, budget_hit: fetched >= budget, events: frag.events.length, sessions: frag.sessions.length, results: frag.results.length, newly_completed: newly.length, standings_changed: standingsChanged, deploy };
-  await put('state/last-ingest.json', summary);
-  return summary;
-}
-
-// ---------------- Live hub ----------------
-export class LiveHub {
-  constructor(state, env) {
-    this.state = state;
-    this.env = env;
-    this.snapshot = null;
-    this.inflight = null;
-  }
-  async fetch() {
-    if (!this.snapshot) this.snapshot = (await this.state.storage.get('snapshot')) || null;
-    const age = this.snapshot ? Date.now() - Date.parse(this.snapshot.checked_at) : Infinity;
-    const ttl = this.snapshot?.state === 'live' ? 8000 : 60000;
-    if (age > ttl) {
-      this.inflight ||= this.refresh().finally(() => (this.inflight = null));
-      try { await this.inflight; } catch (e) { if (!this.snapshot) return json({ state: 'unavailable', error: String(e?.message || e).slice(0, 120), tower: [], feed: [] }); }
-    }
-    return json(this.snapshot);
-  }
-  async get(u) {
-    const r = await fetch(u, { headers: { 'User-Agent': UA, Accept: 'application/json' } });
-    if (!r.ok) throw new Error(`ESPN ${r.status}`);
-    return r.json();
-  }
-  // Core API only: site.api.espn.com rejects our honestly-identified User-Agent (403 = access barrier; not evaded).
-  async cachedJson(key, url, ttlMs) {
-    const hit = await this.state.storage.get(key);
-    if (hit && Date.now() - hit.at < ttlMs) return hit.data;
-    const data = await this.get(url);
-    await this.state.storage.put(key, { at: Date.now(), data });
-    return data;
-  }
-  async refresh() {
-    const now = Date.now();
-    const year = new Date(now).getUTCFullYear();
-    const list = await this.cachedJson(`events-${year}`, `${ESPN_CORE}/events?dates=${year}&limit=100`, 3600e3);
-    const ids = (list.items || []).map((i) => i.$ref.match(/events\/(\d+)/)?.[1]).filter(Boolean);
-    // Event docs are small; cache 30 min, except the active weekend which is re-read every refresh.
-    const evs = [];
-    for (const id of ids) evs.push(await this.cachedJson(`event-${id}`, `${ESPN_CORE}/events/${id}`, 1800e3));
-    const active = evs.filter((e) => now >= Date.parse(e.date) - 2 * 3600e3 && now <= Date.parse(e.endDate || e.date) + 8 * 3600e3);
-    let liveEv = null;
-    let liveComp = null;
-    let recentPost = null;
-    let next = null;
-    for (const e0 of active) {
-      const ev = await this.get(`${ESPN_CORE}/events/${e0.id}`);
-      for (const c of ev.competitions || []) {
-        const t = Date.parse(c.date);
-        if (t > now + 3600e3) continue;
-        const st = await this.get(c.status.$ref.replace('http:', 'https:')).catch(() => null);
-        c._status = st;
-        const state = st?.type?.state;
-        if (state === 'in') { liveEv = ev; liveComp = c; }
-        else if (state === 'post' && now - t < 8 * 3600e3 && (!recentPost || t > Date.parse(recentPost.c.date))) recentPost = { ev, c };
-      }
-    }
-    for (const ev of evs) {
-      for (const c of ev.competitions || []) {
-        const t = Date.parse(c.date);
-        if (t > now && (!next || t < Date.parse(next.start))) next = { event: ev.name, label: SESSION_LABEL[c.type?.abbreviation] || c.type?.abbreviation, start: c.date };
-      }
-    }
-    const prev = this.snapshot;
-    let snap;
-    if (liveComp || recentPost) {
-      const ev = liveEv || recentPost.ev;
-      const c = liveComp || recentPost.c;
-      snap = await this.session(ev, c, liveComp ? 'live' : 'post', prev);
-    } else {
-      snap = { state: 'idle', event: null, session: null, tower: [], feed: [] };
-    }
-    snap.next = next;
-    snap.checked_at = new Date().toISOString();
-    snap.source = 'PropSports';
-    this.snapshot = snap;
-    await this.state.storage.put('snapshot', snap);
-  }
-  async session(ev, c, state, prev) {
-    const base = `${ESPN_CORE}/events/${ev.id}/competitions/${c.id}`;
-    const [statusDoc, comps, compStats] = await Promise.all([c._status ? Promise.resolve(c._status) : this.get(`${base}/status`).catch(() => null), this.get(`${base}/competitors?limit=50`), this.get(`${base}/statistics`).catch(() => null)]);
-    const lapsTotal = (compStats?.categories || []).flatMap((x) => x.stats || []).find((x) => x.name === 'laps')?.value || null;
-    const items = comps.items || [];
-    const names = {};
-    await Promise.all(items.map(async (it) => {
-      const a = await this.cachedJson(`athlete-${it.id}`, `https://sports.core.api.espn.com/v2/sports/racing/athletes/${it.id}`, 7 * 86400e3).catch(() => null);
-      if (a) names[String(it.id)] = a.displayName || a.fullName;
-    }));
-    const stats = await Promise.all(items.map((it) => (it.statistics?.$ref ? this.get(it.statistics.$ref.replace('http:', 'https:')).catch(() => null) : null)));
-    const statuses = await Promise.all(items.map((it) => (it.status?.$ref ? this.get(it.status.$ref.replace('http:', 'https:')).catch(() => null) : null)));
-    const sm = (d) => Object.fromEntries((d?.splits?.categories || []).flatMap((cat) => cat.stats.map((s) => [s.name, s]))) || {};
-    let tower = items.map((it, i) => {
-      const s = sm(stats[i]);
-      const st = statuses[i]?.type?.name?.replace('STATUS_', '').toLowerCase() || null;
-      const d = (k) => (s[k]?.displayValue && !['0', '.000', '0.000'].includes(s[k].displayValue) ? s[k].displayValue : null);
-      return {
-        id: String(it.id),
-        pos: it.order ?? (s.place?.value || null),
-        name: names[String(it.id)] || `#${it.vehicle?.number || it.id}`,
-        num: it.vehicle?.number || null,
-        team: it.vehicle?.manufacturer || null,
-        color: it.vehicle?.teamColor || null,
-        gap: s.behindLaps?.value ? `+${s.behindLaps.value} lap${s.behindLaps.value > 1 ? 's' : ''}` : d('behindTime'),
-        laps: s.lapsCompleted?.value ?? null,
-        pits: s.pitsTaken?.value ?? null,
-        best: d('fastestLap') || (['Race', 'SR'].includes(c.type?.abbreviation) ? null : d('totalTime')),
-        best_ms: null,
-        status: st,
-      };
-    });
-    tower.sort((a, b) => (a.pos ?? 999) - (b.pos ?? 999));
-    const toMs = (t) => { if (!t) return null; const p = t.split(':').map(Number); let v = 0; for (const x of p) v = v * 60 + x; return v * 1000; };
-    for (const r of tower) r.best_ms = toMs(r.best);
-    const best = Math.min(...tower.map((r) => r.best_ms || Infinity));
-    for (const r of tower) r.fastest = Number.isFinite(best) && r.best_ms === best;
-    const lap = statusDoc?.period || null;
-    const session = { id: c.id, type: c.type?.abbreviation, label: SESSION_LABEL[c.type?.abbreviation] || c.type?.abbreviation, start: c.date, state, lap, laps_total: ['Race', 'SR'].includes(c.type?.abbreviation) ? lapsTotal : null, flag: statusDoc?.flag || null, status: statusDoc?.type?.description || null };
-    // Event feed: differences between consecutive source snapshots of the SAME session.
-    const sameSession = prev?.session?.id === c.id;
-    const feed = sameSession ? [...(prev.feed || [])] : [];
-    if (sameSession && state === 'live') {
-      const pb = Object.fromEntries((prev.tower || []).map((r) => [r.id, r]));
-      const t = new Date().toISOString();
-      const add = (kind, kind_label, text) => feed.push({ t, lap, kind, kind_label, text });
-      if (prev.session?.flag !== session.flag && session.flag) add('flag', 'Flag', `${session.flag}`);
-      for (const r of tower) {
-        const o = pb[r.id];
-        if (!o) continue;
-        if (r.pits != null && o.pits != null && r.pits > o.pits) add('pit', 'Pit', `${r.name} pit stop #${r.pits}`);
-        if (r.status === 'retired' && o.status !== 'retired') add('ret', 'Out', `${r.name} retired`);
-        if (r.pos && o.pos && r.pos < o.pos && r.pos <= 10) add('pos', 'Position', `${r.name} P${o.pos} → P${r.pos}`);
-        if (r.fastest && !o.fastest && r.best) add('fl', 'Fastest', `${r.name} ${r.best}`);
-      }
-    }
-    return { state, event: { id: ev.id, name: ev.name }, session, tower, feed: feed.slice(-150), updated_at: new Date().toISOString() };
-  }
+  return new Response(obj.body, { headers: { 'content-type': obj.httpMetadata?.contentType || 'image/png', 'cache-control': 'public, max-age=604800', 'access-control-allow-origin': '*' } });
 }

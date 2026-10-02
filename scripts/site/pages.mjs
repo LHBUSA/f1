@@ -22,7 +22,7 @@ export function home(ctx) {
   const circuit = ev ? ctx.circuitById[ev.circuit_id] : null;
   const nextSession = ev ? [...(ctx.sessionsByEvent[ev.id] || [])].filter((s) => s.state !== 'completed' && s.state !== 'canceled').sort((a, b) => a.start_utc.localeCompare(b.start_utc))[0] : null;
   const gp = ev
-    ? `<section class="section"><div class="wrap"><div class="card gp" data-next-event="${esc(ev.id)}">
+    ? `<section class="section"><div class="wrap"><div class="card gp" data-next-event="${esc(ev.slug)}">
       <div class="gp-main"><span class="eyebrow">Round ${ev.round} · ${season} · Next Grand Prix</span>
         <h2>${esc(ev.name)}</h2>
         <div class="hero-meta"><span><b>Circuit</b><a href="${ctx.circuitUrl(ev.circuit_id)}">${esc(ctx.circuitName(ev.circuit_id))}</a></span><span><b>Where</b>${esc([circuit?.locality, circuit?.country].filter(Boolean).join(', '))}</span><span><b>Format</b>${ev.sprint ? 'Sprint weekend' : 'Conventional'}</span></div>
@@ -237,7 +237,7 @@ export function driversIndex(ctx) {
       const st = (ctx.standingsBy[`${season}|driver`] || []).find((s) => s.subject_id === g.driver_id);
       const color = ctx.colorOf(g.constructor_id, season);
       const num = (ctx.dcsByDriver[g.driver_id] || []).find((x) => x.season === season)?.car_numbers?.[0];
-      return { st, html: `<a class="card card-link dcard ${teamClass(color)}" href="/drivers/${d.slug}">${headshot(d, 'md', ctx.mediaOk, color)}<div><span class="nm">${esc(d.full_name)}<small>${flag(d.flag_url, d.nationality)} ${esc(ctx.conById[g.constructor_id]?.name)}${num ? ' · #' + esc(num) : ''}</small></span><span class="stat">${st ? `P${st.position} · ${fmtPts(st.points)} pts · ${st.wins ?? 0} wins` : ''}</span></div></a>` };
+      return { st, html: `<a class="card card-link dcard ${teamClass(color)}" href="/drivers/${d.slug}">${headshot(d, 'md', ctx.mediaOk, color)}<div><span class="nm">${esc(d.full_name)}<small>${flag(d)} ${esc(ctx.conById[g.constructor_id]?.name)}${num ? ' · #' + esc(num) : ''}</small></span><span class="stat">${st ? `P${st.position} · ${fmtPts(st.points)} pts · ${st.wins ?? 0} wins` : ''}</span></div></a>` };
     })
     .sort((a, b) => (a.st?.position ?? 99) - (b.st?.position ?? 99))
     .map((x) => x.html)
@@ -294,7 +294,7 @@ export function driverPage(ctx, d) {
   <section class="hero ${teamClass(color)}"><div class="wrap hero-person">${headshot(d, 'lg', ctx.mediaOk, color)}<div>
     <span class="eyebrow">${onGrid ? `${ctx.currentSeason} · ${esc(ctx.conById[lt.constructor_id]?.name)}` : `Formula 1 driver · ${car?.first_season ?? ''}–${car?.last_season ?? ''}`}</span>
     <h1>${esc(d.full_name)}</h1>
-    <div class="hero-meta">${d.nationality ? `<span><b>Nationality</b>${flag(d.flag_url, d.nationality)} ${esc(d.nationality)}</span>` : ''}${d.date_of_birth ? `<span><b>Born</b>${esc(fmtDate(d.date_of_birth))}${onGrid ? ` (${age(d.date_of_birth)})` : ''}</span>` : ''}${d.code ? `<span><b>Code</b>${esc(d.code)}</span>` : ''}${num ? `<span><b>Number</b>${esc(num)}</span>` : ''}${lt ? `<span><b>${onGrid ? 'Team' : 'Last team'}</b>${teamLink(ctx, lt.constructor_id)}</span>` : ''}</div>
+    <div class="hero-meta">${d.nationality ? `<span><b>Nationality</b>${flag(d)} ${esc(d.nationality)}</span>` : ''}${d.date_of_birth ? `<span><b>Born</b>${esc(fmtDate(d.date_of_birth))}${onGrid ? ` (${age(d.date_of_birth)})` : ''}</span>` : ''}${d.code ? `<span><b>Code</b>${esc(d.code)}</span>` : ''}${num ? `<span><b>Number</b>${esc(num)}</span>` : ''}${lt ? `<span><b>${onGrid ? 'Team' : 'Last team'}</b>${teamLink(ctx, lt.constructor_id)}</span>` : ''}</div>
     <div class="team-stripe"></div></div></div></section>
   <section class="section"><div class="wrap"><div class="stats">
     <div class="stat-box"><span>Starts</span><b>${car?.starts ?? 0}</b></div><div class="stat-box"><span>Wins</span><b>${car?.wins ?? 0}</b></div><div class="stat-box"><span>Podiums</span><b>${car?.podiums ?? 0}</b></div><div class="stat-box"><span>Poles</span><b>${car?.poles ?? 0}</b></div><div class="stat-box"><span>Points</span><b>${fmtPts(car?.points ?? 0)}</b></div><div class="stat-box"><span>Titles</span><b>${car?.championships.length ?? 0}</b>${car?.championships.length ? `<span>${car.championships.join(', ')}</span>` : ''}</div>
@@ -376,7 +376,7 @@ export function circuitsIndex(ctx) {
   const rest = ctx.circuits.filter((c) => !curIds.has(c.id)).sort((a, b) => (ctx.circuitDna[b.id]?.races_held || 0) - (ctx.circuitDna[a.id]?.races_held || 0));
   const card = (c) => {
     const dna = ctx.circuitDna[c.id];
-    return `<a class="card card-link" href="/circuits/${c.slug}"><span class="kicker">${flag(c.flag_url, c.country)} ${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h3>${esc(ctx.circuitName(c.id))}</h3><p class="fine">${c.length_km ? c.length_km.toFixed(3) + ' km' : ''}${c.turns ? ` · ${c.turns} turns` : ''}${dna?.races_held ? ` · ${dna.races_held} GPs` : ''}${dna?.speed_class ? ` · ${dna.speed_class}-speed` : ''}${c.layout_type ? ` · ${esc(c.layout_type)}` : ''}</p></a>`;
+    return `<a class="card card-link" href="/circuits/${c.slug}"><span class="kicker">${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h3>${esc(ctx.circuitName(c.id))}</h3><p class="fine">${c.length_km ? c.length_km.toFixed(3) + ' km' : ''}${c.turns ? ` · ${c.turns} turns` : ''}${dna?.races_held ? ` · ${dna.races_held} GPs` : ''}${dna?.speed_class ? ` · ${dna.speed_class}-speed` : ''}${c.layout_type ? ` · ${esc(c.layout_type)}` : ''}</p></a>`;
   };
   const body = `${crumbs([['/', 'Home'], ['/circuits', 'Circuits']])}
   <section class="hero"><div class="wrap"><span class="eyebrow">Circuit DNA</span><h1>Circuits</h1><p class="sub">${cur.length} venues on the ${season} calendar and ${ctx.circuits.length} championship circuits since ${ctx.coverage.earliest_season}.</p></div></section>
@@ -406,7 +406,7 @@ export function circuitPage(ctx, c, outline) {
   const tops = (arr, kind) => arr.map((x) => `<li>${kind === 'd' ? `<a href="${ctx.driverUrl(x.id)}">${esc(ctx.driverById[x.id]?.full_name)}</a>` : teamLink(ctx, x.id)} — ${x.wins}</li>`).join('');
   const bc = [['/', 'Home'], ['/circuits', 'Circuits'], [`/circuits/${c.slug}`, ctx.circuitName(c.id)]];
   const body = `${crumbs(bc)}
-  <section class="hero"><div class="wrap"><span class="eyebrow">${flag(c.flag_url, c.country)} ${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h1>${esc(ctx.circuitName(c.id))}</h1>
+  <section class="hero"><div class="wrap"><span class="eyebrow">${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h1>${esc(ctx.circuitName(c.id))}</h1>
   <div class="hero-meta">${c.length_km ? `<span><b>Latest layout</b>${c.length_km.toFixed(3)} km${c.turns ? `, ${c.turns} turns` : ''}</span>` : ''}${dna?.race_laps ? `<span><b>Race laps</b>${dna.race_laps}</span>` : ''}${dna?.race_distance_km ? `<span><b>Distance</b>${dna.race_distance_km} km</span>` : ''}${c.layout_type ? `<span><b>Layout</b>${esc(c.layout_type)}</span>` : ''}${c.lat != null ? `<span><b>Coordinates</b>${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</span>` : ''}${c.opened ? `<span><b>Opened</b>${c.opened}</span>` : ''}${dna?.races_held ? `<span><b>Grands Prix</b>${dna.races_held} (${dna.first_season}–${dna.last_season})</span>` : ''}</div>
   ${next ? `<p class="section"><a class="more" href="${ctx.raceUrl(next.id)}">${next.season} ${esc(next.name)} hub</a></p>` : ''}</div></section>
   <section class="section"><div class="wrap"><div class="split">

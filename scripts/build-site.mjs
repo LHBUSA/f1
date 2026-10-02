@@ -73,14 +73,6 @@ fs.writeFileSync(path.join(DIST, '404.html'), nf);
 const today = new Date().toISOString().slice(0, 10);
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `<url><loc>${SITE}${p === '/' ? '/' : p}</loc><lastmod>${today}</lastmod></url>`).join('\n')}\n</urlset>\n`);
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\n`);
-// Small public manifest for the client (live tower name/colour lookups).
-const manifest = {
-  season: ctx.currentSeason,
-  drivers: Object.fromEntries(ctx.drivers.filter((d) => ctx.currentGrid.some((g) => g.driver_id === d.id) || (ctx.careers[d.id]?.last_season || 0) >= ctx.currentSeason - 1).map((d) => [d.espn_id, { n: d.full_name, c: d.code, s: d.slug }])),
-  teams: Object.fromEntries(ctx.constructors.filter((c) => c.last_season >= ctx.currentSeason - 1).map((c) => [c.id, { n: c.name, col: ctx.colorOf(c.id, ctx.currentSeason) }])),
-};
-fs.mkdirSync(path.join(DIST, 'data'), { recursive: true });
-fs.writeFileSync(path.join(DIST, 'data/live-manifest.json'), JSON.stringify(manifest));
 console.log(`built ${pages} pages (${sitemap.length} indexable) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
 
 // ---------- static content pages ----------

@@ -77,6 +77,13 @@ for (const file of f1Files) {
   }
 }
 
+// Hard data-path guard: customer-facing F1 code may only reach data through the PropSports F1 contract.
+const UPSTREAM_HOSTS = /\b(?:[a-z0-9-]+\.)*(?:espn\.com|espncdn\.com|espn\.go\.com|f1-api\.propbetedge\.ai|api\.met\.no|wikidata\.org|wikipedia\.org|openf1\.org|jolpi\.ca|ergast\.com|formula1\.com|fia\.com|workers\.dev)\b/i;
+for (const file of f1Files) {
+  const lines = fs.readFileSync(file.full, 'utf8').split('\n');
+  for (let i = 0; i < lines.length; i++) if (UPSTREAM_HOSTS.test(lines[i])) violations.push(`${file.rel}:${i + 1}: upstream host reference: ${lines[i].trim().slice(0, 160)}`);
+}
+
 if (violations.length) {
   console.error('\nUpstream provider branding detected in consumer-facing source.');
   console.error('Customer-facing attribution is "DATA · PropSports" (https://propsports.proptechusa.ai).');

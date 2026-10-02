@@ -2,6 +2,8 @@
 export const SITE = 'https://f1.propbetedge.ai';
 export const DISCORD = 'https://discord.gg/kb5zCTHbME';
 export const GA_ID = 'G-BRS48R8PG9';
+// Every data/media request from the site goes to the PropSports F1 contract.
+export const PROPSPORTS_F1 = 'https://propsports.proptechusa.ai/v1/f1';
 
 export const esc = (s) =>
   String(s ?? '')
@@ -38,8 +40,9 @@ export const timeTag = (iso, fmt = 'datetime') =>
 export const teamClass = (color) => (color ? `tc-${String(color).toLowerCase().replace(/[^0-9a-f]/g, '')}` : 'tc-none');
 export const wClass = (p) => `w-${Math.max(0, Math.min(100, Math.round(p ?? 0)))}`;
 
-export function flag(url, alt) {
-  return url ? `<img class="flag" src="${esc(url)}" alt="${esc(alt || '')}" width="20" height="20" loading="lazy" decoding="async">` : '';
+/** Driver nationality flag via the PropSports media proxy (only for drivers with a verified flag image). */
+export function flag(d) {
+  return d?.flag_url && d?.slug ? `<img class="flag" src="${PROPSPORTS_F1}/media/flag/${esc(d.slug)}" alt="${esc(d.nationality || '')}" width="20" height="20" loading="lazy" decoding="async">` : '';
 }
 
 export function initials(name) {
@@ -58,7 +61,7 @@ export function headshot(d, size = 'md', ok = () => true, color) {
   const cls = `avatar avatar-${size} ${teamClass(color)}`;
   if (d?.headshot_url && ok(d.headshot_url)) {
     const px = size === 'lg' ? 240 : size === 'md' ? 96 : 48;
-    return `<span class="${cls}"><img src="${esc(d.headshot_url)}" alt="${esc(d.full_name)}" width="${px}" height="${px}" loading="lazy" decoding="async" data-fallback="${initials(d.full_name)}"></span>`;
+    return `<span class="${cls}"><img src="${PROPSPORTS_F1}/media/headshot/${esc(d.slug)}" alt="${esc(d.full_name)}" width="${px}" height="${px}" loading="lazy" decoding="async" data-fallback="${initials(d.full_name)}"></span>`;
   }
   return `<span class="${cls} avatar-initials" aria-hidden="true">${initials(d?.full_name)}</span>`;
 }

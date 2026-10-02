@@ -2,7 +2,7 @@
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const API = '/api/v1';
+  const API = 'https://propsports.proptechusa.ai/v1/f1'; // the PropSports F1 contract; no other data host
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
   // Menu
@@ -90,11 +90,11 @@
     if (!slug) continue;
     const from = Date.parse(el.dataset.weatherFrom);
     if (from - Date.now() > 9 * 86400e3) continue;
-    fetch(`${API}/weather/${encodeURIComponent(slug)}?from=${encodeURIComponent(el.dataset.weatherFrom)}&to=${encodeURIComponent(el.dataset.weatherTo)}`)
+    fetch(`${API}/weather?circuit=${encodeURIComponent(slug)}&from=${encodeURIComponent(el.dataset.weatherFrom)}&to=${encodeURIComponent(el.dataset.weatherTo)}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((w) => {
         if (!w?.days?.length) return;
-        el.innerHTML = `<span class="kicker">Forecast</span> ` + w.days.map((d) => `${esc(fmtLocal(new Date(d.date + 'T12:00:00Z'), 'date'))}: ${Math.round(d.t_max)}°C, ${d.precip_mm.toFixed(1)} mm${d.wind_ms != null ? `, wind ${Math.round(d.wind_ms)} m/s` : ''}`).join(' · ') + ` <span class="muted">· Forecast data: MET Norway, CC BY 4.0</span>`;
+        el.innerHTML = `<span class="kicker">Forecast</span> ` + w.days.map((d) => `${esc(fmtLocal(new Date(d.date + 'T12:00:00Z'), 'date'))}: ${Math.round(d.t_max)}°C, ${d.precip_mm.toFixed(1)} mm${d.wind_ms != null ? `, wind ${Math.round(d.wind_ms)} m/s` : ''}`).join(' · ') + (w.licence_credit ? ` <span class="muted">· ${esc(w.licence_credit)}</span>` : '');
       })
       .catch(() => {});
   }
@@ -122,8 +122,6 @@
 
   // PBEcast renderer
   let lastOrder = {};
-  let manifest = null;
-  if (cast) fetch('/data/live-manifest.json').then((r) => (r.ok ? r.json() : null)).then((m) => (manifest = m)).catch(() => {});
   function renderCast(s) {
     const state = $('[data-cast-state]');
     const tower = $('[data-cast-tower]');
@@ -142,19 +140,19 @@
     lapEl.textContent = ses?.lap && ses?.laps_total ? `Lap ${ses.lap} / ${ses.laps_total}` : ses?.lap ? `Lap ${ses.lap}` : '';
     const lb = $('[data-cast-lapbar]');
     if (ses?.lap && ses?.laps_total) { lb.hidden = false; lb.firstElementChild.className = 'w-' + Math.min(100, Math.round((ses.lap / ses.laps_total) * 100)); } else lb.hidden = true;
-    $('[data-cast-updated]').textContent = s.updated_at ? `Source update ${fmtLocal(new Date(s.updated_at))}${s.next && s.state !== 'live' ? ` · Next: ${s.next.label} ${fmtLocal(new Date(s.next.start))}` : ''}` : '';
+    $('[data-cast-updated]').textContent = s.updated_at ? `Updated ${fmtLocal(new Date(s.updated_at))}${s.next && s.state !== 'live' ? ` · Next: ${s.next.label} ${fmtLocal(new Date(s.next.start_utc))}` : ''}` : '';
     if (!s.tower?.length) {
-      tower.innerHTML = `<tr><td colspan="7" class="muted">${s.next ? `Next session: ${esc(s.next.event)} · ${esc(s.next.label)} — ${esc(fmtLocal(new Date(s.next.start)))}` : 'No classification yet.'}</td></tr>`;
+      tower.innerHTML = `<tr><td colspan="7" class="muted">${s.next ? `Next session: ${esc(s.next.event)} · ${esc(s.next.label)} — ${esc(fmtLocal(new Date(s.next.start_utc)))}` : 'No classification yet.'}</td></tr>`;
     } else {
       tower.innerHTML = s.tower
         .map((r) => {
-          const changed = lastOrder[r.id] && lastOrder[r.id] !== r.pos ? ' class="changed"' : '';
+          const key = r.driver_id || r.name;
+          const changed = lastOrder[key] && lastOrder[key] !== r.pos ? ' class="changed"' : '';
           const st = r.status === 'retired' ? '<span class="st-ret">OUT</span>' : r.status === 'disqualified' ? '<span class="st-dsq">DSQ</span>' : r.status && r.status !== 'classified' && r.status !== 'running' ? esc(r.status) : '';
-          const m = manifest?.drivers?.[r.id];
-          return `<tr${changed}><td class="pos">${r.pos ?? '—'}</td><td><div class="drv tc-${esc((r.color || '').toLowerCase())}"><span class="tbar"></span><span>${m ? `<a href="/drivers/${esc(m.s)}">${esc(m.n)}</a>` : esc(r.name)} <span class="code">${esc(m?.c || '')}</span><span class="fine"> ${esc(r.team || '')}</span></span></div></td><td class="num gap">${esc(r.gap || '')}</td><td class="num">${r.laps ?? ''}</td><td class="num">${r.pits ?? ''}</td><td class="num ${r.fastest ? 'purple' : ''}">${esc(r.best || '')}</td><td>${st}</td></tr>`;
+          return `<tr${changed}><td class="pos">${r.pos ?? '—'}</td><td><div class="drv tc-${esc((r.color || '').toLowerCase())}"><span class="tbar"></span><span>${r.driver_id ? `<a href="/drivers/${esc(r.driver_id)}">${esc(r.name)}</a>` : esc(r.name)} <span class="code">${esc(r.code || '')}</span><span class="fine"> ${esc(r.team || '')}</span></span></div></td><td class="num gap">${esc(r.gap || '')}</td><td class="num">${r.laps ?? ''}</td><td class="num">${r.pits ?? ''}</td><td class="num ${r.fastest ? 'purple' : ''}">${esc(r.best || '')}</td><td>${st}</td></tr>`;
         })
         .join('');
-      lastOrder = Object.fromEntries(s.tower.map((r) => [r.id, r.pos]));
+      lastOrder = Object.fromEntries(s.tower.map((r) => [r.driver_id || r.name, r.pos]));
     }
     const feed = $('[data-cast-feed]');
     if (s.feed?.length) {

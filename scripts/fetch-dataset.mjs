@@ -5,22 +5,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 
-const API = process.env.F1_API || 'https://f1-api.propbetedge.ai';
+const API = process.env.PROPSPORTS_F1_BASE || 'https://propsports.proptechusa.ai/v1/f1';
 const TOKEN = process.env.F1_DATASET_TOKEN;
 if (!TOKEN) {
-  if (fs.existsSync('data/fragments/drivers.json')) { console.log('fetch-dataset: no token, using local data/fragments'); process.exit(0); }
-  console.error('fetch-dataset: F1_DATASET_TOKEN missing and no local fragments');
+  // Local development may reuse fragments already on disk; a Vercel build must always pull from PropSports.
+  if (!process.env.VERCEL && fs.existsSync('data/fragments/drivers.json')) { console.log('fetch-dataset: local run, using existing data/fragments'); process.exit(0); }
+  console.error('fetch-dataset: F1_DATASET_TOKEN missing');
   process.exit(1);
 }
 const FRAG = path.resolve('data/fragments');
 fs.mkdirSync(FRAG, { recursive: true });
 const h = { authorization: `Bearer ${TOKEN}` };
 async function getBuf(key) {
-  const r = await fetch(`${API}/v1/dataset/${encodeURIComponent(key)}`, { headers: h });
+  const r = await fetch(`${API}/dataset/${key}`, { headers: h });
   if (!r.ok) throw new Error(`${key}: ${r.status}`);
   return Buffer.from(await r.arrayBuffer());
 }
-const manifest = await (await fetch(`${API}/v1/dataset/manifest`, { headers: h })).json();
+const manifest = await (await fetch(`${API}/dataset`, { headers: h })).json();
 const keys = new Set(manifest.objects.map((o) => o.key));
 let buf = await getBuf('fragments/history-v1.json.gz');
 if (buf[0] === 0x1f && buf[1] === 0x8b) buf = zlib.gunzipSync(buf);
