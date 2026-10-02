@@ -86,6 +86,249 @@
         },
         "hotspots": []
       }
+    },
+    {
+      "id": "2026-ferrari-charles-leclerc-austrian-grand-prix-raich",
+      "season": 2026,
+      "constructorId": "ferrari",
+      "constructorName": "Ferrari",
+      "carModel": null,
+      "carModelSource": "see src/identity/machine-2026.json (first-party sourced label only)",
+      "driverId": "charles-leclerc",
+      "event": "2026 Austrian Grand Prix, Friday practice",
+      "eventNote": "Friday practice - FP2 inferred from camera timestamp ~17:05 local (FP1 set of same photographer at ~14:00 shows rookie FP1 drivers); not stated in file",
+      "capturedAt": "2026-06-26T17:06:08",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/FIA_F1_Austria_2026_Nr._16_Leclerc_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2026-ferrari-charles-leclerc-austrian-grand-prix-raich.jpg",
+      "originalSha1": "28fb33be759bb339f54de96fb779cb0bdd32795d",
+      "originalSize": [
+        7097,
+        3548
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:FIA_F1_Austria_2026_Nr._16_Leclerc_(3).jpg",
+      "photographer": "Lukas Raich",
+      "creditLine": "Photo: Lukas Raich / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "derivativeLicense": "CC BY-SA 4.0 (ShareAlike: the background-removed derivative is offered under the same licence)",
+      "attribution": "Photo: Lukas Raich, CC BY-SA 4.0 · background removed",
+      "acquisitionDate": "2026-10-02",
+      "rightsStatus": "licensed_cc_by_sa_4.0",
+      "rightsNotes": "Commons file, author's own work, no restriction templates (none (no restriction templates; sponsor trademarks on livery are incidental; driver helmeted, not identifiable by face)). Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-02",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-cutout-master.png",
+        "stem": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich",
+        "facing": "left",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-640.webp",
+            "avif": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-960.webp",
+            "avif": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-1280.webp",
+            "avif": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-1920.webp",
+            "avif": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-1920.avif"
+          }
+        },
+        "aspect": [
+          6658,
+          1704
+        ],
+        "masterSha1": "055cd612390ae2a620562e90d785822e334bdda3"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2026-ferrari-charles-leclerc-austrian-grand-prix-raich-cutout-master.png",
+          "aspect": [
+            6658,
+            1704
+          ]
+        },
+        "hotspots": []
+      }
+    },
+    {
+      "id": "2026-mclaren-lando-norris-austrian-grand-prix-raich",
+      "season": 2026,
+      "constructorId": "mclaren",
+      "constructorName": "McLaren",
+      "carModel": null,
+      "carModelSource": "see src/identity/machine-2026.json (first-party sourced label only)",
+      "driverId": "lando-norris",
+      "event": "2026 Austrian Grand Prix, Friday practice",
+      "eventNote": "Friday practice - FP2 inferred from camera timestamp ~17:05 local (FP1 set of same photographer at ~14:00 shows rookie FP1 drivers); not stated in file",
+      "capturedAt": "2026-06-26T17:09:21",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/63/FIA_F1_Austria_2026_Nr._1_Norris_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2026-mclaren-lando-norris-austrian-grand-prix-raich.jpg",
+      "originalSha1": "841f5932020740042cab4316b814cad0436ed5ca",
+      "originalSize": [
+        6748,
+        3374
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:FIA_F1_Austria_2026_Nr._1_Norris_(3).jpg",
+      "photographer": "Lukas Raich",
+      "creditLine": "Photo: Lukas Raich / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "derivativeLicense": "CC BY-SA 4.0 (ShareAlike: the background-removed derivative is offered under the same licence)",
+      "attribution": "Photo: Lukas Raich, CC BY-SA 4.0 · background removed",
+      "acquisitionDate": "2026-10-02",
+      "rightsStatus": "licensed_cc_by_sa_4.0",
+      "rightsNotes": "Commons file, author's own work, no restriction templates (none (no restriction templates; sponsor trademarks on livery are incidental; driver helmeted, not identifiable by face)). Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-02",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-cutout-master.png",
+        "stem": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich",
+        "facing": "left",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-640.webp",
+            "avif": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-960.webp",
+            "avif": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-1280.webp",
+            "avif": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-1920.webp",
+            "avif": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-1920.avif"
+          }
+        },
+        "aspect": [
+          6314,
+          1613
+        ],
+        "masterSha1": "d3172a65391d03c115c3fa7344e5c422ff09d032"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2026-mclaren-lando-norris-austrian-grand-prix-raich-cutout-master.png",
+          "aspect": [
+            6314,
+            1613
+          ]
+        },
+        "hotspots": []
+      }
+    },
+    {
+      "id": "2026-red-bull-max-verstappen-austrian-grand-prix-raich",
+      "season": 2026,
+      "constructorId": "red-bull",
+      "constructorName": "Red Bull Racing",
+      "carModel": null,
+      "carModelSource": "see src/identity/machine-2026.json (first-party sourced label only)",
+      "driverId": "max-verstappen",
+      "event": "2026 Austrian Grand Prix, Friday practice",
+      "eventNote": "Friday practice - FP2 inferred from camera timestamp ~17:05 local (FP1 set of same photographer at ~14:00 shows rookie FP1 drivers); not stated in file",
+      "capturedAt": "2026-06-26T17:08:19",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/17/FIA_F1_Austria_2026_Nr._3_Verstappen_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2026-red-bull-max-verstappen-austrian-grand-prix-raich.jpg",
+      "originalSha1": "51c7d4e866fe04d9e3d23e863a88fbb2c738ed41",
+      "originalSize": [
+        6620,
+        3310
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:FIA_F1_Austria_2026_Nr._3_Verstappen_(3).jpg",
+      "photographer": "Lukas Raich",
+      "creditLine": "Photo: Lukas Raich / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "derivativeLicense": "CC BY-SA 4.0 (ShareAlike: the background-removed derivative is offered under the same licence)",
+      "attribution": "Photo: Lukas Raich, CC BY-SA 4.0 · background removed",
+      "acquisitionDate": "2026-10-02",
+      "rightsStatus": "licensed_cc_by_sa_4.0",
+      "rightsNotes": "Commons file, author's own work, no restriction templates (none (no restriction templates; sponsor trademarks on livery are incidental; driver helmeted, not identifiable by face)). Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-02",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-cutout-master.png",
+        "stem": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich",
+        "facing": "left",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-640.webp",
+            "avif": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-960.webp",
+            "avif": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-1280.webp",
+            "avif": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-1920.webp",
+            "avif": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-1920.avif"
+          }
+        },
+        "aspect": [
+          6179,
+          1543
+        ],
+        "masterSha1": "d4e4e49629a10b5ca1a0bea87019fecad2b6c25b"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2026-red-bull-max-verstappen-austrian-grand-prix-raich-cutout-master.png",
+          "aspect": [
+            6179,
+            1543
+          ]
+        },
+        "hotspots": []
+      }
     }
   ]
 }

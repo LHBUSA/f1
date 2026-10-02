@@ -1,0 +1,43 @@
+{
+  "_doc": "2026 car / machine registry (Car Explorer tech source). Every fact carries a source. scope: car_specific = this team's car/supplier choice; regulation = a general 2026 F1 rule the team also publishes (never present it as a team-specific spec). Unknown = absent. No horsepower or unpublished performance figures.",
+  "version": "f1-machine@1",
+  "season": 2026,
+  "retrieved": "2026-10-02",
+  "sources": {
+    "merc-spec": { "url": "https://www.mercedesamgf1.com/f1-w17-2026-technical-specifications", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party" },
+    "merc-launch-2026": { "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party", "date": "2026-02-02" }
+  },
+  "teams": {
+    "mercedes": {
+      "carModel": { "value": "Mercedes-AMG F1 W17 E PERFORMANCE", "short": "W17", "sources": ["merc-launch-2026", "merc-spec"] },
+      "powerUnit": { "manufacturer": "Mercedes-AMG High Performance Powertrains", "designation": "Mercedes-AMG F1 M17 E PERFORMANCE", "relationship": "works", "sources": ["merc-spec", "merc-launch-2026"] },
+      "tyreSupplier": { "value": "Pirelli", "sources": ["merc-spec"] },
+      "specs": [
+        { "component": "chassis", "label": "Monocoque", "value": "Moulded carbon fibre and honeycomb composite structure", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "bodywork", "label": "Bodywork", "value": "Carbon fibre composite including engine cover, sidepods, floor, nose, front wing and rear wing", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "front_suspension", "label": "Front suspension", "value": "Carbon fibre wishbone and push rod-activated springs and dampers", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "rear_suspension", "label": "Rear suspension", "value": "Carbon fibre wishbone and push rod-activated inboard springs and dampers", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "wheels", "label": "Wheels", "value": "OZ forged magnesium", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "tyres", "label": "Tyres", "value": "Pirelli", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "brakes", "label": "Brake system", "value": "Carbone Industries carbon discs and pads with rear brake-by-wire", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "brakes", "label": "Brake calipers", "value": "Brembo monobloc calipers in nickel-plated aluminium alloy (front and rear)", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "cockpit", "label": "Steering", "value": "Power-assisted rack and pinion; carbon fibre steering wheel", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "cockpit", "label": "Instrumentation", "value": "Motion Applied Technologies (MAT)", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "cockpit", "label": "Safety structures", "value": "Survival cell, front/side/rear impact structures, roll structures, titanium halo", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "electronics", "label": "Electronics", "value": "FIA standard ECU and FIA homologated electronic and electrical system", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "fuel_system", "label": "Fuel cell", "value": "ATL Kevlar-reinforced rubber bladder", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "gearbox", "label": "Gearbox", "value": "Eight forward, one reverse; carbon fibre main case; sequential semi-automatic hydraulic selection; carbon clutch", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "dimensions", "label": "Overall width / height", "value": "1900 mm / 970 mm (length under 5505 mm)", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "dimensions", "label": "Overall weight", "value": "772 kg (as published by the team)", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "power_unit", "label": "Power unit", "value": "Mercedes-AMG F1 M17 E PERFORMANCE", "scope": "car_specific", "sources": ["merc-spec"] },
+        { "component": "power_unit", "label": "Internal combustion engine", "value": "1.6 litre V6 (90°), 24 valves, max 15,000 rpm, direct injection max 350 bar", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "power_unit", "label": "Fuel flow", "value": "Max 3000 MJ/h", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "power_unit", "label": "MGU-K", "value": "Max 350 kW, max 60,000 rpm, up to 9.0 MJ recovery per lap (circuit specific)", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "power_unit", "label": "Energy store", "value": "Lithium-ion; max 4.0 MJ usable range on track", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "power_unit", "label": "Allocation", "value": "Four ICE/TC/EXH and three MGU-K/ES/CE per driver per season", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "power_unit", "label": "Minimum weight", "value": "185 kg", "scope": "regulation", "sources": ["merc-spec"] },
+        { "component": "power_unit", "label": "Fuel / lubricants", "value": "PETRONAS Primax fuel; PETRONAS Syntium lubricants; PETRONAS Tutela fluids", "scope": "car_specific", "sources": ["merc-spec"] }
+      ]
+    }
+  }
+}

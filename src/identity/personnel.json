@@ -1,0 +1,44 @@
+{
+  "_doc": "Canonical, season-aware F1 personnel graph. people = identity (one record per person, ever). roles = PERSON x ROLE x TEAM x (DRIVER) x SEASON edges with effective dates and sources. A role renders on a constructor page only when display=true, current=true and season matches. Facts are normalised from sources; no prose is copied. Conflicts are recorded, never silently resolved. Unknown = absent (never guessed). Mechanics: only named when a source documents them; otherwise the team record says not_publicly_documented.",
+  "version": "f1-personnel@1",
+  "retrieved": "2026-10-02",
+  "people": {
+    "toto-wolff": { "name": "Toto Wolff" },
+    "bradley-lord": { "name": "Bradley Lord" },
+    "rob-thomas": { "name": "Rob Thomas" },
+    "james-allison": { "name": "James Allison" },
+    "andrew-shovlin": { "name": "Andrew Shovlin" },
+    "hywel-thomas": { "name": "Hywel Thomas" },
+    "marcus-dudley": { "name": "Marcus Dudley" },
+    "peter-bonnington": { "name": "Peter Bonnington", "known_as": "Bono" },
+    "ron-meadows": { "name": "Ron Meadows" }
+  },
+  "sources": {
+    "merc-wolff": { "url": "https://www.mercedesamgf1.com/team/person/toto-wolff", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party", "date": null },
+    "merc-launch-2026": { "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-season-launch-2026-a-new-era-begins", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party", "date": "2026-02-02" },
+    "merc-lord": { "url": "https://www.mercedesamgf1.com/team/person/bradley-lord", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party", "date": null },
+    "merc-rob-thomas": { "url": "https://www.mercedesamgf1.com/team/person/rob-thomas", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party", "date": null },
+    "merc-allison": { "url": "https://www.mercedesamgf1.com/team/person/james-allison", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party", "date": null },
+    "espn-allison-deal": { "url": "https://www.espn.com/f1/story/_/id/39334896/technical-director-james-allison-signs-long-term-deal-remain-mercedes", "publisher": "ESPN", "type": "espn", "date": "2024-01" },
+    "merc-w17-debut": { "url": "https://www.mercedesamgf1.com/news/mercedes-amg-f1-w17-makes-on-track-debut-at-silverstone", "publisher": "Mercedes-AMG PETRONAS F1 Team", "type": "first_party", "date": "2026-01-22" },
+    "msport-engineers-2026": { "url": "https://www.motorsport.com/f1/news/every-race-engineer-f1-2026/10807004/", "publisher": "Motorsport.com", "type": "media", "date": "2026-03-22" },
+    "rn365-engineers-2026": { "url": "https://racingnews365.com/meet-the-2026-f1-race-engineers", "publisher": "RacingNews365", "type": "media", "date": "2026-03-01" },
+    "gpblog-merc-engineers": { "url": "https://www.gpblog.com/en/exclusive-news/mercedes-makes-decision-on-race-engineers-for-russell-and-antonelli", "publisher": "GPblog", "type": "media", "date": "2026-01" }
+  },
+  "roles": [
+    { "personId": "toto-wolff", "role": "Team Principal & CEO", "roleGroup": "leadership", "rank": 1, "constructorId": "mercedes", "driverId": null, "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": true, "sources": ["merc-wolff", "merc-launch-2026"], "confidence": "high", "display": true },
+    { "personId": "bradley-lord", "role": "Deputy Team Principal", "roleGroup": "leadership", "rank": 2, "constructorId": "mercedes", "driverId": null, "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": true, "sources": ["merc-lord"], "confidence": "high", "display": true },
+    { "personId": "rob-thomas", "role": "Managing Director", "roleGroup": "leadership", "rank": 3, "constructorId": "mercedes", "driverId": null, "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": true, "sources": ["merc-rob-thomas"], "confidence": "high", "display": true },
+    { "personId": "james-allison", "role": "Technical Director", "roleGroup": "technical", "rank": 1, "constructorId": "mercedes", "driverId": null, "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": true, "sources": ["merc-allison", "espn-allison-deal"], "confidence": "high", "display": true },
+    { "personId": "andrew-shovlin", "role": "Trackside Engineering Director", "roleGroup": "race_engineering", "rank": 1, "constructorId": "mercedes", "driverId": null, "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": true, "sources": ["merc-w17-debut"], "confidence": "high", "display": true },
+    { "personId": "marcus-dudley", "role": "Race Engineer", "roleGroup": "race_engineering", "rank": 2, "constructorId": "mercedes", "driverId": "george-russell", "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": true, "sources": ["msport-engineers-2026", "rn365-engineers-2026"], "confidence": "medium", "display": true, "notes": "Pairing with Russell since 2023 (RacingNews365)." },
+    { "personId": "peter-bonnington", "role": "Race Engineer", "roleGroup": "race_engineering", "rank": 2, "constructorId": "mercedes", "driverId": "kimi-antonelli", "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": true, "sources": ["msport-engineers-2026", "rn365-engineers-2026"], "confidence": "medium", "display": true,
+      "conflicts": [ { "claim": "additional title 'Head of Race Engineering'", "source": "gpblog-merc-engineers" }, { "claim": "additional title 'head of trackside performance'", "source": "rn365-engineers-2026" } ],
+      "notes": "Additional senior title differs between sources; only the agreed Race Engineer role is displayed." },
+    { "personId": "hywel-thomas", "role": "Managing Director, Mercedes-AMG High Performance Powertrains", "roleGroup": "power_unit", "rank": 1, "constructorId": "mercedes", "driverId": null, "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": true, "sources": ["merc-launch-2026"], "confidence": "high", "display": true },
+    { "personId": "ron-meadows", "role": "Sporting Director", "roleGroup": "race_engineering", "rank": 3, "constructorId": "mercedes", "driverId": null, "season": 2026, "effectiveFrom": null, "effectiveTo": null, "current": null, "sources": [], "confidence": "low", "display": false, "held": "Only wiki/salary-estimate pages state the 2026 role; no first-party or reputable 2026 source found yet." }
+  ],
+  "garage": {
+    "mercedes": { "season": 2026, "status": "not_publicly_documented", "note": "Individual mechanic roster and chief mechanic not publicly documented by the team; not verified by PropBetEdge." }
+  }
+}

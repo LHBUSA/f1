@@ -11,6 +11,7 @@ import { articlePage } from '../src/news/render.mjs';
 import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
 import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
 import { loadCarPhotos, carPhotoFor, imageObject } from '../src/identity/car-photos.mjs';
+import { loadPeople, teamPeople, teamMachine } from '../src/identity/people.mjs';
 
 const DIST = path.resolve('dist');
 const t0 = Date.now();
@@ -26,6 +27,9 @@ const newsEmit = newsAll.filter((a) => a.status === 'published' || (process.env.
 ctx.newsModule = homeModule(newsPub, X);
 // car photos: approved only; F1_CAR_CANDIDATES=1 / Vercel preview builds also render reviewed candidates, labelled
 const carReg = loadCarPhotos();
+const peopleReg = loadPeople();
+ctx.peopleFor = (cid, season) => teamPeople(peopleReg, cid, season);
+ctx.machineFor = (cid, season) => teamMachine(peopleReg, cid, season);
 const carCandidates = process.env.F1_CAR_CANDIDATES === '1' || process.env.VERCEL_ENV === 'preview';
 ctx.carPhotoFor = (cid, season) => carPhotoFor(carReg, cid, season, { includeCandidates: carCandidates });
 fs.mkdirSync(path.join(DIST, 'media/cars'), { recursive: true });
