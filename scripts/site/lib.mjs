@@ -102,6 +102,7 @@ const NAV = [
 ];
 const NETWORK = [
   ['https://propbetedge.ai', 'Sports News'],
+  ['https://propbetedge.ai/pro', 'All Access'],
   ['https://mlb.propbetedge.ai', 'MLB'],
   ['https://nfl.propbetedge.ai', 'NFL'],
   ['https://nba.propbetedge.ai', 'NBA'],
