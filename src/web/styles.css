@@ -544,3 +544,4 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .team-car .tmark img{width:auto;height:22px;-webkit-mask-image:none;mask-image:none;filter:none}
 .team-car .tmark{pointer-events:none}
 .tmark-code{font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 5px;border:1px solid var(--line,rgba(255,255,255,.2));border-radius:3px;color:var(--muted);line-height:1.2}
+.trend .same{color:var(--muted)}.trend .na{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);border:1px dashed var(--line,rgba(255,255,255,.2));border-radius:3px;padding:0 4px}.trend .gain,.trend .loss{white-space:nowrap;font-weight:700}

@@ -1,5 +1,6 @@
 // Derived intelligence from normalized source truth → data/derived/*.json
 // Never writes back to normalized tables. Every metric carries sample size, population, confidence, version, as-of.
+import { rankWithCountback } from '../src/core/standings.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { slugify } from '../src/core/normalize.mjs';
@@ -836,26 +837,32 @@ for (const season of [...new Set(completedEvents.map((e) => e.season))]) {
   const evs = completedEvents.filter((e) => e.season === season);
   const dPts = {};
   const cPts = {};
-  const dWins = {};
+  const dFin = {}; // Grand Prix finishing positions (countback)
+  const cFin = {};
   const rounds = [];
   for (const e of evs) {
     const rows = raceRows(e.id); // race-row points already include sprint points
     for (const r of rows) {
       dPts[r.driver_id] = (dPts[r.driver_id] || 0) + (r.points || 0);
       if (r.constructor_id) cPts[r.constructor_id] = (cPts[r.constructor_id] || 0) + (r.points || 0);
-      if (r.session_type === 'race' && CLASSIFIED(r) && r.position === 1) dWins[r.driver_id] = (dWins[r.driver_id] || 0) + 1;
+      if (r.session_type === 'race' && CLASSIFIED(r) && Number.isInteger(r.position)) {
+        (dFin[r.driver_id] ??= []).push(r.position);
+        if (r.constructor_id) (cFin[r.constructor_id] ??= []).push(r.position);
+      }
     }
-    const rankOf = (pts) => Object.entries(pts).sort((a, b) => b[1] - a[1] || (dWins[b[0]] || 0) - (dWins[a[0]] || 0)).map(([id, p], i) => [id, { p: r3(p), pos: i + 1 }]);
-    rounds.push({ event_id: e.id, round: e.round, drivers: Object.fromEntries(rankOf(dPts)), constructors: Object.fromEntries(rankOf(cPts)) });
+    rounds.push({ event_id: e.id, round: e.round, drivers: Object.fromEntries(rankWithCountback(dPts, dFin)), constructors: Object.fromEntries(rankWithCountback(cPts, cFin)) });
   }
   const official = officialBy[`${season}|driver`] || [];
   const last = rounds.at(-1);
   const mismatches = official.filter((o) => o.subject_id && last?.drivers[o.subject_id] && Math.abs(last.drivers[o.subject_id].p - o.points) > 0.01).length;
+  // position reconciliation (both tables): rows whose computed last-round position differs from the official one
+  const posMismatch = ['driver', 'constructor'].flatMap((k) => (officialBy[`${season}|${k}`] || []).filter((o) => o.subject_id && last?.[k === 'driver' ? 'drivers' : 'constructors'][o.subject_id] && last[k === 'driver' ? 'drivers' : 'constructors'][o.subject_id].pos !== o.position).map((o) => `${k}:${o.subject_id}`));
   progression[season] = {
     season,
     rounds,
     matches_official: official.length ? mismatches === 0 : null,
     official_mismatches: mismatches,
+    position_mismatches: posMismatch,
     note: mismatches ? 'Race-by-race sums differ from the official table (dropped scores or source corrections); official standings are authoritative.' : null,
   };
 }

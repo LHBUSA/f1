@@ -1,4 +1,5 @@
 import { esc, fmtPts, fmtMs, ordinal, teamClass, headshot, flag, pctBar, confBadge, dnaRadar, fmtNum, pct, timeTag, fmtDate, teamMark } from './lib.mjs';
+import { trendFor } from '../../src/core/standings.mjs';
 import { SESSION_LABEL } from '../../src/core/normalize.mjs';
 
 export function driverCell(ctx, did, cid, season, opts = {}) {
@@ -59,19 +60,19 @@ export function standingsTable(ctx, season, kind, limit = 99, opts = {}) {
   const rows = (ctx.standingsBy[`${season}|${kind}`] || []).filter((s) => s.subject_id).sort((a, b) => a.position - b.position).slice(0, limit);
   if (!rows.length) return '<div class="empty">Standings not published for this season.</div>';
   const prog = ctx.progression[season];
-  const rounds = prog?.rounds || [];
-  const prev = rounds.length > 1 ? rounds[rounds.length - 2][kind === 'driver' ? 'drivers' : 'constructors'] : null;
-  const head = kind === 'driver' ? '<th class="pos">Pos</th><th>Driver</th><th>Team</th><th class="num">Wins</th><th class="num">Pts</th><th class="num">Trend</th>' : '<th class="pos">Pos</th><th>Constructor</th><th class="num">Wins</th><th class="num">Pts</th><th class="num">Trend</th>';
+  // Trend = change since the previous completed Grand Prix (current season only; src/core/standings.mjs)
+  const showTrend = season === ctx.currentSeason;
+  const trendTh = showTrend ? '<th class="num trend-h"><span title="Change since previous completed Grand Prix" aria-label="Change since previous completed Grand Prix">Trend</span></th>' : '';
+  const head = kind === 'driver' ? `<th class="pos">Pos</th><th>Driver</th><th>Team</th><th class="num">Wins</th><th class="num">Pts</th>${trendTh}` : `<th class="pos">Pos</th><th>Constructor</th><th class="num">Wins</th><th class="num">Pts</th>${trendTh}`;
   const body = rows
     .map((s) => {
-      const trend = prev && prev[s.subject_id] && prog?.matches_official !== false ? prev[s.subject_id].pos - s.position : null;
-      const tr = trend == null || season !== ctx.currentSeason ? '' : trend > 0 ? `<span class="gain">▲${trend}</span>` : trend < 0 ? `<span class="loss">▼${-trend}</span>` : '<span class="muted">–</span>';
+      const tr = showTrend ? `<td class="num trend">${trendCell(trendFor(prog?.matches_official === false ? null : prog, kind, s.subject_id, s.position))}</td>` : '';
       if (kind === 'driver') {
         const team = ctx.dcsByDriver[s.subject_id]?.filter((x) => x.season === season).sort((a, b) => b.entries - a.entries)[0]?.constructor_id;
-        return `<tr class="p${s.position}"><td class="pos">${s.position}</td><td>${driverCell(ctx, s.subject_id, team, season, { avatar: opts.avatar })}</td><td class="team-cell">${teamLink(ctx, team, season)}</td><td class="num">${s.wins ?? '—'}</td><td class="num"><b>${fmtPts(s.points)}</b></td><td class="num">${tr}</td></tr>`;
+        return `<tr class="p${s.position}"><td class="pos">${s.position}</td><td>${driverCell(ctx, s.subject_id, team, season, { avatar: opts.avatar })}</td><td class="team-cell">${teamLink(ctx, team, season)}</td><td class="num">${s.wins ?? '—'}</td><td class="num"><b>${fmtPts(s.points)}</b></td>${tr}</tr>`;
       }
       const color = ctx.colorOf(s.subject_id, season);
-      return `<tr class="p${s.position}"><td class="pos">${s.position}</td><td><div class="drv ${teamClass(color)}"><span class="tbar"></span>${teamLink(ctx, s.subject_id, season)}</div></td><td class="num">${s.wins ?? '—'}</td><td class="num"><b>${fmtPts(s.points)}</b></td><td class="num">${tr}</td></tr>`;
+      return `<tr class="p${s.position}"><td class="pos">${s.position}</td><td><div class="drv ${teamClass(color)}"><span class="tbar"></span>${teamLink(ctx, s.subject_id, season)}</div></td><td class="num">${s.wins ?? '—'}</td><td class="num"><b>${fmtPts(s.points)}</b></td>${tr}</tr>`;
     })
     .join('');
   return `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
@@ -153,3 +154,11 @@ export function statusPill(ev) {
 }
 
 export { fmtNum, ordinal };
+
+// ↑ n gained / ↓ n lost / — unchanged / "n/a" no comparable history (never the same symbol as unchanged)
+export function trendCell(t) {
+  if (t.state === 'up') return `<span class="gain" title="Gained ${t.delta} championship position${t.delta > 1 ? 's' : ''} since previous round" aria-label="Up ${t.delta}">↑ ${t.delta}</span>`;
+  if (t.state === 'down') return `<span class="loss" title="Lost ${-t.delta} championship position${t.delta < -1 ? 's' : ''} since previous round" aria-label="Down ${-t.delta}">↓ ${-t.delta}</span>`;
+  if (t.state === 'same') return '<span class="same" title="No position change since previous round" aria-label="No position change since previous round">—</span>';
+  return `<span class="na" title="${esc(t.reason || 'Trend unavailable')}" aria-label="Trend unavailable">n/a</span>`;
+}
