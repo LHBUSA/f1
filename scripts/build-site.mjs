@@ -10,6 +10,7 @@ import { loadProjection } from '../src/news/data.mjs';
 import { articlePage } from '../src/news/render.mjs';
 import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
 import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
+import { loadCarPhotos, carPhotoFor, imageObject } from '../src/identity/car-photos.mjs';
 
 const DIST = path.resolve('dist');
 const t0 = Date.now();
@@ -23,6 +24,12 @@ const newsAll = fs.existsSync('data/news/articles.json') ? JSON.parse(fs.readFil
 const newsPub = newsAll.filter((a) => a.status === 'published');
 const newsEmit = newsAll.filter((a) => a.status === 'published' || (process.env.F1_NEWS_SHADOW === '1' && a.status === 'shadow'));
 ctx.newsModule = homeModule(newsPub, X);
+// car photos: approved only; F1_CAR_CANDIDATES=1 / Vercel preview builds also render reviewed candidates, labelled
+const carReg = loadCarPhotos();
+const carCandidates = process.env.F1_CAR_CANDIDATES === '1' || process.env.VERCEL_ENV === 'preview';
+ctx.carPhotoFor = (cid, season) => carPhotoFor(carReg, cid, season, { includeCandidates: carCandidates });
+fs.mkdirSync(path.join(DIST, 'media/cars'), { recursive: true });
+for (const p of carReg.photos) if (p.approvedForPublicUse || carCandidates) for (const [w, f] of Object.entries(p.derivatives.files)) for (const [ext, src] of Object.entries(f)) fs.copyFileSync(src, path.join(DIST, 'media/cars', `${p.id}-${w}.${ext}`));
 // relocated rounds (projection relocation link): one explanation, shown on the race page
 ctx.relocations = {};
 for (const e of X.allEvents) if (e.relocated_from) { const o = X.event[e.relocated_from.event_id]; const oc = X.circuit[e.relocated_from.original_circuit_id]; ctx.relocations[e.id] = { orig_id: e.relocated_from.event_id, text: `This is the ${e.season} ${e.name.replace(/ in .+$/, '')}, held at ${X.circuit[e.circuit_id]?.name || 'a different circuit'} in ${e.relocated_from.host_country}. The round originally scheduled at ${oc?.name || 'its usual venue'}${o?.start_utc ? ` for ${new Date(o.start_utc).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' })}` : ''} is listed as cancelled.` }; }
@@ -61,6 +68,7 @@ const sitemap = [];
 const allPaths = new Set();
 let pages = 0;
 function emit(p) {
+  if (p.carImageObject) p.jsonLd = [...(p.jsonLd || []), imageObject(p.carImageObject.photo, { site: SITE, publicPath: p.carImageObject.publicPath })];
   const html = layout({ ...p, assets });
   const rel = p.path === '/' ? 'index.html' : p.path.replace(/^\//, '') + '.html';
   const file = path.join(DIST, rel);

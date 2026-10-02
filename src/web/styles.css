@@ -449,3 +449,9 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .pc-driver[hidden],.pc-state>span:empty,[data-pc-premium][hidden],[data-pc-locked][hidden]{display:none!important}
 .pc-towernote{padding:6px 10px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line)}
 .pc-basis{position:absolute;left:10px;top:10px;font:700 11px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);background:#0b0d12cc;border:1px solid var(--line2);padding:3px 8px;border-radius:4px;pointer-events:none}
+/* team hero: the real car (photo is never recoloured; the page accent supports it) */
+.hero.has-car{position:relative}
+.team-car{margin:10px -8px 0;pointer-events:none}
+.team-car img{display:block;width:100%;height:auto;-webkit-mask-image:linear-gradient(90deg,#000 66%,transparent 100%);mask-image:linear-gradient(90deg,#000 66%,transparent 100%);filter:drop-shadow(0 16px 22px rgba(0,0,0,.65))}
+.team-car figcaption{pointer-events:auto;font-size:11px;color:var(--faint);margin:2px 8px 0}.team-car figcaption a{color:var(--muted)}
+@media(min-width:1024px){.hero.has-car>.wrap{position:static}.hero.has-car .team-car{position:absolute;right:max(16px,calc((100vw - var(--wrap))/2 + 8px));top:6px;width:min(46%,640px);margin:0}.hero.has-car .hero-meta,.hero.has-car .lineage{max-width:52%}}
