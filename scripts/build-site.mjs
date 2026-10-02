@@ -32,11 +32,18 @@ const peopleReg = loadPeople();
 ctx.peopleFor = (cid, season) => teamPeople(peopleReg, cid, season);
 ctx.machineFor = (cid, season) => teamMachine(peopleReg, cid, season);
 const explorerReg = loadExplorer();
-// team marks (approved files only)
+// team marks: one canonical registry for hero, car label, cards and tables. A mark whose file cannot be copied at
+// build time degrades to the team's code badge (intentional fallback, logged) - never a broken <img>.
 const teamLogos = JSON.parse(fs.readFileSync('src/identity/team-logos.json', 'utf8')).logos;
-ctx.logoFor = (cid) => (teamLogos[cid]?.status === 'approved' ? teamLogos[cid] : null);
+const teamIdent = JSON.parse(fs.readFileSync('src/identity/teams-2026.json', 'utf8')).teams;
 fs.mkdirSync(path.join(DIST, 'media/logos'), { recursive: true });
-for (const [cid, l] of Object.entries(teamLogos)) if (l.status === 'approved') fs.copyFileSync(l.derivative?.file || l.file, path.join(DIST, l.publicPath.slice(1)));
+const logoOk = {};
+for (const [cid, l] of Object.entries(teamLogos)) {
+  if (l.status !== 'approved') continue;
+  try { fs.copyFileSync(l.derivative?.file || l.file, path.join(DIST, l.publicPath.slice(1))); logoOk[cid] = l; }
+  catch (e) { console.warn(`build-site: team mark for ${cid} unavailable (${e.message}); using code badge`); }
+}
+ctx.logoFor = (cid) => logoOk[cid] || (teamIdent[cid] ? { fallback: true, short: teamIdent[cid].short } : null);
 ctx.explorerFor = (o) => explorerFor(explorerReg, o);
 const carCandidates = process.env.F1_CAR_CANDIDATES === '1' || process.env.VERCEL_ENV === 'preview';
 ctx.carPhotoFor = (cid, season) => carPhotoFor(carReg, cid, season, { includeCandidates: carCandidates });

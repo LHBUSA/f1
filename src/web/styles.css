@@ -543,3 +543,4 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 @media(max-width:600px){.hero-mark img{width:auto;height:38px}}
 .team-car .tmark img{width:auto;height:22px;-webkit-mask-image:none;mask-image:none;filter:none}
 .team-car .tmark{pointer-events:none}
+.tmark-code{font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 5px;border:1px solid var(--line,rgba(255,255,255,.2));border-radius:3px;color:var(--muted);line-height:1.2}

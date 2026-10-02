@@ -1,6 +1,6 @@
 {
-  "_doc": "Team marks shown to IDENTIFY the team (nominative trademark use; no endorsement). Only files whose copyright status permits reuse (Commons PD-textlogo) are approved; trademarks remain with their owners. Files are never recoloured or cropped; dark-ink marks sit on a light chip (bg=light). Held teams fall back to the team name only.",
-  "version": "f1-team-logos@1",
+  "_doc": "Canonical team-mark registry (every current constructor). Marks identify the team only (nominative use), are never recoloured, cropped or stretched, and keep their aspect ratio; dark-ink marks sit on a light chip (bg=light). Provenance is internal; nothing about rights is printed in the UI. Source priority: first-party team/brand assets, then official CDNs, then other authoritative sources.",
+  "version": "f1-team-logos@2",
   "season": 2026,
   "approvedBy": "owner request 2026-10-02 (show team logos next to team names)",
   "logos": {
@@ -22,9 +22,20 @@
       "aspect": 0.9058
     },
     "ferrari": {
-      "status": "held",
-      "reason": "Prancing-horse shield is non-free (fair use on en.wiki only). ferrari.com/media-centre is JS-rendered / 403 to our UA; no published third-party logo terms found.",
-      "copyrightStatus": "non-free (en.wiki only)"
+      "status": "approved",
+      "file": "assets-src/logos/ferrari.svg",
+      "publicPath": "/media/logos/ferrari.svg",
+      "mime": "image/svg+xml",
+      "bg": "light",
+      "aspect": 0.7235,
+      "source": "first_party",
+      "sourceUrl": "https://store.ferrari.com/en-us/",
+      "fileUrl": "inline SVG sprite <symbol id=\"icon-ferrari-logo-black\"> on store.ferrari.com (official Ferrari site)",
+      "retrieved": "2026-10-02",
+      "sha1": "3afa716826962c619fe701e6aa54fadd0a098f7e",
+      "mark": "Ferrari Prancing Horse (Cavallino Rampante), official black mark",
+      "rights": "Official team/brand mark from the team or manufacturer site, used unmodified only to identify the team (nominative use; no endorsement implied). Trademark of its owner.",
+      "note": "ferrari.com returns 403 to our client, so the Scuderia Ferrari HP coloured shield could not be taken first-party; the official Ferrari horse mark is used. Symbol extracted verbatim into a standalone SVG (no path changes)."
     },
     "mclaren": {
       "status": "approved",
@@ -44,14 +55,34 @@
       "aspect": 1.823
     },
     "red-bull": {
-      "status": "held",
-      "reason": "Current team mark is non-free. Red Bull Content Pool is registration-gated / JS-rendered; terms unreadable, treat as editorial_only/unverified.",
-      "copyrightStatus": "non-free (en.wiki only)"
+      "status": "approved",
+      "file": "assets-src/logos/red-bull.svg",
+      "publicPath": "/media/logos/red-bull.svg",
+      "mime": "image/svg+xml",
+      "bg": "none",
+      "aspect": 2.1485,
+      "source": "first_party",
+      "sourceUrl": "https://www.redbullracing.com/int-en",
+      "fileUrl": "https://www.redbullracing.com/_next/static/media/ORBR_logo_2026.4059dac5.svg",
+      "retrieved": "2026-10-02",
+      "sha1": "86a2a721ab71da9c3de6006bba1a12da1b51e07d",
+      "mark": "Oracle Red Bull Racing 2026 team logo",
+      "rights": "Official team/brand mark from the team or manufacturer site, used unmodified only to identify the team (nominative use; no endorsement implied). Trademark of its owner."
     },
     "racing-bulls": {
-      "status": "held",
-      "reason": "No rights-clean file exists; official media page not verifiable.",
-      "copyrightStatus": "non-free (en.wiki only)"
+      "status": "approved",
+      "file": "assets-src/logos/racing-bulls.svg",
+      "publicPath": "/media/logos/racing-bulls.svg",
+      "mime": "image/svg+xml",
+      "bg": "light",
+      "aspect": 3.0171,
+      "source": "first_party",
+      "sourceUrl": "https://www.visacashapprb.com/int-en",
+      "fileUrl": "https://www.visacashapprb.com/_next/static/media/visacashapprb.2417cc46.svg",
+      "retrieved": "2026-10-02",
+      "sha1": "2d376f8f8af619baf26bc2fa82a1cf0bf529db65",
+      "mark": "Visa Cash App Racing Bulls team logo",
+      "rights": "Official team/brand mark from the team or manufacturer site, used unmodified only to identify the team (nominative use; no endorsement implied). Trademark of its owner."
     },
     "alpine": {
       "status": "approved",
@@ -109,9 +140,19 @@
       "aspect": 1.0826
     },
     "aston-martin": {
-      "status": "held",
-      "reason": "Wings mark is non-free; Commons copy has an unverifiable CC BY claim. astonmartinf1.com/en-GB/media returned 404.",
-      "copyrightStatus": "non-free (en.wiki); Commons CC BY 4.0 copy unreliable"
+      "status": "approved",
+      "file": "assets-src/logos/aston-martin.svg",
+      "publicPath": "/media/logos/aston-martin.svg",
+      "mime": "image/svg+xml",
+      "bg": "none",
+      "aspect": 2.4643,
+      "source": "first_party",
+      "sourceUrl": "https://www.astonmartinf1.com/en-GB",
+      "fileUrl": "https://assets.astonmartinf1.com/public/cms/29S4paAKB9c3x7bCuLWApv/ecd8fe87c0f069d3f33ad1e5a66d7760/2025_AMF1_Team__logo_wide_white_RGB_BG.svg",
+      "retrieved": "2026-10-02",
+      "sha1": "16fc388b791a3c054c558f2a88ee754cf2542151",
+      "mark": "Aston Martin Aramco Formula One Team logo (white, wide)",
+      "rights": "Official team/brand mark from the team or manufacturer site, used unmodified only to identify the team (nominative use; no endorsement implied). Trademark of its owner."
     },
     "williams": {
       "status": "approved",
@@ -131,9 +172,20 @@
       "aspect": 1.9455
     },
     "cadillac": {
-      "status": "held",
-      "reason": "Team lockup is non-free. If owner accepts the corporate crest for identification, cadillac__brand2021.svg is copyright-clean.",
-      "copyrightStatus": "non-free (en.wiki only); Commons CC0 copy unreliable"
+      "status": "approved",
+      "file": "assets-src/logos/cadillac.svg",
+      "publicPath": "/media/logos/cadillac.svg",
+      "mime": "image/svg+xml",
+      "bg": "light",
+      "aspect": 3.2727,
+      "source": "first_party",
+      "sourceUrl": "https://www.cadillacf1team.com/",
+      "fileUrl": "inline header SVG on cadillacf1team.com (site logo)",
+      "retrieved": "2026-10-02",
+      "sha1": "0e1cee67dbea34354f2ec815cba5c2ccefd604c5",
+      "mark": "Cadillac crest as used by the Cadillac Formula 1 Team site header",
+      "rights": "Official team/brand mark from the team or manufacturer site, used unmodified only to identify the team (nominative use; no endorsement implied). Trademark of its owner.",
+      "note": "Inline header SVG saved verbatim as a standalone file."
     }
   }
 }

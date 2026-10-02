@@ -78,3 +78,18 @@ test('driver chains never list the same person twice in one step', () => {
     }
   }
 });
+
+test('every current constructor has an approved, existing team mark with a sane aspect ratio', () => {
+  const logos = JSON.parse(fs.readFileSync('src/identity/team-logos.json', 'utf8')).logos;
+  const teams = Object.keys(JSON.parse(fs.readFileSync('src/identity/teams-2026.json', 'utf8')).teams);
+  assert.equal(teams.length, 11);
+  for (const cid of teams) {
+    const l = logos[cid];
+    assert.ok(l && l.status === 'approved', `${cid} has no approved mark`);
+    assert.ok(fs.existsSync(l.derivative?.file || l.file), `${cid} mark file missing`);
+    assert.ok(l.aspect > 0.3 && l.aspect < 6, `${cid} aspect ${l.aspect}`);
+    assert.ok(['light', 'none'].includes(l.bg), `${cid} bg`);
+    assert.ok(l.sourceUrl, `${cid} provenance`);
+    if (/\.svg$/.test(l.file)) assert.doesNotMatch(fs.readFileSync(l.file, 'utf8'), /<script|\son\w+=/i, `${cid} active SVG content`);
+  }
+});

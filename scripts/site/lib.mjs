@@ -263,6 +263,7 @@ export function dnaRadar(dims, color = 'ff4d2e', size = 220) {
 // from the file's aspect ratio so the layout never shifts; dark-ink marks sit on a light chip, nothing is recoloured.
 export function teamMark(logo, h = 18, cls = '') {
   if (!logo) return '';
+  if (logo.fallback) return `<span class="tmark tmark-code${cls ? ` ${cls}` : ''}" aria-hidden="true">${esc(logo.short)}</span>`;
   const w = Math.round(h * logo.aspect);
   return `<span class="tmark tmark-${logo.bg || 'none'}${cls ? ` ${cls}` : ''}"><img src="${logo.publicPath}" width="${w}" height="${h}" alt="" decoding="async"></span>`;
 }
