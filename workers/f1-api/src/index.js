@@ -8,6 +8,7 @@ import { doc, putFile, activate, currentVersion } from './projection.js';
 import { f1Access } from './access.js';
 import { normalizeFrames, sessionPublicId, coverage, SESSION_TYPE } from './frames.js';
 import { deriveIncidents, INCIDENT_TAXONOMY_VERSION } from '../../../src/core/incidents.mjs';
+import { noTransform } from './transport.js';
 
 export { LiveHub };
 
@@ -60,8 +61,7 @@ async function sessionFrames(env, upstream, buffer) {
 const authorized = (req, token) => !!token && (req.headers.get('authorization') || '') === `Bearer ${token}`;
 const err = (req, status, error) => respond(req, { error }, { status, cache: 'no-store' });
 
-export default {
-  async fetch(req, env, ctx) {
+async function route(req, env, ctx) {
     const url = new URL(req.url);
     let p = url.pathname.replace(/\/+$/, '') || '/';
     if (req.method === 'OPTIONS') return respond(req, {}, { status: 204, cache: 'max-age=86400' });
@@ -300,6 +300,12 @@ export default {
       console.error('f1 route error', p, e?.stack || e);
       return err(req, 500, 'internal error');
     }
+}
+
+export default {
+  // Every response leaves with no-transform: see transport.js (Vercel cache vs Accept-Encoding).
+  async fetch(req, env, ctx) {
+    return noTransform(await route(req, env, ctx));
   },
   async scheduled(event, env, ctx) {
     ctx.waitUntil(ingestCurrent(env, { trigger: true }).catch((e) => console.error('ingest failed', e?.message || e)));
