@@ -190,7 +190,7 @@ td.num,th.num{text-align:right}
 .bar-empty span{display:none}
 .conf{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--line2);white-space:nowrap}
 .conf-high{color:var(--green);border-color:#2fe08a55}.conf-medium{color:var(--yellow);border-color:#ffd23f55}.conf-low{color:var(--accent2);border-color:#ff7a4555}.conf-insufficient{color:var(--faint)}
-.radar{width:100%;max-width:280px;margin:0 auto;display:block}
+.radar{width:100%;max-width:330px;height:auto;margin:0 auto;display:block}
 .radar .ring{fill:none;stroke:var(--line2);stroke-width:1}.radar .spoke{stroke:var(--line);stroke-width:1}
 .radar .rlbl{fill:var(--muted);font-family:var(--display);font-size:10px;letter-spacing:.05em;text-transform:uppercase}
 .unavail{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}

@@ -234,11 +234,27 @@ export function dnaRadar(dims, color = 'ff4d2e', size = 220) {
   const rings = [0.25, 0.5, 0.75, 1].map((r) => `<polygon points="${keys.map((_, i) => pt(i, r).join(',')).join(' ')}" class="ring"/>`).join('');
   const spokes = keys.map((_, i) => `<line x1="${c}" y1="${c}" x2="${pt(i, 1)[0]}" y2="${pt(i, 1)[1]}" class="spoke"/>`).join('');
   const vals = keys.map((k, i) => pt(i, (dims[k].percentile ?? 0) / 100).join(',')).join(' ');
+  // Labels anchor AWAY from the centre (left side end-anchored, right side start-anchored) so they never straddle
+  // the edge, and the viewBox is derived from the real extent of rings + labels (10px uppercase display face,
+  // ~6.8 units per character incl. letter-spacing), kept symmetric so the radar stays centred.
+  const CH = 6.8, LH = 12, PAD = 4;
+  let minX = c - R, maxX = c + R, minY = c - R, maxY = c + R;
   const labels = keys
     .map((k, i) => {
-      const [lx, ly] = pt(i, 1.17);
-      return `<text x="${lx}" y="${ly}" class="rlbl" text-anchor="middle" dominant-baseline="middle">${esc(dims[k].short || dims[k].label.split(' ')[0])}</text>`;
+      const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+      const cos = Math.cos(a), sin = Math.sin(a);
+      const [lx, ly] = [c + cos * R * 1.1, c + sin * R * 1.1 + (Math.abs(sin) > 0.6 ? Math.sign(sin) * 5 : 0)];
+      const anchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle';
+      const text = String(dims[k].short || dims[k].label.split(' ')[0]);
+      const w = text.length * CH;
+      const x0 = anchor === 'start' ? lx : anchor === 'end' ? lx - w : lx - w / 2;
+      minX = Math.min(minX, x0); maxX = Math.max(maxX, x0 + w);
+      minY = Math.min(minY, ly - LH / 2); maxY = Math.max(maxY, ly + LH / 2);
+      return `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" class="rlbl" text-anchor="${anchor}" dominant-baseline="middle">${esc(text)}</text>`;
     })
     .join('');
-  return `<svg class="radar" viewBox="0 0 ${size} ${size}" role="img" aria-label="DNA percentile profile">${rings}${spokes}<polygon points="${vals}" fill="#${color}" fill-opacity=".22" stroke="#${color}" stroke-width="2"/>${labels}</svg>`;
+  const halfW = Math.max(c - minX, maxX - c) + PAD;
+  const halfH = Math.max(c - minY, maxY - c) + PAD;
+  const vb = [c - halfW, c - halfH, 2 * halfW, 2 * halfH].map((v) => +v.toFixed(1));
+  return `<svg class="radar" viewBox="${vb.join(' ')}" width="${vb[2]}" height="${vb[3]}" role="img" aria-label="DNA percentile profile">${rings}${spokes}<polygon points="${vals}" fill="#${color}" fill-opacity=".22" stroke="#${color}" stroke-width="2"/>${labels}</svg>`;
 }
