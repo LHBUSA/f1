@@ -49,3 +49,13 @@ test('missing values stay missing (no estimates)', () => {
   assert.equal(f.mgukrpm, undefined);
   for (const cid of TEAMS) for (const m of Object.values(pt(cid).metrics)) assert.doesNotMatch(m.value, /torque|Nm|boost|efficiency/i);
 });
+
+test('team-spec fuel/lubricant fallback: real word boundaries, fuel cell/system/energy never count as a fuel partner', () => {
+  const run = (specs) => powertrainFor({ machine: { powerUnit: { makerKey: 'none', manufacturer: 'Test', relationship: 'works' }, specs: specs.map(([label, value]) => ({ component: 'power-unit', label, value })) }, tech: { powerUnits: {} }, teamName: 'Test' });
+  assert.equal(run([['Fuel', 'Shell V-Power']]).fuel, 'Shell V-Power');
+  assert.equal(run([['Engine oil', 'Shell Helix Ultra']]).lube, 'Shell Helix Ultra');
+  assert.equal(run([['Lubricants', 'Mobil 1']]).lube, 'Mobil 1');
+  for (const label of ['Fuel cell', 'Fuel system', 'Fuel energy']) assert.equal(run([[label, 'FIA-specified']]).fuel, null, `${label} must not become the fuel partner`);
+  assert.equal(run([['Rear spoiler', 'Carbon']]).lube, null); // "oil" inside a word is not oil
+  assert.equal(run([['Biofuel blend', 'Advanced sustainable']]).fuel, null); // nor is "fuel" inside a word
+});

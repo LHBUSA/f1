@@ -55,8 +55,8 @@ export function powertrainFor({ machine, tech, teamName }) {
   if (mf?.fuelPartner && !fluids.team.some((t) => /fuel/i.test(t.label))) fluids.items.push({ key: 'fuel', label: 'Fuel', value: mf.fuelPartner, cls: 'maker', by: pu.manufacturer });
   if (mf?.lubricantPartner && !fluids.team.some((t) => /lubric|oil/i.test(t.label))) fluids.items.push({ key: 'lube', label: 'Lubricants', value: mf.lubricantPartner, cls: 'maker', by: pu.manufacturer });
   const teamFluid = (re) => teamSpecs.find((t) => re.test(t.label) || re.test(t.value))?.value || null;
-  const fuel = mf?.fuelPartner || teamFluid(/fuel(?! (cell|system|energy))/i);
-  const lube = mf?.lubricantPartner || teamFluid(/lubric|oil/i);
+  const fuel = mf?.fuelPartner || teamFluid(/\bfuel\b(?! (cell|system|energy))/i);
+  const lube = mf?.lubricantPartner || teamFluid(/lubric|\boil\b/i);
   return {
     fuel, lube,
     designation: pu.designation || null, manufacturer: pu.manufacturer, relationship: pu.relationship, makerKey: pu.makerKey,
