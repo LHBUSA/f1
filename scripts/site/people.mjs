@@ -34,9 +34,13 @@ export function summaryOf(ctx, prof) {
   }
   const past = prof.timeline.entries.filter((e) => !e.ongoing && e.ranged);
   if (past.length) {
-    const ys = past.flatMap((e) => [e.from, e.to].filter(Boolean).map((x) => Number(String(x).slice(0, 4))));
+    // a disputed endpoint never sets the range; if one of its candidates would fall outside it, the range is left out
+    const yr = (x) => Number(String(x).slice(0, 4));
+    const ys = past.flatMap((e) => [['from', e.from], ['to', e.to]].filter(([k, v]) => v && !e.disputed?.[k]).map(([, v]) => yr(v)));
+    const dys = past.flatMap((e) => ['from', 'to'].flatMap((k) => (e.disputed?.[k] || []).map(yr)));
+    const range = ys.length && !dys.some((y) => y < Math.min(...ys) || y > Math.max(...ys));
     const orgs = [...new Set(past.map((e) => orgName(ctx, e)).filter(Boolean))];
-    parts.push(`The verified record also lists ${past.length} earlier role${past.length > 1 ? 's' : ''}${ys.length ? ` between ${Math.min(...ys)} and ${Math.max(...ys)}` : ''}${orgs.length ? ` with ${orgs.slice(0, 4).join(', ')}${orgs.length > 4 ? ' and others' : ''}` : ''}.`);
+    parts.push(`The verified record also lists ${past.length} earlier role${past.length > 1 ? 's' : ''}${range ? ` between ${Math.min(...ys)} and ${Math.max(...ys)}` : ''}${orgs.length ? ` with ${orgs.slice(0, 4).join(', ')}${orgs.length > 4 ? ' and others' : ''}` : ''}.`);
   }
   const ds = prof.drivers.filter((x) => x.stats && /\brace engineer\b/i.test(x.entry.title));
   const byDriver = new Map();

@@ -209,4 +209,5 @@ test('a disputed date shows every candidate, never one picked side', () => {
   assert.match(steiner.period, /2014 or 2016/);
   assert.match(careerTimeline(reg, 'adrian-newey').entries.find((e) => e.constructorId === 'mclaren').period, /2004 or 2005/);
   assert.match(careerTimeline(reg, 'gianpiero-lambiase').entries.find((e) => e.disputed).period, /^2014 or 2015 – /);
+  if (DIST) assert.doesNotMatch(fs.readFileSync('dist/people/guenther-steiner.html', 'utf8'), /between 2016 and/);
 });
