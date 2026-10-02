@@ -561,7 +561,7 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 @media(min-width:1024px){.rail{--card:min(34vw,620px)}}
 .rail-item{scroll-snap-align:start}
 .rail-card{position:relative;display:flex;flex-direction:column;gap:8px;height:100%;padding:16px 18px 18px;border-radius:14px;color:inherit;text-decoration:none;border:1px solid var(--line);background:radial-gradient(70% 60% at 50% 58%,color-mix(in srgb,var(--tc) 22%,transparent),transparent 72%),linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.25));transition:opacity .3s,transform .3s,border-color .3s}
-.rail-item:not(.is-active) .rail-card{opacity:.72;transform:scale(.94)}
+.rail-item:not(.is-active) .rail-card{opacity:.8}.rail-item.is-active .rail-card{transform:scale(1.015)}
 .rail-card:hover,.rail-card:focus-visible{border-color:color-mix(in srgb,var(--tc) 60%,#fff 10%);outline:none}
 .rail-card:focus-visible{box-shadow:0 0 0 2px #fff}
 .rail-head{display:flex;align-items:center;gap:8px;font:700 15px var(--display);letter-spacing:.06em;text-transform:uppercase}
@@ -608,3 +608,21 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 }
 .nav-progress{position:fixed;left:0;top:0;height:2px;width:0;background:var(--accent,#ff4d2e);z-index:1000;opacity:0;transition:width 1.2s ease-out,opacity .2s}.nav-progress[data-on='1']{width:80%;opacity:1}@media (prefers-reduced-motion: reduce){.nav-progress{transition:none}}::view-transition-old(root),::view-transition-new(root){animation-duration:120ms}
 /* TEMP (remove when PBEcast v3 merges): frozen PBEcast UI keeps its accepted colours */body.bg-cast{--muted:#8a93a8;--faint:#5d667b}
+
+/* rail progress: 03 / 11 + thin segments; the active segment fills during the idle interval (autoplay only) */
+.rail-progress{display:none;align-items:center;gap:14px;margin-top:2px}
+@media (scripting: enabled){.rail-progress{display:flex}}
+.rail-count{font:700 13px var(--display);letter-spacing:.1em;color:var(--muted);white-space:nowrap}.rail-count b{color:var(--ink)}.rail-cur{margin-left:8px;color:var(--faint);text-transform:uppercase;font-size:11px;letter-spacing:.14em}
+.rail-segs{display:flex;gap:4px;flex:1;max-width:420px}
+.rail-seg{flex:1;height:14px;padding:6px 0;border:0;background:none;cursor:pointer}
+.rail-seg i{display:block;height:2px;border-radius:2px;background:#ffffff26;position:relative;overflow:hidden}
+.rail-seg[aria-current=true] i{background:#ffffff40}
+.rail-seg[aria-current=true] i::after{content:"";position:absolute;inset:0;width:100%;background:var(--rail-accent,#fff);opacity:.9;transform-origin:left;transform:scaleX(1)}
+.rail-progress.timing .rail-seg[aria-current=true] i::after{animation:rail-fill var(--rail-ms,6000ms) linear forwards}
+.rail-progress.paused .rail-seg[aria-current=true] i::after{animation-play-state:paused}
+.rail-seg:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:2px}
+@keyframes rail-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.rail.wrapping{opacity:0;transition:opacity .22s}
+.rail{transition:opacity .22s}
+@media (prefers-reduced-motion: reduce){.rail-progress.timing .rail-seg[aria-current=true] i::after{animation:none}.rail,.rail.wrapping{transition:none}}
+@media(max-width:600px){.rail-segs{max-width:none}.rail-cur{display:none}}

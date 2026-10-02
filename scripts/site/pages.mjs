@@ -841,7 +841,8 @@ function carRail(ctx) {
       <span class="rail-cta">Explore ${esc(c.name)} →</span>
     </a></li>`;
   }).join('');
-  return `<section class="section grid-rail" aria-label="The ${season} grid"><div class="wrap rail-top"><div><span class="eyebrow">${season} grid</span><h2>Meet the cars</h2></div><div class="rail-nav"><button type="button" class="rail-btn" data-rail-prev aria-label="Previous car">‹</button><button type="button" class="rail-btn" data-rail-next aria-label="Next car">›</button></div></div>
+  return `<section class="section grid-rail" aria-label="The ${season} grid"><div class="wrap rail-top"><div><span class="eyebrow">${season} grid</span><h2>Meet the cars</h2></div><div class="rail-nav"><button type="button" class="rail-btn" data-rail-prev aria-label="Previous constructor">‹</button><button type="button" class="rail-btn" data-rail-next aria-label="Next constructor">›</button></div></div>
   <ul class="rail" data-rail tabindex="0" aria-label="${season} cars, in championship order. Use left and right arrows to browse.">${cards}</ul>
+  <div class="wrap rail-progress" data-rail-progress><span class="rail-count" aria-live="polite"><b data-rail-idx>01</b> / ${String(ids.length).padStart(2, '0')} <span class="rail-cur" data-rail-name>${esc(ctx.conById[ids[0]]?.name || '')}</span></span><span class="rail-segs">${ids.map((cid, i) => `<button type="button" class="rail-seg" data-rail-go="${i}" aria-label="Go to ${esc(ctx.conById[cid]?.name || cid)}"${i === 0 ? ' aria-current="true"' : ''}><i></i></button>`).join('')}</span></div>
   <p class="wrap fine rail-credit">Real ${season} cars, backgrounds removed. Photo credits on each team page.</p></section>`;
 }
