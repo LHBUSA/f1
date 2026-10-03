@@ -845,3 +845,6 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 .h2h-row .lbl small{font-size:10px;letter-spacing:.04em;text-transform:none;margin-left:4px;font-weight:600}
 .mu-hero h1.mu-h1{margin:0 0 18px;text-align:center;font:700 clamp(13px,1.6vw,16px)/1.3 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.mu-hero h1.mu-h1 span{color:var(--faint)}
 .pc-state .pc-mode{min-width:150px;text-align:center;box-sizing:border-box}.pc-state .pc-acct{min-width:104px;text-align:center;box-sizing:border-box}
+/* PBEcast tower height reserved per grid size (no inline styles: CSP style-src 'self') */
+.pc-rows[data-rows="18"]{min-height:576px}.pc-rows[data-rows="19"]{min-height:608px}.pc-rows[data-rows="20"]{min-height:640px}.pc-rows[data-rows="21"]{min-height:672px}.pc-rows[data-rows="22"]{min-height:704px}.pc-rows[data-rows="23"]{min-height:736px}.pc-rows[data-rows="24"]{min-height:768px}.pc-rows[data-rows="25"]{min-height:800px}.pc-rows[data-rows="26"]{min-height:832px}
+.pc-row>*{pointer-events:none}

@@ -305,16 +305,19 @@ function renderContext(T) {
   n.replaceChildren(...(head ? [el('b', null, head), document.createTextNode(` · ${rest}`)] : [document.createTextNode(rest)]));
 }
 function markHover() { document.querySelectorAll('.pc-row').forEach((r) => r.classList.toggle('is-hover', !!S.hover && r.dataset.code === S.hover)); }
+// rows are kept as stable elements keyed by driver code and only rewritten when their content changes, so a click
+// is never lost to the once-a-second refresh
+const rowEls = new Map();
 function renderTower(T) {
   renderContext(T);
   const body = $('[data-pc-tower]');
   if (!body) return;
   const f = S.model ? frameAt(S.model, T) : null;
   const rows = f ? [...f.cars].filter((c) => ID.drivers[c.id]).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99)) : S.tower;
-  body.replaceChildren(...rows.map((c, i) => {
+  const want = rows.map((c, i) => {
     const d = ID.drivers[c.id || c.driver_id], t = TEAM(c.id || c.driver_id);
     const out = c.status && !RUNNING.has(c.status);
-    const b = el('button', `pc-row tc-${(t?.color || '').toLowerCase()}${c.pos === 1 ? ' is-leader' : ''}${out ? ' is-out' : ''}${d?.code && d.code === S.hover ? ' is-hover' : ''}`); b.type = 'button';
+    const b = el('button', `pc-row tc-${(t?.color || '').toLowerCase()}${c.pos === 1 ? ' is-leader' : ''}${out ? ' is-out' : ''}`); b.type = 'button';
     b.setAttribute('aria-pressed', String(d?.code === S.selected)); b.dataset.code = d?.code || '';
     const start = startPos(c.id || c.driver_id), mv = start != null && c.pos != null ? start - c.pos : null;
     b.append(el('span', 'pc-pos', String(c.pos ?? '–')), el('span', 'pc-stripe'), Object.assign(el('span', 'pc-team', t?.short || ''), { title: t?.name || '' }), el('span', 'pc-code', d?.code || '?'),
@@ -326,8 +329,15 @@ function renderTower(T) {
       b.append(el('span', 'pc-num', i === 0 ? `L${c.laps ?? ''}` : c.gap_laps ? `+${c.gap_laps}L` : fmtGap(c.gap_ms)), el('span', 'pc-num pc-iv', i === 0 ? '' : fmtGap(iv)), el('span', 'pc-num', c.pits != null ? String(c.pits) : ''), el('span', 'pc-num', fmtLap(c.best_ms)));
     } else b.append(el('span', 'pc-num', c.laps != null ? `L${c.laps}` : ''));
     b.append(el('span', 'pc-status', status));
-    return b;
-  }));
+    const key = `${b.className}|${b.getAttribute('aria-pressed')}|${b.innerHTML}`, code = b.dataset.code || `#${i}`;
+    let cur = rowEls.get(code);
+    if (!cur) { cur = b; rowEls.set(code, cur); }
+    else if (cur._k !== key) { cur.className = b.className; cur.setAttribute('aria-pressed', b.getAttribute('aria-pressed')); cur.dataset.code = b.dataset.code; cur.replaceChildren(...b.childNodes); }
+    cur._k = key; cur.classList.toggle('is-hover', !!S.hover && cur.dataset.code === S.hover);
+    return cur;
+  });
+  const kids = [...body.children];
+  if (kids.length !== want.length || want.some((n, i) => kids[i] !== n)) body.replaceChildren(...want);
 }
 
 // ---------- feed ----------
