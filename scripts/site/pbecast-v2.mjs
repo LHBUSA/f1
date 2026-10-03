@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { esc, crumbs, jsonLdBreadcrumb, PROPSPORTS_F1 } from './lib.mjs';
 import { buildRegistry } from '../../src/identity/registry.mjs';
+import { kalshiStripMount } from './kalshi.mjs';
 
 const LABEL = { fp1: 'Practice 1', fp2: 'Practice 2', fp3: 'Practice 3', qualifying: 'Qualifying', 'sprint-qualifying': 'Sprint Qualifying', sprint: 'Sprint', race: 'Grand Prix' };
 const AA = { price: '$29/month', url: 'https://propbetedge.ai/pro' };
@@ -21,6 +22,8 @@ export function pbecastEventPage(X, ev) {
   const circ = X.circuit[ev.circuit_id];
   const geo = geometryFor(ev.circuit_id);
   const race = ev.sessions.find((s) => s.type === 'race');
+  // Kalshi main-race-winner strip (leaders): its own client (src/web/kalshi.js), never part of the cast's data path
+  const kalshiMount = kalshiStripMount(ev.id, race);
   // not live: the weekend's latest published classification (public results), labelled as such
   const lastS = [...ev.sessions].filter((s) => s.state === 'completed' && s.results?.length).at(-1);
   const fallback = lastS ? { label: LABEL[lastS.type] || lastS.type, rows: lastS.results.filter((r) => r.position).map((r) => ({ driver_id: r.driver_id, pos: r.position, status: r.status === 'classified' ? 'running' : r.status, laps: r.laps ?? null })) } : null;
@@ -36,6 +39,7 @@ export function pbecastEventPage(X, ev) {
   </div>
   <aside class="pc-tower" aria-label="Timing tower"><div class="pc-tower-h"><span>POS</span><span>DRIVER</span><span data-pc-premium hidden class="pc-tower-pro">GAP · INT · PITS · BEST</span><span data-pc-locked="pbecast_tower" class="pc-tower-lock"><a href="${AA.url}" data-pc-cta="pbecast_tower">Gaps &amp; intervals · All Access</a></span></div><p class="pc-towernote" data-pc-towernote>Connecting to timing…</p><div data-pc-tower class="pc-rows" data-rows="${Math.min(26, Math.max(18, fallback?.rows.length || 0, Object.keys(data.identity.drivers).length))}"><p class="pc-empty">Waiting for timing…</p></div></aside>
 </section>
+${kalshiMount}
 <section class="wrap pc-lower">
   <div class="pc-feedcol"><h2>Race state &amp; incidents</h2><p class="fine">Flags and car status from our timing record. Causes are never inferred; a retirement is not an accident.</p><ul class="pc-feed" data-pc-feed></ul></div>
   <div class="pc-replaycol">
@@ -53,7 +57,7 @@ export function pbecastEventPage(X, ev) {
   </div>
 </section>
 <script type="application/json" id="pbecast-data">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
-  return { path: `/pbecast/${ev.id}`, title: `${ev.season} ${ev.name} PBEcast: Live Track, Timing & Replay`, description: `PBEcast for the ${ev.season} ${ev.name}: cars placed on ${circ?.name || 'the circuit'} from recorded timing, the timing tower, race state, and All Access replay with position history.`, body, section: '/pbecast', bg: 'cast', pbecast: true, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/pbecast', 'PBEcast'], [`/pbecast/${ev.id}`, ev.name]])] };
+  return { path: `/pbecast/${ev.id}`, title: `${ev.season} ${ev.name} PBEcast: Live Track, Timing & Replay`, description: `PBEcast for the ${ev.season} ${ev.name}: cars placed on ${circ?.name || 'the circuit'} from recorded timing, the timing tower, race state, and All Access replay with position history.`, body, section: '/pbecast', bg: 'cast', pbecast: true, kalshi: !!kalshiMount, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/pbecast', 'PBEcast'], [`/pbecast/${ev.id}`, ev.name]])] };
 }
 
 export function pbecastHub(X, nextEv) {

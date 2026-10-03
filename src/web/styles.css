@@ -848,3 +848,12 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 /* PBEcast tower height reserved per grid size (no inline styles: CSP style-src 'self') */
 .pc-rows[data-rows="18"]{min-height:576px}.pc-rows[data-rows="19"]{min-height:608px}.pc-rows[data-rows="20"]{min-height:640px}.pc-rows[data-rows="21"]{min-height:672px}.pc-rows[data-rows="22"]{min-height:704px}.pc-rows[data-rows="23"]{min-height:736px}.pc-rows[data-rows="24"]{min-height:768px}.pc-rows[data-rows="25"]{min-height:800px}.pc-rows[data-rows="26"]{min-height:832px}
 .pc-row>*{pointer-events:none}
+
+/* Kalshi Market Intelligence (shared component, vendored CSS appended by the build). F1 token mapping + card frame;
+   prediction-market accent stays the component's cool blue, distinct from F1 accent red. Empty mounts take no space. */
+.kx,.kx-strip{--pbe-ink-2:var(--panel);--pbe-line:var(--line);--pbe-paper:var(--ink);--pbe-dim:var(--muted);--f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.kx.ic{border:1px solid rgba(127,184,255,.24);border-radius:var(--r);padding:16px;min-width:0}
+.kx-mount:empty{display:none}
+.kx-sec .kx-f1note{margin-top:8px}
+.pc-kalshi{margin-top:14px}
+.pc-kalshi .kx-f1note{margin-top:6px}

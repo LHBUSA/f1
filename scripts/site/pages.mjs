@@ -1,6 +1,7 @@
 import { esc, fmtPts, fmtMs, ordinal, teamClass, headshot, flag, crumbs, jsonLdBreadcrumb, lineChart, fmtDate, timeTag, pct, SITE, fmtNum, teamMark } from './lib.mjs';
 import { driverCell, teamLink, sessionTable, standingsTable, dnaPanel, battleCard, fitList, sessionList, statusPill, sessionsAhead } from './components.mjs';
 import { SESSION_LABEL } from '../../src/core/normalize.mjs';
+import { kalshiRaceMount } from './kalshi.mjs';
 
 const age = (dob) => {
   if (!dob) return null;
@@ -203,6 +204,8 @@ export function racePage(ctx, ev) {
   const fit = ctx.fit[ev.id];
   const history = (ctx.eventsByCircuit[ev.circuit_id] || []).filter((e) => e.season < ev.season && e.status === 'completed').slice(-8).reverse();
   const isPast = ev.status === 'completed';
+  // Kalshi main-race-winner market: client-side, only while the main race (never the sprint) is not completed
+  const kalshiMount = isPast ? '' : kalshiRaceMount(ev.slug, ctx.session(ev.id, 'race'));
   const breadcrumb = [['/', 'Home'], ['/races', 'Races'], [ev.season === ctx.currentSeason ? '/races' : `/seasons/${ev.season}`, String(ev.season)], [`/races/${ev.slug}`, ev.name]];
   const body = `${crumbs(breadcrumb)}
   <section class="hero"><div class="wrap"><span class="eyebrow">Round ${ev.round ?? '—'} · ${ev.season} ${ev.sprint ? '· Sprint weekend' : ''}</span><h1>${esc(ev.name)}</h1>
@@ -214,6 +217,7 @@ export function racePage(ctx, ev) {
     <div class="card"><span class="kicker">Session schedule</span>${sessionList(ctx, ev)}${!isPast ? `<p class="fine" data-weather="${esc(c?.slug || '')}" data-weather-from="${esc(ev.start_utc)}" data-weather-to="${esc(ev.end_utc || ev.start_utc)}"></p>` : ''}</div>
     ${champ}
   </div></div></div></section>
+  ${kalshiMount}
   ${tm ? `<section class="section" id="teammate-gaps"><div class="wrap"><div class="card"><div class="section-head"><div><span class="eyebrow">Qualifying</span><h2>Teammate qualifying gaps</h2></div></div><div class="tm-head" aria-hidden="true"><span>Team</span><span>Ahead</span><span>Gap</span><span>Behind</span></div><ol class="tm-gaps">${tm}</ol><p class="fine">Gap = slower teammate's time vs the faster one, in the deepest knockout session both drivers set a time in.</p></div></div></section>` : ''}
   ${fit ? `<section class="section" id="fit"><div class="wrap"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit</span><h2>Driver × circuit profile</h2></div></div>${fitList(ctx, fit, 22)}</div></div></section>` : ''}
   ${history.length ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Recent winners at ${esc(ctx.circuitName(ev.circuit_id))}</h2><a class="more" href="${ctx.circuitUrl(ev.circuit_id)}">Circuit DNA</a></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Winner</th><th>Team</th><th class="num">Grid</th></tr></thead><tbody>${history
@@ -239,7 +243,7 @@ export function racePage(ctx, ev) {
   const desc = w
     ? `${ev.season} ${ev.name} results: ${ctx.driverById[w.driver_id]?.full_name} won for ${ctx.conById[w.constructor_id]?.name}. Full race, qualifying, sprint and practice classifications, teammate gaps and championship impact.`
     : `${ev.season} ${ev.name} at ${ctx.circuitName(ev.circuit_id)}: session schedule, Circuit Fit, recent winners and live classification.`;
-  return { path: `/races/${ev.slug}`, title: `${ev.season} ${ev.name} ${w ? 'Results' : 'Schedule & Preview'}`, description: desc, body, jsonLd, section: '/races', ogType: 'article' };
+  return { path: `/races/${ev.slug}`, title: `${ev.season} ${ev.name} ${w ? 'Results' : 'Schedule & Preview'}`, description: desc, body, jsonLd, section: '/races', ogType: 'article', kalshi: !!kalshiMount };
 }
 
 // ---------------- DRIVERS ----------------

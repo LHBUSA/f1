@@ -77,6 +77,8 @@ for (const e of X.allEvents) if (e.relocated_from) { const o = X.event[e.relocat
 const colors = new Set();
 for (const c of ctx.constructors) for (const v of Object.values(c.colors || {})) colors.add(String(v).toLowerCase());
 let css = fs.readFileSync('src/web/styles.css', 'utf8');
+// shared Kalshi component styles, vendored unchanged; F1 token mapping + card frame live in styles.css (.kx)
+css += '\n' + fs.readFileSync('src/vendor/kalshi/kalshi-market-ui.css', 'utf8');
 css += '\n' + [...colors].map((c) => `.tc-${c.replace(/[^0-9a-f]/g, '')}{--tc:#${c}}`).join('');
 css += '\n' + Array.from({ length: 101 }, (_, i) => `.w-${i}{width:${i}%}`).join('');
 const cssHash = crypto.createHash('sha256').update(css).digest('hex').slice(0, 10);
@@ -115,7 +117,16 @@ fs.writeFileSync(path.join(DIST, `assets/rail.${rlHash}.js`), rlJs);
 const nvJs = fs.readFileSync('src/web/nav.js', 'utf8');
 const nvHash = crypto.createHash('sha256').update(nvJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/nav.${nvHash}.js`), nvJs);
-const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, nav: `/assets/nav.${nvHash}.js` };
+// Kalshi Market Intelligence (race page + PBEcast only): the vendored shared component (src/vendor/kalshi, unchanged)
+// as content-hashed ES modules, lazily imported by the classic loader src/web/kalshi.js. Prices are fetched client-side.
+const hashOut = (src, name) => { const t = fs.readFileSync(src, 'utf8'); const h = crypto.createHash('sha256').update(t).digest('hex').slice(0, 10); fs.writeFileSync(path.join(DIST, `assets/${name}.${h}.js`), t); return `/assets/${name}.${h}.js`; };
+const kxUi = hashOut('src/vendor/kalshi/kalshi-market-ui.js', 'kalshi-market-ui');
+const kxClient = hashOut('src/vendor/kalshi/kalshi-market-client.js', 'kalshi-market-client');
+const kxJs = fs.readFileSync('src/web/kalshi.js', 'utf8').replace("'/assets/kalshi-market-ui.js'", `'${kxUi}'`).replace("'/assets/kalshi-market-client.js'", `'${kxClient}'`);
+if (!kxJs.includes(kxUi) || !kxJs.includes(kxClient)) throw new Error('build-site: kalshi loader import paths not rewritten');
+const kxHash = crypto.createHash('sha256').update(kxJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/kalshi.${kxHash}.js`), kxJs);
+const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];
@@ -218,6 +229,14 @@ function methodology(ctx) {
   <p>From the last 10 seasons at each circuit: track-position importance (grid↔finish rank correlation and pole conversion), position change, pole-lap speed, attrition and observed pit stops per car (2014+). Braking, tyre stress, DRS, safety-car and weather volatility are not sourced.</p>
   <h2>Circuit Fit</h2>
   <p>A weighted average of relevant Driver and Constructor DNA percentiles, with weights set by the circuit’s profile (e.g. qualifying is weighted up where track position matters). It is descriptive — not a prediction, probability or betting signal.</p>
+  <h2 id="kalshi">Kalshi prediction-market prices</h2>
+  <p>Race pages and PBEcast can show the Kalshi market on who wins the Grand Prix. These are traded prices from Kalshi, a regulated prediction market. They are not sportsbook odds, and they are not a PropBetEdge model, pick or prediction. Every price links to that market on Kalshi.</p>
+  <ul>
+  <li><b>What the contract pays</b> — each contract is a YES on one driver finishing first in the <i>main race</i> (the Grand Prix itself, not the sprint and not the championship). A YES pays $1 if that driver wins and nothing otherwise, so a price in cents is what the market is paying for that $1.</li>
+  <li><b>Mid-market</b> — the midpoint of the best YES bid and the best YES ask, shown only when both exist and the spread is 10¢ or less. Otherwise the bid and ask are shown as they are. Bid, ask, last trade and Mid-market are different numbers and are labelled separately.</li>
+  <li><b>Movement</b> — changes and trend lines come only from snapshots we actually recorded. Nothing between two observations is filled in, and a change is only shown between two observed Mid-markets.</li>
+  <li><b>Freshness</b> — each market shows when it was last read. A market that stops updating is labelled stale, and then removed.</li>
+  <li><b>Coverage</b> — only contracts with a live, traded book are listed, ranked by Mid-market, top eight. If there is no market for a race, nothing is shown.</li></ul>
   <h2>Points</h2>
   <p>Race-row points are published as the weekend total (sprint included). Pre-1991 seasons used dropped scores, so race-by-race sums can differ from official totals; official standings are always authoritative and progression charts are hidden where sums disagree.</p>
   <h2>Identity</h2>

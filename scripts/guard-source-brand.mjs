@@ -79,8 +79,11 @@ for (const file of f1Files) {
 
 // Hard data-path guard: customer-facing F1 code may only reach data through the PropSports F1 contract.
 const UPSTREAM_HOSTS = /\b(?:[a-z0-9-]+\.)*(?:espn\.com|espncdn\.com|espn\.go\.com|f1-api\.propbetedge\.ai|api\.met\.no|wikidata\.org|wikipedia\.org|openf1\.org|jolpi\.ca|ergast\.com|formula1\.com|fia\.com|workers\.dev)\b/i;
+// The one exception: the PropSports markets API (our own Kalshi Market Intelligence service, owner approved 2026-10-03),
+// read client-side by the vendored shared component. Only this exact host is exempt; any other workers.dev host still fails.
+const PROPSPORTS_MARKETS_HOST = /\bpropsports-markets\.sales-fd3\.workers\.dev\b/gi;
 for (const file of f1Files) {
-  const lines = fs.readFileSync(file.full, 'utf8').split('\n');
+  const lines = fs.readFileSync(file.full, 'utf8').split('\n').map((l) => l.replace(PROPSPORTS_MARKETS_HOST, 'propsports-markets'));
   for (let i = 0; i < lines.length; i++) if (UPSTREAM_HOSTS.test(lines[i])) violations.push(`${file.rel}:${i + 1}: upstream host reference: ${lines[i].trim().slice(0, 160)}`);
 }
 
