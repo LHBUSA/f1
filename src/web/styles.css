@@ -152,7 +152,8 @@ td.num,th.num{text-align:right}
 .avatar{display:inline-flex;align-items:flex-end;justify-content:center;overflow:hidden;border-radius:50%;background:radial-gradient(circle at 50% 30%,var(--panel3),var(--bg2));border:2px solid var(--tc);flex:none}
 .avatar img{width:100%;height:100%;object-fit:cover;object-position:top}
 .avatar-sm{width:36px;height:36px}.avatar-md{width:72px;height:72px}.avatar-lg{width:120px;height:120px}
-@media(min-width:768px){.avatar-lg{width:170px;height:170px}}
+@media(min-width:768px){.avatar-lg{width:168px;height:168px}}
+@media(min-width:1024px){.avatar-lg{width:208px;height:208px}.avatar-lg.avatar-initials{font-size:64px}}
 .avatar-initials{align-items:center;font-family:var(--display);font-weight:800;color:var(--ink2);font-size:18px}
 .avatar-lg.avatar-initials{font-size:44px}
 .flag{width:20px;height:20px;border-radius:50%;object-fit:cover;display:inline-block;vertical-align:-4px;border:1px solid var(--line2)}
@@ -466,7 +467,7 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .src{font-size:10px;color:var(--faint);text-decoration:underline dotted}.machine-strip .src{position:absolute;top:10px;right:12px}
 .people-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px 28px}.pgroup h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tc);margin:0 0 8px}
 .people,.pairs{list-style:none;margin:0;padding:0;display:grid;gap:8px}.person{display:flex;align-items:center;gap:10px}.person .who{display:flex;flex-direction:column;min-width:0;flex:1}.person b{font-size:14px}.person small{font-size:12px;color:var(--muted)}
-.avatar{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;background:color-mix(in srgb,var(--tc) 35%,#11141b);border:1px solid color-mix(in srgb,var(--tc) 60%,transparent)}
+.pavatar{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;background:color-mix(in srgb,var(--tc) 35%,#11141b);border:1px solid color-mix(in srgb,var(--tc) 60%,transparent)}
 .pairs li{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line,rgba(255,255,255,.1));border-left:3px solid var(--tc);border-radius:8px}.pairs .drv{font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:13px;min-width:0;flex:1}.pairs .arrow{color:var(--faint)}.pairs .eng{display:flex;flex-direction:column;flex:1.2;min-width:0}.pairs .eng small{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}.pairs .eng b{font-size:14px}.pairs .eng.none b{color:var(--faint);font-weight:400}.pgroup-race .people{margin-top:10px}
 @media(max-width:600px){.machine-strip{grid-template-columns:1fr 1fr}.machine-strip>div{border-bottom:1px solid var(--line,rgba(255,255,255,.1))}}
 .pgroup-race,.pgroup-garage{grid-column:1/-1}.pgroup-race .pairs{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}.pgroup-garage .fine{margin:0}
@@ -709,3 +710,13 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 @media(max-width:700px){.hs span{display:none}}
 .ctl-item .tag{font-size:11px}
 .pt-grid-solo{grid-template-columns:minmax(0,760px)}
+/* driver hero: current car attached to the identity (portrait | identity | car on wide screens, car below otherwise) */
+.drv-car{margin:4px 0 0;grid-column:1/-1;display:grid;gap:6px}
+.drv-car-img{display:block;position:relative;isolation:isolate;max-width:720px}
+.drv-car-img::before{content:"";position:absolute;inset:22% 4% 2% 4%;z-index:-1;background:radial-gradient(ellipse at 50% 62%,color-mix(in srgb,var(--tc) 22%,transparent),transparent 70%)}
+.drv-car-img img{display:block;width:100%;height:auto;filter:drop-shadow(0 16px 22px rgba(0,0,0,.65))}
+.drv-car figcaption{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.drv-car figcaption .eyebrow{flex-basis:100%;margin:0}.drv-car figcaption b{font:800 17px var(--display);letter-spacing:.02em}
+.drv-car-links{display:flex;flex-wrap:wrap;gap:4px 14px;flex-basis:100%}
+.drv-car small{flex-basis:100%;font-size:11px;color:var(--faint)}.drv-car small a{color:var(--muted)}
+@media(min-width:1280px){.hero-person.has-drv-car{grid-template-columns:auto minmax(0,1fr) minmax(420px,600px)}.hero-person.has-drv-car .drv-car{grid-column:auto;align-self:center}}

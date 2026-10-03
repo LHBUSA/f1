@@ -13,7 +13,7 @@ export const GROUPS = [
 
 function face(prof, size = 48, cls = 'face') {
   if (prof.photo?.files) return `<img class="${cls}" src="/media/people/${esc(prof.photo.files[size > 96 ? '192' : '96'])}" width="${size}" height="${size}" alt="${size > 96 ? esc(prof.name) : ''}" loading="${size > 96 ? 'eager' : 'lazy'}" decoding="async">`;
-  return `<span class="avatar" aria-hidden="true">${esc(initials(prof.name))}</span>`;
+  return `<span class="avatar pavatar" aria-hidden="true">${esc(initials(prof.name))}</span>`;
 }
 const orgName = (ctx, e) => (e.constructorId ? ctx.conById[e.constructorId]?.name || e.constructorId : e.organisation || '');
 const orgLink = (ctx, e) => (e.constructorId && ctx.conById[e.constructorId] ? `<a href="/teams/${esc(e.constructorId)}">${esc(ctx.conById[e.constructorId].name)}</a>` : esc(e.organisation || ''));

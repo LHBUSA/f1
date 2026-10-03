@@ -302,16 +302,19 @@ export function driverPage(ctx, d) {
   const num = (ctx.dcsByDriver[d.id] || []).sort((a, b) => b.season - a.season)[0]?.car_numbers?.[0];
   const thin = (car?.entries || 0) < 3;
   const bc = [['/', 'Home'], ['/drivers', 'Drivers'], [`/drivers/${d.slug}`, d.full_name]];
+  // current car: the driver's constructor in the current-season grid, that season's approved photo only (no other season)
+  const gridCid = ctx.currentGrid.find((g) => g.driver_id === d.id)?.constructor_id || null;
+  const carFig = gridCid ? driverCarFigure(ctx, d, gridCid, ctx.currentSeason) : '';
   const body = `${crumbs(bc)}
-  <section class="hero ${teamClass(color)}"><div class="wrap hero-person">${headshot(d, 'lg', ctx.mediaOk, color)}<div>
+  <section class="hero ${teamClass(color)}"><div class="wrap hero-person${carFig ? ' has-drv-car' : ''}">${headshot(d, 'lg', ctx.mediaOk, color)}<div class="hero-id">
     <span class="eyebrow">${onGrid ? `${ctx.currentSeason} · ${esc(ctx.conById[lt.constructor_id]?.name)}` : `Formula 1 driver · ${car?.first_season ?? ''}–${car?.last_season ?? ''}`}</span>
     <h1>${esc(d.full_name)}</h1>
     <div class="hero-meta">${d.nationality ? `<span><b>Nationality</b>${flag(d)} ${esc(d.nationality)}</span>` : ''}${d.date_of_birth ? `<span><b>Born</b>${esc(fmtDate(d.date_of_birth))}${onGrid ? ` (${age(d.date_of_birth)})` : ''}</span>` : ''}${d.code ? `<span><b>Code</b>${esc(d.code)}</span>` : ''}${num ? `<span><b>Number</b>${esc(num)}</span>` : ''}${lt ? `<span><b>${onGrid ? 'Team' : 'Last team'}</b>${teamLink(ctx, lt.constructor_id)}</span>` : ''}</div>
-    <div class="team-stripe"></div></div></div></section>
+    <div class="team-stripe"></div></div>${carFig}</div></section>
   <section class="section"><div class="wrap"><div class="stats">
     <div class="stat-box"><span>Starts</span><b>${car?.starts ?? 0}</b></div><div class="stat-box"><span>Wins</span><b>${car?.wins ?? 0}</b></div><div class="stat-box"><span>Podiums</span><b>${car?.podiums ?? 0}</b></div><div class="stat-box"><span>Poles</span><b>${car?.poles ?? 0}</b></div><div class="stat-box"><span>Points</span><b>${fmtPts(car?.points ?? 0)}</b></div><div class="stat-box"><span>Titles</span><b>${car?.championships.length ?? 0}</b>${car?.championships.length ? `<span>${car.championships.join(', ')}</span>` : ''}</div>
   </div><p class="fine">Career totals from published race classifications (${ctx.coverage.earliest_season}–${ctx.currentSeason}). Poles use the qualifying classification where published, otherwise grid position 1. ${esc(car?.points_note || '')}</p></div></section>
-  ${onGrid ? `<section class="section"><div class="wrap">${currentMachineCard(ctx, lt.constructor_id, ctx.currentSeason)}</div></section>` : ''}
+  ${gridCid && !carFig ? `<section class="section"><div class="wrap">${currentMachineCard(ctx, gridCid, ctx.currentSeason)}</div></section>` : ''}
   ${ctx.driverProfileHtml ? ctx.driverProfileHtml(d) : ''}
   ${dnaC || dnaK ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Driver DNA</span><h2>Profile</h2></div><a class="more" href="/methodology#driver-dna">Methodology</a></div>
     <div class="tabs" role="tablist">${dnaC ? `<button class="tab" role="tab" type="button" aria-selected="true" aria-controls="dna-cur" id="dt-cur">${esc(dnaC.window)}</button>` : ''}${dnaK ? `<button class="tab" role="tab" type="button" aria-selected="${dnaC ? 'false' : 'true'}" aria-controls="dna-car" id="dt-car">Career</button>` : ''}</div>
@@ -689,7 +692,7 @@ function machineStrip(ctx, c, season, m, people, lineup) {
 
 function personFace(r, size = 48) {
   if (r.photo?.files) return `<img class="face" src="/media/people/${esc(r.photo.files[size >= 96 ? '192' : '96'])}" width="${size}" height="${size}" alt="" loading="lazy" decoding="async">`;
-  return `<span class="avatar" aria-hidden="true">${esc(initials(r.name))}</span>`;
+  return `<span class="avatar pavatar" aria-hidden="true">${esc(initials(r.name))}</span>`;
 }
 
 function personCard(r, ctx, extra = '') {
@@ -894,6 +897,22 @@ export function powerUnitsPage(ctx, rows) {
   ${row('Power-unit leadership', (pt) => pt.leadership.slice(0, 2).map((l) => `${esc(l.name)} <small class="muted">${esc(l.role)}</small>`).join('<br>') || '—')}
   </tbody></table></div><p class="fine">Labels: team-published, manufacturer-published, FIA regulation. A regulation value is a limit that applies to every engine, not a measured figure. A manufacturer's published output is shown only for its own engine.</p></div></section>`;
   return { path: '/power-units', title: `${season} F1 Power Units Compared: Mercedes, Ferrari, Honda, Audi, Red Bull Ford`, description: `${season} Formula 1 power units side by side from published facts: designations, works and customer teams, ICE and MGU-K limits, energy store, fuels, lubricants and published output where a maker has disclosed it.`, section: '/teams', body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/teams', 'Teams'], ['/power-units', 'Power units']])] };
+}
+
+// the current car attached to an active driver's hero: approved photo for (constructor, season) or nothing
+function driverCarFigure(ctx, d, cid, season) {
+  const photo = ctx.carPhotoFor?.(cid, season);
+  if (!photo || photo.season !== season || photo.constructorId !== cid) return '';
+  const machine = ctx.machineFor?.(cid, season), pt = ctx.powertrainFor?.(cid, season);
+  const team = ctx.conById[cid]?.name || cid;
+  const model = machine?.carModel?.value || photo.carModel || null;
+  const pictured = photo.driverId && photo.driverId !== d.slug ? ctx.drivers.find((x) => x.slug === photo.driverId) : null;
+  const alt = `${season} ${team} ${model || 'car'}${pictured ? `, ${pictured.full_name}'s car` : ''}`;
+  const set = (ext) => [640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.${ext} ${w}w`).join(', ');
+  const sizes = '(min-width:1280px) 600px, (min-width:768px) 90vw, 100vw';
+  return `<figure class="drv-car"><a class="drv-car-img" href="/teams/${cid}#explorer" aria-label="${esc(`Explore the ${season} ${team} car`)}"><picture><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><img src="/media/cars/${photo.id}-1280.webp" srcset="${set('webp')}" sizes="${sizes}" width="1280" height="${Math.round((1280 * photo.derivatives.aspect[1]) / photo.derivatives.aspect[0])}" alt="${esc(alt)}" decoding="async"></picture></a>
+  <figcaption><span class="eyebrow">Current machine · ${season}</span><b>${esc(model || `${team} ${season} car`)}</b>${pt ? `<span class="muted">${esc(pt.designation || `${pt.manufacturer} power unit`)}</span>` : ''}<span class="drv-car-links"><a class="more" href="/teams/${cid}#explorer">Explore car</a> <a class="more" href="/teams/${cid}#powertrain">Explore power unit</a></span>
+  <small>${pictured ? `Pictured: ${esc(pictured.full_name)}'s car${photo.event ? ` · ${esc(photo.event)}` : ''} · ` : photo.event ? `${esc(photo.event)} · ` : ''}<a href="${esc(photo.sourceUrl)}" rel="noopener">Photo: ${esc(photo.photographer)}</a>, <a href="${esc(photo.licenseUrl)}" rel="noopener license">${esc(photo.license)}</a> · background removed${photo.approvedForPublicUse ? '' : ' · PREVIEW CANDIDATE'}</small></figcaption></figure>`;
 }
 
 function currentMachineCard(ctx, cid, season) {
