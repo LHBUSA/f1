@@ -4,9 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
-import { kalshiCard, kalshiStrip, __resetKalshiFlashes } from '../src/vendor/kalshi/kalshi-market-ui.js';
+import { kalshiCard, kalshiStrip, marketModule, marketHistoryCard, marketCloseLine, __resetKalshiFlashes } from '../src/vendor/kalshi/kalshi-market-ui.js';
 import { createKalshiClient } from '../src/vendor/kalshi/kalshi-market-client.js';
-import { kalshiRaceMount, kalshiStripMount, raceMarketId, isRaceMarketId } from '../scripts/site/kalshi.mjs';
+import { kalshiRaceMount, kalshiStripMount, kalshiCloseMount, raceMarketId, isRaceMarketId } from '../scripts/site/kalshi.mjs';
 
 const MARKET_URL = 'https://kalshi.com/markets/kxf1race/f1-race/kxf1race-bah26';
 const DRIVERS = ['Max Verstappen', 'Kimi Antonelli', 'Lewis Hamilton', 'Charles Leclerc', 'George Russell', 'Lando Norris', 'Oscar Piastri', 'Fernando Alonso', 'Carlos Sainz', 'Pierre Gasly'];
@@ -76,10 +76,10 @@ test('kalshi: CSP connect-src allows the PropSports markets host', () => {
   assert.doesNotMatch(csp, /kalshi\.com/, 'the browser never talks to Kalshi');
 });
 
-// sha256 of the canonical shared files (propbetedge-workers/workers/propsports-markets/client), LF-normalised
+// sha256 of the canonical shared files (propbetedge-workers/workers/propsports-markets/client @ 70d92e0), LF-normalised
 const VENDOR_SHA = {
-  'kalshi-market-ui.js': '0f03224b086e11967329e2a4666ef5327e335fbb32ae251a31a2a543b30e1952',
-  'kalshi-market-ui.css': '572d18127bf6ce357e50b4320e0d98d83b07aa3d6bfb1e1c04c43bee4f009f98',
+  'kalshi-market-ui.js': 'c343805e546cde66d01676c9c6c9f6f4ca746a8ba138b4b1ad0159a341f3db2a',
+  'kalshi-market-ui.css': 'db0f4b1efd5209966fb627f72e217b9539876d5123edc10d80524d172da41a06',
   'kalshi-market-client.js': '653cb0fc2673f909552453052560bfd6194e0e4d045c51b1eb73483957d4c049',
 };
 const lf = (f) => fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
@@ -100,8 +100,10 @@ test('kalshi: browser code never calls a Kalshi API host', () => {
     assert.doesNotMatch(t, API, f);
     assert.doesNotMatch(t, /fetch\([^)]*kalshi\.com/i, f);
   }
-  // the F1 loader talks only to the shared client (which reads the PropSports markets API)
-  assert.doesNotMatch(fs.readFileSync('src/web/kalshi.js', 'utf8'), /\bfetch\(/);
+  // the F1 loader reads only the PropSports markets API (its own reads keep kalshi:null history entries)
+  const loader = fs.readFileSync('src/web/kalshi.js', 'utf8');
+  const hosts = [...loader.matchAll(/https:\/\/[a-z0-9.-]+/gi)].map((m) => m[0]);
+  assert.deepEqual([...new Set(hosts)], ['https://propsports-markets.sales-fd3.workers.dev']);
 });
 
 test('kalshi: the race mount only ever targets the MAIN race session, never a sprint', () => {
@@ -116,7 +118,10 @@ test('kalshi: the race mount only ever targets the MAIN race session, never a sp
     assert.equal(kalshiStripMount(ev, { type, state: 'scheduled' }), '', type);
   }
   assert.equal(kalshiRaceMount(ev, null), '');
-  assert.equal(kalshiRaceMount(ev, { ...race, state: 'completed' }), '', 'completed race: no mount');
+  // completed main race keeps its mount (market history), flagged done; races before the market lane never had one
+  assert.match(kalshiRaceMount(ev, { ...race, state: 'completed' }), /data-kalshi-race="2026-bahrain-grand-prix-in-malaysia-race"[^>]*data-kalshi-done="1"/);
+  assert.match(kalshiStripMount(ev, { ...race, state: 'completed' }), /data-kalshi-strip="2026-bahrain-grand-prix-in-malaysia-race"[^>]*data-kalshi-done="1"/);
+  assert.equal(kalshiRaceMount('2024-italian-grand-prix', { type: 'race', state: 'completed', start_utc: '2024-09-01T13:00Z' }), '');
   assert.equal(kalshiRaceMount(ev, { ...race, state: 'canceled' }), '');
   for (const bad of [`${ev}-sprint`, `${ev}-sprint-race`, `${ev}-sprint-qualifying-race`, '2026-drivers-championship-race', `${ev}`, '']) assert.equal(isRaceMarketId(bad), false, bad);
   // the browser loader applies the same rule before it fetches anything
@@ -129,6 +134,9 @@ test('kalshi: the race mount only ever targets the MAIN race session, never a sp
   assert.equal(K.usable({ event: { state: 'pre' }, kalshi: { state: 'open', proposition: 'driver_wins_race' } }), true);
   assert.equal(K.usable({ event: { state: 'pre' }, kalshi: { state: 'open', proposition: 'driver_wins_championship' } }), false);
   assert.equal(K.usable(null), false);
+  // market still trading after the chequered flag stays visible; closed / settled moves to history
+  assert.equal(K.usable({ event: { state: 'post' }, kalshi: { state: 'open', proposition: 'driver_wins_race' }, market: { lifecycle: 'ACTIVE' } }), true);
+  assert.equal(K.usable({ event: { state: 'post' }, kalshi: { state: 'open', proposition: 'driver_wins_race' }, market: { lifecycle: 'CLOSED' } }), false);
   assert.equal(K.phase({ event: { state: 'in' } }), 'live');
   assert.equal(K.phase({ event: { state: 'pre' } }, '2999-01-01T00:00Z'), 'pregame');
   assert.match(K.NOTE, /finishes first in the main race/);
@@ -137,8 +145,119 @@ test('kalshi: the race mount only ever targets the MAIN race session, never a sp
 test('kalshi: pages wire the mount only on race + PBEcast templates; static build bakes no prices', () => {
   const pages = fs.readFileSync('scripts/site/pages.mjs', 'utf8');
   assert.match(pages, /kalshiRaceMount\(ev\.slug, ctx\.session\(ev\.id, 'race'\)\)/);
+  assert.doesNotMatch(pages, /isPast \? '' : kalshiRaceMount/, 'completed races keep the mount');
+  assert.match(pages, /kalshiCloseMount\(last\.slug, ctx\.session\(last\.id, 'race'\)\)/);
   assert.doesNotMatch(pages, /kalshiRaceMount\([^)]*sprint/);
   const pc = fs.readFileSync('scripts/site/pbecast-v2.mjs', 'utf8');
   assert.match(pc, /kalshiStripMount\(ev\.id, race\)/);
   for (const f of ['scripts/site/pages.mjs', 'scripts/site/pbecast-v2.mjs', 'scripts/site/kalshi.mjs', 'scripts/build-site.mjs']) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /market-intelligence\/(?:sport|event)/, f);
+});
+
+// ---------- market history (How the market closed) ----------
+// The REAL settled tennis event (Rybakina vs Charaeva) from the PropSports API, reshaped ONLY in sport / ids / names into
+// the F1 main-race field shape for QA. Every price, timestamp and settlement value is the stored real one.
+const REAL = JSON.parse(fs.readFileSync('tests/fixtures/market-history-tennis-settled.json', 'utf8')).event;
+const F1_ID = '2026-bahrain-grand-prix-in-malaysia-race';
+function f1History(lifecycle = 'SETTLED', { kalshiNull = true } = {}) {
+  const e = structuredClone(REAL);
+  const names = ['Max Verstappen', 'Kimi Antonelli'];
+  e.event = { ...e.event, sport: 'f1', competition: 'f1', canonical_event_id: F1_ID, state: 'post' };
+  const h = e.market_history;
+  h.proposition = 'driver_wins_race';
+  h.shape = 'field';
+  h.lifecycle = lifecycle;
+  h.status_label = lifecycle === 'SETTLED' ? 'Market settled' : 'Market closed';
+  h.outcomes.forEach((o, i) => { o.abbr = o.kalshi_name = names[i]; o.contract = `Main Race: ${names[i]} wins`; o.role = `p:${slug(names[i])}`; if (lifecycle === 'CLOSED') o.settlement = null; });
+  if (lifecycle === 'CLOSED') h.markers.settlement = null;
+  e.market = { ...e.market, proposition: 'driver_wins_race', lifecycle, close: { ...e.market.close, lifecycle, shape: 'field', outcomes: e.market.close.outcomes.map((o, i) => ({ ...o, abbr: names[i], result: lifecycle === 'CLOSED' ? null : o.result })) } };
+  if (kalshiNull) e.kalshi = null; else e.kalshi.proposition = 'driver_wins_race';
+  return e;
+}
+
+test('market history: SETTLED field market renders "How the market closed" (real stored values, kalshi:null)', () => {
+  const e = f1History('SETTLED');
+  const html = marketModule(e, { placement: 'race-page-history' });
+  assert.match(html, /How the market closed/);
+  assert.match(html, /kx-h__rows kx-h__rows--field/);
+  assert.match(html, /<span class="kx__frank mono">1<\/span>/);
+  assert.match(html, /First observed/);
+  assert.doesNotMatch(html, /<small>[^<]*open/i, 'first observed is never labelled an opening price');
+  assert.match(html, /not the opening price/);
+  assert.match(html, /Kalshi settlement: <b>Kimi Antonelli<\/b> — YES/);
+  assert.match(html, /Settled YES/);
+  assert.match(html, /Final trade/);
+  assert.match(html, /Settlement is the market venue's, not our result/);
+  assert.match(html, /<svg[^>]*aria-label="Observed market prices over time"/);
+  assert.doesNotMatch(html, /style="/, 'no inline styles (F1 CSP style-src self)');
+  assert.doesNotMatch(html, /Market Pulse/);
+  assert.match(html, /5\.5¢/, 'first observed 5.5¢, the stored value');
+  const line = marketCloseLine(e);
+  assert.match(line, /MARKET/);
+  assert.match(line, /Kimi Antonelli/);
+  assert.match(line, /settled YES/);
+});
+
+test('market history: CLOSED shows "awaiting settlement", never a result', () => {
+  const e = f1History('CLOSED');
+  const html = marketModule(e, {});
+  assert.match(html, /Market closed · awaiting settlement/);
+  assert.match(html, /Awaiting settlement/);
+  assert.doesNotMatch(html, /Settled YES|settlement: <b>/);
+  assert.match(marketCloseLine(e), /awaiting settlement/);
+});
+
+test('market history: nothing for no entry / no history / no close', () => {
+  assert.equal(marketModule(null), '');
+  assert.equal(marketHistoryCard(null), '');
+  assert.equal(marketHistoryCard({ market: { lifecycle: 'SETTLED' } }), '');
+  assert.equal(marketCloseLine(null), '');
+  assert.equal(marketCloseLine({ market: { lifecycle: 'SETTLED', close: null } }), '');
+  assert.equal(kalshiCloseMount('2026-bahrain-grand-prix-in-malaysia', { type: 'race', state: 'scheduled', start_utc: '2026-10-04T07:00Z' }), '', 'result line only for a completed race');
+  assert.match(kalshiCloseMount('2026-bahrain-grand-prix-in-malaysia', { type: 'race', state: 'completed', start_utc: '2026-10-04T07:00Z' }), /data-kalshi-close="2026-bahrain-grand-prix-in-malaysia-race"/);
+  assert.equal(kalshiCloseMount('2026-bahrain-grand-prix-in-malaysia', { type: 'sprint', state: 'completed', start_utc: '2026-10-04T07:00Z' }), '');
+});
+
+test('market history: every link is rel sponsored to the venue market', () => {
+  const html = marketModule(f1History('SETTLED'));
+  const links = [...html.matchAll(/<a\b[^>]*>/g)].map((m) => m[0]);
+  assert.ok(links.length >= 1);
+  for (const a of links) {
+    assert.match(a, /rel="noopener noreferrer sponsored"/);
+    assert.ok(a.includes(`href="${REAL.market_history.market_url}"`), a);
+  }
+  assert.match(html, /Kalshi · Prediction market data/);
+});
+
+test('market history: loader picks history vs live card; polls live 20s / pregame 45s / CLOSED 5min / SETTLED never', () => {
+  const win = { document: { readyState: 'complete', addEventListener() {}, querySelector: () => null, hidden: false } };
+  win.window = win;
+  vm.runInNewContext(fs.readFileSync('src/web/kalshi.js', 'utf8'), { window: win, document: win.document, setTimeout, clearTimeout });
+  const K = win.F1.kalshi;
+  const POLL = { live: 20_000, pregame: 45_000, idle: 120_000 };
+  const settled = f1History('SETTLED');
+  const closed = f1History('CLOSED');
+  assert.equal(K.historic(settled), true, 'kalshi:null + market_history still renders');
+  assert.equal(K.historic(closed), true);
+  assert.equal(K.usable(settled), false);
+  assert.equal(K.nextMs(settled, null, true, POLL), 0);
+  assert.equal(K.nextMs(closed, null, true, POLL), 5 * 60_000);
+  const live = fieldEntry();
+  live.market = { lifecycle: 'ACTIVE', proposition: 'driver_wins_race' };
+  assert.equal(K.nextMs(live, '2999-01-01T00:00Z', false, POLL), 45_000);
+  assert.equal(K.nextMs({ ...live, event: { ...live.event, state: 'in' } }, null, false, POLL), 20_000);
+  assert.equal(K.nextMs(null, null, true, POLL), 0, 'completed race with no market: one read, then stop');
+  assert.equal(K.nextMs(null, '2999-01-01T00:00Z', false, POLL), 120_000);
+  const champ = f1History('SETTLED');
+  champ.market.proposition = champ.market_history.proposition = 'driver_wins_championship';
+  assert.equal(K.historic(champ), false, 'never a championship market');
+});
+
+test('market history: built completed race pages carry the mount + loader, no baked prices', () => {
+  const dir = 'dist/races';
+  if (!fs.existsSync(dir)) return;
+  const pages = fs.readdirSync(dir).filter((f) => f.startsWith('2026-')).map((f) => fs.readFileSync(path.join(dir, f), 'utf8'));
+  for (const h of pages.filter((x) => /data-kalshi-race=/.test(x))) {
+    assert.match(h, /<script src="\/assets\/kalshi\.[0-9a-f]{10}\.js" defer><\/script>/);
+    assert.doesNotMatch(h, /How the market closed|kx-h__row|kx__frow/, 'no prices baked into the static page');
+  }
 });

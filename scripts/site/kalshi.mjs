@@ -1,4 +1,4 @@
-// Kalshi Market Intelligence mount points (owner approved 2026-10-03). The static build only decides WHERE a market may
+// Kalshi Market Intelligence mount points (owner approved 2026-10-03; market history 2026-10-03). The static build only decides WHERE a market may
 // appear; prices are never baked into the page. src/web/kalshi.js fetches them client-side from the PropSports markets
 // API and renders nothing when there is no market.
 //
@@ -16,20 +16,41 @@ export function raceMarketId(eventSlug, raceSession) {
   return isRaceMarketId(id) ? id : null;
 }
 
-const OPEN = (s) => s && s.type === 'race' && !['completed', 'canceled', 'cancelled'].includes(s.state);
+// The PropSports F1 market lane first recorded Kalshi markets in October 2026; no earlier race ever had an observed
+// market, so completed races before this keep no mount (one pointless request avoided per historical page).
+export const MARKET_SINCE = Date.parse('2026-09-01T00:00:00Z');
+const CANCELED = ['canceled', 'cancelled'];
+const DONE = (s) => s?.state === 'completed';
+// Mount while the main race is upcoming/running AND after it completes (market history: "How the market closed").
+const MOUNTABLE = (s) => {
+  if (!s || s.type !== 'race' || CANCELED.includes(s.state)) return false;
+  if (!DONE(s)) return true;
+  const t = Date.parse(s.start_utc || '');
+  return Number.isFinite(t) && t >= MARKET_SINCE;
+};
+const attrs = (s) => `${s.start_utc ? ` data-kalshi-start="${esc(s.start_utc)}"` : ''}${DONE(s) ? ' data-kalshi-done="1"' : ''}`;
 
-/** Race page mount: present only while the main race is not completed. An empty element (no box, no reserved space). */
+/** Race page mount: upcoming, live AND completed main races (history once the market closes). An empty element
+ *  (no box, no reserved space); prices are fetched client-side, never baked. */
 export function kalshiRaceMount(eventSlug, raceSession) {
-  if (!OPEN(raceSession)) return '';
+  if (!MOUNTABLE(raceSession)) return '';
   const id = raceMarketId(eventSlug, raceSession);
   if (!id) return '';
-  return `<div class="kx-mount" data-kalshi-race="${esc(id)}"${raceSession.start_utc ? ` data-kalshi-start="${esc(raceSession.start_utc)}"` : ''}></div>`;
+  return `<div class="kx-mount" data-kalshi-race="${esc(id)}"${attrs(raceSession)}></div>`;
 }
 
-/** PBEcast strip mount (leaders), same main-race market. */
+/** PBEcast mount (leaders strip while trading; market history card with the replay once closed), same main-race market. */
 export function kalshiStripMount(eventSlug, raceSession) {
-  if (!OPEN(raceSession)) return '';
+  if (!MOUNTABLE(raceSession)) return '';
   const id = raceMarketId(eventSlug, raceSession);
   if (!id) return '';
-  return `<div class="kx-mount pc-kalshi wrap" data-kalshi-strip="${esc(id)}"${raceSession.start_utc ? ` data-kalshi-start="${esc(raceSession.start_utc)}"` : ''}></div>`;
+  return `<div class="kx-mount pc-kalshi wrap" data-kalshi-strip="${esc(id)}"${attrs(raceSession)}></div>`;
+}
+
+/** Result card line (completed main race): compact "MARKET first → before start · settled" from the board. */
+export function kalshiCloseMount(eventSlug, raceSession) {
+  if (!MOUNTABLE(raceSession) || !DONE(raceSession)) return '';
+  const id = raceMarketId(eventSlug, raceSession);
+  if (!id) return '';
+  return `<p class="kx-mount kx-closeline" data-kalshi-close="${esc(id)}"></p>`;
 }

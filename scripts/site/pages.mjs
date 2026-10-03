@@ -1,7 +1,7 @@
 import { esc, fmtPts, fmtMs, ordinal, teamClass, headshot, flag, crumbs, jsonLdBreadcrumb, lineChart, fmtDate, timeTag, pct, SITE, fmtNum, teamMark } from './lib.mjs';
 import { driverCell, teamLink, sessionTable, standingsTable, dnaPanel, battleCard, fitList, sessionList, statusPill, sessionsAhead } from './components.mjs';
 import { SESSION_LABEL } from '../../src/core/normalize.mjs';
-import { kalshiRaceMount } from './kalshi.mjs';
+import { kalshiRaceMount, kalshiCloseMount } from './kalshi.mjs';
 
 const age = (dob) => {
   if (!dob) return null;
@@ -45,12 +45,15 @@ export function home(ctx) {
 
   // Latest result
   let latest = '';
+  let kalshiLine = '';
   if (last) {
+    // subtle market line on the result card (board close summary, client-side; nothing when no market was recorded)
+    kalshiLine = kalshiCloseMount(last.slug, ctx.session(last.id, 'race'));
     const podium = ctx.rows(last.id, 'race').filter((r) => r.status === 'classified' && r.position <= 3);
     const order = [podium[1], podium[0], podium[2]].filter(Boolean);
     latest = `<div class="card"><span class="eyebrow">Latest result · Round ${last.round}</span><h3><a href="${ctx.raceUrl(last.id)}">${esc(last.name)}</a></h3><p class="fine">${esc(fmtDate(last.end_utc || last.start_utc))} · ${esc(ctx.circuitName(last.circuit_id))}</p>
       <div class="podium">${order.map((r) => `<div class="pp pp${r.position} ${teamClass(ctx.colorOf(r.constructor_id, last.season))}">${headshot(ctx.driverById[r.driver_id], 'md', ctx.mediaOk, ctx.colorOf(r.constructor_id, last.season))}<b>${r.position}</b><a class="nm" href="${ctx.driverUrl(r.driver_id)}">${esc(ctx.driverById[r.driver_id]?.last_name)}</a></div>`).join('')}</div>
-      <p><a class="more" href="${ctx.raceUrl(last.id)}">Full classification</a></p></div>`;
+      <p><a class="more" href="${ctx.raceUrl(last.id)}">Full classification</a></p>${kalshiLine}</div>`;
   }
 
   // DNA spotlight: top current qualifier and racecraft
@@ -87,6 +90,7 @@ export function home(ctx) {
     title: `F1 ${season} Live, Standings, Driver DNA & Teammate Battles | PropBetEdge F1`,
     description: `Formula 1 ${season} intelligence: next Grand Prix schedule, live timing, championship standings, Driver and Constructor DNA, Circuit Fit and teammate battles, built from sourced results.`,
     body,
+    kalshi: !!kalshiLine,
     jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'PropBetEdge F1', url: SITE + '/' }],
   };
 }
@@ -204,8 +208,9 @@ export function racePage(ctx, ev) {
   const fit = ctx.fit[ev.id];
   const history = (ctx.eventsByCircuit[ev.circuit_id] || []).filter((e) => e.season < ev.season && e.status === 'completed').slice(-8).reverse();
   const isPast = ev.status === 'completed';
-  // Kalshi main-race-winner market: client-side, only while the main race (never the sprint) is not completed
-  const kalshiMount = isPast ? '' : kalshiRaceMount(ev.slug, ctx.session(ev.id, 'race'));
+  // Kalshi main-race-winner market: client-side; live card while it trades, "How the market closed" once it has closed
+  // or settled (completed races keep the mount). Never the sprint or championship.
+  const kalshiMount = kalshiRaceMount(ev.slug, ctx.session(ev.id, 'race'));
   const breadcrumb = [['/', 'Home'], ['/races', 'Races'], [ev.season === ctx.currentSeason ? '/races' : `/seasons/${ev.season}`, String(ev.season)], [`/races/${ev.slug}`, ev.name]];
   const body = `${crumbs(breadcrumb)}
   <section class="hero"><div class="wrap"><span class="eyebrow">Round ${ev.round ?? '—'} · ${ev.season} ${ev.sprint ? '· Sprint weekend' : ''}</span><h1>${esc(ev.name)}</h1>

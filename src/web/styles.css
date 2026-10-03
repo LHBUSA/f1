@@ -857,3 +857,6 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 .kx-sec .kx-f1note{margin-top:8px}
 .pc-kalshi{margin-top:14px}
 .pc-kalshi .kx-f1note{margin-top:6px}
+/* Market history (closed / settled main-race market) + result-card market line */
+.kx-closeline{margin:8px 0 0;font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-kalshi .kx-h{margin:0}
