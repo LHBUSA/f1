@@ -95,7 +95,8 @@ async function route(req, env, ctx) {
       }
       if (p === '/replay') {
         const internal = await doc(env, 'internal');
-        return respond(req, { sessions: await recordedSessions(env, internal) }, { cache: 'public, max-age=60' });
+        // the upstream session key stays internal (frame lookup); public rows carry the public id only
+        return respond(req, { sessions: (await recordedSessions(env, internal)).map(({ upstream, ...s }) => s) }, { cache: 'public, max-age=60' });
       }
       if (p === '/membership') {
         const a = await f1Access(req, env);

@@ -35,7 +35,7 @@ const FORBIDDEN = [
 function stripComments(text) {
   return text
     .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ''))  // keep line numbers
-    .replace(/^\s*\/\/.*$/gm, '');
+    .replace(/^[ \t]*\/\/.*$/gm, '');
 }
 
 function walk(dir, out = []) {
@@ -82,6 +82,18 @@ const UPSTREAM_HOSTS = /\b(?:[a-z0-9-]+\.)*(?:espn\.com|espncdn\.com|espn\.go\.c
 for (const file of f1Files) {
   const lines = fs.readFileSync(file.full, 'utf8').split('\n');
   for (let i = 0; i < lines.length; i++) if (UPSTREAM_HOSTS.test(lines[i])) violations.push(`${file.rel}:${i + 1}: upstream host reference: ${lines[i].trim().slice(0, 160)}`);
+}
+
+// Public API serializer guard (2026-10-03): workers/f1-api responses carry public ids only. Customer phrasing
+// patterns apply to its source, and no respond()/respondPrivate() payload may carry an upstream key unless that
+// line is stripping it (destructuring it out).
+const API_DIR = path.join(ROOT, 'workers/f1-api/src');
+if (fs.existsSync(API_DIR)) for (const file of walkAll(API_DIR)) {
+  const lines = stripComments(fs.readFileSync(file.full, 'utf8')).split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    for (const pattern of FORBIDDEN) { pattern.lastIndex = 0; if (pattern.test(lines[i])) violations.push(`${file.rel}:${i + 1}: ${lines[i].trim().slice(0, 220)}`); }
+    if (/respond(?:Private)?\(/.test(lines[i]) && /\b(?:upstream|espn_[a-z_]*)\s*[:,]/.test(lines[i]) && !/\(\{\s*upstream\s*,/.test(lines[i])) violations.push(`${file.rel}:${i + 1}: upstream key in a public response: ${lines[i].trim().slice(0, 160)}`);
+  }
 }
 
 if (violations.length) {
