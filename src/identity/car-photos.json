@@ -1754,6 +1754,498 @@
           }
         ]
       }
+    },
+    {
+      "id": "2000-jaguar-r1-vauxford",
+      "season": 2000,
+      "constructorId": "jaguar",
+      "constructorName": "Jaguar",
+      "carModel": "Jaguar R1",
+      "carModelSource": "src/identity/car-models.json (wp-jaguar-r1, wd-Q2452869)",
+      "driverId": null,
+      "event": "British Motor Museum, Gaydon",
+      "eventNote": "museum display; photographed 2019-07-21",
+      "historical": true,
+      "capturedAt": "2019-07-21 11:49:10",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/eb/2000_Jaguar_R1_3.0_Front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2000-jaguar-r1-vauxford.jpg",
+      "originalSha1": "86e59c6ad6b9815bbc3e8aac9a92ec8d40cdf372",
+      "originalSize": [
+        4595,
+        2491
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2000_Jaguar_R1_3.0_Front.jpg",
+      "photographer": "Vauxford",
+      "creditLine": "Photo: Vauxford / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "derivativeLicense": "CC BY-SA 4.0 (ShareAlike: the background-removed derivative is offered under the same licence)",
+      "attribution": "Photo: Vauxford, CC BY-SA 4.0 · background removed",
+      "acquisitionDate": "2026-10-03",
+      "rightsStatus": "licensed_cc_by_sa_4_0",
+      "rightsNotes": "Commons file page checked individually: author Vauxford, credit \"Own work\", licence CC BY-SA 4.0, templates Cc-by-sa-4.0/Self, no restriction templates. Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-03",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2000-jaguar-r1-vauxford-cutout-master.png",
+        "stem": "assets-src/cars/derived/2000-jaguar-r1-vauxford",
+        "facing": "left",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2000-jaguar-r1-vauxford-640.webp",
+            "avif": "assets-src/cars/derived/2000-jaguar-r1-vauxford-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2000-jaguar-r1-vauxford-960.webp",
+            "avif": "assets-src/cars/derived/2000-jaguar-r1-vauxford-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2000-jaguar-r1-vauxford-1280.webp",
+            "avif": "assets-src/cars/derived/2000-jaguar-r1-vauxford-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2000-jaguar-r1-vauxford-1920.webp",
+            "avif": "assets-src/cars/derived/2000-jaguar-r1-vauxford-1920.avif"
+          }
+        },
+        "aspect": [
+          4427,
+          2200
+        ],
+        "masterSha1": "af2d6f4d5b0d9e9f347bc793de8381b2f7dbd3a3"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2000-jaguar-r1-vauxford-cutout-master.png",
+          "aspect": [
+            4427,
+            2200
+          ]
+        },
+        "hotspots": []
+      }
+    },
+    {
+      "id": "2001-jaguar-r2-chin",
+      "season": 2001,
+      "constructorId": "jaguar",
+      "constructorName": "Jaguar",
+      "carModel": "Jaguar R2",
+      "carModelSource": "src/identity/car-models.json (wp-jaguar-r2, wd-Q2061227)",
+      "driverId": null,
+      "event": "2026 Adelaide Motorsport Festival",
+      "eventNote": "demonstration event; photographed 2026-03-01",
+      "historical": true,
+      "capturedAt": "2026-03-01",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/2001_Jaguar_R2_at_the_2026_Adelaide_Motorsport_Festival_%28DSCF2645%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2001-jaguar-r2-chin.jpg",
+      "originalSha1": "589aaa3fb61db601e2e48105b5c472bac21aea52",
+      "originalSize": [
+        7728,
+        5152
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2001_Jaguar_R2_at_the_2026_Adelaide_Motorsport_Festival_(DSCF2645).jpg",
+      "photographer": "Yu Chu Chin",
+      "creditLine": "Photo: Yu Chu Chin / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "derivativeLicense": "CC BY-SA 4.0 (ShareAlike: the background-removed derivative is offered under the same licence)",
+      "attribution": "Photo: Yu Chu Chin, CC BY-SA 4.0 · background removed",
+      "acquisitionDate": "2026-10-03",
+      "rightsStatus": "licensed_cc_by_sa_4_0",
+      "rightsNotes": "Commons file page checked individually: author Yu Chu Chin, credit \"Own work\", licence CC BY-SA 4.0, templates Cc-by-sa-4.0, no restriction templates. Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-03",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2001-jaguar-r2-chin-cutout-master.png",
+        "stem": "assets-src/cars/derived/2001-jaguar-r2-chin",
+        "facing": "left",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2001-jaguar-r2-chin-640.webp",
+            "avif": "assets-src/cars/derived/2001-jaguar-r2-chin-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2001-jaguar-r2-chin-960.webp",
+            "avif": "assets-src/cars/derived/2001-jaguar-r2-chin-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2001-jaguar-r2-chin-1280.webp",
+            "avif": "assets-src/cars/derived/2001-jaguar-r2-chin-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2001-jaguar-r2-chin-1920.webp",
+            "avif": "assets-src/cars/derived/2001-jaguar-r2-chin-1920.avif"
+          }
+        },
+        "aspect": [
+          7460,
+          3628
+        ],
+        "masterSha1": "11ec0581d9ca663ef15d178c822dafdb9a72d2c8"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2001-jaguar-r2-chin-cutout-master.png",
+          "aspect": [
+            7460,
+            3628
+          ]
+        },
+        "hotspots": []
+      }
+    },
+    {
+      "id": "2002-jaguar-r3-dixon",
+      "season": 2002,
+      "constructorId": "jaguar",
+      "constructorName": "Jaguar",
+      "carModel": "Jaguar R3",
+      "carModelSource": "src/identity/car-models.json (wp-jaguar-r3, wd-Q2409325)",
+      "driverId": "eddie-irvine",
+      "event": "Jaguar Heritage Trust display, British Motor Museum",
+      "eventNote": "photographed 2015-09-01; the file describes it as the R3 driven by Eddie Irvine in 2002",
+      "historical": true,
+      "capturedAt": "2015-09-01 15:18:46",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/40/Jaguar_R3_Formula_1_Racing_Car%2C_Heritage_Motor_Centre-_geograph.org.uk_-_4645889_-_David-Dixon.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2002-jaguar-r3-dixon.jpg",
+      "originalSha1": "04268d13f1e5311854ad14e4b97dd7568c26a36b",
+      "originalSize": [
+        1280,
+        960
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jaguar_R3_Formula_1_Racing_Car,_Heritage_Motor_Centre-_geograph.org.uk_-_4645889_-_David-Dixon.jpg",
+      "photographer": "David Dixon",
+      "creditLine": "Photo: David Dixon / Wikimedia Commons, CC BY-SA 2.0",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "derivativeLicense": "CC BY-SA 2.0 (ShareAlike: the background-removed derivative is offered under the same licence)",
+      "attribution": "Photo: David Dixon, CC BY-SA 2.0 · background removed",
+      "acquisitionDate": "2026-10-03",
+      "rightsStatus": "licensed_cc_by_sa_2_0",
+      "rightsNotes": "Commons file page checked individually: author David Dixon, credit \"geograph.org.uk\", licence CC BY-SA 2.0, templates Cc-by-sa-2.0, no restriction templates. Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-03",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2002-jaguar-r3-dixon-cutout-master.png",
+        "stem": "assets-src/cars/derived/2002-jaguar-r3-dixon",
+        "facing": "left",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2002-jaguar-r3-dixon-640.webp",
+            "avif": "assets-src/cars/derived/2002-jaguar-r3-dixon-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2002-jaguar-r3-dixon-960.webp",
+            "avif": "assets-src/cars/derived/2002-jaguar-r3-dixon-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2002-jaguar-r3-dixon-1280.webp",
+            "avif": "assets-src/cars/derived/2002-jaguar-r3-dixon-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2002-jaguar-r3-dixon-1920.webp",
+            "avif": "assets-src/cars/derived/2002-jaguar-r3-dixon-1920.avif"
+          }
+        },
+        "aspect": [
+          1140,
+          816
+        ],
+        "masterSha1": "c28816830e8286041aa923a283c468f280efdeed"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2002-jaguar-r3-dixon-cutout-master.png",
+          "aspect": [
+            1140,
+            816
+          ]
+        },
+        "hotspots": []
+      }
+    },
+    {
+      "id": "2003-jaguar-r4-sutherland",
+      "season": 2003,
+      "constructorId": "jaguar",
+      "constructorName": "Jaguar",
+      "carModel": "Jaguar R4",
+      "carModelSource": "src/identity/car-models.json (wp-jaguar-r4, wd-Q2439656)",
+      "driverId": null,
+      "event": "Coventry Transport Museum",
+      "eventNote": "museum display; photographed 2011-04-02; nose badge reads R4",
+      "historical": true,
+      "capturedAt": "2011-04-02 14:54",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Jaguar_R4_F1_car_and_1955_Maserati_250F_at_Coventry_Motor_Museum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2003-jaguar-r4-sutherland.jpg",
+      "originalSha1": "ac77319273edb0f7e62994aa4483990d94e1853a",
+      "originalSize": [
+        4928,
+        3264
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jaguar_R4_F1_car_and_1955_Maserati_250F_at_Coventry_Motor_Museum.jpg",
+      "photographer": "Ben Sutherland",
+      "creditLine": "Photo: Ben Sutherland / Wikimedia Commons, CC BY 2.0",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "derivativeLicense": null,
+      "attribution": "Photo: Ben Sutherland, CC BY 2.0 · background removed",
+      "acquisitionDate": "2026-10-03",
+      "rightsStatus": "licensed_cc_by_2_0",
+      "rightsNotes": "Commons file page checked individually: author Ben Sutherland from Forest Hill, London, European Union, credit \"Maserati 250F and Jaguar R4 F1 cars Uploaded by Oxyman\", licence CC BY 2.0, templates Cc-by-2.0/FlickreviewR/link/Flickrreview/Flickrreview/i18n/en, no restriction templates. Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-03",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2003-jaguar-r4-sutherland-cutout-master.png",
+        "stem": "assets-src/cars/derived/2003-jaguar-r4-sutherland",
+        "facing": "left",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2003-jaguar-r4-sutherland-640.webp",
+            "avif": "assets-src/cars/derived/2003-jaguar-r4-sutherland-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2003-jaguar-r4-sutherland-960.webp",
+            "avif": "assets-src/cars/derived/2003-jaguar-r4-sutherland-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2003-jaguar-r4-sutherland-1280.webp",
+            "avif": "assets-src/cars/derived/2003-jaguar-r4-sutherland-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2003-jaguar-r4-sutherland-1920.webp",
+            "avif": "assets-src/cars/derived/2003-jaguar-r4-sutherland-1920.avif"
+          }
+        },
+        "aspect": [
+          3927,
+          2944
+        ],
+        "masterSha1": "d7bcae64870d3f1451eac5532ed412d7d0c26b6e"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2003-jaguar-r4-sutherland-cutout-master.png",
+          "aspect": [
+            3927,
+            2944
+          ]
+        },
+        "hotspots": []
+      }
+    },
+    {
+      "id": "2004-jaguar-r5-dikeman",
+      "season": 2004,
+      "constructorId": "jaguar",
+      "constructorName": "Jaguar",
+      "carModel": "Jaguar R5",
+      "carModelSource": "src/identity/car-models.json (wp-jaguar-r5, wd-Q589084)",
+      "driverId": "mark-webber",
+      "event": "2004 United States Grand Prix, Indianapolis",
+      "eventNote": "race weekend",
+      "historical": true,
+      "capturedAt": "2004",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Webber_usgp_2004.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2004-jaguar-r5-dikeman.jpg",
+      "originalSha1": "4747356b046c4e5ad22df2e578858be09ca39b59",
+      "originalSize": [
+        3072,
+        2048
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Webber_usgp_2004.jpg",
+      "photographer": "Rick Dikeman",
+      "creditLine": "Photo: Rick Dikeman / Wikimedia Commons, CC BY-SA 3.0",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "derivativeLicense": "CC BY-SA 3.0 (ShareAlike: the background-removed derivative is offered under the same licence)",
+      "attribution": "Photo: Rick Dikeman, CC BY-SA 3.0 · background removed",
+      "acquisitionDate": "2026-10-03",
+      "rightsStatus": "licensed_cc_by_sa_3_0",
+      "rightsNotes": "Commons file page checked individually: author Rick Dikeman, credit \"Own work\", licence CC BY-SA 3.0 (dual GFDL; CC BY-SA 3.0 used), templates CC-Layout/Cc-by-sa-3.0-migrated/License migration/License migration complete, no restriction templates. Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-03",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2004-jaguar-r5-dikeman-cutout-master.png",
+        "stem": "assets-src/cars/derived/2004-jaguar-r5-dikeman",
+        "facing": "right",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2004-jaguar-r5-dikeman-640.webp",
+            "avif": "assets-src/cars/derived/2004-jaguar-r5-dikeman-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2004-jaguar-r5-dikeman-960.webp",
+            "avif": "assets-src/cars/derived/2004-jaguar-r5-dikeman-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2004-jaguar-r5-dikeman-1280.webp",
+            "avif": "assets-src/cars/derived/2004-jaguar-r5-dikeman-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2004-jaguar-r5-dikeman-1920.webp",
+            "avif": "assets-src/cars/derived/2004-jaguar-r5-dikeman-1920.avif"
+          }
+        },
+        "aspect": [
+          2790,
+          1032
+        ],
+        "masterSha1": "ce92bab47f0e8faa2985f4b06325f76db98ac29b"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2004-jaguar-r5-dikeman-cutout-master.png",
+          "aspect": [
+            2790,
+            1032
+          ]
+        },
+        "hotspots": []
+      }
+    },
+    {
+      "id": "2005-red-bull-rb1-raich",
+      "season": 2005,
+      "constructorId": "red-bull",
+      "constructorName": "Red Bull Racing",
+      "carModel": "Red Bull RB1",
+      "carModelSource": "src/identity/car-models.json (wp-red-bull-rb1, wd-Q172200)",
+      "driverId": "david-coulthard",
+      "event": "2024 Austrian Grand Prix support programme",
+      "eventNote": "demonstration run; photographed 2024-06-30; period livery not guaranteed",
+      "historical": true,
+      "capturedAt": "2024-06-30 12:43:04",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Red_Bull_RB1_%282024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "localAssetPath": "assets-src/cars/originals/2005-red-bull-rb1-raich.jpg",
+      "originalSha1": "60d44fc2bd0daa4e81bac1b584e335a0477611c1",
+      "originalSize": [
+        4046,
+        2276
+      ],
+      "sourceName": "Wikimedia Commons",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Bull_RB1_(2024).jpg",
+      "photographer": "Lukas Raich",
+      "creditLine": "Photo: Lukas Raich / Wikimedia Commons, CC BY-SA 4.0",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "derivativeLicense": "CC BY-SA 4.0 (ShareAlike: the background-removed derivative is offered under the same licence)",
+      "attribution": "Photo: Lukas Raich, CC BY-SA 4.0 · background removed",
+      "acquisitionDate": "2026-10-03",
+      "rightsStatus": "licensed_cc_by_sa_4_0",
+      "rightsNotes": "Commons file page checked individually: author Lukas Raich, credit \"Own work\", licence CC BY-SA 4.0, templates Cc-by-sa-4.0/Self, no restriction templates. Sponsor marks shown as photographed, unaltered; trademarks not licensed to PropBetEdge.",
+      "approvedForPublicUse": true,
+      "approvedBy": "owner standing rule 2026-10-02 (ship when provenance, rights and QA pass)",
+      "approvedAt": "2026-10-03",
+      "derivatives": {
+        "changes": [
+          "background removed (rembg BiRefNet-general segmentation; background pixels made transparent, no pixels generated)",
+          "isolated background fragments removed",
+          "cropped to the car",
+          "resized"
+        ],
+        "master": "assets-src/cars/derived/2005-red-bull-rb1-raich-cutout-master.png",
+        "stem": "assets-src/cars/derived/2005-red-bull-rb1-raich",
+        "facing": "left",
+        "files": {
+          "640": {
+            "webp": "assets-src/cars/derived/2005-red-bull-rb1-raich-640.webp",
+            "avif": "assets-src/cars/derived/2005-red-bull-rb1-raich-640.avif"
+          },
+          "960": {
+            "webp": "assets-src/cars/derived/2005-red-bull-rb1-raich-960.webp",
+            "avif": "assets-src/cars/derived/2005-red-bull-rb1-raich-960.avif"
+          },
+          "1280": {
+            "webp": "assets-src/cars/derived/2005-red-bull-rb1-raich-1280.webp",
+            "avif": "assets-src/cars/derived/2005-red-bull-rb1-raich-1280.avif"
+          },
+          "1920": {
+            "webp": "assets-src/cars/derived/2005-red-bull-rb1-raich-1920.webp",
+            "avif": "assets-src/cars/derived/2005-red-bull-rb1-raich-1920.avif"
+          }
+        },
+        "aspect": [
+          3736,
+          1025
+        ],
+        "masterSha1": "6cf400c5addee02b4d71725a2815d5297e7b4752"
+      },
+      "explorer": {
+        "coordinateSystem": {
+          "space": "normalized-master",
+          "origin": "top-left",
+          "x": "0..1 of width",
+          "y": "0..1 of height",
+          "master": "assets-src/cars/derived/2005-red-bull-rb1-raich-cutout-master.png",
+          "aspect": [
+            3736,
+            1025
+          ]
+        },
+        "hotspots": []
+      }
     }
   ]
 }

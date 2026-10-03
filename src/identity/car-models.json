@@ -1,0 +1,30 @@
+{
+  "_doc": "Historical car model identity: exact constructor + exact season -> the chassis name raced that season. Every entry cites at least one reference work pinned to a revision plus the open identity record (Wikidata). Used for historical team pages and car galleries; the current season's label stays in machine-<season>.json (first-party sources only). Never inferred from a photo or from another season.",
+  "version": 1,
+  "retrieved": "2026-10-02",
+  "sources": {
+    "wp-jaguar-r1": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Jaguar R1", "url": "https://en.wikipedia.org/w/index.php?title=Jaguar_R1&oldid=1371250888", "fact": "car with which Jaguar Racing competed in the 2000 Formula One World Championship; debut 2000 Australian Grand Prix; predecessor Stewart SF3" },
+    "wp-jaguar-r2": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Jaguar R2", "url": "https://en.wikipedia.org/w/index.php?title=Jaguar_R2&oldid=1371251039", "fact": "car with which the Jaguar team competed in the 2001 Formula One World Championship; debut 2001 Australian Grand Prix" },
+    "wp-jaguar-r3": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Jaguar R3", "url": "https://en.wikipedia.org/w/index.php?title=Jaguar_R3&oldid=1374020532", "fact": "car with which Jaguar Racing competed in the 2002 Formula One season (R3B B-spec from the 2002 British Grand Prix)" },
+    "wp-jaguar-r4": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Jaguar R4", "url": "https://en.wikipedia.org/w/index.php?title=Jaguar_R4&oldid=1371251199", "fact": "car with which Jaguar Racing competed in the 2003 Formula One season" },
+    "wp-jaguar-r5": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Jaguar R5", "url": "https://en.wikipedia.org/w/index.php?title=Jaguar_R5&oldid=1374703260", "fact": "car used by Jaguar Racing to contest the 2004 Formula One season; last chassis made by Jaguar Racing (R5B used for two races)" },
+    "wp-red-bull-rb1": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Red Bull RB1", "url": "https://en.wikipedia.org/w/index.php?title=Red_Bull_RB1&oldid=1371283386", "fact": "designed by Jaguar Racing for the 2005 season (originally Jaguar R6) and used by Red Bull Racing after the buyout" },
+    "wp-stewart-sf3": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Stewart SF3", "url": "https://en.wikipedia.org/w/index.php?title=Stewart_SF3&oldid=1371250933", "fact": "car with which Stewart Grand Prix competed in the 1999 Formula One World Championship; final car known as a Stewart" },
+    "wd-Q2452869": { "publisher": "Wikidata (CC0)", "title": "Jaguar R1 (Q2452869)", "url": "https://www.wikidata.org/wiki/Q2452869" },
+    "wd-Q2061227": { "publisher": "Wikidata (CC0)", "title": "Jaguar R2 (Q2061227)", "url": "https://www.wikidata.org/wiki/Q2061227" },
+    "wd-Q2409325": { "publisher": "Wikidata (CC0)", "title": "Jaguar R3 (Q2409325)", "url": "https://www.wikidata.org/wiki/Q2409325" },
+    "wd-Q2439656": { "publisher": "Wikidata (CC0)", "title": "Jaguar R4 (Q2439656)", "url": "https://www.wikidata.org/wiki/Q2439656" },
+    "wd-Q589084": { "publisher": "Wikidata (CC0)", "title": "Jaguar R5 (Q589084)", "url": "https://www.wikidata.org/wiki/Q589084" },
+    "wd-Q172200": { "publisher": "Wikidata (CC0)", "title": "Red Bull RB1 (Q172200)", "url": "https://www.wikidata.org/wiki/Q172200" },
+    "wd-Q2410215": { "publisher": "Wikidata (CC0)", "title": "Stewart SF3 (Q2410215)", "url": "https://www.wikidata.org/wiki/Q2410215" }
+  },
+  "models": [
+    { "constructorId": "stewart", "season": 1999, "model": "Stewart SF3", "wikidata": "Q2410215", "sources": ["wp-stewart-sf3", "wd-Q2410215"] },
+    { "constructorId": "jaguar", "season": 2000, "model": "Jaguar R1", "wikidata": "Q2452869", "sources": ["wp-jaguar-r1", "wd-Q2452869"] },
+    { "constructorId": "jaguar", "season": 2001, "model": "Jaguar R2", "wikidata": "Q2061227", "sources": ["wp-jaguar-r2", "wd-Q2061227"] },
+    { "constructorId": "jaguar", "season": 2002, "model": "Jaguar R3", "wikidata": "Q2409325", "sources": ["wp-jaguar-r3", "wd-Q2409325"], "note": "R3B B-specification from the 2002 British Grand Prix" },
+    { "constructorId": "jaguar", "season": 2003, "model": "Jaguar R4", "wikidata": "Q2439656", "sources": ["wp-jaguar-r4", "wd-Q2439656"] },
+    { "constructorId": "jaguar", "season": 2004, "model": "Jaguar R5", "wikidata": "Q589084", "sources": ["wp-jaguar-r5", "wd-Q589084"], "note": "R5B used for two races" },
+    { "constructorId": "red-bull", "season": 2005, "model": "Red Bull RB1", "wikidata": "Q172200", "sources": ["wp-red-bull-rb1", "wd-Q172200"] }
+  ]
+}

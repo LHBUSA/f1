@@ -1,0 +1,15 @@
+{
+  "_doc": "One-line, source-backed context for a constructor inside its franchise lineage (team pages, lineage timeline). Editorial continuity only: each constructor name keeps its own sporting record. No transaction prices. Sources stay here (owner rule 2026-10-02: no per-fact source links on pages).",
+  "version": 1,
+  "retrieved": "2026-10-02",
+  "sources": {
+    "wp-stewart-gp": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Stewart Grand Prix", "url": "https://en.wikipedia.org/w/index.php?title=Stewart_Grand_Prix&oldid=1371252440", "fact": "founded by Jackie Stewart and his son Paul Stewart in 1996; competed as the Ford works-supported team 1997-1999; at the end of 1999 Ford bought the team outright and it was renamed Jaguar Racing; in 2004 Jaguar Racing was sold to Red Bull and rebranded Red Bull Racing in 2005" },
+    "wp-jaguar-f1": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Jaguar in Formula One", "url": "https://en.wikipedia.org/w/index.php?title=Jaguar_in_Formula_One&oldid=1377893135", "fact": "Ford, Jaguar's then-parent company, purchased Stewart Grand Prix in June 1999 and renamed it Jaguar; the team operated 2000-2004; Ford sold it to Red Bull at the end of 2004" },
+    "wp-red-bull-racing": { "publisher": "Wikipedia (CC BY-SA 4.0)", "title": "Red Bull Racing", "url": "https://en.wikipedia.org/w/index.php?title=Red_Bull_Racing&oldid=1371252330", "fact": "Red Bull Racing formed in 2005" }
+  },
+  "notes": {
+    "stewart": { "text": "Founded by Jackie and Paul Stewart and run as Ford's works-supported team.", "sources": ["wp-stewart-gp"] },
+    "jaguar": { "text": "Ford bought the Stewart team in 1999 and raced it under its Jaguar brand.", "sources": ["wp-jaguar-f1", "wp-stewart-gp"] },
+    "red-bull": { "text": "Red Bull bought the team from Ford at the end of 2004 and renamed it Red Bull Racing for 2005.", "sources": ["wp-stewart-gp", "wp-jaguar-f1", "wp-red-bull-racing"] }
+  }
+}

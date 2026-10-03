@@ -735,3 +735,34 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 .drv-car-links{display:flex;flex-wrap:wrap;gap:4px 14px;flex-basis:100%}
 .drv-car small{flex-basis:100%;font-size:11px;color:var(--faint)}.drv-car small a{color:var(--muted)}
 @media(min-width:1280px){.hero-person.has-drv-car{grid-template-columns:auto minmax(0,1fr) minmax(420px,600px)}.hero-person.has-drv-car .drv-car{grid-column:auto;align-self:center}}
+
+/* historical constructors: final-machine hero, the cars, lineage timeline + machine strip */
+.hist-hero .split{align-items:center}
+.hist-car{margin:6px -8px 0}
+.hist-car .car-id{margin-bottom:4px}
+.carlist{list-style:none;margin:0;padding:0;display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))}
+.carcard{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-top:3px solid var(--tc);border-radius:var(--r);overflow:hidden}
+.carcard picture{display:flex;align-items:center;justify-content:center;height:clamp(130px,13vw,160px);padding:10px 10px 0;background:radial-gradient(ellipse at 50% 70%,color-mix(in srgb,var(--tc) 18%,transparent),transparent 70%)}
+.carcard img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 10px 14px rgba(0,0,0,.6))}
+.cc-body{display:flex;flex-direction:column;gap:6px;padding:10px 14px 14px;flex:1}
+.cc-year{font:800 26px/1 var(--display);letter-spacing:.02em}.cc-year a{color:var(--ink)}
+.cc-model{font:700 15px var(--display);letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,var(--tc) 55%,#fff)}
+.carcard dl{margin:2px 0 0;display:grid;gap:4px;font-size:14px}.carcard dl>div{display:grid;grid-template-columns:minmax(92px,auto) 1fr;gap:8px}.carcard dt{color:var(--muted)}.carcard dd{margin:0}
+.cc-credit{margin:auto 0 0;padding-top:6px;font-size:11px;color:var(--faint)}.cc-credit a{color:var(--muted)}
+.lin-tl{list-style:none;margin:0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.lin-tl li{position:relative;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel)}
+.lin-tl li.cur{border-color:color-mix(in srgb,var(--tc) 70%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--tc) 14%,var(--panel2)),var(--panel))}
+.lin-tl .lin-yrs{display:block;font:700 12px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.lin-tl a,.lin-tl b{display:block;margin-top:2px;font:800 20px/1.15 var(--display);letter-spacing:.02em;text-transform:uppercase;color:var(--ink)}
+.lin-tl li.cur b{color:#fff}
+.lin-tl p{margin:6px 0 0;font-size:14px;color:var(--ink2)}
+.lin-cars{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+.lin-cars a{display:flex;flex-direction:column;gap:6px;height:100%;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);color:var(--ink2);text-decoration:none}
+.lin-cars li.cur a{border-color:color-mix(in srgb,var(--tc) 60%,var(--line))}
+.lin-cars picture{display:flex;align-items:center;justify-content:center;height:clamp(70px,8vw,110px)}
+.lin-cars img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.lin-cars span{font-size:13px}.lin-cars b{font-family:var(--display);letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+@media(min-width:900px){.lin-tl li:not(:last-child)::after{content:"→";position:absolute;right:-9px;top:50%;transform:translate(50%,-50%);color:var(--faint);font-family:var(--display)}}
+/* current-team hero: the absolutely placed car (desktop) needs its own height reserved; the lineage now lives in its
+   own section below, so the left column alone no longer guarantees it */
+@media(min-width:1024px){.hero.has-car>.wrap{min-height:230px}}

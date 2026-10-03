@@ -345,6 +345,20 @@ export function teamsIndex(ctx) {
   return { path: '/teams', title: `F1 Teams ${season}: Constructors, Lineage & Constructor DNA`, description: `All ${ctx.currentTeams.length} Formula 1 constructors in ${season} — Audi, Cadillac and the established teams — with lineage, drivers, standings and Constructor DNA.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/teams', 'Teams']])] };
 }
 
+// responsive <picture> for a registry car photo (AVIF + WebP derivatives; never upscaled; size from the master aspect)
+function carPicture(p, alt, sizes, { eager = false } = {}) {
+  const ws = Object.keys(p.derivatives.files).map(Number).sort((a, b) => a - b);
+  const real = (w) => Math.min(w, p.derivatives.aspect[0]);
+  const set = (ext) => [...new Map(ws.map((w) => [real(w), `/media/cars/${p.id}-${w}.${ext} ${real(w)}w`])).values()].join(', ');
+  const w = real(1280);
+  return `<picture><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><img src="/media/cars/${p.id}-${ws.includes(1280) ? 1280 : ws.at(-1)}.webp" srcset="${set('webp')}" sizes="${sizes}" width="${w}" height="${Math.round((w * p.derivatives.aspect[1]) / p.derivatives.aspect[0])}" alt="${esc(alt)}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
+}
+// photographer + licence credit; for a historical car, where it was photographed (museum, demo run, race weekend)
+function carCredit(p) {
+  const where = p.historical && p.event ? p.event.split(/,| \(/)[0] : '';
+  return `<a href="${esc(p.sourceUrl)}" rel="noopener">Photo: ${esc(p.photographer)}</a>, <a href="${esc(p.licenseUrl)}" rel="noopener license">${esc(p.license)}</a> · background removed${where ? ` · ${esc(where)}` : ''}${p.approvedForPublicUse ? '' : ' · PREVIEW CANDIDATE'}`;
+}
+
 export function teamPage(ctx, c, lineageChain) {
   const season = ctx.currentSeason;
   const lastSeason = c.last_season;
@@ -378,11 +392,62 @@ export function teamPage(ctx, c, lineageChain) {
   const xp = photo ? ctx.explorerFor?.({ photo, machine, people, lineup, season, carLabel: machine?.carModel?.value || null }) : null;
   if (xp) { const pc = xp.comps.find((x) => x.id === 'power-unit'); if (pc?.links?.powerUnit) pc.links.pt = ctx.powertrainFor?.(c.id, season); }
   const car = photo ? `<figure class="team-car">${machine?.carModel || ctx.logoFor?.(c.id) ? `<div class="car-id">${teamMark(ctx.logoFor?.(c.id), 22, 'car-mark')}<span>${season} car</span>${machine?.carModel ? `<b>${esc(machine.carModel.value)}</b>` : ''}</div>` : ''}<div class="car-stage"><picture><source type="image/avif" srcset="${[640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.avif ${w}w`).join(', ')}" sizes="(min-width:1024px) 46vw, 100vw"><img src="/media/cars/${photo.id}-1280.webp" srcset="${[640, 960, 1280, 1920].map((w) => `/media/cars/${photo.id}-${w}.webp ${w}w`).join(', ')}" sizes="(min-width:1024px) 46vw, 100vw" width="1280" height="${Math.round((1280 * photo.derivatives.aspect[1]) / photo.derivatives.aspect[0])}" alt="${esc(`${season} ${c.name}${photo.carModel ? ` ${photo.carModel}` : ''}${photo.event ? `, ${photo.event}` : ''}`)}" fetchpriority="high" decoding="async"></picture>${explorerHotspots(xp)}</div><figcaption><a href="${esc(photo.sourceUrl)}" rel="noopener">Photo: ${esc(photo.photographer)}</a>, <a href="${esc(photo.licenseUrl)}" rel="noopener license">${esc(photo.license)}</a> · background removed${photo.approvedForPublicUse ? '' : ' · PREVIEW CANDIDATE'}</figcaption></figure>` : '';
+  // ---- historical constructor (no longer on the grid) ----
+  // Hero = its FINAL season's approved car (exact constructor + exact season), labelled "Final machine", never "current".
+  // Current-only modules (Car Explorer, Powertrain, People, current machine) stay absent: no historical data backs them.
+  const retired = c.last_season < season;
+  const finalCar = retired ? ctx.carPhotoFor?.(c.id, c.last_season) : null;
+  const finalModel = finalCar ? ctx.carModelFor?.(c.id, c.last_season) : null;
+  const histCar = finalCar ? `<figure class="team-car hist-car"><div class="car-id"><span>Final machine · ${c.last_season}</span>${finalModel ? `<b>${esc(finalModel)}</b>` : ''}</div>${carPicture(finalCar, `${c.last_season} ${c.name}${finalModel ? ` ${finalModel}` : ''}`, '(min-width:1024px) 46vw, 100vw', { eager: true })}<figcaption>${carCredit(finalCar)}</figcaption></figure>` : '';
+  // The cars: one card per season with an approved exact-season photo (retired constructors)
+  const gallery = retired ? ctx.teamCarPhotos?.(c.id) || [] : [];
+  const carCards = gallery
+    .map((p) => {
+      const y = p.season;
+      const model = ctx.carModelFor?.(c.id, y);
+      const st = (ctx.standingsBy[`${y}|constructor`] || []).find((x) => x.subject_id === c.id);
+      const ds = (bySeason[y] || []).filter((x) => x.race_starts > 0).sort((a, b) => b.race_starts - a.race_starts);
+      const res = ctx.results.filter((r) => r.session_type === 'race' && r.constructor_id === c.id && r.status === 'classified' && ctx.eventById?.[r.event_id]?.season === y);
+      const best = res.length ? Math.min(...res.map((r) => r.position)) : null;
+      const w = res.filter((r) => r.position === 1).length;
+      const dl = [
+        ds.length ? `<div><dt>Drivers</dt><dd>${ds.map((x) => `<a href="${ctx.driverUrl(x.driver_id)}">${esc(ctx.driverById[x.driver_id]?.last_name || x.driver_id)}</a>`).join(', ')}</dd></div>` : '',
+        st ? `<div><dt>Constructors</dt><dd>${ordinal(st.position)} · ${fmtPts(st.points)} pts</dd></div>` : '',
+        best ? `<div><dt>${best === 1 ? 'Wins' : 'Best finish'}</dt><dd>${best === 1 ? w : `P${best}`}</dd></div>` : '',
+      ].join('');
+      return `<li class="carcard">${carPicture(p, `${y} ${c.name}${model ? ` ${model}` : ''}`, '(min-width:1024px) 300px, (min-width:600px) 45vw, 92vw')}<div class="cc-body"><span class="cc-year"><a href="/standings/${y}">${y}</a></span>${model ? `<b class="cc-model">${esc(model)}</b>` : ''}${dl ? `<dl>${dl}</dl>` : ''}<p class="cc-credit">${carCredit(p)}</p></div></li>`;
+    })
+    .join('');
+  // Lineage timeline: every member with its own years; the page's constructor highlighted; a sourced one-line note
+  const lineageTl = chain.length > 1
+    ? `<ol class="lin-tl">${chain
+        .map((id) => {
+          const m = ctx.conById[id];
+          const note = ctx.lineageNote?.(id);
+          return `<li${id === c.id ? ' class="cur" aria-current="page"' : ''}><span class="lin-yrs">${m.first_season}–${m.last_season === season ? 'present' : m.last_season}</span>${id === c.id ? `<b>${esc(m.name)}</b>` : `<a href="/teams/${id}">${esc(m.name)}</a>`}${note ? `<p>${esc(note)}</p>` : ''}</li>`;
+        })
+        .join('')}</ol>`
+    : '';
+  // Lineage machines: only cars with a sourced model, their exact constructor + season, and an approved photo
+  const linCars = chain.length > 1 ? ctx.lineageCars?.(chain, c.id) || [] : [];
+  const linModel = (p) => ctx.carModelFor?.(p.constructorId, p.season) || (p.season === season ? ctx.machineFor?.(p.constructorId, season)?.carModel?.value : null);
+  const linShown = linCars.filter((p) => linModel(p));
+  const lineageStrip = linShown.length > 1
+    ? `<ol class="lin-cars" aria-label="Cars across the lineage">${linShown
+        .map((p) => {
+          const nm = ctx.conById[p.constructorId]?.name || p.constructorName;
+          return `<li${p.constructorId === c.id ? ' class="cur"' : ''}><a href="/teams/${p.constructorId}">${carPicture(p, `${p.season} ${nm} ${linModel(p)}`, '(min-width:1024px) 240px, 45vw')}<span><b>${esc(linModel(p))}</b> · ${p.season}</span></a></li>`;
+        })
+        .join('')}</ol><p class="fine">Each car is shown for its own constructor and season only. Photos: ${linShown.map((p) => `${esc(p.photographer)}, ${esc(p.license)}`).join('; ')}; backgrounds removed.</p>`
+    : '';
   const body = `${crumbs(bc)}
-  <section class="hero ${teamClass(color)}${car ? ' has-car' : ''}"><div class="wrap"><span class="eyebrow">${c.first_season}–${c.last_season === season ? 'present' : c.last_season}</span><h1 class="team-h1">${c.last_season === season ? teamMark(ctx.logoFor?.(c.id), 52, 'hero-mark') : ''}<span>${esc(c.name)}</span></h1>
+  ${histCar ? `<section class="hero ${teamClass(color)} hist-hero"><div class="wrap"><div class="split even"><div><span class="eyebrow">${c.first_season}–${c.last_season}</span><h1 class="team-h1"><span>${esc(c.name)}</span></h1>
+  <div class="hero-meta">${c.source_names.length ? `<span><b>Source labels</b>${esc(c.source_names.join(', '))}</span>` : ''}${titles.length ? `<span><b>Constructors' titles</b>${titles.length} (${titles.join(', ')})</span>` : ''}</div><div class="team-stripe"></div></div>${histCar}</div></div></section>` : `<section class="hero ${teamClass(color)}${car ? ' has-car' : ''}"><div class="wrap"><span class="eyebrow">${c.first_season}–${c.last_season === season ? 'present' : c.last_season}</span><h1 class="team-h1">${c.last_season === season ? teamMark(ctx.logoFor?.(c.id), 52, 'hero-mark') : ''}<span>${esc(c.name)}</span></h1>
   <div class="hero-meta">${c.source_names.length ? `<span><b>Source labels</b>${esc(c.source_names.join(', '))}</span>` : ''}${titles.length ? `<span><b>Constructors' titles</b>${titles.length} (${titles.join(', ')})</span>` : ''}</div><div class="team-stripe"></div>${car}
-  ${chain.length > 1 ? `<div class="section"><span class="kicker">Franchise lineage</span><div class="lineage">${chain.map((id, i) => `${i ? '<i>→</i>' : ''}${id === c.id ? `<span class="cur">${esc(ctx.conById[id].name)}</span>` : `<a href="/teams/${id}">${esc(ctx.conById[id].name)}</a>`}`).join('')}</div><p class="fine">Lineage is PropBetEdge editorial grouping of the same entrant across renames; each name keeps its own record.</p></div>` : ''}</div></section>
+  </div></section>`}
   <section class="section"><div class="wrap"><div class="stats"><div class="stat-box"><span>Grands Prix</span><b>${races}</b></div><div class="stat-box"><span>Wins</span><b>${wins}</b></div><div class="stat-box"><span>Podiums</span><b>${podiums}</b></div><div class="stat-box"><span>Titles</span><b>${titles.length}</b></div></div></div></section>
+  ${carCards ? `<section class="section ${teamClass(color)}"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${gallery[0].season === gallery.at(-1).season ? gallery[0].season : `${gallery[0].season}–${gallery.at(-1).season}`}</span><h2>The cars</h2></div></div><ol class="carlist">${carCards}</ol></div></section>` : ''}
+  ${lineageTl ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Franchise lineage</span><h2>The team's story</h2></div></div>${lineageTl}${lineageStrip}<p class="fine">Lineage is PropBetEdge editorial grouping of the same entrant across renames; each name keeps its own record.</p></div></section>` : ''}
   <div class="${teamClass(color)}">${machineStrip(ctx, c, season, machine, people, lineup)}
   ${powertrainSection(ctx, c, season, c.last_season === season ? ctx.powertrainFor?.(c.id, season) : null)}
   ${xp ? explorerSection(ctx, xp) : ''}
@@ -393,7 +458,8 @@ export function teamPage(ctx, c, lineageChain) {
   return {
     path: `/teams/${c.id}`,
     explorer: !!xp,
-    carImageObject: photo ? { photo, publicPath: `/media/cars/${photo.id}-1920.webp` } : null,
+    carImageObject: photo ? { photo, publicPath: `/media/cars/${photo.id}-1920.webp` } : finalCar ? { photo: finalCar, publicPath: `/media/cars/${finalCar.id}-1920.webp` } : null,
+    extraImageObjects: gallery.filter((p) => p !== finalCar).map((p) => ({ photo: p, publicPath: `/media/cars/${p.id}-1920.webp` })),
     title: `${c.name} F1 Team – Results, Drivers & Constructor DNA`,
     description: `${c.name} in Formula 1 (${c.first_season}–${c.last_season}): ${races} Grands Prix, ${wins} wins, ${podiums} podiums, drivers by season${dna ? ', Constructor DNA' : ''} and franchise lineage.`,
     body,

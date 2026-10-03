@@ -11,6 +11,7 @@ import { articlePage } from '../src/news/render.mjs';
 import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
 import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
 import { loadCarPhotos, carPhotoFor, imageObject } from '../src/identity/car-photos.mjs';
+import { loadCarModels, loadLineageNotes, carModelFor, teamCarPhotos, lineageCars } from '../src/identity/history.mjs';
 import { loadPeople, teamPeople, teamMachine } from '../src/identity/people.mjs';
 import { loadExplorer, explorerFor } from '../src/identity/explorer.mjs';
 import { powertrainFor } from '../src/identity/powertrain.mjs';
@@ -60,6 +61,12 @@ ctx.explorerFor = (o) => explorerFor(explorerReg, o);
 ctx.powertrainFor = (cid, season) => { const m = teamMachine(peopleReg, cid, season); return m ? powertrainFor({ machine: m, tech: explorerReg.tech, teamName: ctx.conById[cid]?.name || cid }) : null; };
 const carCandidates = process.env.F1_CAR_CANDIDATES === '1' || process.env.VERCEL_ENV === 'preview';
 ctx.carPhotoFor = (cid, season) => carPhotoFor(carReg, cid, season, { includeCandidates: carCandidates });
+// historical constructors: sourced car models, exact-season photos, lineage strip and notes (src/identity/history.mjs)
+const carModels = loadCarModels(), lineageNotes = loadLineageNotes();
+ctx.carModelFor = (cid, season) => carModelFor(carModels, cid, season);
+ctx.teamCarPhotos = (cid) => teamCarPhotos(carReg, cid, { includeCandidates: carCandidates });
+ctx.lineageCars = (chain, cid) => lineageCars(carReg, chain, cid, { includeCandidates: carCandidates });
+ctx.lineageNote = (cid) => lineageNotes.notes[cid]?.text || null;
 fs.mkdirSync(path.join(DIST, 'media/cars'), { recursive: true });
 for (const p of carReg.photos) if (p.approvedForPublicUse || carCandidates) for (const [w, f] of Object.entries(p.derivatives.files)) for (const [ext, src] of Object.entries(f)) fs.copyFileSync(src, path.join(DIST, 'media/cars', `${p.id}-${w}.${ext}`));
 // relocated rounds (projection relocation link): one explanation, shown on the race page
@@ -113,6 +120,7 @@ const allPaths = new Set();
 let pages = 0;
 function emit(p) {
   if (p.carImageObject) p.jsonLd = [...(p.jsonLd || []), imageObject(p.carImageObject.photo, { site: SITE, publicPath: p.carImageObject.publicPath })];
+  if (p.extraImageObjects?.length) p.jsonLd = [...(p.jsonLd || []), ...p.extraImageObjects.map((o) => imageObject(o.photo, { site: SITE, publicPath: o.publicPath }))];
   const html = layout({ ...p, assets });
   const rel = p.path === '/' ? 'index.html' : p.path.replace(/^\//, '') + '.html';
   const file = path.join(DIST, rel);

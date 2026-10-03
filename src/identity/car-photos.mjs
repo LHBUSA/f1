@@ -15,8 +15,10 @@ export function imageObject(p, { site, publicPath }) {
     '@context': 'https://schema.org',
     '@type': 'ImageObject',
     contentUrl: `${site}${publicPath}`,
-    name: `${p.season} ${p.constructorName}${p.carModel ? ` ${p.carModel}` : ''}`,
-    caption: `${p.season} ${p.constructorName}${p.driverId ? ` (${p.event})` : ''}. ${p.attribution}.`,
+    // a model name that already carries the constructor ("Jaguar R5") is not prefixed twice
+    name: p.carModel?.startsWith(p.constructorName) ? `${p.season} ${p.carModel}` : `${p.season} ${p.constructorName}${p.carModel ? ` ${p.carModel}` : ''}`,
+    // historical cars: say where the photograph was taken (museum, demonstration run), never imply the race itself
+    caption: p.historical ? `${p.season} ${p.carModel || p.constructorName}, photographed at ${p.event}. ${p.attribution}.` : `${p.season} ${p.constructorName}${p.driverId ? ` (${p.event})` : ''}. ${p.attribution}.`,
     creator: { '@type': 'Person', name: p.photographer },
     creditText: `${p.photographer} / ${p.sourceName}`,
     license: p.licenseUrl,
