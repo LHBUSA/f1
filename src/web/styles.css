@@ -833,4 +833,4 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 .mu-gloss summary{cursor:pointer;font:700 14px var(--display);letter-spacing:.12em;text-transform:uppercase}.mu-gloss dl{display:grid;gap:4px 18px;grid-template-columns:minmax(0,1fr);margin-top:10px}.mu-gloss dt{font-weight:700;margin-top:6px}.mu-gloss dd{margin:0;color:var(--ink2)}
 @media(min-width:768px){.mu-gloss dl{grid-template-columns:200px minmax(0,1fr)}.mu-gloss dt{margin-top:0}}
 .h2h-row .lbl small{font-size:10px;letter-spacing:.04em;text-transform:none;margin-left:4px;font-weight:600}
-.mu-h1{margin:0 0 18px;text-align:center;font:700 clamp(13px,1.6vw,16px)/1.3 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.mu-h1 span{color:var(--faint)}
+.mu-hero h1.mu-h1{margin:0 0 18px;text-align:center;font:700 clamp(13px,1.6vw,16px)/1.3 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.mu-hero h1.mu-h1 span{color:var(--faint)}
