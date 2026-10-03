@@ -76,11 +76,11 @@ test('kalshi: CSP connect-src allows the PropSports markets host', () => {
   assert.doesNotMatch(csp, /kalshi\.com/, 'the browser never talks to Kalshi');
 });
 
-// sha256 of the canonical shared files (propbetedge-workers/workers/propsports-markets/client @ 8b73545), LF-normalised
+// sha256 of the canonical shared files (propbetedge-workers/workers/propsports-markets/client @ ad6187a), LF-normalised
 const VENDOR_SHA = {
-  'kalshi-market-ui.js': '93a8f485e90633a1cd70e93ab4123c1dc2161d08b3a76e41ec3cc4a0279d74f4',
+  'kalshi-market-ui.js': '03712a0eb48e5265523ec45b145fd2fa880c9435e1adf2c6ca988c78c3fa37a8',
   'kalshi-market-ui.css': 'fb046ada2b2e5450207e4301c0e41a193aa599e4661843fdcdb50d45ac7191ae',
-  'kalshi-market-client.js': '211be23bb9a5b2be0a1b4ed1a1c2c1b3b2dfc4ef45a040ae13c07d28a8ae8744',
+  'kalshi-market-client.js': '68f9ed06de627654634e385acc79b1efdee858de4a59801e20b401b5c0bc43dc',
 };
 const lf = (f) => fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
 test('kalshi: vendored shared component is unchanged', () => {
@@ -100,7 +100,7 @@ test('kalshi: browser code never calls a Kalshi API host', () => {
     assert.doesNotMatch(t, API, f);
     assert.doesNotMatch(t, /fetch\([^)]*kalshi\.com/i, f);
   }
-  // the F1 loader reads only through the vendored shared client (8b73545 keeps kalshi:null history entries): no host,
+  // the F1 loader reads only through the vendored shared client (ad6187a keeps kalshi:null history entries): no host,
   // no fetch of its own (the 70d92e0 direct-read workaround is gone)
   const loader = fs.readFileSync('src/web/kalshi.js', 'utf8');
   assert.deepEqual([...loader.matchAll(/https:\/\/[a-z0-9.-]+/gi)].map((m) => m[0]), []);
@@ -303,4 +303,39 @@ test('copy: owner line, never conditional availability wording', () => {
   const b = fs.readFileSync('scripts/build-site.mjs', 'utf8');
   assert.match(b, /Live prediction-market pricing is built into PropBetEdge race pages and PBEcast\./);
   assert.doesNotMatch(b, /part of every race page|if available|selected events|when a market exists/i);
+});
+
+// shared client ad6187a: a failed read is never cached as "no market"; the next poll retries at once
+test('kalshi: a failed read is never cached as no market (ad6187a)', async () => {
+  const live = fieldEntry();
+  let n = 0;
+  const flaky = async () => { n += 1; return n === 1 ? new Response('{}', { status: 503 }) : new Response(JSON.stringify({ contract: 'market-intel/1', enabled: true, event: live, events: [live] }), { status: 200 }); };
+  const c = createKalshiClient({ sport: 'f1', fetchImpl: flaky });
+  assert.equal(await c.loadEvent(live.event.canonical_event_id), null, 'first read failed');
+  const got = await c.loadEvent(live.event.canonical_event_id);
+  assert.ok(got?.kalshi, 'retried immediately, not served a cached null');
+  assert.equal(n, 2);
+  // a later failure keeps the last good entry (the card stays) and is not cached either
+  let m = 0;
+  const later = async () => { m += 1; return m === 2 ? new Response('{}', { status: 502 }) : new Response(JSON.stringify({ enabled: true, event: live }), { status: 200 }); };
+  const d = createKalshiClient({ sport: 'f1', fetchImpl: later });
+  assert.ok(await d.loadEvent('x-race'));
+  assert.ok(await d.loadEvent('x-race', { force: true }), 'failed refresh keeps the last good entry');
+  assert.ok(await d.loadEvent('x-race'), 'and retries on the next call');
+  assert.equal(m, 3);
+  // board: same rule
+  let b = 0;
+  const fb = async () => { b += 1; return b === 1 ? new Response('{}', { status: 500 }) : new Response(JSON.stringify({ enabled: true, events: [live] }), { status: 200 }); };
+  const e = createKalshiClient({ sport: 'f1', fetchImpl: fb });
+  assert.equal((await e.loadBoard()).size, 0);
+  assert.equal((await e.loadBoard()).size, 1);
+});
+
+test('kalshi: card subtitle says Live only for a live-fresh quote; stale says quote not current (ad6187a)', () => {
+  __resetKalshiFlashes();
+  const at = (freshness) => { const e = fieldEntry(); e.kalshi.freshness = freshness; return kalshiCard(e, { placement: 'race-page' }); };
+  assert.match(at('live'), /<span class="kx__sub">Live prediction market · Kalshi<\/span>/);
+  assert.match(at('stale'), /<span class="kx__sub">Prediction market · quote not current · Kalshi<\/span>/);
+  assert.doesNotMatch(at('stale'), /Live prediction market ·/);
+  assert.match(at('delayed'), /<span class="kx__sub">Prediction market · Kalshi<\/span>/);
 });

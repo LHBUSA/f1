@@ -1,12 +1,12 @@
 // Kalshi Market Intelligence on F1 (owner approved 2026-10-03; market history 2026-10-03; MLB market standard 2026-10-03).
 // Classic script: it lazily imports the vendored shared component + client (src/vendor/kalshi, unchanged, canonical
-// 8b73545; the build writes them content-hashed and rewrites the two paths below). Data comes only from the PropSports
+// ad6187a; the build writes them content-hashed and rewrites the two paths below). Data comes only from the PropSports
 // markets API through the shared client (the browser never calls Kalshi); prices are fetched live, never baked into the
 // static page. No market / any failure -> the mount stays empty (no box, no space).
 // The only market attached is the MAIN race winner (`<event>-race`); never a sprint or championship view.
 //
 // The page evolves with the market, no release needed: Market Pulse (full ranked-field card) while the market trades,
-// then "How the market closed" (shared marketHistoryCard) once it is CLOSED or SETTLED. The shared client (8b73545)
+// then "How the market closed" (shared marketHistoryCard) once it is CLOSED or SETTLED. The shared client (ad6187a)
 // keeps completed entries that come back with `kalshi: null` + `market` / `market_history`, so this loader no longer
 // reads the API itself.
 (() => {
