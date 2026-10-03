@@ -6,7 +6,7 @@ import path from 'node:path';
 
 const base = process.argv[2] || 'http://127.0.0.1:4173';
 const shotDir = process.argv.includes('--shots') ? process.argv[process.argv.indexOf('--shots') + 1] : null;
-const WIDTHS = [320, 360, 390, 430, 768, 1024, 1440];
+const WIDTHS = [320, 360, 390, 430, 768, 1024, 1280, 1366, 1440, 1600, 1920];
 const pages = (process.env.QA_PAGES || '').split(',').filter(Boolean);
 const defaults = ['/', '/races', '/standings', '/drivers', '/teams', '/circuits', '/matchups', '/pbecast', '/news', '/methodology', '/data-coverage'];
 async function discover() {
@@ -40,9 +40,12 @@ for (const w of WIDTHS) {
     const r = await page.evaluate(() => {
       const doc = document.documentElement;
       const overflow = doc.scrollWidth - doc.clientWidth;
-      const offenders = overflow > 0 ? [...document.querySelectorAll('body *')].filter((el) => { const b = el.getBoundingClientRect(); return b.right > doc.clientWidth + 1 && !el.closest('.table-wrap') && getComputedStyle(el).position !== 'fixed'; }).slice(0, 5).map((el) => el.tagName + '.' + el.className) : [];
+      const offenders = overflow > 0 ? [...document.querySelectorAll('body *')].filter((el) => { const b = el.getBoundingClientRect(); return b.right > doc.clientWidth + 1 && getComputedStyle(el).position !== 'fixed' && !el.parentElement?.closest('.table-wrap'); }).slice(0, 5).map((el) => el.tagName + '.' + el.className) : [];
+      // tables: content wider than its box is only acceptable below desktop width, and only with the scroll
+      // affordance (data-scroll set by app.js). At >=1024 an ordinary table must fit (data-wide = documented exception).
+      const tables = [...document.querySelectorAll('.table-wrap')].filter((w) => w.offsetParent && w.scrollWidth - w.clientWidth > 1).map((w) => ({ h: w.closest('section')?.querySelector('h2')?.textContent || '', cw: w.clientWidth, sw: w.scrollWidth, cue: !!w.dataset.scroll, wide: !!w.closest('[data-wide]') }));
       const broken = [...document.images].filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src);
-      return { overflow, offenders, broken, h1: document.querySelectorAll('h1').length, canonical: document.querySelector('link[rel=canonical]')?.href };
+      return { overflow, offenders, tables, broken, h1: document.querySelectorAll('h1').length, canonical: document.querySelector('link[rel=canonical]')?.href };
     });
     checks++;
     // Until the API Worker is live, /api failures are tolerated unless QA_STRICT=1.
@@ -50,6 +53,7 @@ for (const w of WIDTHS) {
     const problems = [];
     if (status !== 200) problems.push(`status ${status}`);
     if (r.overflow > 0) problems.push(`overflow ${r.overflow}px ${r.offenders.join(' ')}`);
+    for (const t of r.tables) { if (w >= 1024 && !t.wide) problems.push(`table clipped ${t.cw}/${t.sw}px [${t.h}]`); else if (!t.cue) problems.push(`table scroll without affordance [${t.h}]`); }
     if (r.broken.length) problems.push(`broken images ${r.broken.slice(0, 3).join(' ')}`);
     if (errs.length) problems.push(`console ${errs.slice(0, 3).join(' | ')}`);
     if (r.h1 !== 1) problems.push(`h1 count ${r.h1}`);

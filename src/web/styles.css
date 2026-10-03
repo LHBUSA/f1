@@ -75,7 +75,14 @@ main{min-height:60vh}
 @media(min-width:1024px){.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .split{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
 .split>*,.grid>*,.cast>*{min-width:0}
-@media(min-width:1024px){.split{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}.split.even{grid-template-columns:1fr 1fr}}
+/* Side-by-side is decided by the space the split actually has (container query on its parent), not the viewport.
+   Splits holding data tables need a wider container: each table must fit its column without horizontal scrolling.
+   app.js (fitSplits) stacks any split whose tables still overflow with worst-case content. */
+:has(>.split){container-type:inline-size}
+@container (min-width:900px){.split{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}}
+@container (min-width:720px){.split.even{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container (max-width:1179.98px){.split:has(.table-wrap){grid-template-columns:minmax(0,1fr)}}
+.split.is-stacked{grid-template-columns:minmax(0,1fr)}
 .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0;position:relative}
 .card h3{font-size:22px;margin-bottom:6px}
 .card-link{display:block;transition:border-color .15s,transform .15s}
@@ -123,6 +130,13 @@ h1{overflow-wrap:anywhere}
 /* timing tower / tables */
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(90deg,var(--panel) 40%,transparent) left/28px 100% no-repeat local,linear-gradient(270deg,var(--panel) 40%,transparent) right/28px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(255,255,255,.14),transparent) left/10px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(255,255,255,.14),transparent) right/10px 100% no-repeat scroll,var(--panel)}
 .table-wrap::-webkit-scrollbar{display:none}
+/* scroll affordance: app.js sets data-scroll=start|middle|end when the table is wider than its box; the edge(s)
+   with more content fade out and the fade disappears at that end. No data-scroll = the table fits. */
+.table-wrap[data-scroll=start]{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 56px),#0003);mask-image:linear-gradient(90deg,#000 calc(100% - 56px),#0003)}
+.table-wrap[data-scroll=middle]{-webkit-mask-image:linear-gradient(90deg,#0003,#000 40px,#000 calc(100% - 56px),#0003);mask-image:linear-gradient(90deg,#0003,#000 40px,#000 calc(100% - 56px),#0003)}
+.table-wrap[data-scroll=end]{-webkit-mask-image:linear-gradient(90deg,#0003,#000 40px);mask-image:linear-gradient(90deg,#0003,#000 40px)}
+/* list cells (several teams / drivers in one cell) wrap instead of widening the table */
+td.list{white-space:normal;min-width:14ch}
 table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
 th{font-family:var(--display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--muted);text-align:left;padding:10px 10px;border-bottom:1px solid var(--line2);white-space:nowrap;background:var(--bg2);position:sticky;top:0}
 td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -667,6 +681,7 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 .pt-cards-sm{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}
 .xp-pt .pt-schem,.xp-pt .pt-svg{margin-top:6px}
 .pu-table td,.pu-table th{vertical-align:top;white-space:normal;min-width:120px}.pu-table th[scope=row]{color:var(--muted);font-weight:600;min-width:140px}
+.pu-table .pt-tag{white-space:normal;margin-left:0;max-width:100%}
 .cur-machine{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}.cur-machine b{font:800 18px var(--display)}.cur-machine p{margin:0;flex-basis:100%}
 @media(max-width:800px){.pt-grid{grid-template-columns:1fr}.pt-card dl>div{grid-template-columns:1fr;gap:1px}}
 

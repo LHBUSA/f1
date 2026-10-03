@@ -276,7 +276,7 @@ export function driverPage(ctx, d) {
       const st = (ctx.standingsBy[`${y}|driver`] || []).find((s) => s.subject_id === d.id);
       const teams = [...new Set(rows.map((r) => r.constructor_id))];
       const cls = rows.filter((r) => r.classified);
-      return `<tr><td><a href="${y === ctx.currentSeason ? '/standings' : `/standings/${y}`}">${y}</a></td><td>${teams.map((t) => teamLink(ctx, t)).join(', ')}</td><td class="num">${rows.filter((r) => r.started).length}</td><td class="num">${cls.filter((r) => r.finish === 1).length}</td><td class="num">${cls.filter((r) => r.finish <= 3).length}</td><td class="num">${rows.filter((r) => r.pole).length}</td><td class="num">${fmtPts(st?.points ?? rows.reduce((s, r) => s + r.points, 0))}</td><td class="num">${st ? ordinal(st.position) : '—'}</td></tr>`;
+      return `<tr><td><a href="${y === ctx.currentSeason ? '/standings' : `/standings/${y}`}">${y}</a></td><td class="list">${teams.map((t) => teamLink(ctx, t)).join(', ')}</td><td class="num">${rows.filter((r) => r.started).length}</td><td class="num">${cls.filter((r) => r.finish === 1).length}</td><td class="num">${cls.filter((r) => r.finish <= 3).length}</td><td class="num">${rows.filter((r) => r.pole).length}</td><td class="num">${fmtPts(st?.points ?? rows.reduce((s, r) => s + r.points, 0))}</td><td class="num">${st ? ordinal(st.position) : '—'}</td></tr>`;
     })
     .reverse()
     .join('');
@@ -296,7 +296,7 @@ export function driverPage(ctx, d) {
       const q = flip ? [s.quali_h2h[1], s.quali_h2h[0]] : s.quali_h2h;
       const r = flip ? [s.race_h2h[1], s.race_h2h[0]] : s.race_h2h;
       const url = ctx.matchupUrl(t.a, t.b);
-      return `<tr><td>${driverCell(ctx, o, t.constructors.at(-1), t.seasons.at(-1))}</td><td>${t.constructors.map((c) => teamLink(ctx, c)).join(', ')}</td><td>${t.seasons[0]}${t.seasons.length > 1 ? '–' + t.seasons.at(-1) : ''}</td><td class="num">${q[0]}–${q[1]}</td><td class="num">${r[0]}–${r[1]}</td><td>${url ? `<a class="more" href="${url}">Battle</a>` : ''}</td></tr>`;
+      return `<tr><td>${driverCell(ctx, o, t.constructors.at(-1), t.seasons.at(-1))}</td><td class="list">${t.constructors.map((c) => teamLink(ctx, c)).join(', ')}</td><td>${t.seasons[0]}${t.seasons.length > 1 ? '–' + t.seasons.at(-1) : ''}</td><td class="num">${q[0]}–${q[1]}</td><td class="num">${r[0]}–${r[1]}</td><td>${url ? `<a class="more" href="${url}">Battle</a>` : ''}</td></tr>`;
     })
     .join('');
   const num = (ctx.dcsByDriver[d.id] || []).sort((a, b) => b.season - a.season)[0]?.car_numbers?.[0];
@@ -322,8 +322,8 @@ export function driverPage(ctx, d) {
     ${dnaK ? `<div class="tabpanel" role="tabpanel" id="dna-car" aria-labelledby="dt-car"${dnaC ? ' hidden' : ''}>${dnaPanel(dnaK, { color: color || 'ff4d2e', title: 'Career DNA' })}</div>` : ''}
   </div></section>` : ''}
   ${mateRows ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Teammate record</h2></div><div class="table-wrap"><table><thead><tr><th>Teammate</th><th>Team</th><th>Seasons</th><th class="num">Quali H2H</th><th class="num">Race H2H</th><th></th></tr></thead><tbody>${mateRows}</tbody></table></div></div></section>` : ''}
-  <section class="section"><div class="wrap"><div class="split"><div><div class="section-head"><h2>Recent races</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Team</th><th class="num">Quali</th><th class="num">Grid</th><th class="num">Finish</th><th class="num">Pts</th></tr></thead><tbody>${recentRows}</tbody></table></div></div>
-  <div><div class="section-head"><h2>By season</h2></div><div class="table-wrap"><table><thead><tr><th>Year</th><th>Team</th><th class="num">Starts</th><th class="num">W</th><th class="num">Pod</th><th class="num">Poles</th><th class="num">Pts</th><th class="num">Pos</th></tr></thead><tbody>${seasons}</tbody></table></div></div></div></div></section>`;
+  <section class="section"><div class="wrap"><div class="section-head"><h2>Recent races</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Team</th><th class="num">Quali</th><th class="num">Grid</th><th class="num">Finish</th><th class="num">Pts</th></tr></thead><tbody>${recentRows}</tbody></table></div></div></section>
+  <section class="section"><div class="wrap"><div class="section-head"><h2>By season</h2></div><div class="table-wrap"><table><thead><tr><th>Year</th><th>Team</th><th class="num">Starts</th><th class="num">W</th><th class="num">Pod</th><th class="num">Poles</th><th class="num">Pts</th><th class="num">Pos</th></tr></thead><tbody>${seasons}</tbody></table></div></div></section>`;
   const jsonLd = [
     { '@context': 'https://schema.org', '@type': 'Person', name: d.full_name, ...(d.date_of_birth ? { birthDate: d.date_of_birth } : {}), ...(d.nationality ? { nationality: d.nationality } : {}), jobTitle: 'Racing driver', url: SITE + `/drivers/${d.slug}`, ...(lt ? { memberOf: { '@type': 'SportsTeam', name: ctx.conById[lt.constructor_id]?.name } } : {}) },
     jsonLdBreadcrumb(bc),
@@ -356,7 +356,7 @@ export function teamPage(ctx, c, lineageChain) {
     .map((y) => {
       const st = (ctx.standingsBy[`${y}|constructor`] || []).find((s) => s.subject_id === c.id);
       const ds = bySeason[y].sort((a, b) => b.race_starts - a.race_starts).filter((x) => x.race_starts > 0);
-      return `<tr><td><a href="${y === season ? '/standings' : `/standings/${y}`}">${y}</a></td><td>${ds.map((x) => `<a href="${ctx.driverUrl(x.driver_id)}">${esc(ctx.driverById[x.driver_id]?.last_name || x.driver_id)}</a>`).join(', ')}</td><td class="num">${st ? ordinal(st.position) : '—'}</td><td class="num">${st ? fmtPts(st.points) : '—'}</td><td class="num">${st?.wins ?? '—'}</td></tr>`;
+      return `<tr><td><a href="${y === season ? '/standings' : `/standings/${y}`}">${y}</a></td><td class="list">${ds.map((x) => `<a href="${ctx.driverUrl(x.driver_id)}">${esc(ctx.driverById[x.driver_id]?.last_name || x.driver_id)}</a>`).join(', ')}</td><td class="num">${st ? ordinal(st.position) : '—'}</td><td class="num">${st ? fmtPts(st.points) : '—'}</td><td class="num">${st?.wins ?? '—'}</td></tr>`;
     })
     .join('');
   const dna = ctx.conDna[lastSeason]?.[c.id];
@@ -519,7 +519,7 @@ export function matchupsIndex(ctx) {
   <section class="section"><div class="wrap"><div class="section-head"><h2>Teammate pairings with 20+ shared races</h2></div><div class="table-wrap"><table><thead><tr><th>Driver A</th><th>Driver B</th><th>Team</th><th>Seasons</th><th class="num">Quali</th><th class="num">Race</th><th></th></tr></thead><tbody>${famous
     .map((t) => {
       const u = ctx.matchupUrl(t.a, t.b);
-      return `<tr><td>${driverCell(ctx, t.a, t.constructors.at(-1), t.seasons.at(-1))}</td><td>${driverCell(ctx, t.b, t.constructors.at(-1), t.seasons.at(-1))}</td><td>${t.constructors.map((c) => teamLink(ctx, c)).join(', ')}</td><td>${t.seasons[0]}–${t.seasons.at(-1)}</td><td class="num">${t.career.quali_h2h.join('–')}</td><td class="num">${t.career.race_h2h.join('–')}</td><td>${u ? `<a class="more" href="${u}">Open</a>` : ''}</td></tr>`;
+      return `<tr><td>${driverCell(ctx, t.a, t.constructors.at(-1), t.seasons.at(-1))}</td><td>${driverCell(ctx, t.b, t.constructors.at(-1), t.seasons.at(-1))}</td><td class="list">${t.constructors.map((c) => teamLink(ctx, c)).join(', ')}</td><td>${t.seasons[0]}–${t.seasons.at(-1)}</td><td class="num">${t.career.quali_h2h.join('–')}</td><td class="num">${t.career.race_h2h.join('–')}</td><td>${u ? `<a class="more" href="${u}">Open</a>` : ''}</td></tr>`;
     })
     .join('')}</tbody></table></div></div></section>`;
   return { path: '/matchups', title: `F1 Teammate Battles ${season}: Qualifying & Race Head-to-Heads`, description: `Every ${season} Formula 1 teammate battle: qualifying and race head-to-heads, median qualifying gaps, points and DNFs, plus historic pairings.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/matchups', 'Matchups']])] };

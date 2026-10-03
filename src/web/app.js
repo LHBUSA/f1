@@ -33,6 +33,38 @@
   };
   F1.fmtLocal = fmtLocal;
 
+  // ---------- tables: scroll affordance + split safety net ----------
+  // A table wider than its box gets data-scroll=start|middle|end (CSS fades the edge that has more columns).
+  // A two-column .split whose tables still overflow with this page's content is stacked (.is-stacked) instead of
+  // hiding columns behind an invisible scroll.
+  F1.register('tables', {
+    selector: '.table-wrap',
+    mount(root) {
+      const wraps = $$('.table-wrap', root);
+      const mark = (w) => {
+        const over = w.scrollWidth - w.clientWidth > 1;
+        const s = !over ? '' : w.scrollLeft <= 1 ? 'start' : w.scrollLeft >= w.scrollWidth - w.clientWidth - 1 ? 'end' : 'middle';
+        if (s) w.dataset.scroll = s; else delete w.dataset.scroll;
+      };
+      const fit = () => {
+        for (const s of $$('.split', root)) {
+          if (!s.querySelector('.table-wrap')) continue;
+          s.classList.remove('is-stacked');
+          if (getComputedStyle(s).gridTemplateColumns.split(' ').length > 1 && $$('.table-wrap', s).some((w) => w.scrollWidth - w.clientWidth > 1)) s.classList.add('is-stacked');
+        }
+        wraps.forEach(mark);
+      };
+      const onScroll = (e) => mark(e.currentTarget);
+      wraps.forEach((w) => w.addEventListener('scroll', onScroll, { passive: true }));
+      let raf = 0;
+      const onResize = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); };
+      addEventListener('resize', onResize);
+      fit();
+      document.fonts?.ready.then(fit);
+      return () => { removeEventListener('resize', onResize); wraps.forEach((w) => w.removeEventListener('scroll', onScroll)); };
+    },
+  });
+
   // ---------- shell (once per document) ----------
   const mb = $('[data-menu]');
   if (mb) mb.addEventListener('click', () => {
