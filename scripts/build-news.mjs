@@ -3,6 +3,11 @@
 //
 // Publication dates are frozen: an article already in the live news index keeps its published_at; modified_at moves only
 // when the packet content (hash) changes. A preview is never first-published after its race has started (stale).
+//
+// Time (see src/news/temporal.mjs): the copy is framed at the story's FIRST publication (frozen published_at, or now for
+// a first publication). A qualifying story first published after its race started, or a race final first published
+// >72h after the race, is an archive backfill: retrospective copy, an archive label, and no Google News entry. A
+// published preview whose race has since started stays at its URL as an archived preview. Never backdated.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -18,9 +23,11 @@ import { editorialGate, EDITORIAL_VERSION } from '../src/news/quality.mjs';
 import { validateDraft, render, QUALITY_VERSION } from '../src/news/validate.mjs';
 import { cardSvg, renderCard, headshotData } from '../src/news/card.mjs';
 import { CLASS_LABEL } from '../src/news/render.mjs';
+import { archiveKind } from '../src/news/temporal.mjs';
 
 const BASE = process.env.PROPSPORTS_F1_BASE || 'https://propsports.proptechusa.ai/v1/f1';
 const NOW = process.env.F1_NEWS_NOW || new Date().toISOString();
+const T = (iso) => Date.parse(iso); // compare instants numerically: source ISO strings differ in precision ('11:00Z' vs '11:00:00.000Z')
 const OUT = path.resolve('data/news');
 const PROJ = path.resolve('data/projection');
 fs.mkdirSync(path.join(OUT, 'cards'), { recursive: true });
@@ -33,6 +40,9 @@ try {
   const r = await fetch(`${BASE}/news`, { signal: AbortSignal.timeout(20000) });
   if (r.ok) for (const a of (await r.json()).articles || []) live[a.slug] = a;
 } catch { /* first publication or offline: dates start now */ }
+
+// frozen first-publication time of a story (class + event), else this build's time
+const publishedAtFor = (cls, eventId) => Object.values(live).find((a) => a.class === cls && a.event_id === eventId)?.published_at || NOW;
 
 const SLUG = {
   race_final: (P) => `${P.entities.find((x) => x.key === 'p1').ref}-wins-${P.event_id}`,
@@ -47,16 +57,17 @@ for (const [cls, cfg] of Object.entries(classes)) {
   for (const season of cfg.seasons) {
     for (const ev of X.raceEvents(season)) {
       let r;
-      if (cls === 'race_final') r = raceFinalPacket(X, ev.id, { asOf: NOW });
-      else if (cls === 'qualifying') r = qualifyingPacket(X, ev.id, { asOf: NOW });
+      const publishedAt = publishedAtFor(cls, ev.id);
+      if (cls === 'race_final') r = raceFinalPacket(X, ev.id, { asOf: NOW, publishedAt });
+      else if (cls === 'qualifying') r = qualifyingPacket(X, ev.id, { asOf: NOW, publishedAt });
       else if (cls === 'preview') {
         // a preview exists only for the next event that has not started (or one already published before its start)
         const race = X.session(ev.id, 'race');
         const already = live[`${ev.id}-preview`];
-        if (!already && (!race?.start_utc || race.start_utc <= NOW || ev.status === 'completed')) continue;
-        const next = X.raceEvents(season).find((e) => X.session(e.id, 'race')?.start_utc > NOW && e.status !== 'completed');
+        if (!already && (!race?.start_utc || T(race.start_utc) <= T(NOW) || ev.status === 'completed')) continue;
+        const next = X.raceEvents(season).find((e) => T(X.session(e.id, 'race')?.start_utc) > T(NOW) && e.status !== 'completed');
         if (!already && next?.id !== ev.id) continue;
-        r = previewPacket(X, ev.id, { asOf: NOW });
+        r = previewPacket(X, ev.id, { asOf: NOW, publishedAt });
       }
       if (!r?.ok) continue;
       const P = r.packet;
@@ -79,13 +90,17 @@ for (const cls of Object.keys(classes).filter((k) => !k.startsWith('_'))) {
     // editorial gate runs only on a factually clean draft and never relaxes it
     const ed = v.ok ? editorialGate(c.P, c.draft, { X }) : { ok: false, reasons: ['factual_gate_failed'], warnings: [], words: v.words, links: 0 };
     const prev = live[c.draft.slug];
-    const stale = cls === 'preview' && !prev && c.P.context.valid_until && c.P.context.valid_until <= NOW;
+    const stale = cls === 'preview' && !prev && c.P.context.valid_until && T(c.P.context.valid_until) <= T(NOW);
     let status = !v.ok || !ed.ok ? 'held' : stale ? 'stale' : cfg.mode === 'published' ? 'published' : cfg.mode === 'canary' ? (i < cfg.canary || prev?.status === 'published' ? 'published' : 'shadow') : 'shadow';
     const published_at = prev?.published_at || NOW;
+    if (c.P.context.temporal && c.P.context.temporal.as_of !== published_at) throw new Error(`${c.draft.slug}: temporal frame ${c.P.context.temporal.as_of} != published_at ${published_at}`);
+    // archive: backfill at first publication, or a preview whose race has started since (judged at build time; display only)
+    const tf = c.P.context.temporal || {};
+    const archive = archiveKind(cls, tf, NOW);
     const modified_at = prev && prev.packet_hash !== c.P.hash ? NOW : prev?.modified_at || published_at;
     const headline = render(c.draft.headline, c.P);
     ledger[c.draft.slug] = { topic: c.P.topic, headline };
-    const a = { slug: c.draft.slug, class: cls, topic: c.P.topic, event_id: c.P.event_id, status, published_at, modified_at, headline, dek: render(c.draft.dek, c.P), packet_hash: c.P.hash, packet: c.P, draft: c.draft, validation: { ok: v.ok, reasons: v.reasons, facts_used: v.facts_used, words: v.words, gate: QUALITY_VERSION }, editorial: { ok: ed.ok, reasons: ed.reasons, warnings: ed.warnings, words: ed.words, links: ed.links, version: EDITORIAL_VERSION }, composer: c.draft.composer || null };
+    const a = { slug: c.draft.slug, class: cls, topic: c.P.topic, event_id: c.P.event_id, status, published_at, modified_at, archive, headline, dek: render(c.draft.dek, c.P), packet_hash: c.P.hash, packet: c.P, draft: c.draft, validation: { ok: v.ok, reasons: v.reasons, facts_used: v.facts_used, words: v.words, gate: QUALITY_VERSION }, editorial: { ok: ed.ok, reasons: ed.reasons, warnings: ed.warnings, words: ed.words, links: ed.links, version: EDITORIAL_VERSION }, composer: c.draft.composer || null };
     articles.push(a);
     report.stories.push({ slug: a.slug, class: cls, status, words: v.words, facts_used: v.facts_used.length, reasons: [...v.reasons, ...ed.reasons], warnings: ed.warnings, links: ed.links });
   });
@@ -114,9 +129,9 @@ for (const a of articles.filter((x) => x.status === 'published' || x.status === 
 fs.writeFileSync(path.join(OUT, 'articles.json'), JSON.stringify(articles));
 fs.writeFileSync(path.join(OUT, 'canary-report.json'), JSON.stringify(report, null, 2));
 const pub = articles.filter((a) => a.status === 'published');
-const index = { generated_at: NOW, gate: QUALITY_VERSION, articles: pub.map((a) => ({ slug: a.slug, class: a.class, topic: a.topic, event_id: a.event_id, status: a.status, headline: a.headline, dek: a.dek, published_at: a.published_at, modified_at: a.modified_at, packet_hash: a.packet_hash, image: `/news/cards/${a.slug}.jpg`, entities: a.packet.entities.filter((x) => ['driver', 'team', 'circuit', 'race'].includes(x.type)).map((x) => ({ type: x.type, id: x.ref, name: x.name })) })).sort((a, b) => b.published_at.localeCompare(a.published_at) || b.slug.localeCompare(a.slug)) };
+const index = { generated_at: NOW, gate: QUALITY_VERSION, articles: pub.map((a) => ({ slug: a.slug, class: a.class, topic: a.topic, event_id: a.event_id, status: a.status, archive: a.archive, headline: a.headline, dek: a.dek, published_at: a.published_at, modified_at: a.modified_at, packet_hash: a.packet_hash, image: `/news/cards/${a.slug}.jpg`, entities: a.packet.entities.filter((x) => ['driver', 'team', 'circuit', 'race'].includes(x.type)).map((x) => ({ type: x.type, id: x.ref, name: x.name })) })).sort((a, b) => b.published_at.localeCompare(a.published_at) || b.slug.localeCompare(a.slug)) };
 const docs = { 'news-index': index };
-for (const a of pub) docs[`news-${a.slug}`] = { slug: a.slug, class: a.class, status: a.status, published_at: a.published_at, modified_at: a.modified_at, headline: a.headline, dek: a.dek, packet: a.packet, draft: a.draft, validation: a.validation };
+for (const a of pub) docs[`news-${a.slug}`] = { slug: a.slug, class: a.class, status: a.status, archive: a.archive, published_at: a.published_at, modified_at: a.modified_at, headline: a.headline, dek: a.dek, packet: a.packet, draft: a.draft, validation: a.validation };
 for (const [n, d] of Object.entries(docs)) fs.writeFileSync(path.join(PROJ, `${n}.json`), JSON.stringify(d));
 // register in the projection manifest; the version covers the news content too
 const mf = JSON.parse(fs.readFileSync(path.join(PROJ, 'manifest.json'), 'utf8'));

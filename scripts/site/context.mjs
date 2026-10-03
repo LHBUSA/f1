@@ -82,7 +82,11 @@ export function loadContext() {
     return ys.length ? c.colors[ys[0]] : null;
   };
   const cur = ctx.eventsBySeason[ctx.currentSeason] || [];
-  const now = Date.now();
+  // build clock (F1_SITE_NOW pins it for deterministic QA); every 'next'/'upcoming' decision uses this one value
+  const now = process.env.F1_SITE_NOW ? Date.parse(process.env.F1_SITE_NOW) : Date.now();
+  ctx.now = now;
+  // source states that did not advance: a session still 'scheduled' after its start time. Never shown as next/upcoming.
+  ctx.staleSessions = ctx.events.filter((e) => e.season === ctx.currentSeason).flatMap((e) => (ctx.sessionsByEvent[e.id] || []).filter((s) => s.start_utc && !['completed', 'canceled', 'live'].includes(s.state) && Date.parse(s.start_utc) + 4 * 3600e3 < now).map((s) => `${e.id}:${s.type}`));
   ctx.nextEvent = cur.find((e) => e.status !== 'canceled' && e.status !== 'completed' && Date.parse(e.end_utc || e.start_utc) + 6 * 3600e3 > now) || null;
   ctx.lastCompleted = [...ctx.events].filter((e) => e.status === 'completed').sort((a, b) => b.start_utc.localeCompare(a.start_utc))[0] || null;
   ctx.currentGrid = ctx.meta.current_grid;

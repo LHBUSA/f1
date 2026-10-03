@@ -1,7 +1,8 @@
 // RACE FINAL packet: what the classification, qualifying, standings progression and our own DNA/archive say about one
 // Grand Prix. Signals are tested rules over packet facts; a signal is never used without its rule.
-import { Packet, gridText, posText, pts, fmtLap, secs, fmtDay, countWord, ordinal, gapMs } from './packet.mjs';
+import { Packet, gridText, posText, pts, fmtLap, secs, countWord, ordinal, gapMs } from './packet.mjs';
 import { addStakes, addArchive, addForm, addBattle, addDna, addPages } from './context.mjs';
+import { temporalFrame, nextEventAfter, venueDay } from './temporal.mjs';
 
 export const RACE_RULES = {
   close_finish_ms: 2000, // winner's margin under two seconds
@@ -11,7 +12,8 @@ export const RACE_RULES = {
   dna_strength_pct: 80, // a DNA dimension is a strength at the 80th percentile or above
 };
 
-export function raceFinalPacket(X, eventId, { asOf = new Date().toISOString(), replay = null } = {}) {
+// publishedAt = the story's frozen first-publication time (this build's time for a first publication): the copy's frame.
+export function raceFinalPacket(X, eventId, { asOf = new Date().toISOString(), publishedAt = asOf, replay = null } = {}) {
   const ev = X.event[eventId];
   if (!ev) return { ok: false, reason: 'unknown_event' };
   const race = X.session(eventId, 'race');
@@ -29,7 +31,7 @@ export function raceFinalPacket(X, eventId, { asOf = new Date().toISOString(), r
   P.fact('event', title, title, 'Event', 'projection: events');
   P.entity('race', 'race', ev.id, title);
   P.fact('round', ev.round, `round ${ev.round}`, 'Championship round', 'projection: events');
-  P.fact('race_date', race.start_utc, fmtDay(race.start_utc), 'Race date', 'projection: sessions');
+  P.fact('race_date', race.start_utc, venueDay(race.start_utc, ev.circuit_id), 'Race date (venue-local calendar day)', 'projection: sessions');
   const circ = X.circuit[ev.circuit_id];
   if (circ) P.entity('circuit', 'circuit', circ.id, circ.name);
   if (race.laps_scheduled) P.fact('laps_scheduled', race.laps_scheduled, `${race.laps_scheduled} laps`, 'Scheduled race distance', 'projection: sessions');
@@ -212,8 +214,13 @@ export function raceFinalPacket(X, eventId, { asOf = new Date().toISOString(), r
   if (dnf.length >= RACE_RULES.high_attrition_min) P.signal('high_attrition', { n: dnf.length });
 
   // ---- next race ----
-  const nx = X.nextEvent(ev.end_utc || ev.start_utc);
-  if (nx) { P.entity('next', 'race', nx.id, `${nx.season} ${nx.name}`); P.fact('next_date', nx.start_utc, fmtDay(nx.start_utc), 'Next event start', 'projection: events'); }
+  // the next round in CALENDAR order after this race (never filtered by today's status, or a late build skips rounds);
+  // its RACE start, not the weekend's first session
+  const nx = nextEventAfter(X, race.start_utc);
+  const nxRace = nx && X.session(nx.id, 'race');
+  if (nx && nxRace?.start_utc) { P.entity('next', 'race', nx.id, `${nx.season} ${nx.name}`); P.fact('next_race_start', nxRace.start_utc, venueDay(nxRace.start_utc, nx.circuit_id), 'Next race start (venue-local calendar day)', 'projection: sessions'); }
+  P.context.temporal = temporalFrame(X, eventId, 'race_final', publishedAt);
+  if (nxRace?.start_utc) P.context.temporal.next_race_state = Date.parse(nxRace.start_utc) > Date.parse(publishedAt) ? 'upcoming' : 'started';
 
   // ---- result table + grid/finish chart ----
   P.chart('classification', { title: 'Race classification', kind: 'table', rows: rows.map((r) => ({ pos: r.status === 'classified' ? r.position : null, driver_id: r.driver_id, name: D(r.driver_id)?.name, team_id: r.constructor_id, team: C(r.constructor_id)?.name, grid: r.grid, status: r.status, time: r.position === 1 ? r.time : r.gap || (r.behind_laps ? `+${r.behind_laps} lap${r.behind_laps > 1 ? 's' : ''}` : null), points: r.points, laps: r.laps })) });

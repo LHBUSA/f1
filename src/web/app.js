@@ -113,9 +113,11 @@
     lapEl.textContent = ses?.lap && ses?.laps_total ? `Lap ${ses.lap} / ${ses.laps_total}` : ses?.lap ? `Lap ${ses.lap}` : '';
     const lb = $('[data-cast-lapbar]');
     if (ses?.lap && ses?.laps_total) { lb.hidden = false; lb.firstElementChild.className = 'w-' + Math.min(100, Math.round((ses.lap / ses.laps_total) * 100)); } else lb.hidden = true;
-    $('[data-cast-updated]').textContent = s.updated_at ? `Updated ${fmtLocal(new Date(s.updated_at))}${s.next && s.state !== 'live' ? ` · Next: ${s.next.label} ${fmtLocal(new Date(s.next.start_utc))}` : ''}` : '';
+    // 'Next' is only ever a future session: an upstream next that has already started is not shown as next
+    const next = s.next && Date.parse(s.next.start_utc) > Date.now() ? s.next : null;
+    $('[data-cast-updated]').textContent = s.updated_at ? `Updated ${fmtLocal(new Date(s.updated_at))}${next && s.state !== 'live' ? ` · Next: ${next.label} ${fmtLocal(new Date(next.start_utc))}` : ''}` : '';
     if (!s.tower?.length) {
-      tower.innerHTML = `<tr><td colspan="7" class="muted">${s.next ? `Next session: ${esc(s.next.event)} · ${esc(s.next.label)} — ${esc(fmtLocal(new Date(s.next.start_utc)))}` : 'No classification yet.'}</td></tr>`;
+      tower.innerHTML = `<tr><td colspan="7" class="muted">${next ? `Next session: ${esc(next.event)} · ${esc(next.label)} — ${esc(fmtLocal(new Date(next.start_utc)))}` : 'No classification yet.'}</td></tr>`;
     } else {
       tower.innerHTML = s.tower
         .map((r) => {
@@ -160,9 +162,24 @@
         const d = new Date(t.getAttribute('datetime'));
         if (!Number.isNaN(+d)) t.textContent = fmtLocal(d, t.dataset.local);
       }
+      for (const p of $$('.pill[data-until]', root)) if (Date.parse(p.dataset.until) <= Date.now()) p.remove();
       for (const el of $$('[data-countdown]', root)) {
-        const target = Date.parse(el.dataset.countdown);
+        // the build picked the next session; if it has started since, advance through the weekend's remaining sessions,
+        // and when none is left remove the countdown (never a countdown to the past)
+        let queue = [];
+        try { queue = JSON.parse(el.dataset.countdownQueue || '[]'); } catch {}
+        const label = el.previousElementSibling?.matches('[data-countdown-label]') ? el.previousElementSibling : null;
+        let target = Date.parse(el.dataset.countdown);
+        const advance = () => {
+          const nx = queue.find(([, iso]) => Date.parse(iso) > Date.now());
+          if (!nx) { el.hidden = true; if (label) label.hidden = true; return false; }
+          target = Date.parse(nx[1]);
+          if (label) label.textContent = `Next session: ${nx[0]}`;
+          return true;
+        };
+        if (target <= Date.now() && !advance()) continue;
         const tick = () => {
+          if (target <= Date.now() && !advance()) return;
           let s = Math.max(0, Math.floor((target - Date.now()) / 1000));
           const d = Math.floor(s / 86400); s -= d * 86400;
           const h = Math.floor(s / 3600); s -= h * 3600;

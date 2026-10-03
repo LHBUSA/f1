@@ -2,8 +2,9 @@
 // relocated round), the championship with calculated stakes, the circuit's measured layout and its full archive,
 // form and momentum, teammate battles, constructor form, and descriptive Circuit Fit with its components.
 // Nothing from the weekend's own sessions is used and nothing is predicted. Stale once the race starts.
-import { Packet, posText, pts, fmtDay, countWord, ordinal } from './packet.mjs';
+import { Packet, posText, pts, countWord, ordinal } from './packet.mjs';
 import { loadGeometry, layoutMetrics } from './geometry.mjs';
+import { temporalFrame, venueDay } from './temporal.mjs';
 import * as M from '../intel/metrics.mjs';
 
 export const PREVIEW_VERSION = 'f1-preview@2.0.0';
@@ -17,7 +18,7 @@ function pointsScale(X, season) {
 }
 const pct = (s) => s.replace(/(\d+)th pct/, (m, n) => `${ordinal(Number(n))} percentile`);
 
-export function previewPacket(X, eventId, { asOf = new Date().toISOString() } = {}) {
+export function previewPacket(X, eventId, { asOf = new Date().toISOString(), publishedAt = asOf } = {}) {
   const ev = X.event[eventId];
   if (!ev || ev.status === 'canceled') return { ok: false, reason: 'unknown_or_canceled' };
   const race = X.session(eventId, 'race');
@@ -34,9 +35,10 @@ export function previewPacket(X, eventId, { asOf = new Date().toISOString() } = 
   P.fact('event', title, title, 'Event', 'projection: events');
   P.entity('race', 'race', ev.id, title);
   P.fact('round', ev.round, `round ${ev.round}`, 'Championship round', 'projection: events');
-  P.fact('race_date', race.start_utc, fmtDay(race.start_utc), 'Race start', 'projection: sessions');
+  P.fact('race_date', race.start_utc, venueDay(race.start_utc, ev.circuit_id), 'Race date (venue-local calendar day)', 'projection: sessions');
+  P.context.temporal = temporalFrame(X, eventId, 'preview', publishedAt);
   const q = X.session(eventId, 'qualifying');
-  if (q?.start_utc) P.fact('quali_date', q.start_utc, fmtDay(q.start_utc), 'Qualifying', 'projection: sessions');
+  if (q?.start_utc) P.fact('quali_date', q.start_utc, venueDay(q.start_utc, ev.circuit_id), 'Qualifying date (venue-local calendar day)', 'projection: sessions');
   if (race.laps_scheduled) P.fact('laps', race.laps_scheduled, `${race.laps_scheduled} laps`, 'Scheduled race distance', 'projection: sessions');
   if (ev.sprint) P.signal('sprint_weekend');
   const circ = X.circuit[ev.circuit_id];
@@ -47,7 +49,7 @@ export function previewPacket(X, eventId, { asOf = new Date().toISOString() } = 
     const o = X.event[ev.relocated_from.event_id];
     P.entity('orig_race', 'race', ev.relocated_from.event_id, `${o?.season} ${o?.name}`.trim());
     if (X.circuit[ev.relocated_from.original_circuit_id]) P.entity('orig_circuit', 'circuit', ev.relocated_from.original_circuit_id, X.circuit[ev.relocated_from.original_circuit_id].name);
-    if (o?.start_utc) P.fact('orig_date', o.start_utc, fmtDay(o.start_utc), 'Original date of the relocated round', 'projection: events');
+    if (o?.start_utc) P.fact('orig_date', o.start_utc, venueDay(o.start_utc, o.circuit_id), 'Original date of the relocated round', 'projection: events');
     P.fact('gp_title', ev.name.replace(/ in .+$/, ''), ev.name.replace(/ in .+$/, ''), 'Grand Prix title of the relocated round', 'projection: events (relocation link)');
     P.signal('relocated', { from: ev.relocated_from.event_id });
   }

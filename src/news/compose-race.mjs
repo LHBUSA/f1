@@ -1,7 +1,7 @@
 // Narrative composer for RACE FINALS. Built only from the frozen packet; describes what the classification, the
 // standings and our archive show. It never narrates lap-by-lap order it does not have, never assigns causes, and never
 // predicts. Tokens: {f:id} fact, {e:key} link, {s:key} surname.
-export const RACE_COMPOSER_VERSION = 'f1-compose-race@2.0.0';
+export const RACE_COMPOSER_VERSION = 'f1-compose-race@2.1.0';
 
 export function composeRaceFinal(P) {
   const has = (...ids) => ids.every((id) => P.facts.some((f) => f.id === id) || P.entities.some((x) => x.key === id));
@@ -132,7 +132,8 @@ export function composeRaceFinal(P) {
 
   // ---------- next + follow ----------
   section('Follow the championship', [join(
-    has('next', 'next_date') ? 'The season moves on to the {e:next}, which starts on {f:next_date}.' : null,
+    // next round in calendar order; tense follows whether its race had started when this story was first published
+    has('next', 'next_race_start') ? (P.context.temporal?.next_race_state === 'upcoming' ? 'The season moves on to the {e:next}, where the race starts on {f:next_race_start}.' : 'The next round on the calendar was the {e:next}, raced on {f:next_race_start}.') : null,
     'The {e:race} page has every session, the {e:page_standings} page the updated table, and {e:page_intel} the form, team and DNA view of the grid, including {e:page_teammates}.',
   )]);
 

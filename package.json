@@ -10,7 +10,7 @@
     "enrich": "node scripts/enrich-wikidata.mjs",
     "derive": "node scripts/derive.mjs",
     "pipeline": "node scripts/normalize.mjs && node scripts/enrich-wikidata.mjs && node scripts/derive.mjs",
-    "build": "node scripts/fetch-dataset.mjs && node scripts/normalize.mjs --assemble-only && node scripts/derive.mjs && node scripts/verify-media.mjs && node scripts/build-projection.mjs && node scripts/build-news.mjs && node scripts/build-site.mjs && node scripts/guard-source-brand.mjs && node scripts/publish-projection.mjs",
+    "build": "node scripts/fetch-dataset.mjs && node scripts/normalize.mjs --assemble-only && node scripts/derive.mjs && node scripts/verify-media.mjs && node scripts/build-projection.mjs && node scripts/build-news.mjs && node scripts/build-site.mjs && node scripts/temporal-qa.mjs && node scripts/guard-source-brand.mjs && node scripts/publish-projection.mjs",
     "serve": "node scripts/serve.mjs",
     "qa:browser": "node scripts/qa-browser.mjs",
     "guard": "node scripts/guard-source-brand.mjs",

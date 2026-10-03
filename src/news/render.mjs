@@ -1,6 +1,20 @@
 // Article page rendering (static HTML in the site's design system). Charts are SVG data visualisations built from the
 // packet's chart data; text comes from validated token drafts. Nothing here adds a fact.
 import { segments, render as renderPlain, resolveHref } from './validate.mjs';
+import { venueDay } from './temporal.mjs';
+
+// Archive frame shown under the dateline: a story first published after its session (backfill), or a preview whose
+// race has since started. States the publication moment against the event moment; never backdates.
+export function archiveNote(a) {
+  const tf = a.packet.context.temporal;
+  if (!a.archive || !tf) return '';
+  const circ = a.packet.entities.find((x) => x.key === 'circuit')?.ref;
+  const day = (iso) => venueDay(iso, circ);
+  const pub = new Date(a.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  if (a.archive === 'expired_preview') return `Archived preview: written before the race, which was held on ${day(tf.race_start)}. The result is on the race page.`;
+  if (a.class === 'qualifying') return `Archive report, published ${pub} after the race of ${day(tf.race_start)}. It describes the picture at the end of qualifying on ${day(tf.qualifying_start)}.`;
+  return `Archive report, published ${pub}. It describes the race of ${day(tf.race_start)} and the championship as it stood after it.`;
+}
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 export const CLASS_LABEL = { race_final: 'Race final', qualifying: 'Qualifying', preview: 'Race preview', sprint_final: 'Sprint final', circuit_intel: 'Circuit intelligence', driver_intel: 'Driver intelligence', teammate_battle: 'Teammate battle', championship: 'Championship update' };
@@ -85,10 +99,11 @@ export function articlePage(a, { linkOk, related = [], site }) {
   const body = `<nav class="crumbs ncrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/news">News</a><span class="sep">/</span><span aria-current="page">${esc(CLASS_LABEL[a.class] || 'Story')}</span></nav>
 <article class="narticle">
   <header class="nhero wrap">
-    <span class="eyebrow">${esc(CLASS_LABEL[a.class] || 'Story')}${a.status !== 'published' ? ` · ${esc(a.status.toUpperCase())}` : ''}</span>
+    <span class="eyebrow">${a.archive ? 'Archive · ' : ''}${esc(CLASS_LABEL[a.class] || 'Story')}${a.status !== 'published' ? ` · ${esc(a.status.toUpperCase())}` : ''}</span>
     <h1>${html(d.headline, P, () => false)}</h1>
     <p class="ndek">${html(d.dek, P, linkOk)}</p>
-    <p class="nmeta"><span>By the PropBetEdge F1 Desk</span> · <time datetime="${esc(a.published_at)}">${esc(new Date(a.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }))}</time>${a.modified_at && a.modified_at !== a.published_at ? ` · updated <time datetime="${esc(a.modified_at)}">${esc(new Date(a.modified_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }))}</time>` : ''}</p>
+    <p class="nmeta"><span>By the PropBetEdge F1 Desk</span> · <time datetime="${esc(a.published_at)}">${esc(new Date(a.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }))}</time>${a.modified_at && a.modified_at !== a.published_at ? ` · updated <time datetime="${esc(a.modified_at)}">${esc(new Date(a.modified_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }))}</time>` : ''}</p>${archiveNote(a) ? `
+    <p class="note narchive">${esc(archiveNote(a))}</p>` : ''}
     <div class="nchips">${chips}</div>
     <img class="ncard" src="/news/cards/${esc(a.slug)}.webp" width="1200" height="630" alt="${esc(hl)}" decoding="async" fetchpriority="low">
   </header>

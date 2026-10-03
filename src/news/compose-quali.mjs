@@ -1,6 +1,6 @@
 // Narrative composer for QUALIFYING recaps. Describes the session as classified (positions, segment times, cut
 // lines) and what it means for the race and the standings, without predicting the race.
-export const QUALI_COMPOSER_VERSION = 'f1-compose-quali@2.0.0';
+export const QUALI_COMPOSER_VERSION = 'f1-compose-quali@2.1.0';
 
 export function composeQualifying(P) {
   const has = (...ids) => ids.every((id) => P.facts.some((f) => f.id === id) || P.entities.some((x) => x.key === id));
@@ -96,10 +96,22 @@ export function composeQualifying(P) {
   section('The circuit and the data', data);
 
   section('Qualifying classification', ['The full order with every segment time, as published.'], { module: 'quali_table' });
-  section("What's next", [join(
-    has('race_date') ? 'The race starts on {f:race_date}.' : null,
-    'Results land on the {e:race} page, {e:page_pbecast} follows the session live, and the standings, form and teammate views sit in {e:page_standings}, {e:page_form} and {e:page_teammates}.',
+  // tense follows the race state at the story's first publication (packet.context.temporal), never the build clock
+  const raceState = P.context.temporal?.race_state;
+  const views = 'the standings, form and teammate views sit in {e:page_standings}, {e:page_form} and {e:page_teammates}.';
+  if (raceState === 'completed') section('Race result', [join(
+    has('race_date') ? 'The race was held on {f:race_date}.' : null,
+    'The full result is on the {e:race} page, and ' + views,
   )]);
+  else if (raceState === 'live') section('The race', [join(
+    'The race is underway: results land on the {e:race} page as they are published and {e:page_pbecast} follows it live.',
+    'Meanwhile ' + views,
+  )]);
+  else if (raceState === 'upcoming') section("What's next", [join(
+    has('race_date') ? 'The race starts on {f:race_date}.' : null,
+    'Results land on the {e:race} page, {e:page_pbecast} follows the session live, and ' + views,
+  )]);
+  else if (raceState !== 'cancelled') section('Follow the championship', ['Every session is on the {e:race} page, and ' + views]);
 
   const headline = leaderCut ? '{e:q1} takes {f:event} pole as championship leader {s:cut} goes out in {f:cut_segment}' : lock ? '{e:q1} leads a {e:q1_team} front-row lockout at the {f:event}' : '{e:q1} takes pole for the {f:event}';
   return {

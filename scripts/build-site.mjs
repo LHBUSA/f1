@@ -17,7 +17,7 @@ import { powertrainFor } from '../src/identity/powertrain.mjs';
 import { loadOwnership, ownershipForTeam, personProfileV2 } from '../src/identity/people-v2.mjs';
 import { driverProfileHtml } from './site/people.mjs';
 
-const DIST = path.resolve('dist');
+const DIST = path.resolve(process.env.F1_DIST || 'dist'); // F1_DIST: build elsewhere (QA beside a served dist)
 const t0 = Date.now();
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(path.join(DIST, 'assets/fonts'), { recursive: true });
@@ -176,10 +176,10 @@ const nf = layout({ path: '/404', title: 'Page not found', description: 'Page no
 fs.writeFileSync(path.join(DIST, '404.html'), nf);
 
 // sitemap + robots
-const today = new Date().toISOString().slice(0, 10);
-fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `<url><loc>${SITE}${p.path === '/' ? '/' : p.path}</loc><lastmod>${p.lastmod || today}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `<url><loc>${SITE}${p.path === '/' ? '/' : p.path}</loc>${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`);
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\nSitemap: ${SITE}/news-sitemap.xml\n`);
 console.log(`built ${pages} pages (${sitemap.length} indexable) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+if (ctx.staleSessions.length) console.log(`source-state diagnostic: ${ctx.staleSessions.length} session(s) past their start but not completed (never shown as next/upcoming): ${ctx.staleSessions.slice(0, 8).join(", ")}`);
 
 // ---------- static content pages ----------
 function methodology(ctx) {

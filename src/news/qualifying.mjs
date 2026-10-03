@@ -1,9 +1,11 @@
 // QUALIFYING packet: the qualifying classification as of the end of the session (never the race that followed), the
 // knockout cut lines, teammate gaps, and what pole has meant at this circuit in our archive.
-import { Packet, posText, pts, fmtLap, secs, fmtDay, countWord, ordinal } from './packet.mjs';
+import { Packet, posText, pts, fmtLap, secs, countWord, ordinal } from './packet.mjs';
 import { addStakes, addArchive, addDna, addPages, addBattle } from './context.mjs';
+import { temporalFrame, venueDay } from './temporal.mjs';
 
-export function qualifyingPacket(X, eventId, { asOf = new Date().toISOString() } = {}) {
+// publishedAt = the story's frozen first-publication time (this build's time for a first publication): the copy's frame.
+export function qualifyingPacket(X, eventId, { asOf = new Date().toISOString(), publishedAt = asOf } = {}) {
   const ev = X.event[eventId];
   const qs = X.session(eventId, 'qualifying');
   const rows = X.rows(eventId, 'qualifying').filter((r) => r.position);
@@ -15,7 +17,7 @@ export function qualifyingPacket(X, eventId, { asOf = new Date().toISOString() }
   P.fact('event', title, title, 'Event', 'projection: events');
   P.entity('race', 'race', ev.id, title);
   P.fact('round', ev.round, `round ${ev.round}`, 'Championship round', 'projection: events');
-  P.fact('quali_date', qs.start_utc, fmtDay(qs.start_utc), 'Qualifying date', 'projection: sessions');
+  P.fact('quali_date', qs.start_utc, venueDay(qs.start_utc, ev.circuit_id), 'Qualifying date (venue-local calendar day)', 'projection: sessions');
   const circ = X.circuit[ev.circuit_id];
   if (circ) P.entity('circuit', 'circuit', circ.id, circ.name);
 
@@ -135,46 +137,10 @@ export function qualifyingPacket(X, eventId, { asOf = new Date().toISOString() }
   addPages(P, ev.season, ev.id);
 
   const race = X.session(eventId, 'race');
-  if (race?.start_utc) P.fact('race_date', race.start_utc, fmtDay(race.start_utc), 'Race start', 'projection: sessions');
+  if (race?.start_utc) P.fact('race_date', race.start_utc, venueDay(race.start_utc, ev.circuit_id), 'Race date (venue-local calendar day)', 'projection: sessions');
+  P.context.temporal = temporalFrame(X, eventId, 'qualifying', publishedAt);
   P.chart('quali_table', { title: 'Qualifying classification', kind: 'table', rows: rows.map((r) => ({ pos: r.position, driver_id: r.driver_id, name: D(r.driver_id)?.name, team_id: r.constructor_id, team: C(r.constructor_id)?.name, q1: fmtLap(r.q1_ms), q2: fmtLap(r.q2_ms), q3: fmtLap(r.q3_ms), best: fmtLap(r.best_lap_ms) })) });
   P.chart('quali_gaps', { title: 'Gap to pole, top ten', kind: 'bars', rows: rows.filter((r) => r.best_lap_ms && r.position <= 10).map((r) => ({ driver_id: r.driver_id, code: D(r.driver_id)?.code, color: C(r.constructor_id)?.color || null, value_ms: r.best_lap_ms - pole.best_lap_ms })) });
   P.limit('Sector times, tyre choices and track conditions are not sourced. The starting grid can differ from qualifying when penalties apply; this story describes qualifying only.');
   return { ok: true, packet: P.freeze() };
-}
-
-const pick = (P, key, variants) => { let h = 0; for (const c of P.hash + key) h = (h * 31 + c.charCodeAt(0)) >>> 0; return variants[h % variants.length]; };
-
-export function writeQualifying(P) {
-  const has = (...ids) => ids.every((id) => P.facts.some((f) => f.id === id) || P.entities.some((x) => x.key === id));
-  const sig = (n) => P.context.signals.find((s) => s.name === n);
-  const val = (id) => P.facts.find((f) => f.id === id)?.value;
-  const S = [];
-  const lock = sig('front_row_lockout');
-  const headline = lock ? '{e:q1} leads a {e:q1_team} front-row lockout at the {f:event}' : '{e:q1} takes pole for the {f:event}';
-  const dek = `{s:q1} set {f:q1_lap}${has('pole_gap', 'q2') ? ', {f:pole_gap} clear of {e:q2}' : ''}.${has('leader', 'leader_pos') ? ' Championship leader {e:leader} qualified {f:leader_pos}.' : ''}`;
-  S.push({ heading: '', paragraphs: [
-    `{e:q1} took pole position for the {f:event} with {f:q1_lap} for {e:q1_team}. It is {s:q1}'s {f:season_poles}.`,
-    has('q2') ? `{e:q2} qualified {f:q2_pos}${has('pole_gap') ? ', {f:pole_gap} behind' : ''}${lock ? ' to complete the front row for the same team' : ''}${has('q3') ? ', with {e:q3} {f:q3_pos}' + (has('p3_gap') ? ' at {f:p3_gap}' : '') : ''}.` : null,
-  ].filter(Boolean) });
-  const shape = [];
-  if (sig('tight_pole')) shape.push('The margin at the front was {f:pole_gap}.');
-  else if (sig('clear_pole')) shape.push('A pole margin of {f:pole_gap} is a clear gap by qualifying standards in our archive.');
-  if (has('mate', 'mate_pos')) shape.push(`Teammate {e:mate} qualified {f:mate_pos}${has('mate_gap') ? ', {f:mate_gap} slower in the deepest segment both completed' : ''}.`);
-  if (has('cut', 'cut_segment', 'cut_pos')) shape.push(`{e:cut}, {f:cut_champ_pos} in the championship before the weekend, was eliminated in {f:cut_segment} at {e:circuit} and qualified {f:cut_pos}.`);
-  if (has('leader', 'leader_pos') && !has('cut')) shape.push('Championship leader {e:leader} qualified {f:leader_pos} for the {f:event}.');
-  else if (sig('leader_on_pole')) shape.push('{s:q1} arrived at {e:circuit} leading the championship and leaves qualifying on pole for {f:round}.');
-  if (shape.length) S.push({ heading: 'How qualifying shaped up', paragraphs: [shape.join(' ')] });
-  const data = [];
-  if (has('pole_dna_q')) data.push(pick(P, 'qdna', ['Pole at {e:circuit} comes from a driver at the {f:pole_dna_q} for Qualifying Pace in the {f:dna_window} Driver DNA window, which measures each driver against a teammate.', 'In Driver DNA ({f:dna_window} window), {s:q1} sits at the {f:pole_dna_q} for Qualifying Pace; this {e:circuit} lap adds to that teammate-relative record.', "{s:q1}'s Qualifying Pace percentile in Driver DNA is {f:pole_dna_q} over the {f:dna_window} window; the {f:event} pole is one more sample in it."]));
-  if (has('circuit_pole_win')) data.push(`At {e:circuit}, pole has converted {f:circuit_pole_win} of the time in the Circuit DNA sample${has('circuit_rho') ? ', and the grid-to-finish rank correlation is {f:circuit_rho}' : ''}. That is history, not a forecast for this race.`);
-  if (data.length) S.push({ heading: 'What the data says', paragraphs: [data.join(' ')], module: P.charts.includes('quali_gaps') ? 'quali_gaps' : null });
-  S.push({ heading: 'Qualifying classification', paragraphs: ['The full order with each segment time, as published.'], module: 'quali_table' });
-  if (has('race_date')) S.push({ heading: "What's next", paragraphs: ['The race starts on {f:race_date}; follow it live on the {e:race} page and in PBEcast.'] });
-  return {
-    headline, dek, sections: S,
-    seo_title: '{s:q1} on pole for the {f:event}',
-    seo_description: `{e:q1} took pole for the {f:event} with {f:q1_lap}. Full qualifying order, gaps and what pole means at {e:circuit}.`,
-    social_headline: headline,
-    link_intents: P.entities.map((x) => x.key),
-  };
 }

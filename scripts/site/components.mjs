@@ -146,11 +146,15 @@ export function sessionList(ctx, ev) {
     .join('');
 }
 
-export function statusPill(ev) {
+// 'Upcoming' only while the weekend is still ahead: never for an event whose end has passed (a source state that did
+// not advance), and the client drops it once its end passes between builds (data-until, app.js).
+export function statusPill(ev, now = Date.now()) {
   if (ev.status === 'completed') return '<span class="pill pill-done">Final</span>';
   if (ev.status === 'live' || ev.status === 'in_progress') return '<span class="pill pill-live">Race weekend</span>';
   if (ev.status === 'canceled') return '<span class="pill pill-cancel">Cancelled</span>';
-  return '<span class="pill">Upcoming</span>';
+  const end = ev.end_utc || ev.start_utc;
+  if (end && Date.parse(end) <= now) return '';
+  return `<span class="pill"${end ? ` data-until="${esc(end)}"` : ''}>Upcoming</span>`;
 }
 
 export { fmtNum, ordinal };
@@ -161,4 +165,10 @@ export function trendCell(t) {
   if (t.state === 'down') return `<span class="loss" title="Lost ${-t.delta} championship position${t.delta < -1 ? 's' : ''} since previous round" aria-label="Down ${-t.delta}">↓ ${-t.delta}</span>`;
   if (t.state === 'same') return '<span class="same" title="No position change since previous round" aria-label="No position change since previous round">—</span>';
   return `<span class="na" title="${esc(t.reason || 'Trend unavailable')}" aria-label="Trend unavailable">n/a</span>`;
+}
+
+// Sessions of a weekend still AHEAD at `now`: not completed/cancelled and starting in the future. A session whose
+// source state never advanced past 'scheduled' after its start is not ahead (never labelled Next).
+export function sessionsAhead(sessions, now) {
+  return [...(sessions || [])].filter((s) => s.start_utc && s.state !== 'completed' && s.state !== 'canceled' && Date.parse(s.start_utc) > now).sort((a, b) => Date.parse(a.start_utc) - Date.parse(b.start_utc));
 }

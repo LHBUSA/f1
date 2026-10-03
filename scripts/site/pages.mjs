@@ -1,5 +1,5 @@
 import { esc, fmtPts, fmtMs, ordinal, teamClass, headshot, flag, crumbs, jsonLdBreadcrumb, lineChart, fmtDate, timeTag, pct, SITE, fmtNum, teamMark } from './lib.mjs';
-import { driverCell, teamLink, sessionTable, standingsTable, dnaPanel, battleCard, fitList, sessionList, statusPill } from './components.mjs';
+import { driverCell, teamLink, sessionTable, standingsTable, dnaPanel, battleCard, fitList, sessionList, statusPill, sessionsAhead } from './components.mjs';
 import { SESSION_LABEL } from '../../src/core/normalize.mjs';
 
 const age = (dob) => {
@@ -20,13 +20,15 @@ export function home(ctx) {
   const season = ctx.currentSeason;
   const last = ctx.lastCompleted;
   const circuit = ev ? ctx.circuitById[ev.circuit_id] : null;
-  const nextSession = ev ? [...(ctx.sessionsByEvent[ev.id] || [])].filter((s) => s.state !== 'completed' && s.state !== 'canceled').sort((a, b) => a.start_utc.localeCompare(b.start_utc))[0] : null;
+  const ahead = ev ? sessionsAhead(ctx.sessionsByEvent[ev.id], ctx.now) : [];
+  const nextSession = ahead[0] || null;
+  const queue = esc(JSON.stringify(ahead.map((s) => [SESSION_LABEL[s.type] || s.type, s.start_utc])));
   const gp = ev
     ? `<section class="section"><div class="wrap"><div class="card gp" data-next-event="${esc(ev.slug)}">
       <div class="gp-main"><span class="eyebrow">Round ${ev.round} · ${season} · Next Grand Prix</span>
         <h2>${esc(ev.name)}</h2>
         <div class="hero-meta"><span><b>Circuit</b><a href="${ctx.circuitUrl(ev.circuit_id)}">${esc(ctx.circuitName(ev.circuit_id))}</a></span><span><b>Where</b>${esc([circuit?.locality, circuit?.country].filter(Boolean).join(', '))}</span><span><b>Format</b>${ev.sprint ? 'Sprint weekend' : 'Conventional'}</span></div>
-        ${nextSession ? `<p class="kicker">Next session: ${esc(SESSION_LABEL[nextSession.type])}</p><div class="countdown" data-countdown="${esc(nextSession.start_utc)}" aria-live="off"><div><b data-d>–</b><span>Days</span></div><div><b data-h>–</b><span>Hrs</span></div><div><b data-m>–</b><span>Min</span></div><div><b data-s>–</b><span>Sec</span></div></div>` : ''}
+        ${nextSession ? `<p class="kicker" data-countdown-label>Next session: ${esc(SESSION_LABEL[nextSession.type])}</p><div class="countdown" data-countdown="${esc(nextSession.start_utc)}" data-countdown-queue="${queue}" aria-live="off"><div><b data-d>–</b><span>Days</span></div><div><b data-h>–</b><span>Hrs</span></div><div><b data-m>–</b><span>Min</span></div><div><b data-s>–</b><span>Sec</span></div></div>` : ''}
         <p class="fine" data-weather="${esc(circuit?.slug || '')}" data-weather-from="${esc(ev.start_utc)}" data-weather-to="${esc(ev.end_utc || ev.start_utc)}"></p>
         <p><a class="more" href="${ctx.raceUrl(ev.id)}">Race weekend hub</a></p>
       </div>
@@ -125,7 +127,7 @@ export function racesIndex(ctx, season, isMain) {
     .map((e) => {
       const w = winnerOf(ctx, e.id);
       const p = poleOf(ctx, e.id);
-      return `<tr><td class="pos">${e.round ?? '—'}</td><td><a href="${ctx.raceUrl(e.id)}"><b>${esc(e.name)}</b></a><div class="fine">${esc(ctx.circuitName(e.circuit_id))}</div></td><td>${esc(fmtDate(e.end_utc || e.start_utc))}</td><td>${statusPill(e)}${e.sprint ? ' <span class="pill pill-sprint">Sprint</span>' : ''}</td><td>${w ? driverCell(ctx, w.driver_id, w.constructor_id, season) : '—'}</td><td>${p ? driverCell(ctx, p.driver_id, p.constructor_id, season) : '—'}</td></tr>`;
+      return `<tr><td class="pos">${e.round ?? '—'}</td><td><a href="${ctx.raceUrl(e.id)}"><b>${esc(e.name)}</b></a><div class="fine">${esc(ctx.circuitName(e.circuit_id))}</div></td><td>${esc(fmtDate(e.end_utc || e.start_utc))}</td><td>${statusPill(e, ctx.now)}${e.sprint ? ' <span class="pill pill-sprint">Sprint</span>' : ''}</td><td>${w ? driverCell(ctx, w.driver_id, w.constructor_id, season) : '—'}</td><td>${p ? driverCell(ctx, p.driver_id, p.constructor_id, season) : '—'}</td></tr>`;
     })
     .join('');
   const path = isMain ? '/races' : `/seasons/${season}`;
@@ -204,7 +206,7 @@ export function racePage(ctx, ev) {
   const breadcrumb = [['/', 'Home'], ['/races', 'Races'], [ev.season === ctx.currentSeason ? '/races' : `/seasons/${ev.season}`, String(ev.season)], [`/races/${ev.slug}`, ev.name]];
   const body = `${crumbs(breadcrumb)}
   <section class="hero"><div class="wrap"><span class="eyebrow">Round ${ev.round ?? '—'} · ${ev.season} ${ev.sprint ? '· Sprint weekend' : ''}</span><h1>${esc(ev.name)}</h1>
-  <div class="hero-meta"><span><b>Circuit</b><a href="${ctx.circuitUrl(ev.circuit_id)}">${esc(ctx.circuitName(ev.circuit_id))}</a></span><span><b>Location</b>${esc([c?.locality, c?.country].filter(Boolean).join(', '))}</span><span><b>Dates</b>${esc(fmtDate(ev.start_utc, false))} – ${esc(fmtDate(ev.end_utc || ev.start_utc))}</span><span>${statusPill(ev)}</span></div>
+  <div class="hero-meta"><span><b>Circuit</b><a href="${ctx.circuitUrl(ev.circuit_id)}">${esc(ctx.circuitName(ev.circuit_id))}</a></span><span><b>Location</b>${esc([c?.locality, c?.country].filter(Boolean).join(', '))}</span><span><b>Dates</b>${esc(fmtDate(ev.start_utc, false))} – ${esc(fmtDate(ev.end_utc || ev.start_utc))}</span><span>${statusPill(ev, ctx.now)}</span></div>
   ${ev.official_name !== ev.name ? `<p class="fine">Official event name: ${esc(ev.official_name)}</p>` : ''}
   ${ctx.relocations?.[ev.slug] ? `<p class="note">${esc(ctx.relocations[ev.slug].text)} <a href="/races/${esc(ctx.relocations[ev.slug].orig_id)}">Original round</a></p>` : ''}</div></section>
   ${facts ? `<section class="section"><div class="wrap">${facts}</div></section>` : ''}
@@ -227,7 +229,7 @@ export function racePage(ctx, ev) {
       name: `${ev.season} ${ev.name}`,
       startDate: ev.start_utc,
       endDate: ev.end_utc || ev.start_utc,
-      eventStatus: ev.status === 'canceled' ? 'https://schema.org/EventCancelled' : 'https://schema.org/EventScheduled',
+      ...(ev.status === 'canceled' ? { eventStatus: 'https://schema.org/EventCancelled' } : ev.status === 'completed' || Date.parse(ev.end_utc || ev.start_utc) <= ctx.now ? {} : { eventStatus: 'https://schema.org/EventScheduled' }),
       sport: 'Formula One',
       location: { '@type': 'Place', name: ctx.circuitName(ev.circuit_id), address: [c?.locality, c?.country].filter(Boolean).join(', '), ...(c?.lat != null ? { geo: { '@type': 'GeoCoordinates', latitude: c.lat, longitude: c.lon } } : {}) },
       url: SITE + `/races/${ev.slug}`,
