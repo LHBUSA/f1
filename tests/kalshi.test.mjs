@@ -58,6 +58,8 @@ test('kalshi: field market renders a ranked driver list (top 8 by Mid-market)', 
   });
   assert.match(html, /2 more traded contracts on Kalshi/);
   assert.match(html, /not sportsbook odds and not a PropBetEdge model/);
+  assert.match(html, /Market Pulse/);
+  assert.match(html, /Live prediction-market pricing — no sportsbook line required/);
   // no inline style attribute on the field layout (the F1 CSP has no 'unsafe-inline' for styles)
   assert.doesNotMatch(html, /style="/);
   const strip = kalshiStrip(fieldEntry(), { placement: 'pbecast-strip' });
@@ -76,8 +78,8 @@ test('kalshi: CSP connect-src allows the PropSports markets host', () => {
 
 // sha256 of the canonical shared files (propbetedge-workers/workers/propsports-markets/client), LF-normalised
 const VENDOR_SHA = {
-  'kalshi-market-ui.js': '6f1c1244403f078da96182c7658e0f3da3e3777ccffa80b834257245a2aa2d81',
-  'kalshi-market-ui.css': '43cbdcc9313a82618c38bd3998e020943e0db2031b95ed34ef566e91883901fd',
+  'kalshi-market-ui.js': '0f03224b086e11967329e2a4666ef5327e335fbb32ae251a31a2a543b30e1952',
+  'kalshi-market-ui.css': '572d18127bf6ce357e50b4320e0d98d83b07aa3d6bfb1e1c04c43bee4f009f98',
   'kalshi-market-client.js': '653cb0fc2673f909552453052560bfd6194e0e4d045c51b1eb73483957d4c049',
 };
 const lf = (f) => fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
