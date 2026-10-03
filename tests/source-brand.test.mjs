@@ -27,3 +27,10 @@ test('public /replay rows carry the public session id only (no upstream key)', a
   assert.ok(!('upstream' in body.sessions[0]));
   assert.doesNotMatch(JSON.stringify(body), /999|espn/i);
 });
+
+test('every public JSON object response carries data_source: PropSports', async () => {
+  const { default: api } = await import('../workers/f1-api/src/index.js');
+  const env = { DATA: { get: async () => null, list: async () => ({ delimitedPrefixes: [] }) } };
+  const res = await api.fetch(new Request('https://f1-api.propbetedge.ai/v1/f1/replay'), env, { waitUntil() {} });
+  assert.equal((await res.json()).data_source, 'PropSports');
+});

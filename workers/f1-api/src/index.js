@@ -14,18 +14,20 @@ export { LiveHub };
 
 const ALLOWED_ORIGINS = new Set(['https://f1.propbetedge.ai', 'https://propsports.proptechusa.ai', 'http://127.0.0.1:4173', 'http://localhost:4173']);
 
+// PropSports data contract: every JSON object response names PropSports as its data source (network standard).
+const contract = (data) => (data && typeof data === 'object' && !Array.isArray(data) && !('data_source' in data) ? { data_source: 'PropSports', ...data } : data);
 function respond(req, data, { status = 200, cache = 'public, max-age=300' } = {}) {
   const origin = req.headers.get('origin');
   const h = { 'content-type': 'application/json; charset=utf-8', 'cache-control': cache, vary: 'Origin', 'x-propsports-service': 'f1' };
   if (origin && ALLOWED_ORIGINS.has(origin)) h['access-control-allow-origin'] = origin;
-  return new Response(JSON.stringify(data), { status, headers: h });
+  return new Response(JSON.stringify(contract(data)), { status, headers: h });
 }
 // premium/session-bound responses: never shared caches, credentials allowed only for the F1 site origin
 function respondPrivate(req, data, status = 200) {
   const origin = req.headers.get('origin');
   const h = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store', vary: 'Origin, Cookie', 'x-propsports-service': 'f1', 'x-robots-tag': 'noindex' };
   if (origin && ALLOWED_ORIGINS.has(origin)) { h['access-control-allow-origin'] = origin; h['access-control-allow-credentials'] = 'true'; }
-  return new Response(JSON.stringify(data), { status, headers: h });
+  return new Response(JSON.stringify(contract(data)), { status, headers: h });
 }
 const FREE_WINDOW_MS = 8 * 60e3;
 const sessionsMemo = { at: 0, list: null };
