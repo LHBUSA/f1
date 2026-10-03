@@ -429,7 +429,14 @@ body[data-pc-tier=all_access] .pc-acct{color:var(--gold);border-color:#ffcf5c66}
 .pc-track canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:pointer}
 .pc-track canvas[data-flag=caution]{box-shadow:inset 0 0 0 2px #ffd23f99}.pc-track canvas[data-flag=red]{box-shadow:inset 0 0 0 3px #ff2d55cc}
 .pc-nogeo{position:absolute;inset:0;display:grid;place-items:center;padding:20px;text-align:center;color:var(--muted)}
-.pc-gapnote{position:absolute;left:10px;bottom:10px;font:600 12px var(--display);letter-spacing:.06em;color:var(--yellow);background:#0b0d12cc;padding:4px 8px;border-radius:4px}
+.pc-hud{position:absolute;left:10px;top:10px;right:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-start;pointer-events:none}
+.pc-hud[hidden]{display:none}
+.pc-hud>span{font:700 12px var(--display);letter-spacing:.1em;text-transform:uppercase;font-variant-numeric:tabular-nums;color:var(--ink);background:#0b0d12e0;border:1px solid var(--line2);padding:3px 8px;border-radius:4px;white-space:nowrap}
+.pc-hud>span[hidden]{display:none}
+.pc-hud-main b{color:var(--gold,#ffcf5c);font-weight:800}.pc-hud[data-mode=live] .pc-hud-main b{color:#ff8fa3}
+.pc-hud-flag[data-flag=green]{color:#3ddc84;border-color:#3ddc8455}.pc-hud-flag[data-flag=caution]{color:var(--yellow);border-color:#ffd23f88}.pc-hud-flag[data-flag=red]{color:#ff8fa3;border-color:#ff2d55aa}
+.pc-hud-gap{color:var(--yellow)!important;border-style:dashed!important;border-color:#ffd23f88!important}
+@media(max-width:480px){.pc-hud{left:8px;top:8px;right:8px;gap:4px}.pc-hud>span{font-size:11px;padding:2px 6px}}
 .pc-method{margin-top:8px}
 .pc-driver{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel)}
 .pc-dbadge{font:800 12px var(--display);padding:2px 6px;border-radius:3px;background:var(--tc);color:#0b0d12}
@@ -463,8 +470,11 @@ input[data-pc-scrub]{width:100%;accent-color:var(--accent)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media(max-width:480px){.pc-row{grid-template-columns:24px 4px 34px minmax(0,1fr) auto auto;gap:6px;padding:5px 8px}body[data-pc-tier=all_access] .pc-row{grid-template-columns:22px 4px 32px 34px repeat(2,minmax(0,1fr)) auto}body[data-pc-tier=all_access] .pc-row .pc-num:nth-of-type(n+3){display:none}}
 .pc-driver[hidden],.pc-state>span:empty,[data-pc-premium][hidden],[data-pc-locked][hidden]{display:none!important}
-.pc-towernote{padding:6px 10px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line)}
-.pc-basis{position:absolute;left:10px;top:10px;font:700 11px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);background:#0b0d12cc;border:1px solid var(--line2);padding:3px 8px;border-radius:4px;pointer-events:none}
+.pc-towernote{padding:6px 10px;font-size:12px;line-height:18px;min-height:31px;box-sizing:border-box;color:var(--muted);border-bottom:1px solid var(--line)}
+.pc-towernote[data-state=replay],.pc-towernote[data-state=live]{font:700 12px/18px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.pc-towernote[data-state=replay] b{color:var(--gold,#ffcf5c)}.pc-towernote[data-state=live] b{color:#ff8fa3}
+.pc-row.is-hover{background:#ffffff10;box-shadow:inset 3px 0 0 var(--tc,#fff)}
+.pc-basis{position:absolute;right:10px;bottom:10px;font:700 11px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);background:#0b0d12cc;border:1px solid var(--line2);padding:3px 8px;border-radius:4px;pointer-events:none}
 /* team hero: the real car (photo is never recoloured; the page accent supports it) */
 .hero.has-car{position:relative}
 .team-car{margin:10px -8px 0;pointer-events:none}
@@ -834,3 +844,4 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 @media(min-width:768px){.mu-gloss dl{grid-template-columns:200px minmax(0,1fr)}.mu-gloss dt{margin-top:0}}
 .h2h-row .lbl small{font-size:10px;letter-spacing:.04em;text-transform:none;margin-left:4px;font-weight:600}
 .mu-hero h1.mu-h1{margin:0 0 18px;text-align:center;font:700 clamp(13px,1.6vw,16px)/1.3 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.mu-hero h1.mu-h1 span{color:var(--faint)}
+.pc-state .pc-mode{min-width:150px;text-align:center;box-sizing:border-box}.pc-state .pc-acct{min-width:104px;text-align:center;box-sizing:border-box}

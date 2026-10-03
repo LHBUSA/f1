@@ -2,13 +2,14 @@
 // All Access (server-enforced): full tower, replay, scrubber, position graph, full feed. The browser never decides
 // entitlement: premium data only arrives from endpoints that verified the network session.
 import { buildModel, progressAt, frameAt, positionHistory, inGap, lapAt } from './progress.js';
+import { layoutLabels, clusters, FAN_MIN } from './track-labels.js';
 
 const D = JSON.parse(document.getElementById('pbecast-data').textContent);
 const $ = (s, r = document) => r.querySelector(s);
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const ID = D.identity, TEAM = (id) => ID.teams[ID.drivers[id]?.team] || null;
 const track = D.geometry;
-const S = { mode: 'idle', frames: [], model: null, T: 0, playing: false, speed: 1, selected: new URLSearchParams(location.search).get('driver'), entitled: false, signedIn: false, session: null, tower: [], events: [], lastOk: 0, failures: 0, polls: 0 };
+const S = { mode: 'idle', frames: [], model: null, T: 0, playing: false, speed: 1, selected: new URLSearchParams(location.search).get('driver'), hover: null, focusAt: 0, sessionType: null, offTrack: [], entitled: false, signedIn: false, session: null, tower: [], events: [], lastOk: 0, failures: 0, polls: 0 };
 const ga = (name, params) => { try { window.gtag?.('event', name, { sport: 'f1', ...params }); } catch {} };
 
 // ---------- network ----------
@@ -36,55 +37,104 @@ function along(frac) {
 }
 
 // ---------- canvas ----------
+// Presentation only. Every car is drawn exactly at its timing-derived point on the track centreline (no lateral
+// offsets: we do not know a car's lateral position). Labels live in their own layer (track-labels.mjs) and may move
+// away from the car with a leader line; dense packs fan their labels outward and draw compact markers on track.
 const cv = $('[data-pc-canvas]'), ctx = cv?.getContext('2d');
-let view = null, layer = null;
+let view = null, layer = null, blocks = [], staticBlocks = [], blocksDirty = true, center = null, trackPx = [];
+const FONT = '"Barlow Condensed", sans-serif';
 function fit() {
   if (!cv || !track) return;
   const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
   cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
   const xs = pts.map((p) => p[0]).concat((track.pit || []).map((p) => p[0])), ys = pts.map((p) => p[1]).concat((track.pit || []).map((p) => p[1]));
-  const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys), pad = 28 * dpr;
-  const k = Math.min((cv.width - 2 * pad) / (maxx - minx), (cv.height - 2 * pad) / (maxy - miny));
-  const ox = (cv.width - (maxx - minx) * k) / 2, oy = (cv.height - (maxy - miny) * k) / 2;
-  view = { dpr, k, P: (x, y) => [ox + (x - minx) * k, cv.height - oy - (y - miny) * k] };
-  layer = document.createElement('canvas'); layer.width = cv.width; layer.height = cv.height;
+  const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  // room for the HUD (top) and the method badge (bottom); the circuit fills the rest of the panel
+  const narrow = r.width < 560, padX = (narrow ? 26 : 40) * dpr, padT = (narrow ? 40 : 46) * dpr, padB = (narrow ? 34 : 38) * dpr;
+  const k = Math.min((cv.width - 2 * padX) / (maxx - minx), (cv.height - padT - padB) / (maxy - miny));
+  const ox = (cv.width - (maxx - minx) * k) / 2, oy = padT + (cv.height - padT - padB - (maxy - miny) * k) / 2;
+  view = { dpr, k, P: (x, y) => [ox + (x - minx) * k, oy + (maxy - y) * k], narrow };
+  center = { x: ox + ((maxx - minx) * k) / 2, y: oy + ((maxy - miny) * k) / 2 };
+  trackPx = Array.from({ length: 600 }, (_, i) => { const a = along(i / 600); const [x, y] = view.P(a.x, a.y); return [x / dpr, y / dpr]; });
+  layer = document.createElement('canvas'); layer.width = cv.width; layer.height = cv.height; staticBlocks = [];
   const g = layer.getContext('2d');
   const line = (arr, close) => { g.beginPath(); arr.forEach((p, i) => { const [x, y] = view.P(p[0], p[1]); i ? g.lineTo(x, y) : g.moveTo(x, y); }); if (close) g.closePath(); };
+  const tw = Math.max(9, Math.min(15, Math.min(cv.width, cv.height) / dpr / 34)) * dpr; // track width scales with the panel
   g.lineJoin = 'round'; g.lineCap = 'round';
-  if (track.pit) { g.setLineDash([4 * dpr, 4 * dpr]); g.strokeStyle = 'rgba(160,170,190,.35)'; g.lineWidth = 2 * dpr; line(track.pit); g.stroke(); g.setLineDash([]); }
-  g.shadowColor = 'rgba(255,77,46,.35)'; g.shadowBlur = 18 * dpr; g.strokeStyle = '#11141c'; g.lineWidth = 16 * dpr; line(pts, true); g.stroke(); g.shadowBlur = 0;
-  g.strokeStyle = '#2b3242'; g.lineWidth = 10 * dpr; line(pts, true); g.stroke();
-  g.strokeStyle = 'rgba(255,77,46,.55)'; g.lineWidth = 1.2 * dpr; line(pts, true); g.stroke();
-  // timing line (estimated position; labelled as such)
-  const t0 = along(0), [tx, ty] = view.P(t0.x, t0.y);
-  g.strokeStyle = '#f2f4f8'; g.lineWidth = 3 * dpr; g.beginPath(); g.moveTo(tx - t0.nx * 10 * dpr, ty + t0.ny * 10 * dpr); g.lineTo(tx + t0.nx * 10 * dpr, ty - t0.ny * 10 * dpr); g.stroke();
-  g.fillStyle = 'rgba(198,204,217,.8)'; g.font = `600 ${10 * dpr}px "Barlow Condensed", sans-serif`; g.fillText('TIMING LINE (EST.)', tx + 12 * dpr, ty - 10 * dpr);
-  for (const c of track.corners || []) { const [x, y] = view.P(c.x, c.y); g.fillStyle = 'rgba(198,204,217,.5)'; if (c.n) g.fillText(`T${c.n}`, x + 6 * dpr, y - 6 * dpr); else { g.beginPath(); g.arc(x, y, 1.6 * dpr, 0, 7); g.fill(); } }
+  // pit lane: its own colour, dashed, labelled — distinct from the racing line
+  if (track.pit?.length > 1) {
+    g.strokeStyle = '#0d1017'; g.lineWidth = tw * 0.62; line(track.pit); g.stroke();
+    g.setLineDash([5 * dpr, 4 * dpr]); g.strokeStyle = 'rgba(122,190,255,.55)'; g.lineWidth = 2 * dpr; line(track.pit); g.stroke(); g.setLineDash([]);
+    const mid = track.pit[Math.floor(track.pit.length / 2)], [px, py] = view.P(mid[0], mid[1]);
+    halo(g, 'PIT', px, py - 10 * dpr, `700 ${9 * dpr}px ${FONT}`, 'rgba(122,190,255,.85)', dpr);
+    staticBlocks.push(textBox(g, 'PIT', px, py - 10 * dpr, 'center', dpr));
+  }
+  // circuit: one restrained glow, dark kerb edge, asphalt, thin centre accent
+  g.shadowColor = 'rgba(255,77,46,.16)'; g.shadowBlur = 8 * dpr; g.strokeStyle = '#0d1017'; g.lineWidth = tw + 6 * dpr; line(pts, true); g.stroke(); g.shadowBlur = 0;
+  g.strokeStyle = '#2c3343'; g.lineWidth = tw; line(pts, true); g.stroke();
+  g.strokeStyle = 'rgba(255,255,255,.07)'; g.lineWidth = 1 * dpr; line(pts, true); g.stroke();
+  // start/finish: chequered band across the track at the (estimated) timing line
+  const t0 = along(0), [tx, ty] = view.P(t0.x, t0.y), nx = t0.nx, ny = -t0.ny, txd = -ny, tyd = nx; // screen normal + tangent
+  const half = tw / 2 + 2 * dpr, cells = 6, cs = (2 * half) / cells;
+  for (let row = 0; row < 2; row++) for (let i = 0; i < cells; i++) {
+    g.fillStyle = (i + row) % 2 ? '#0b0d12' : '#f2f4f8';
+    const cx0 = tx + nx * (-half + i * cs) + txd * (row - 1) * cs, cy0 = ty + ny * (-half + i * cs) + tyd * (row - 1) * cs;
+    g.beginPath(); g.moveTo(cx0, cy0); g.lineTo(cx0 + nx * cs, cy0 + ny * cs); g.lineTo(cx0 + nx * cs + txd * cs, cy0 + ny * cs + tyd * cs); g.lineTo(cx0 + txd * cs, cy0 + tyd * cs); g.closePath(); g.fill();
+  }
+  const side = (tx - center.x) * nx + (ty - center.y) * ny >= 0 ? 1 : -1;
+  g.textAlign = side * nx >= 0 ? 'left' : 'right';
+  const sfx = tx + nx * side * (half + 8 * dpr), sfy = ty + ny * side * (half + 8 * dpr);
+  halo(g, 'START / FINISH (EST.)', sfx, sfy, `700 ${9.5 * dpr}px ${FONT}`, 'rgba(242,244,248,.85)', dpr);
+  staticBlocks.push(textBox(g, 'START / FINISH (EST.)', sfx, sfy, g.textAlign, dpr));
+  g.textAlign = 'center';
+  // corners: numbers only, quiet
+  for (const c of track.corners || []) { if (!c.n) continue; const [x, y] = view.P(c.x, c.y); halo(g, String(c.n), x + 7 * dpr, y - 7 * dpr, `600 ${8.5 * dpr}px ${FONT}`, 'rgba(198,204,217,.38)', dpr); }
+  g.textAlign = 'start';
+  blocksDirty = true;
+}
+// painted map text is a no-go zone for driver labels
+function textBox(g, txt, x, y, align, dpr) { const w = g.measureText(txt).width, h = 11 * dpr; return { x: align === 'center' ? x - w / 2 : align === 'right' ? x - w : x, y: y - h / 2, w, h }; }
+function halo(g, txt, x, y, font, color, dpr, w = 3) {
+  g.font = font; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  g.strokeStyle = 'rgba(7,8,12,.92)'; g.lineWidth = w * dpr; g.strokeText(txt, x, y);
+  g.fillStyle = color; g.fillText(txt, x, y);
+}
+// DOM overlays on the canvas (HUD, method badge) are no-go zones for labels
+function measureBlocks() {
+  if (!cv || !view) return;
+  const cr = cv.getBoundingClientRect(), d = view.dpr;
+  blocks = [...cv.parentElement.querySelectorAll('.pc-hud>span:not([hidden]), .pc-basis')].filter((n) => !n.closest('[hidden]'))
+    .map((n) => n.getBoundingClientRect()).filter((b) => b.width && b.height).map((b) => ({ x: (b.left - cr.left) * d, y: (b.top - cr.top) * d, w: b.width * d, h: b.height * d })).concat(staticBlocks);
+  blocksDirty = false;
 }
 
 // Car glyph (top-down, facing +x in local space): team-colour body, black tyres, wings, dark cockpit.
-function carGlyph(g, x, y, ang, color, sc, { held, sel, leader }) {
+function carGlyph(g, x, y, ang, color, sc, { held }) {
   g.save(); g.translate(x, y); g.rotate(ang); g.scale(sc, sc);
-  g.globalAlpha = held ? 0.45 : 1;
-  if (sel) { g.shadowColor = color; g.shadowBlur = 10; }
   g.fillStyle = '#0b0d12';
   for (const [tx, ty] of [[6.5, 4.6], [6.5, -4.6], [-6.5, 4.8], [-6.5, -4.8]]) g.fillRect(tx - 2.2, ty - 1.4, 4.4, 2.8);
-  g.fillStyle = color;
-  g.beginPath(); g.moveTo(11, 0); g.lineTo(5, 1.6); g.lineTo(1, 3.6); g.lineTo(-7, 3.4); g.lineTo(-9, 1.8); g.lineTo(-9, -1.8); g.lineTo(-7, -3.4); g.lineTo(1, -3.6); g.lineTo(5, -1.6); g.closePath(); g.fill();
-  g.shadowBlur = 0;
+  const body = () => { g.beginPath(); g.moveTo(11, 0); g.lineTo(5, 1.6); g.lineTo(1, 3.6); g.lineTo(-7, 3.4); g.lineTo(-9, 1.8); g.lineTo(-9, -1.8); g.lineTo(-7, -3.4); g.lineTo(1, -3.6); g.lineTo(5, -1.6); g.closePath(); };
+  g.fillStyle = color; body(); g.fill();
   g.fillRect(9.4, -5.2, 1.6, 10.4);            // front wing
   g.fillRect(-11, -4.6, 2, 9.2);               // rear wing
   g.fillStyle = 'rgba(8,10,14,.85)'; g.beginPath(); g.ellipse(-0.6, 0, 2.3, 1.4, 0, 0, 7); g.fill();
-  g.lineWidth = (sel ? 1.4 : 0.8); g.strokeStyle = sel ? '#ffffff' : held ? 'rgba(255,207,92,.9)' : 'rgba(0,0,0,.6)';
+  g.lineWidth = 0.8; g.strokeStyle = held ? 'rgba(255,207,92,.95)' : 'rgba(0,0,0,.65)';
   if (held) g.setLineDash([2, 1.5]);
-  g.beginPath(); g.moveTo(11, 0); g.lineTo(5, 1.6); g.lineTo(1, 3.6); g.lineTo(-7, 3.4); g.lineTo(-9, 1.8); g.lineTo(-9, -1.8); g.lineTo(-7, -3.4); g.lineTo(1, -3.6); g.lineTo(5, -1.6); g.closePath(); g.stroke(); g.setLineDash([]);
+  body(); g.stroke(); g.setLineDash([]);
   g.restore();
-  if (sel) { g.save(); g.globalAlpha = 0.9; g.strokeStyle = '#ffffff'; g.lineWidth = 1.5 * view.dpr; g.beginPath(); g.arc(x, y, 15 * view.dpr, 0, 7); g.stroke(); g.restore(); }
+}
+// compact pack marker: team dot with a heading tick (cars in a dense pack)
+function packMarker(g, x, y, ang, color, dpr, { held }) {
+  g.save(); g.translate(x, y); g.rotate(ang);
+  g.fillStyle = color; g.strokeStyle = held ? 'rgba(255,207,92,.95)' : 'rgba(7,8,12,.95)'; g.lineWidth = 1.4 * dpr;
+  if (held) g.setLineDash([2 * dpr, 1.5 * dpr]);
+  g.beginPath(); g.moveTo(6 * dpr, 0); g.lineTo(-3.5 * dpr, 3.6 * dpr); g.lineTo(-3.5 * dpr, -3.6 * dpr); g.closePath(); g.fill(); g.stroke();
+  g.restore();
 }
 
 // Display easing (visual only): cars glide to the timing-derived target instead of jumping when live timing corrects.
 // The model position (progressAt) is untouched and is what the QA hook reports; scrubs/lap jumps snap.
-const disp = new Map();
+const disp = new Map(), labelPrev = new Map();
 let lastDrawT = null, lastDrawAt = 0;
 function eased(id, target, T) {
   const now = performance.now(), dt = Math.min(250, now - lastDrawAt || 16);
@@ -95,15 +145,20 @@ function eased(id, target, T) {
   const v = cur + (target - cur) * (1 - Math.exp(-dt / tau));
   disp.set(id, v); return v;
 }
+const isSel = (id) => !!S.selected && (ID.drivers[id]?.code === S.selected || id === S.selected);
+const isHov = (id) => !!S.hover && ID.drivers[id]?.code === S.hover;
+const surname = (id) => (ID.drivers[id]?.name || '').split(' ').slice(-1)[0].toUpperCase();
 
 function drawCars(T) {
   if (!ctx || !layer) return;
+  if (blocksDirty) measureBlocks();
   ctx.clearRect(0, 0, cv.width, cv.height);
-  ctx.drawImage(layer, 0, 0);
   const f = S.model ? frameAt(S.model, T) : null;
+  const gap = !!(S.model && inGap(S.model, T));
+  ctx.globalAlpha = gap ? 0.55 : 1; ctx.drawImage(layer, 0, 0); ctx.globalAlpha = 1;
   const flag = f?.flag ? String(f.flag).toUpperCase() : '';
   cv.dataset.flag = /RED/.test(flag) ? 'red' : /SAFETY|SC|VSC|YELLOW/.test(flag) ? 'caution' : '';
-  if (!f) { lastDrawT = T; lastDrawAt = performance.now(); return; }
+  if (!f) { lastDrawT = T; lastDrawAt = performance.now(); window.__pbecast = { T, mode: S.mode, session: S.session, cars: [], unplaced: 0, selected: S.selected, hover: S.hover, layout: null }; return; }
   const dpr = view.dpr, placed = [];
   const order = [...f.cars].filter((c) => ID.drivers[c.id]).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99));
   const unplaced = [];
@@ -115,72 +170,156 @@ function drawCars(T) {
     placed.push({ c, frac: p.laps, held: p.state === 'held', crossedAgo: lastX ? T - lastX.ms : null });
   }
   // opening lap: running order at the line, spaced back, until each car's first observed crossing
-  unplaced.forEach((c, i) => placed.push({ c, frac: -((i + 1) * 14) / L, held: true, grid: true }));
-  // screen placement on the eased fraction; bunched cars spread into lanes, labels alternate sides
-  const drawn = [];
-  for (const it of placed) {
-    const fr = it.grid ? it.frac : eased(it.c.id, it.frac, T);
+  // after that, a car with no placement (pit / garage / overdue) is not drawn on track: the HUD counts it instead
+  const opening = f.lap <= 1 || !f.lap;
+  if (opening) unplaced.forEach((c, i) => placed.push({ c, frac: -((i + 1) * 14) / L, held: true, grid: true }));
+  S.offTrack = opening ? [] : unplaced.map((c) => c.id);
+  // exact screen point on the centreline for each car (eased fraction; no lateral offset)
+  const cars = placed.map((it) => {
+    const id = it.c.id, fr = it.grid ? it.frac : eased(id, it.frac, T);
     const a = along(fr), a2 = along(fr + 0.0015);
-    let [x, y] = view.P(a.x, a.y);
-    const [x2, y2] = view.P(a2.x, a2.y);
-    const ang = Math.atan2(y2 - y, x2 - x);
-    const near = drawn.filter((d) => Math.hypot(d.x - x, d.y - y) < 16 * dpr).length;
-    let lane = 0;
-    if (near) { lane = (near % 2 ? 1 : -1) * Math.ceil(near / 2); x += a.nx * lane * 9 * dpr; y -= a.ny * lane * 9 * dpr; }
-    drawn.push({ x, y, ang, lane, nx: a.nx, ny: a.ny, it });
+    const [x, y] = view.P(a.x, a.y), [x2, y2] = view.P(a2.x, a2.y);
+    const t = TEAM(id);
+    return { it, id, x, y, ang: Math.atan2(y2 - y, x2 - x), color: `#${t?.color || '888'}`, sel: isSel(id), hov: isHov(id), leader: it.c.pos === 1, code: ID.drivers[id]?.code || '' };
+  });
+  // dense packs draw compact markers; the selected car always keeps its full glyph
+  const packs = clusters(cars, 22 * dpr);
+  for (const g of packs) if (g.length >= FAN_MIN) for (const i of g) cars[i].compact = true;
+  const anySel = cars.some((c) => c.sel);
+  for (const c of cars) {
+    c.sc = (c.sel ? 2.05 : 1.28) * dpr;                     // selected 1.6x
+    c.r = c.sel ? 17 * dpr : c.compact ? 6 * dpr : 10 * dpr; // no-cover radius for labels
+    ctx.font = `${c.sel ? 800 : 700} ${(c.sel ? 12.5 : 10.5) * dpr}px ${FONT}`;
+    c.text = c.sel ? `${c.leader ? 'P1 ' : ''}${c.code}` : `${c.leader ? 'P1 ' : ''}${c.code}`;
+    c.sub = c.sel ? surname(c.id) : '';
+    const w1 = ctx.measureText(c.text).width;
+    let w2 = 0; if (c.sub) { ctx.font = `600 ${10.5 * dpr}px ${FONT}`; w2 = ctx.measureText(c.sub).width + 5 * dpr; }
+    c.lw = w1 + w2 + (c.sel || c.hov ? 14 : 8) * dpr; c.lh = (c.sel ? 20 : 14) * dpr;
   }
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  for (const d of drawn) {
-    const t = TEAM(d.it.c.id), sel = ID.drivers[d.it.c.id]?.code === S.selected || d.it.c.id === S.selected;
-    const color = `#${t?.color || '888'}`;
-    if (!d.it.grid && !d.it.held) { // short trail along the track behind the car
-      ctx.strokeStyle = `${color}44`; ctx.lineWidth = 3 * dpr; ctx.beginPath();
-      const fr = disp.get(d.it.c.id) ?? d.it.frac;
-      for (let k = 0; k <= 6; k++) { const bb = along(fr - (k * 0.004)); const [bx, by] = view.P(bb.x, bb.y); k ? ctx.lineTo(bx, by) : ctx.moveTo(bx, by); }
-      ctx.stroke();
-    }
-    carGlyph(ctx, d.x, d.y, d.ang, color, (sel ? 1.4 : 1.12) * dpr, { held: d.it.held, sel, leader: d.it.c.pos === 1 });
+  const lab = layoutLabels(cars.map((c) => ({ id: c.id, x: c.x, y: c.y, r: c.r, w: c.lw, h: c.lh, prio: c.sel ? -2 : c.hov ? -1 : c.it.c.pos ?? 99, prev: labelPrev.get(c.id) })),
+    { bounds: { x0: 3 * dpr, y0: 3 * dpr, x1: cv.width - 3 * dpr, y1: cv.height - 3 * dpr }, blocks, center, cluster: 22 * dpr });
+  labelPrev.clear();
+  for (const [id, l] of lab) { const c = cars.find((x) => x.id === id); labelPrev.set(id, { dx: l.cx - c.x, dy: l.cy - c.y }); }
+  // short trail behind moving cars (derived state only)
+  for (const c of cars) {
+    if (c.it.grid || c.it.held || c.compact) continue;
+    ctx.strokeStyle = `${c.color}38`; ctx.lineWidth = 3 * dpr; ctx.lineCap = 'round'; ctx.beginPath();
+    const fr = disp.get(c.id) ?? c.it.frac;
+    for (let k = 0; k <= 6; k++) { const bb = along(fr - (k * 0.004)); const [bx, by] = view.P(bb.x, bb.y); k ? ctx.lineTo(bx, by) : ctx.moveTo(bx, by); }
+    ctx.stroke();
+  }
+  // leader lines (label displaced from its car)
+  for (const c of cars) {
+    const l = lab.get(c.id); if (!l?.leader) continue;
+    const ex = Math.max(l.x, Math.min(c.x, l.x + l.w)), ey = Math.max(l.y, Math.min(c.y, l.y + l.h));
+    const d = Math.hypot(ex - c.x, ey - c.y) || 1, sx = c.x + ((ex - c.x) / d) * c.r * 0.7, sy = c.y + ((ey - c.y) / d) * c.r * 0.7;
+    ctx.globalAlpha = c.it.held ? 0.45 : anySel && !c.sel && !c.hov ? 0.55 : 0.9;
+    ctx.strokeStyle = c.sel ? 'rgba(255,255,255,.85)' : c.hov ? 'rgba(255,255,255,.75)' : 'rgba(198,204,217,.5)'; ctx.lineWidth = (c.sel ? 1.4 : 1) * dpr;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+    ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(sx, sy, 1.6 * dpr, 0, 7); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  // cars: back-markers first; leader, hovered and selected on top
+  const z = (c) => (c.sel ? 3 : c.hov ? 2 : c.leader ? 1 : 0);
+  const drawOrder = [...cars].sort((a, b) => z(a) - z(b) || (b.it.c.pos ?? 99) - (a.it.c.pos ?? 99));
+  const now = performance.now();
+  for (const c of drawOrder) {
+    ctx.globalAlpha = c.it.held ? 0.5 : anySel && !c.sel && !c.hov ? 0.78 : 1;
+    if (c.sel) { // halo + ring: the star of the map
+      const gr = ctx.createRadialGradient(c.x, c.y, 2 * dpr, c.x, c.y, 30 * dpr); gr.addColorStop(0, `${c.color}66`); gr.addColorStop(1, `${c.color}00`);
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(c.x, c.y, 30 * dpr, 0, 7); ctx.fill();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.6 * dpr; ctx.beginPath(); ctx.arc(c.x, c.y, 19 * dpr, 0, 7); ctx.stroke();
+      if (S.focusAt && now - S.focusAt < 1100) { const k = (now - S.focusAt) / 1100; ctx.globalAlpha = 1 - k; ctx.lineWidth = 2 * dpr; ctx.beginPath(); ctx.arc(c.x, c.y, (19 + 34 * k) * dpr, 0, 7); ctx.stroke(); ctx.globalAlpha = 1; }
+    } else if (c.hov) { ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 1.2 * dpr; ctx.beginPath(); ctx.arc(c.x, c.y, (c.compact ? 8 : 13) * dpr, 0, 7); ctx.stroke(); }
+    if (c.compact && !c.sel) packMarker(ctx, c.x, c.y, c.ang, c.color, dpr, { held: c.it.held });
+    else carGlyph(ctx, c.x, c.y, c.ang, c.color, c.sc, { held: c.it.held });
+    if (c.leader && !c.sel) { ctx.strokeStyle = 'rgba(255,207,92,.9)'; ctx.lineWidth = 1.2 * dpr; ctx.beginPath(); ctx.arc(c.x, c.y, (c.compact ? 7.5 : 12) * dpr, 0, 7); ctx.stroke(); }
     // an OBSERVED crossing (real recorded event) within the last 2 s gets a brief ring
-    if (d.it.crossedAgo != null && d.it.crossedAgo < 2000) { ctx.globalAlpha = 0.7 * (1 - d.it.crossedAgo / 2000); ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1 * dpr; ctx.beginPath(); ctx.arc(d.x, d.y, 13 * dpr, 0, 7); ctx.stroke(); ctx.globalAlpha = 1; }
-    // driver code tag, offset off the racing line (side alternates with the lane so bunched tags do not stack)
-    const side = d.lane < 0 ? -1 : 1, off = (14 + Math.abs(d.lane) * 4) * dpr;
-    const lx = d.x + d.nx * off * side, ly = d.y - d.ny * off * side;
-    const code = ID.drivers[d.it.c.id]?.code || '';
-    ctx.font = `700 ${(sel ? 11 : 9.5) * dpr}px "Barlow Condensed", sans-serif`;
-    const tw = ctx.measureText(code).width + 8 * dpr, th = (sel ? 15 : 13) * dpr;
-    ctx.globalAlpha = d.it.held ? 0.6 : 1;
-    ctx.fillStyle = 'rgba(8,10,14,.82)'; ctx.beginPath(); ctx.roundRect(lx - tw / 2, ly - th / 2, tw, th, 3 * dpr); ctx.fill();
-    ctx.fillStyle = color; ctx.fillRect(lx - tw / 2, ly - th / 2, 2 * dpr, th);
-    ctx.fillStyle = sel ? '#ffffff' : '#e6e9ef'; ctx.fillText(code, lx + 1 * dpr, ly + 0.5 * dpr);
-    if (d.it.c.pos === 1) { ctx.fillStyle = '#ffcf5c'; ctx.font = `800 ${8.5 * dpr}px "Barlow Condensed", sans-serif`; ctx.fillText('P1', lx, ly - th * 0.95); }
+    if (c.it.crossedAgo != null && c.it.crossedAgo < 2000) { ctx.globalAlpha = 0.7 * (1 - c.it.crossedAgo / 2000); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1 * dpr; ctx.beginPath(); ctx.arc(c.x, c.y, 14 * dpr, 0, 7); ctx.stroke(); }
     ctx.globalAlpha = 1;
   }
-  ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
-  lastDrawT = T; lastDrawAt = performance.now();
-  S.hit = drawn.map((d) => ({ x: d.x / dpr, y: d.y / dpr, id: d.it.c.id }));
-  // QA hook: the exact race state on screen (MODEL track fraction + state per car), comparable across widths
-  window.__pbecast = { T, mode: S.mode, session: S.session, cars: drawn.map((d) => ({ id: d.it.c.id, frac: Math.round(d.it.frac * 1e6) / 1e6, held: !!d.it.held, grid: !!d.it.grid })).sort((a, b) => a.id.localeCompare(b.id)), unplaced: placed.length - drawn.length };
+  // labels: plain code with a dark halo; hovered = light plate; selected = plate with team stripe + surname
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  for (const c of drawOrder) {
+    const l = lab.get(c.id); if (!l) continue;
+    ctx.globalAlpha = c.it.held ? 0.55 : anySel && !c.sel && !c.hov ? 0.7 : 1;
+    const my = l.y + l.h / 2;
+    if (c.sel || c.hov) {
+      ctx.fillStyle = c.sel ? 'rgba(8,10,14,.94)' : 'rgba(8,10,14,.85)'; ctx.beginPath(); ctx.roundRect(l.x, l.y, l.w, l.h, 3 * dpr); ctx.fill();
+      ctx.strokeStyle = c.sel ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.3)'; ctx.lineWidth = 1 * dpr; ctx.stroke();
+      ctx.fillStyle = c.color; ctx.fillRect(l.x, l.y, 3 * dpr, l.h);
+    } else { ctx.fillStyle = c.color; ctx.fillRect(l.x + 1 * dpr, my - 4 * dpr, 2 * dpr, 8 * dpr); }
+    let x = l.x + (c.sel || c.hov ? 7 : 5) * dpr;
+    ctx.font = `${c.sel ? 800 : 700} ${(c.sel ? 12.5 : 10.5) * dpr}px ${FONT}`;
+    const parts = c.leader ? [['P1 ', '#ffcf5c'], [c.code, c.sel ? '#ffffff' : '#eef0f4']] : [[c.code, c.sel ? '#ffffff' : '#eef0f4']];
+    for (const [txt, col] of parts) {
+      if (!(c.sel || c.hov)) { ctx.strokeStyle = 'rgba(7,8,12,.92)'; ctx.lineWidth = 3 * dpr; ctx.lineJoin = 'round'; ctx.strokeText(txt, x, my + 0.5 * dpr); }
+      ctx.fillStyle = col; ctx.fillText(txt, x, my + 0.5 * dpr); x += ctx.measureText(txt).width;
+    }
+    if (c.sub) { ctx.font = `600 ${10.5 * dpr}px ${FONT}`; ctx.fillStyle = 'rgba(230,233,239,.8)'; ctx.fillText(c.sub, x + 5 * dpr, my + 0.5 * dpr); }
+  }
+  ctx.globalAlpha = 1; ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
+  lastDrawT = T; lastDrawAt = now;
+  S.hit = cars.map((c) => { const l = lab.get(c.id); return { id: c.id, x: c.x / dpr, y: c.y / dpr, r: Math.max(12, c.r / dpr), label: l && { x: l.x / dpr, y: l.y / dpr, w: l.w / dpr, h: l.h / dpr } }; });
+  // QA hook: the exact race state on screen (MODEL track fraction + state per car), comparable across widths,
+  // plus the presentation layout (CSS px) so visual QA can prove no overlaps / no off-canvas / no lateral offsets
+  window.__pbecast = {
+    T, mode: S.mode, session: S.session, selected: S.selected, hover: S.hover, gap,
+    cars: cars.map((c) => ({ id: c.id, frac: Math.round(c.it.frac * 1e6) / 1e6, held: !!c.it.held, grid: !!c.it.grid })).sort((a, b) => a.id.localeCompare(b.id)),
+    unplaced: S.offTrack.length, offTrack: S.offTrack,
+    layout: { w: cv.width / dpr, h: cv.height / dpr, track: trackPx, blocks: blocks.map((b) => ({ x: b.x / dpr, y: b.y / dpr, w: b.w / dpr, h: b.h / dpr })),
+      cars: cars.map((c) => ({ id: c.id, code: c.code, x: c.x / dpr, y: c.y / dpr, r: c.r / dpr, compact: !!c.compact, sel: c.sel, hov: c.hov })),
+      labels: [...lab].map(([id, l]) => ({ id, x: l.x / dpr, y: l.y / dpr, w: l.w / dpr, h: l.h / dpr, leader: l.leader, fan: l.fan, forced: l.forced })) },
+  };
+}
+function pick(clientX, clientY) {
+  if (!S.hit || !cv) return null;
+  const r = cv.getBoundingClientRect(), x = clientX - r.left, y = clientY - r.top;
+  const lab = S.hit.find((h) => h.label && x >= h.label.x && x <= h.label.x + h.label.w && y >= h.label.y && y <= h.label.y + h.label.h);
+  if (lab) return lab.id;
+  const near = S.hit.map((h) => ({ ...h, d: Math.hypot(h.x - x, h.y - y) })).sort((a, b) => a.d - b.d)[0];
+  return near && near.d < Math.max(14, near.r) ? near.id : null;
 }
 
 // ---------- tower ----------
+// statuses that mean the car is circulating (on_track = upstream STATUS_ON_TRACK, not mapped by the recorder)
+const RUNNING = new Set(['running', 'classified', 'on_track']);
 // position at the first recorded frame of the session (for "gained / lost since the start"; only from our frames)
 function startPos(id) { const f0 = S.model?.frames?.[0]; return f0 ? f0.cars?.find((c) => c.id === id)?.pos ?? null : null; }
 const fmtGap = (ms) => (ms == null ? '' : ms >= 60000 ? `+${Math.floor(ms / 60000)}:${((ms % 60000) / 1000).toFixed(3).padStart(6, '0')}` : `+${(ms / 1000).toFixed(3)}`);
 const fmtLap = (ms) => (ms ? `${Math.floor(ms / 60000)}:${((ms % 60000) / 1000).toFixed(3).padStart(6, '0')}` : '');
+// what the tower is showing, always stated: replay / live / latest published classification (never "no session live"
+// above replay-derived rows)
+const sessionLabel = () => (S.sessionType ? D.session_labels[S.sessionType] || S.sessionType : '');
+function renderContext(T) {
+  const n = $('[data-pc-towernote]');
+  if (!n) return;
+  const lap = S.model ? lapAt(S.model, T) : null;
+  let state = 'idle', head = '', rest = '';
+  if (S.mode === 'replay' && S.model) { state = 'replay'; head = 'Replay'; rest = [sessionLabel(), 'Recorded timing', lap ? `Lap ${lap}` : ''].filter(Boolean).join(' · '); }
+  else if (S.mode === 'live') { state = 'live'; head = 'Live'; rest = [sessionLabel(), 'Timing as recorded', lap ? `Lap ${lap}` : ''].filter(Boolean).join(' · '); }
+  else rest = D.fallback ? `No session live · latest published classification: ${D.fallback.label}` : 'No session live';
+  const key = `${state}|${head}|${rest}`;
+  if (n.dataset.key === key) return;
+  n.dataset.key = key; n.dataset.state = state;
+  n.replaceChildren(...(head ? [el('b', null, head), document.createTextNode(` · ${rest}`)] : [document.createTextNode(rest)]));
+}
+function markHover() { document.querySelectorAll('.pc-row').forEach((r) => r.classList.toggle('is-hover', !!S.hover && r.dataset.code === S.hover)); }
 function renderTower(T) {
+  renderContext(T);
   const body = $('[data-pc-tower]');
   if (!body) return;
   const f = S.model ? frameAt(S.model, T) : null;
   const rows = f ? [...f.cars].filter((c) => ID.drivers[c.id]).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99)) : S.tower;
   body.replaceChildren(...rows.map((c, i) => {
     const d = ID.drivers[c.id || c.driver_id], t = TEAM(c.id || c.driver_id);
-    const out = c.status && !['running', 'classified'].includes(c.status);
-    const b = el('button', `pc-row tc-${(t?.color || '').toLowerCase()}${c.pos === 1 ? ' is-leader' : ''}${out ? ' is-out' : ''}`); b.type = 'button';
+    const out = c.status && !RUNNING.has(c.status);
+    const b = el('button', `pc-row tc-${(t?.color || '').toLowerCase()}${c.pos === 1 ? ' is-leader' : ''}${out ? ' is-out' : ''}${d?.code && d.code === S.hover ? ' is-hover' : ''}`); b.type = 'button';
     b.setAttribute('aria-pressed', String(d?.code === S.selected)); b.dataset.code = d?.code || '';
     const start = startPos(c.id || c.driver_id), mv = start != null && c.pos != null ? start - c.pos : null;
     b.append(el('span', 'pc-pos', String(c.pos ?? '–')), el('span', 'pc-stripe'), Object.assign(el('span', 'pc-team', t?.short || ''), { title: t?.name || '' }), el('span', 'pc-code', d?.code || '?'),
       Object.assign(el('span', `pc-mv ${mv > 0 ? 'up' : mv < 0 ? 'down' : ''}`, mv ? `${mv > 0 ? '↑' : '↓'}${Math.abs(mv)}` : ''), { title: mv ? `${mv > 0 ? 'Gained' : 'Lost'} ${Math.abs(mv)} since the start of this session` : '' }));
-    const status = c.status && c.status !== 'running' ? { retired: 'OUT', disqualified: 'DSQ', dns: 'DNS', not_classified: 'NC' }[c.status] || c.status.toUpperCase() : '';
+    const status = c.status && !RUNNING.has(c.status) ? { retired: 'OUT', disqualified: 'DSQ', dns: 'DNS', not_classified: 'NC' }[c.status] || c.status.toUpperCase() : '';
     if (S.entitled) {
       const prev = rows[i - 1];
       const iv = c.gap_ms != null && prev?.gap_ms != null ? c.gap_ms - prev.gap_ms : null;
@@ -234,14 +373,32 @@ function renderGraph(T) {
 // ---------- header state ----------
 function renderHeader(T) {
   const f = S.model ? frameAt(S.model, T) : null;
-  $('[data-pc-lap]').textContent = f?.lap ? `LAP ${f.lap}${D.laps_total ? ` / ${D.laps_total}` : ''}` : '';
   const flag = f?.flag ? String(f.flag).toUpperCase().replace(/_/g, ' ') : '';
-  const fc = $('[data-pc-flag]'); fc.textContent = flag; fc.hidden = !flag || flag === 'GREEN';
   const stale = S.mode === 'live' && S.lastOk && Date.now() - S.lastOk > 45000;
-  $('[data-pc-mode]').textContent = S.mode === 'live' ? (stale ? 'LIVE · TIMING DELAYED' : 'LIVE') : S.mode === 'replay' ? `REPLAY · ${S.speed}×` : 'NO SESSION LIVE';
-  $('[data-pc-mode]').dataset.state = stale ? 'stale' : S.mode;
-  const gapNote = $('[data-pc-gap]');
-  if (gapNote) gapNote.hidden = !(S.model && inGap(S.model, T));
+  const mode = S.mode === 'live' ? (stale ? 'LIVE · TIMING DELAYED' : 'LIVE') : S.mode === 'replay' ? `REPLAY · ${S.speed}×` : 'NO SESSION LIVE';
+  const mp = $('[data-pc-mode]'); if (mp.textContent !== mode) mp.textContent = mode; mp.dataset.state = stale ? 'stale' : S.mode;
+  renderHud(T, f, flag);
+}
+// broadcast HUD over the map: REPLAY · <SESSION> · LAP N · <elapsed>, recorded flag, recording gap, cars not on track.
+// Built only from the recorded session; absolutely positioned (no layout shift); DOM touched only when text changes.
+const fmtElapsed = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 3600) ? `${Math.floor(s / 3600)}:` : ''}${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
+function renderHud(T, f, flag) {
+  const hud = $('[data-pc-hud]');
+  if (!hud) return;
+  const on = (S.mode === 'replay' || S.mode === 'live') && !!S.model;
+  const gap = on && inGap(S.model, T);
+  const main = on ? [sessionLabel(), f?.lap ? `Lap ${f.lap}${S.mode === 'live' && D.laps_total && S.sessionType === 'race' ? `/${D.laps_total}` : ''}` : '', S.model.start != null ? fmtElapsed(T - S.model.start) : ''].filter(Boolean).join(' · ') : '';
+  const fl = on && flag ? flag : '';
+  const off = on && S.offTrack.length ? `${S.offTrack.length} not on track · pit / garage` : '';
+  const key = `${on}|${S.mode}|${main}|${fl}|${gap}|${off}`;
+  if (hud.dataset.key === key) return;
+  hud.dataset.key = key; hud.hidden = !on; hud.dataset.mode = S.mode;
+  if (!on) return;
+  $('[data-pc-hudmain]').replaceChildren(el('b', null, S.mode === 'live' ? 'LIVE' : 'REPLAY'), document.createTextNode(` · ${main}`));
+  const fc = $('[data-pc-hudflag]'); fc.hidden = !fl; fc.textContent = fl; fc.dataset.flag = /RED/.test(fl) ? 'red' : /GREEN/.test(fl) ? 'green' : 'caution';
+  $('[data-pc-gap]').hidden = !gap;
+  const o = $('[data-pc-hudoff]'); o.hidden = !off; o.textContent = off;
+  blocksDirty = true;
 }
 
 // ---------- loop ----------
@@ -290,13 +447,27 @@ document.addEventListener('click', (e) => {
 // ---------- selection ----------
 document.addEventListener('click', (e) => {
   const row = e.target.closest?.('.pc-row');
-  if (row) { S.selected = S.selected === row.dataset.code ? null : row.dataset.code; persistSel(); return; }
-  if (e.target === cv && S.hit) {
-    const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-    const hit = S.hit.map((h) => ({ ...h, d: Math.hypot(h.x - x, h.y - y) })).sort((a, b) => a.d - b.d)[0];
-    if (hit && hit.d < 18) { S.selected = ID.drivers[hit.id]?.code || null; persistSel(); }
+  if (row) {
+    S.selected = S.selected === row.dataset.code ? null : row.dataset.code; S.focusAt = S.selected ? performance.now() : 0; persistSel();
+    // focus the driver on the map: on narrow layouts the tower sits below the track, so bring the track back into view
+    const trk = $('.pc-track'), tr = trk?.getBoundingClientRect();
+    if (S.selected && tr && (tr.bottom < 0 || tr.top > innerHeight)) trk.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    return;
+  }
+  if (e.target === cv) {
+    const id = pick(e.clientX, e.clientY);
+    if (id) { const code = ID.drivers[id]?.code || null; S.selected = S.selected === code ? null : code; S.focusAt = S.selected ? performance.now() : 0; persistSel(); }
   }
 });
+// hover either side highlights both (pointer or keyboard focus on a tower row)
+const setHover = (code) => { if (S.hover === code) return; S.hover = code; markHover(); };
+cv?.addEventListener('pointermove', (e) => { const id = pick(e.clientX, e.clientY); cv.style.cursor = id ? 'pointer' : 'default'; setHover(id ? ID.drivers[id]?.code || null : null); });
+cv?.addEventListener('pointerleave', () => setHover(null));
+const towerEl = $('[data-pc-tower]');
+towerEl?.addEventListener('pointerover', (e) => setHover(e.target.closest?.('.pc-row')?.dataset.code || null));
+towerEl?.addEventListener('pointerleave', () => setHover(null));
+towerEl?.addEventListener('focusin', (e) => setHover(e.target.closest?.('.pc-row')?.dataset.code || null));
+towerEl?.addEventListener('focusout', () => setHover(null));
 function persistT() { if (S.mode !== 'replay' || !S.model) return; const u = new URL(location.href); u.searchParams.set('session', S.session); u.searchParams.set('t', new Date(Math.round(S.T)).toISOString()); history.replaceState(null, '', u); }
 function persistSel() {
   const u = new URL(location.href); if (S.selected) u.searchParams.set('driver', S.selected); else u.searchParams.delete('driver'); history.replaceState(null, '', u);
@@ -319,7 +490,7 @@ function renderFocus(T) {
   const p = S.model && c ? progressAt(S.model, d.id, T, { live: S.mode === 'live' }) : null;
   const m = S.model?.cars.get(d.id), lastX = m && [...m.crossings].reverse().find((x) => x.ms <= T);
   const observedNow = lastX && T - lastX.ms < 2500;
-  const status = c?.status && !['running', 'classified'].includes(c.status) ? ({ retired: 'Retired', disqualified: 'Disqualified', dns: 'Did not start', not_classified: 'Not classified' }[c.status] || c.status) : !p ? '—' : p.state === 'held' ? 'Held · timing gap' : p.state === 'unplaced' ? (f?.lap ? 'Not placed · pit / garage' : 'Awaiting first crossing') : p.state === 'out' ? 'Out' : observedNow ? 'Observed line crossing' : 'Interpolated between crossings';
+  const status = c?.status && !RUNNING.has(c.status) ? ({ retired: 'Retired', disqualified: 'Disqualified', dns: 'Did not start', not_classified: 'Not classified' }[c.status] || c.status) : !p ? '—' : p.state === 'held' ? 'Held · timing gap' : p.state === 'unplaced' ? (f?.lap ? 'Not placed · pit / garage' : 'Awaiting first crossing') : p.state === 'out' ? 'Out' : observedNow ? 'Observed line crossing' : 'Interpolated between crossings';
   const start = startPos(d.id), mv = start != null && c?.pos != null ? start - c.pos : null;
   const stat = (k, v, cls = '') => { const s = el('div', `pc-fs ${cls}`); s.append(el('span', null, k), el('b', null, v)); return s; };
   const ahead = rows[i - 1], behind = rows[i + 1];
@@ -356,7 +527,7 @@ async function loadLive() {
     const live = await getJSON(`${PUB}/live`);
     const sameEvent = live.body?.event?.id === D.event.id;
     if (live.body?.state !== 'live' || !sameEvent) return false;
-    S.mode = 'live'; S.session = live.body.session?.id;
+    S.mode = 'live'; S.session = live.body.session?.id; S.sessionType = live.body.session?.type || null;
     let frames;
     if (S.entitled) { const rep = await getJSON(`${PRIV}/replay/${S.session}`, { priv: true }); frames = rep.status === 200 ? rep.body.frames : null; }
     if (!frames) frames = (await getJSON(`${PUB}/live/frames`)).body?.frames || [];
@@ -388,7 +559,7 @@ async function loadEvents() {
 function showFallback() {
   if (!D.fallback) return;
   S.tower = D.fallback.rows;
-  const n = $('[data-pc-towernote]'); if (n) { n.hidden = false; n.textContent = `No session live · latest published classification: ${D.fallback.label}`; }
+  renderContext(0);
 }
 async function loadRecorded() {
   if (!S.model) showFallback();
@@ -396,6 +567,7 @@ async function loadRecorded() {
   const sel = $('[data-pc-sessions]');
   if (sel) sel.replaceChildren(...idx.map((s) => Object.assign(el('option', null, `${D.session_labels[s.type] || s.type} · ${s.frames} frames`), { value: s.id })));
   $('[data-pc-recorded]').textContent = idx.length ? `${idx.length} recorded session${idx.length > 1 ? 's' : ''} this weekend` : 'No session recorded for this weekend yet.';
+  S.sessionTypes = Object.fromEntries(idx.map((s) => [s.id, s.type]));
   if (!idx.length) return;
   const asked = new URLSearchParams(location.search).get('session');
   S.session = idx.find((s) => s.id === asked)?.id || idx[0].id;
@@ -407,8 +579,13 @@ async function loadRecorded() {
 async function openReplay(id) {
   const r = await getJSON(`${PRIV}/replay/${id}`, { priv: true });
   if (r.status !== 200) { ga('premium_feature_attempted', { feature: 'pbecast_replay', status: r.status }); return; }
-  S.mode = 'replay'; S.session = id; S.frames = r.body.frames; S.model = buildModel(S.frames); S.events = r.body.events || [];
-  const want = Date.parse(new URLSearchParams(location.search).get('t') || '');
+  const q = new URLSearchParams(location.search);
+  S.mode = 'replay'; S.session = id; S.sessionType = r.body.meta?.type || S.sessionTypes?.[id] || null;
+  S.frames = r.body.frames; S.model = buildModel(S.frames); S.events = r.body.events || [];
+  disp.clear(); labelPrev.clear();
+  // the replay owns the tower from here: replace the fallback note with the replay context immediately
+  renderContext(S.model.start);
+  const want = q.get('session') === id ? Date.parse(q.get('t') || '') : NaN;
   S.T = Number.isFinite(want) ? Math.min(S.model.end, Math.max(S.model.start, want)) : S.model.start;
   const cov = r.body.coverage || {};
   $('[data-pc-coverage]').textContent = `${cov.frames || 0} frames · longest recording silence ${cov.longest_silence_s ?? 0}s${cov.silences_over_60s ? ` · ${cov.silences_over_60s} gap${cov.silences_over_60s > 1 ? 's' : ''} over 60s (cars held, not interpolated)` : ''}`;

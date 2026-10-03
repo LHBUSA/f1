@@ -97,7 +97,10 @@ if (fs.existsSync(BD_SRC)) {
 const prog = fs.readFileSync('src/core/progress.mjs', 'utf8');
 const progHash = crypto.createHash('sha256').update(prog).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/progress.${progHash}.js`), prog);
-const pc = fs.readFileSync('src/web/pbecast.js', 'utf8').replace("from './progress.js'", `from './progress.${progHash}.js'`);
+const lbl = fs.readFileSync('src/core/track-labels.mjs', 'utf8');
+const lblHash = crypto.createHash('sha256').update(lbl).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/track-labels.${lblHash}.js`), lbl);
+const pc = fs.readFileSync('src/web/pbecast.js', 'utf8').replace("from './progress.js'", `from './progress.${progHash}.js'`).replace("from './track-labels.js'", `from './track-labels.${lblHash}.js'`);
 const pcHash = crypto.createHash('sha256').update(pc).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/pbecast.${pcHash}.js`), pc);
 // Car Explorer client (team pages only)
