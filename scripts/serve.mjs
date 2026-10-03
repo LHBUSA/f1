@@ -31,9 +31,10 @@ http.createServer(async (req, res) => {
     const f = path.join(ROOT, c);
     if (f.startsWith(ROOT) && fs.existsSync(f) && fs.statSync(f).isFile()) {
       res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' });
-      return fs.createReadStream(f).pipe(res);
+      // a transient read error (exFAT under load, a rebuild in progress) ends this response, never the server
+      return fs.createReadStream(f).on('error', () => res.destroy()).pipe(res);
     }
   }
   res.writeHead(404, { 'content-type': 'text/html' });
-  fs.createReadStream(path.join(ROOT, '404.html')).pipe(res);
+  fs.createReadStream(path.join(ROOT, '404.html')).on('error', () => res.destroy()).pipe(res);
 }).listen(PORT, () => console.log(`serving ${ROOT} on http://127.0.0.1:${PORT}`));
