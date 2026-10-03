@@ -39,12 +39,13 @@ export function kalshiRaceMount(eventSlug, raceSession) {
   return `<div class="kx-mount" data-kalshi-race="${esc(id)}"${attrs(raceSession)}></div>`;
 }
 
-/** PBEcast mount (leaders strip while trading; market history card with the replay once closed), same main-race market. */
-export function kalshiStripMount(eventSlug, raceSession) {
+/** PBEcast mount: Market Pulse directly under the timing tower (a pc-grid item), full ranked-field card while it trades,
+ *  market history in the same place once closed / settled; same main-race market. Empty -> display:none. */
+export function kalshiCastMount(eventSlug, raceSession) {
   if (!MOUNTABLE(raceSession)) return '';
   const id = raceMarketId(eventSlug, raceSession);
   if (!id) return '';
-  return `<div class="kx-mount pc-kalshi wrap" data-kalshi-strip="${esc(id)}"${attrs(raceSession)}></div>`;
+  return `<div class="kx-mount pc-kalshi" data-kalshi-cast="${esc(id)}"${attrs(raceSession)}></div>`;
 }
 
 /** Result card line (completed main race): compact "MARKET first → before start · settled" from the board. */

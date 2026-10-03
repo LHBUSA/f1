@@ -6,7 +6,7 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 import { kalshiCard, kalshiStrip, marketModule, marketHistoryCard, marketCloseLine, __resetKalshiFlashes } from '../src/vendor/kalshi/kalshi-market-ui.js';
 import { createKalshiClient } from '../src/vendor/kalshi/kalshi-market-client.js';
-import { kalshiRaceMount, kalshiStripMount, kalshiCloseMount, raceMarketId, isRaceMarketId } from '../scripts/site/kalshi.mjs';
+import { kalshiRaceMount, kalshiCastMount, kalshiCloseMount, raceMarketId, isRaceMarketId } from '../scripts/site/kalshi.mjs';
 
 const MARKET_URL = 'https://kalshi.com/markets/kxf1race/f1-race/kxf1race-bah26';
 const DRIVERS = ['Max Verstappen', 'Kimi Antonelli', 'Lewis Hamilton', 'Charles Leclerc', 'George Russell', 'Lando Norris', 'Oscar Piastri', 'Fernando Alonso', 'Carlos Sainz', 'Pierre Gasly'];
@@ -76,11 +76,11 @@ test('kalshi: CSP connect-src allows the PropSports markets host', () => {
   assert.doesNotMatch(csp, /kalshi\.com/, 'the browser never talks to Kalshi');
 });
 
-// sha256 of the canonical shared files (propbetedge-workers/workers/propsports-markets/client @ 70d92e0), LF-normalised
+// sha256 of the canonical shared files (propbetedge-workers/workers/propsports-markets/client @ 8b73545), LF-normalised
 const VENDOR_SHA = {
-  'kalshi-market-ui.js': 'c343805e546cde66d01676c9c6c9f6f4ca746a8ba138b4b1ad0159a341f3db2a',
-  'kalshi-market-ui.css': 'db0f4b1efd5209966fb627f72e217b9539876d5123edc10d80524d172da41a06',
-  'kalshi-market-client.js': '653cb0fc2673f909552453052560bfd6194e0e4d045c51b1eb73483957d4c049',
+  'kalshi-market-ui.js': '93a8f485e90633a1cd70e93ab4123c1dc2161d08b3a76e41ec3cc4a0279d74f4',
+  'kalshi-market-ui.css': 'fb046ada2b2e5450207e4301c0e41a193aa599e4661843fdcdb50d45ac7191ae',
+  'kalshi-market-client.js': '211be23bb9a5b2be0a1b4ed1a1c2c1b3b2dfc4ef45a040ae13c07d28a8ae8744',
 };
 const lf = (f) => fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
 test('kalshi: vendored shared component is unchanged', () => {
@@ -100,10 +100,12 @@ test('kalshi: browser code never calls a Kalshi API host', () => {
     assert.doesNotMatch(t, API, f);
     assert.doesNotMatch(t, /fetch\([^)]*kalshi\.com/i, f);
   }
-  // the F1 loader reads only the PropSports markets API (its own reads keep kalshi:null history entries)
+  // the F1 loader reads only through the vendored shared client (8b73545 keeps kalshi:null history entries): no host,
+  // no fetch of its own (the 70d92e0 direct-read workaround is gone)
   const loader = fs.readFileSync('src/web/kalshi.js', 'utf8');
-  const hosts = [...loader.matchAll(/https:\/\/[a-z0-9.-]+/gi)].map((m) => m[0]);
-  assert.deepEqual([...new Set(hosts)], ['https://propsports-markets.sales-fd3.workers.dev']);
+  assert.deepEqual([...loader.matchAll(/https:\/\/[a-z0-9.-]+/gi)].map((m) => m[0]), []);
+  assert.doesNotMatch(loader, /fetch\(/);
+  assert.match(loader, /createKalshiClient\(\{ sport: 'f1' \}\)/);
 });
 
 test('kalshi: the race mount only ever targets the MAIN race session, never a sprint', () => {
@@ -111,16 +113,16 @@ test('kalshi: the race mount only ever targets the MAIN race session, never a sp
   const race = { type: 'race', state: 'scheduled', start_utc: '2026-10-04T07:00Z' };
   assert.equal(raceMarketId(ev, race), `${ev}-race`);
   assert.match(kalshiRaceMount(ev, race), /data-kalshi-race="2026-bahrain-grand-prix-in-malaysia-race"/);
-  assert.match(kalshiStripMount(ev, race), /data-kalshi-strip="2026-bahrain-grand-prix-in-malaysia-race"/);
+  assert.match(kalshiCastMount(ev, race), /data-kalshi-cast="2026-bahrain-grand-prix-in-malaysia-race"/);
   for (const type of ['sprint', 'sprint-qualifying', 'qualifying', 'fp1']) {
     assert.equal(raceMarketId(ev, { type, state: 'scheduled' }), null, type);
     assert.equal(kalshiRaceMount(ev, { type, state: 'scheduled' }), '', type);
-    assert.equal(kalshiStripMount(ev, { type, state: 'scheduled' }), '', type);
+    assert.equal(kalshiCastMount(ev, { type, state: 'scheduled' }), '', type);
   }
   assert.equal(kalshiRaceMount(ev, null), '');
   // completed main race keeps its mount (market history), flagged done; races before the market lane never had one
   assert.match(kalshiRaceMount(ev, { ...race, state: 'completed' }), /data-kalshi-race="2026-bahrain-grand-prix-in-malaysia-race"[^>]*data-kalshi-done="1"/);
-  assert.match(kalshiStripMount(ev, { ...race, state: 'completed' }), /data-kalshi-strip="2026-bahrain-grand-prix-in-malaysia-race"[^>]*data-kalshi-done="1"/);
+  assert.match(kalshiCastMount(ev, { ...race, state: 'completed' }), /data-kalshi-cast="2026-bahrain-grand-prix-in-malaysia-race"[^>]*data-kalshi-done="1"/);
   assert.equal(kalshiRaceMount('2024-italian-grand-prix', { type: 'race', state: 'completed', start_utc: '2024-09-01T13:00Z' }), '');
   assert.equal(kalshiRaceMount(ev, { ...race, state: 'canceled' }), '');
   for (const bad of [`${ev}-sprint`, `${ev}-sprint-race`, `${ev}-sprint-qualifying-race`, '2026-drivers-championship-race', `${ev}`, '']) assert.equal(isRaceMarketId(bad), false, bad);
@@ -149,7 +151,7 @@ test('kalshi: pages wire the mount only on race + PBEcast templates; static buil
   assert.match(pages, /kalshiCloseMount\(last\.slug, ctx\.session\(last\.id, 'race'\)\)/);
   assert.doesNotMatch(pages, /kalshiRaceMount\([^)]*sprint/);
   const pc = fs.readFileSync('scripts/site/pbecast-v2.mjs', 'utf8');
-  assert.match(pc, /kalshiStripMount\(ev\.id, race\)/);
+  assert.match(pc, /kalshiCastMount\(ev\.id, race\)/);
   for (const f of ['scripts/site/pages.mjs', 'scripts/site/pbecast-v2.mjs', 'scripts/site/kalshi.mjs', 'scripts/build-site.mjs']) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /market-intelligence\/(?:sport|event)/, f);
 });
 
@@ -260,4 +262,45 @@ test('market history: built completed race pages carry the mount + loader, no ba
     assert.match(h, /<script src="\/assets\/kalshi\.[0-9a-f]{10}\.js" defer><\/script>/);
     assert.doesNotMatch(h, /How the market closed|kx-h__row|kx__frow/, 'no prices baked into the static page');
   }
+});
+
+test('MLB market standard: shared client keeps completed field entries (kalshi:null + market history)', async () => {
+  const settled = f1History('SETTLED');
+  const fetchImpl = async (url) => new Response(JSON.stringify(/\/event\//.test(url) ? { enabled: true, event: settled } : { enabled: true, events: [settled] }), { status: 200 });
+  const c = createKalshiClient({ sport: 'f1', fetchImpl });
+  assert.equal((await c.loadEvent(F1_ID))?.market_history?.lifecycle, 'SETTLED');
+  assert.ok((await c.loadBoard()).get(F1_ID), 'board keeps the completed entry');
+});
+
+test('MLB market standard: lifecycle label for every phase; a non-fresh quote is never labelled live', () => {
+  const win = { document: { readyState: 'complete', addEventListener() {}, querySelector: () => null, hidden: false } };
+  win.window = win;
+  vm.runInNewContext(fs.readFileSync('src/web/kalshi.js', 'utf8'), { window: win, document: win.document, setTimeout, clearTimeout });
+  const K = win.F1.kalshi;
+  const open = (state, freshness = 'live', lc = 'ACTIVE') => { const e = fieldEntry(); e.event = { ...e.event, state }; e.kalshi.freshness = freshness; e.market = { lifecycle: lc, proposition: 'driver_wins_race' }; return e; };
+  assert.deepEqual([...K.marketPhase(open('pre'), '2999-01-01T00:00Z')], ['pre', 'MARKET OPEN · PRE-RACE']);
+  assert.deepEqual([...K.marketPhase(open('in'))], ['live', 'LIVE MARKET']);
+  assert.deepEqual([...K.marketPhase(open('in', 'stale'))], ['live-delayed', 'MARKET OPEN · RACE IN PROGRESS']);
+  assert.deepEqual([...K.marketPhase(open('post'))], ['final-open', 'RACE FINAL · MARKET STILL TRADING']);
+  assert.deepEqual([...K.marketPhase(f1History('CLOSED'))], ['closed', 'MARKET CLOSED · AWAITING SETTLEMENT']);
+  assert.deepEqual([...K.marketPhase(f1History('SETTLED'))], ['settled', 'MARKET SETTLED']);
+  assert.equal(K.marketPhase(null), null);
+  assert.equal(K.marketPhase(open('post', 'live', 'CLOSED')), null, 'closed without stored history: nothing');
+});
+
+test('MLB market standard: PBEcast mounts Market Pulse inside the grid under the timing tower (not a collapsed strip)', () => {
+  const pc = fs.readFileSync('scripts/site/pbecast-v2.mjs', 'utf8');
+  assert.match(pc, /<\/aside>\s*\$\{kalshiMount\}\s*<\/section>/, 'mount is the pc-grid item right after the tower');
+  const loader = fs.readFileSync('src/web/kalshi.js', 'utf8');
+  assert.doesNotMatch(loader, /kalshiStrip\(/, 'no collapsed strip on PBEcast');
+  assert.match(loader, /ui\.kalshiCard\(entry, \{ placement: 'pbecast', compact: true \}\)/);
+  assert.match(loader, /ui\.marketHistoryCard\(entry, \{ placement: 'pbecast-history' \}\)/);
+  const css = fs.readFileSync('src/web/styles.css', 'utf8');
+  assert.match(css, /\.pc-grid>\.pc-tower\{grid-column:2;grid-row:1\/span 2\}/);
+});
+
+test('copy: owner line, never conditional availability wording', () => {
+  const b = fs.readFileSync('scripts/build-site.mjs', 'utf8');
+  assert.match(b, /Live prediction-market pricing is built into PropBetEdge race pages and PBEcast\./);
+  assert.doesNotMatch(b, /part of every race page|if available|selected events|when a market exists/i);
 });

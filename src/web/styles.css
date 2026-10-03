@@ -855,8 +855,19 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 .kx.ic{border:1px solid rgba(127,184,255,.24);border-radius:var(--r);padding:16px;min-width:0}
 .kx-mount:empty{display:none}
 .kx-sec .kx-f1note{margin-top:8px}
-.pc-kalshi{margin-top:14px}
+/* PBEcast Market Pulse (MLB market standard): a pc-grid item directly under the timing tower on phones/tablets; on
+   desktop it sits under the track map (left column) while the tower spans both rows, so its arrival never moves the
+   track or the tower. Lifecycle label above the module; empty mount = display:none (no box, no reserved space). */
+.pc-kalshi{min-width:0}
+@media(min-width:1024px){.pc-grid>.pc-trackcol{grid-column:1;grid-row:1}.pc-grid>.pc-tower{grid-column:2;grid-row:1/span 2}.pc-grid>.pc-kalshi{grid-column:1;grid-row:2}}
 .pc-kalshi .kx-f1note{margin-top:6px}
+.kx-phase{display:flex;align-items:center;gap:6px;margin:0 0 6px 2px;font:800 11px/1 var(--f-mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);letter-spacing:.14em;color:#7fb8ff}
+.kx-phase-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.kx-phase-wrap[data-phase="live"] .kx-phase{color:#ff6b6b}
+.kx-phase-wrap[data-phase="live"] .kx-phase-dot{animation:kx-phase-blink 1.6s ease-in-out infinite}
+.kx-phase-wrap[data-phase="closed"] .kx-phase,.kx-phase-wrap[data-phase="settled"] .kx-phase,.kx-phase-wrap[data-phase="final-open"] .kx-phase{color:var(--muted)}
+@keyframes kx-phase-blink{50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.kx-phase-dot{animation:none!important}}
 /* Market history (closed / settled main-race market) + result-card market line */
 .kx-closeline{margin:8px 0 0;font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pc-kalshi .kx-h{margin:0}
