@@ -232,7 +232,12 @@ for (const e of completedEvents) {
         const d = q && mq ? qualiPairDelta(q, mq) : null;
         return {
           driver_id: m.driver_id,
+          // DNA input (unchanged, documented in the DNA basis): qualifying classification, else starting grid
           quali_ahead: qualiPos && mq?.position ? qualiPos < mq.position : r.grid && m.grid ? r.grid < m.grid : null,
+          // matchup/battle semantics: qualifying classification ONLY; the grid comparison is a separate, labelled
+          // fallback used only when no qualifying classification exists for the pair (grid penalties never alter it)
+          quali_cls_ahead: qualiPos && mq?.position ? qualiPos < mq.position : null,
+          grid_ahead: !(qualiPos && mq?.position) && r.grid > 0 && m.grid > 0 ? r.grid < m.grid : null,
           quali_delta_pct: d && Math.abs(d.pct) < 5 ? d.pct : null,
           quali_stage: d?.stage || null,
           race_ahead: CLASSIFIED(r) && CLASSIFIED(m) ? r.position < m.position : CLASSIFIED(r) && !CLASSIFIED(m) && STARTED(m) ? true : !CLASSIFIED(r) && CLASSIFIED(m) && STARTED(r) ? false : null,
@@ -742,17 +747,32 @@ function summarize(rows, a, b) {
       avg_grid: r3(mean(xs.filter((x) => x.grid).map((x) => x.grid))),
       positions_gained: r3(mean(xs.filter((x) => x.gain != null).map((x) => x.gain))),
       q3_appearances: xs.filter((x) => x.q3).length,
+      // sample sizes behind the averages (the UI shows them beside every average)
+      n_finish: cls.length,
+      n_grid: xs.filter((x) => x.grid).length,
+      n_gain: xs.filter((x) => x.gain != null).length,
     };
   };
-  const qa = rows.map((r) => r.m.quali_ahead).filter((v) => v != null);
-  const ra = rows.map((r) => r.m.race_ahead).filter((v) => v != null);
+  // H2H semantics (every count carries its denominator; the UI never recomputes them):
+  //   qualifying = official qualifying classification where both have one; grid only as a separately labelled fallback
+  //   race       = only races where BOTH were classified (a retirement never hands the other driver an H2H win)
+  //   sprint     = only sprint sessions where both have a sprint classification
+  const qa = rows.map((r) => r.m.quali_cls_ahead).filter((v) => v != null);
+  const ga = rows.map((r) => r.m.grid_ahead).filter((v) => v != null);
+  const rc = rows.filter((r) => r.m.both_classified && Number.isFinite(r.m.finish_delta) && r.m.finish_delta !== 0); // distinct classified positions decide
   const qd = rows.map((r) => r.m.quali_delta_pct).filter((v) => v != null);
   const sp = rows.filter((r) => r.a.sprint_pos && r.b?.sprint_pos);
   return {
     events: rows.length,
     quali_h2h: [qa.filter(Boolean).length, qa.filter((v) => v === false).length],
-    race_h2h: [ra.filter(Boolean).length, ra.filter((v) => v === false).length],
+    quali_comparable: qa.length,
+    grid_fallback_h2h: [ga.filter(Boolean).length, ga.filter((v) => v === false).length],
+    grid_fallback_events: ga.length,
+    race_h2h: [rc.filter((r) => r.m.finish_delta > 0).length, rc.filter((r) => r.m.finish_delta < 0).length],
+    race_comparable: rc.length,
+    race_excluded: rows.length - rc.length,
     sprint_h2h: [sp.filter((r) => r.a.sprint_pos < r.b.sprint_pos).length, sp.filter((r) => r.a.sprint_pos > r.b.sprint_pos).length],
+    sprint_comparable: sp.length,
     quali_gap_pct_median: r3(median(qd)),
     quali_gap_samples: qd.length,
     a: s('a'),
@@ -786,10 +806,16 @@ for (const p of Object.values(pairs)) {
     last5: summarize(all.slice(-5), p.a, p.b),
     last10: summarize(all.slice(-10), p.a, p.b),
     by_season: bySeason,
+    // same pair under more than one constructor: one summary per constructor
+    by_constructor: Object.fromEntries([...p.constructors].map((c) => [c, summarize(all.filter((r) => r.a.constructor_id === c), p.a, p.b)])),
     log: all.slice(-30).map((r) => ({
       event_id: r.event_id,
+      constructor_id: r.a.constructor_id,
       a_quali: r.a.quali_pos,
       b_quali: r.b?.quali_pos ?? null,
+      a_grid: r.a.grid || null,
+      b_grid: r.b?.grid || null,
+      both_classified: r.m.both_classified,
       a_finish: r.a.classified ? r.a.finish : null,
       b_finish: r.b?.classified ? r.b.finish : null,
       a_status: r.a.status,
@@ -805,18 +831,36 @@ for (const p of Object.values(pairs)) {
 function matchup(a, b) {
   const lb = Object.fromEntries((driverLog[b] || []).map((x) => [x.event_id, x]));
   const shared = (driverLog[a] || []).filter((x) => lb[x.event_id]).map((x) => ({ a: x, b: lb[x.event_id] }));
-  const both = shared.filter((s) => s.a.classified && s.b.classified);
-  const qBoth = shared.filter((s) => (s.a.quali_pos || s.a.grid) && (s.b.quali_pos || s.b.grid));
+  // SHARED GRID HISTORY: every event both started a race weekend in, whatever their cars. Different machinery, so it is
+  // never presented as a same-car comparison; the same-team subset is counted separately (same_team_events).
+  const both = shared.filter((s) => s.a.classified && s.b.classified && Number.isInteger(s.a.finish) && Number.isInteger(s.b.finish) && s.a.finish !== s.b.finish);
+  const qCls = shared.filter((s) => s.a.quali_pos && s.b.quali_pos);
+  const qGrid = shared.filter((s) => !(s.a.quali_pos && s.b.quali_pos) && s.a.grid > 0 && s.b.grid > 0);
+  const side = (pick) => [pick(shared.map((s) => s.a)), pick(shared.map((s) => s.b))];
+  const seasons = [...new Set(shared.map((s) => s.a.season))];
+  const resOf = (x) => ({ constructor_id: x.constructor_id, quali: x.quali_pos || null, grid: x.grid || null, finish: x.classified ? x.finish : null, status: x.status, classified: x.classified, points: x.points });
   return {
     shared_events: shared.length,
+    same_team_events: shared.filter((s) => s.a.constructor_id && s.a.constructor_id === s.b.constructor_id).length,
+    race_comparable_events: both.length,
+    race_excluded_events: shared.length - both.length,
     race_ahead: [both.filter((s) => s.a.finish < s.b.finish).length, both.filter((s) => s.a.finish > s.b.finish).length],
-    quali_ahead: [qBoth.filter((s) => (s.a.quali_pos || s.a.grid) < (s.b.quali_pos || s.b.grid)).length, qBoth.filter((s) => (s.a.quali_pos || s.a.grid) > (s.b.quali_pos || s.b.grid)).length],
+    quali_comparable_events: qCls.length,
+    quali_ahead: [qCls.filter((s) => s.a.quali_pos < s.b.quali_pos).length, qCls.filter((s) => s.a.quali_pos > s.b.quali_pos).length],
+    grid_fallback_events: qGrid.length,
+    grid_ahead: [qGrid.filter((s) => s.a.grid < s.b.grid).length, qGrid.filter((s) => s.a.grid > s.b.grid).length],
+    quali_unavailable_events: shared.length - qCls.length - qGrid.length,
     points: [r3(shared.reduce((t, s) => t + s.a.points, 0)), r3(shared.reduce((t, s) => t + s.b.points, 0))],
     wins: [shared.filter((s) => s.a.classified && s.a.finish === 1).length, shared.filter((s) => s.b.classified && s.b.finish === 1).length],
     podiums: [shared.filter((s) => s.a.classified && s.a.finish <= 3).length, shared.filter((s) => s.b.classified && s.b.finish <= 3).length],
+    dnfs: side((xs) => xs.filter((x) => x.started && !x.classified).length),
     first_season: shared.length ? shared[0].a.season : null,
     last_season: shared.length ? shared.at(-1).a.season : null,
-    recent: shared.slice(-10).reverse().map((s) => ({ event_id: s.a.event_id, a: s.a.classified ? s.a.finish : s.a.status, b: s.b.classified ? s.b.finish : s.b.status })),
+    by_season: Object.fromEntries(seasons.map((y) => {
+      const ss = shared.filter((s) => s.a.season === y), bb = ss.filter((s) => s.a.classified && s.b.classified), qq = ss.filter((s) => s.a.quali_pos && s.b.quali_pos);
+      return [y, { events: ss.length, same_team: ss.filter((s) => s.a.constructor_id === s.b.constructor_id).length, race_ahead: [bb.filter((s) => s.a.finish < s.b.finish).length, bb.filter((s) => s.a.finish > s.b.finish).length], race_comparable: bb.length, quali_ahead: [qq.filter((s) => s.a.quali_pos < s.b.quali_pos).length, qq.filter((s) => s.a.quali_pos > s.b.quali_pos).length], quali_comparable: qq.length, points: [r3(ss.reduce((t, s) => t + s.a.points, 0)), r3(ss.reduce((t, s) => t + s.b.points, 0))] }];
+    })),
+    recent: shared.slice(-10).reverse().map((s) => ({ event_id: s.a.event_id, a: resOf(s.a), b: resOf(s.b), same_team: s.a.constructor_id === s.b.constructor_id, ahead: s.a.classified && s.b.classified ? (s.a.finish < s.b.finish ? 'a' : 'b') : null })),
   };
 }
 const matchupPairs = new Set();

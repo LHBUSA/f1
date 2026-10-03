@@ -587,62 +587,14 @@ export function matchupsIndex(ctx) {
   <section class="section"><div class="wrap"><div class="section-head"><h2>Teammate pairings with 20+ shared races</h2></div><div class="table-wrap"><table><thead><tr><th>Driver A</th><th>Driver B</th><th>Team</th><th>Seasons</th><th class="num">Quali</th><th class="num">Race</th><th></th></tr></thead><tbody>${famous
     .map((t) => {
       const u = ctx.matchupUrl(t.a, t.b);
-      return `<tr><td>${driverCell(ctx, t.a, t.constructors.at(-1), t.seasons.at(-1))}</td><td>${driverCell(ctx, t.b, t.constructors.at(-1), t.seasons.at(-1))}</td><td class="list">${t.constructors.map((c) => teamLink(ctx, c)).join(', ')}</td><td>${t.seasons[0]}–${t.seasons.at(-1)}</td><td class="num">${t.career.quali_h2h.join('–')}</td><td class="num">${t.career.race_h2h.join('–')}</td><td>${u ? `<a class="more" href="${u}">Open</a>` : ''}</td></tr>`;
+      return `<tr><td>${driverCell(ctx, t.a, t.constructors.at(-1), t.seasons.at(-1))}</td><td>${driverCell(ctx, t.b, t.constructors.at(-1), t.seasons.at(-1))}</td><td class="list">${t.constructors.map((c) => teamLink(ctx, c)).join(', ')}</td><td>${t.seasons[0]}–${t.seasons.at(-1)}</td><td class="num">${t.career.quali_h2h.join('–')}</td><td class="num">${t.career.race_h2h.join('–')} <span class="fine">/${t.career.race_comparable}</span></td><td>${u ? `<a class="more" href="${u}">Open</a>` : ''}</td></tr>`;
     })
-    .join('')}</tbody></table></div></div></section>`;
+    .join('')}</tbody></table></div><p class="fine">Qualifying: official qualifying classification. Race: only races where both drivers were classified (/n = those races); a retirement never counts as a head-to-head win.</p></div></section>`;
   return { path: '/matchups', title: `F1 Teammate Battles ${season}: Qualifying & Race Head-to-Heads`, description: `Every ${season} Formula 1 teammate battle: qualifying and race head-to-heads, median qualifying gaps, points and DNFs, plus historic pairings.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/matchups', 'Matchups']])] };
 }
 
-export function matchupPage(ctx, key) {
-  const m = ctx.matchups[key];
-  const [a, b] = [ctx.driverById[m.a], ctx.driverById[m.b]];
-  const t = ctx.teammates.find((x) => (x.a === m.a && x.b === m.b) || (x.a === m.b && x.b === m.a));
-  const flip = t && t.a !== m.a;
-  const ca = ctx.latestTeam[m.a];
-  const cb = ctx.latestTeam[m.b];
-  const colA = ctx.colorOf(ca?.constructor_id, ca?.season);
-  const colB = ctx.colorOf(cb?.constructor_id, cb?.season);
-  const row = (label, x, y, better = 'high') => {
-    const win = x === y || x == null || y == null ? 0 : (better === 'high' ? x > y : x < y) ? 1 : -1;
-    return `<tr><td class="num ${win === 1 ? 'green' : ''}"><b>${x ?? '—'}</b></td><th scope="row" class="num">${esc(label)}</th><td class="${win === -1 ? 'green' : ''}"><b>${y ?? '—'}</b></td></tr>`;
-  };
-  const tw = (s) => (flip ? { a: s.b, b: s.a, quali_h2h: [...s.quali_h2h].reverse(), race_h2h: [...s.race_h2h].reverse(), sprint_h2h: [...s.sprint_h2h].reverse(), quali_gap_pct_median: s.quali_gap_pct_median == null ? null : -s.quali_gap_pct_median, quali_gap_samples: s.quali_gap_samples, events: s.events } : s);
-  const teamBlock = t
-    ? (() => {
-        const windows = [['career', 'Career together'], ['last10', 'Last 10'], ['last5', 'Last 5'], ...t.seasons.slice().reverse().map((y) => [y, String(y)])];
-        return `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Teammates · ${t.constructors.map((c) => esc(ctx.conById[c]?.name)).join(', ')}</span><h2>Teammate battle</h2></div></div>
-        <div class="tabs" role="tablist">${windows.map(([k, l], i) => `<button class="tab" role="tab" type="button" aria-selected="${i === 0}" aria-controls="tw-${k}" id="tbw-${k}">${esc(l)}</button>`).join('')}</div>
-        ${windows
-          .map(([k], i) => {
-            const s0 = typeof k === 'number' ? t.by_season[k] : t[k];
-            const s = tw(s0);
-            return `<div class="tabpanel" role="tabpanel" id="tw-${k}" aria-labelledby="tbw-${k}"${i ? ' hidden' : ''}><div class="table-wrap"><table class="vs-table"><thead><tr><th class="num">${esc(a.last_name)}</th><th class="num">${s.events} events</th><th>${esc(b.last_name)}</th></tr></thead><tbody>
-            ${row('Qualifying H2H', s.quali_h2h[0], s.quali_h2h[1])}${row('Race H2H', s.race_h2h[0], s.race_h2h[1])}${row('Sprint H2H', s.sprint_h2h[0], s.sprint_h2h[1])}${row('Points', s.a.points, s.b.points)}${row('Wins', s.a.wins, s.b.wins)}${row('Podiums', s.a.podiums, s.b.podiums)}${row('Poles', s.a.poles, s.b.poles)}${row('DNFs', s.a.dnfs, s.b.dnfs, 'low')}${row('Fastest laps', s.a.fastest_laps, s.b.fastest_laps)}${row('Avg finish', s.a.avg_finish, s.b.avg_finish, 'low')}${row('Avg grid', s.a.avg_grid, s.b.avg_grid, 'low')}${row('Avg positions gained', s.a.positions_gained, s.b.positions_gained)}${row('Q3 appearances', s.a.q3_appearances, s.b.q3_appearances)}
-            </tbody></table></div><p class="fine">${s.quali_gap_pct_median != null ? `Median qualifying gap: ${esc(a.last_name)} ${s.quali_gap_pct_median > 0 ? '+' : ''}${s.quali_gap_pct_median.toFixed(3)}% vs ${esc(b.last_name)} (n=${s.quali_gap_samples}; negative = ${esc(a.last_name)} faster).` : 'No comparable qualifying lap times in this window.'}</p></div>`;
-          })
-          .join('')}</div></section>`;
-      })()
-    : '';
-  const dA = ctx.dnaCur[m.a] || ctx.dnaCareer[m.a];
-  const dB = ctx.dnaCur[m.b] || ctx.dnaCareer[m.b];
-  const dnaCmp =
-    dA && dB
-      ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Driver DNA</span><h2>Profile comparison</h2></div></div><div class="table-wrap"><table><thead><tr><th class="num">${esc(a.last_name)} <span class="fine">${esc(dA.window)}</span></th><th class="num">Dimension</th><th>${esc(b.last_name)} <span class="fine">${esc(dB.window)}</span></th></tr></thead><tbody>${Object.keys(dA.dimensions)
-          .map((k) => row(dA.dimensions[k].label, dA.dimensions[k].percentile, dB.dimensions[k]?.percentile))
-          .join('')}</tbody></table></div><p class="fine">Percentiles; each driver vs their own window population. Teammate-relative dimensions compare each driver to their own teammates.</p></div></section>`
-      : '';
-  const recent = m.recent.map((r) => `<tr><td><a href="${ctx.raceUrl(r.event_id)}">${ctx.eventById[r.event_id].season} ${esc(ctx.eventById[r.event_id].name)}</a></td><td class="num">${esc(String(r.a))}</td><td class="num">${esc(String(r.b))}</td></tr>`).join('');
-  const path = `/matchup/${a.slug}/${b.slug}`;
-  const bc = [['/', 'Home'], ['/matchups', 'Matchups'], [path, `${a.last_name} vs ${b.last_name}`]];
-  const body = `${crumbs(bc)}
-  <section class="hero"><div class="wrap"><span class="eyebrow">Head to head · ${m.first_season}–${m.last_season}</span><h1>${esc(a.full_name)} <span class="muted">vs</span> ${esc(b.full_name)}</h1>
-  <div class="grid g2 section"><div class="card battle ${teamClass(colA)}"><div class="side">${headshot(a, 'md', ctx.mediaOk, colA)}<a class="nm" href="/drivers/${a.slug}">${esc(a.full_name)}</a></div><span class="vs">${m.race_ahead[0]}</span><div class="side"><span class="kicker">Finished ahead</span><span class="nm">${m.shared_events} shared races</span></div></div>
-  <div class="card battle ${teamClass(colB)}"><div class="side">${headshot(b, 'md', ctx.mediaOk, colB)}<a class="nm" href="/drivers/${b.slug}">${esc(b.full_name)}</a></div><span class="vs">${m.race_ahead[1]}</span><div class="side"><span class="kicker">Finished ahead</span><span class="nm">both classified</span></div></div></div></div></section>
-  <section class="section"><div class="wrap"><div class="table-wrap"><table class="vs-table"><thead><tr><th class="num">${esc(a.last_name)}</th><th class="num">In shared races</th><th>${esc(b.last_name)}</th></tr></thead><tbody>${row('Finished ahead', m.race_ahead[0], m.race_ahead[1])}${row('Qualified ahead', m.quali_ahead[0], m.quali_ahead[1])}${row('Points', m.points[0], m.points[1])}${row('Wins', m.wins[0], m.wins[1])}${row('Podiums', m.podiums[0], m.podiums[1])}</tbody></table></div></div></section>
-  ${teamBlock}${dnaCmp}
-  <section class="section"><div class="wrap"><div class="section-head"><h2>Recent shared races</h2></div><div class="table-wrap"><table><thead><tr><th>Event</th><th class="num">${esc(a.last_name)}</th><th class="num">${esc(b.last_name)}</th></tr></thead><tbody>${recent}</tbody></table></div></div></section>`;
-  return { path, title: `${a.full_name} vs ${b.full_name} – F1 Head-to-Head`, description: `${a.full_name} vs ${b.full_name}: ${m.shared_events} shared Formula 1 races, finished-ahead ${m.race_ahead[0]}–${m.race_ahead[1]}, qualifying ${m.quali_ahead[0]}–${m.quali_ahead[1]}${t ? ', full teammate battle' : ''} and Driver DNA comparison.`, body, section: '/matchups', jsonLd: [jsonLdBreadcrumb(bc)] };
-}
+// matchup pages live in ./matchup.mjs (shared grid history vs teammate battle)
+export { matchupPage } from './matchup.mjs';
 
 // ---------------- PBECAST ----------------
 export function pbecast(ctx) {

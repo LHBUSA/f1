@@ -114,7 +114,7 @@ export function battleCard(ctx, t, season, { link = true } = {}) {
     <div class="side">${headshot(b, 'md', ctx.mediaOk, color)}<span class="nm">${esc(b?.last_name || b?.full_name)}</span></div>
     <div class="h2h">
       ${row('Qualifying', s.quali_h2h[0], s.quali_h2h[1])}
-      ${row('Race', s.race_h2h[0], s.race_h2h[1])}
+      ${row(`Race <small>${s.race_comparable ?? ''} both classified</small>`, s.race_h2h[0], s.race_h2h[1])}
       ${row('Points', Math.round(s.a.points), Math.round(s.b.points))}
       <p class="fine">${s.quali_gap_pct_median != null ? `Median qualifying gap ${s.quali_gap_pct_median > 0 ? '+' : ''}${s.quali_gap_pct_median.toFixed(3)}% (${esc(a?.code || a?.last_name)} vs ${esc(b?.code || b?.last_name)}, n=${s.quali_gap_samples})` : 'No comparable qualifying times'} · ${s.events} events${season ? ` in ${season}` : ' together'} · ${teamLink(ctx, cid)}</p>
       ${url ? `<a class="more" href="${url}">Full battle</a>` : ''}
