@@ -3,6 +3,7 @@
 import { segments, render as renderPlain, resolveHref } from './validate.mjs';
 import { venueDay } from './temporal.mjs';
 import { articleMarketEvent } from './market.mjs';
+import { articleMarketModule } from '../vendor/kalshi/article-market-ui.js';
 
 // Archive frame shown under the dateline: a story first published after its session (backfill), or a preview whose
 // race has since started. States the publication moment against the event moment; never backdates.
@@ -78,11 +79,16 @@ export function moduleHtml(id, packet, link) {
 // MARKET (article-market/1): one module with a lifecycle (LIVE MARKET WATCH -> THE MARKET RESULT) after the first
 // editorial section, only on a story first published at/after the activation time and linked to its main race market.
 // The slot is an empty element (no box, no reserved space); src/web/article-market.js fills it client-side from the
-// same-origin markets rewrite. Prices are never baked into the page; nothing observed -> nothing rendered.
+// same-origin markets rewrite. Live prices are never baked into the page; nothing observed -> nothing rendered.
+// Once the packet is FINAL and stored on the story (market.frozen, EMBED_THIS_PACKET) the page renders THE MARKET
+// RESULT from that stored copy at build time (first paint, no request, never re-read).
 export function articleMarketSlot(a) {
   const id = articleMarketEvent(a);
   if (!id) return '';
-  return `<div class="nmarket" data-art-market="${esc(id)}" data-published="${esc(a.published_at)}"${a.market.focus?.length ? ` data-focus="${esc(a.market.focus.join(','))}"` : ''}></div>`;
+  const focus = a.market.focus?.length ? a.market.focus : null;
+  const fz = a.market.frozen;
+  const inner = fz?.payload ? articleMarketModule(fz.payload, { placement: 'f1-article', focus }) : '';
+  return `<div class="nmarket" data-art-market="${esc(id)}" data-published="${esc(a.published_at)}"${focus ? ` data-focus="${esc(focus.join(','))}"` : ''}${inner ? ` data-am-frozen="${esc(fz.sha256)}"` : ''}>${inner}</div>`;
 }
 
 // article -> page object for layout()
@@ -131,5 +137,5 @@ export function articlePage(a, { linkOk, related = [], site }) {
     { '@context': 'https://schema.org', '@type': 'NewsArticle', headline: hl.slice(0, 110), description: dk, datePublished: a.published_at, dateModified: a.modified_at || a.published_at, image: [`${site}/news/cards/${a.slug}.jpg`], author: { '@type': 'Organization', name: 'PropBetEdge F1 Desk', url: `${site}/news` }, publisher: { '@type': 'Organization', name: 'PropBetEdge', logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` } }, mainEntityOfPage: `${site}/news/${a.slug}`, articleSection: CLASS_LABEL[a.class], about: race ? { '@type': 'SportsEvent', name: race.name, url: `${site}/races/${race.ref}`, sport: 'Formula 1' } : undefined, mentions },
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [['/', 'Home'], ['/news', 'News'], [`/news/${a.slug}`, hl]].map(([p, n], i) => ({ '@type': 'ListItem', position: i + 1, name: n, item: site + p })) },
   ];
-  return { path: `/news/${a.slug}`, title: renderPlain(d.seo_title, P), description: renderPlain(d.seo_description, P), body, jsonLd, ogType: 'article', ogImage: `${site}/news/cards/${a.slug}.jpg`, ogImageAlt: hl, article: { published: a.published_at, modified: a.modified_at || a.published_at, section: CLASS_LABEL[a.class] }, section: '/news', noindex: a.status !== 'published', bg: 'data', articleMarket: !!slot };
+  return { path: `/news/${a.slug}`, title: renderPlain(d.seo_title, P), description: renderPlain(d.seo_description, P), body, jsonLd, ogType: 'article', ogImage: `${site}/news/cards/${a.slug}.jpg`, ogImageAlt: hl, article: { published: a.published_at, modified: a.modified_at || a.published_at, section: CLASS_LABEL[a.class] }, section: '/news', noindex: a.status !== 'published', bg: 'data', articleMarket: !!slot && !slot.includes('data-am-frozen') };
 }

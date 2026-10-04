@@ -29,6 +29,25 @@ export function marketLink(X, eventId, packet) {
   return { contract: 'article-market/1', sport: ARTICLE_MARKET_SPORT, canonical_event_id: id, proposition: 'driver_wins_race', focus: focus.slice(0, MAX_FOCUS) };
 }
 
+export const MARKETS_BASE = process.env.PROPSPORTS_MARKETS_BASE || 'https://propsports-markets.sales-fd3.workers.dev';
+const sec = (iso) => Math.floor(Date.parse(iso || '') / 1000);
+
+/**
+ * The payload to store when the shared API says the packet is final (freeze = EMBED_THIS_PACKET), else null. Checks it is
+ * THIS story's packet: same canonical event, same original publication second, FINAL, sealed sha256, result mode.
+ */
+export function freezable(a, payload) {
+  const id = articleMarketEvent(a);
+  const p = payload?.packet;
+  if (!id || !payload?.eligible || payload.freeze !== 'EMBED_THIS_PACKET' || payload.live?.mode !== 'MARKET_RESULT') return null;
+  if (!p || p.packet_state !== 'FINAL' || p.canonical_event_id !== id || !/^[0-9a-f]{64}$/.test(p.sha256 || '')) return null;
+  if (sec(p.article?.published_at) !== sec(a.published_at)) return null;
+  return { contract: payload.contract, sport: payload.sport, eligible: true, mode: payload.mode, freeze: payload.freeze, packet: p, live: { version: payload.live.version, mode: 'MARKET_RESULT', in_play: false, as_of: payload.live.as_of, venues: [] } };
+}
+
+/** Index form of the link: the frozen packet is referenced by sha only (the payload lives in the story's news doc). */
+export const indexMarket = (m) => (!m ? null : m.frozen ? { ...m, frozen: { sha256: m.frozen.sha256, embedded_at: m.frozen.embedded_at } } : m);
+
 /** The canonical market event id of an article that may carry the module, else null (pre-activation / unlinked). */
 export function articleMarketEvent(a) {
   const pub = Date.parse(a?.published_at || '');

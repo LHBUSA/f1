@@ -67,3 +67,27 @@ test('vercel.json: exact same-origin rewrite for the F1 article market route onl
   assert.equal(r.source, '/api/markets/v1/article-market/f1/:id(\\d{4}-[a-z0-9-]+-race)');
   assert.equal(r.destination, 'https://propsports-markets.sales-fd3.workers.dev/v1/article-market/f1/:id');
 });
+
+test('freeze: a FINAL packet (EMBED_THIS_PACKET) for THIS story is stored and rendered from the stored copy, no live read', async () => {
+  const { freezable, indexMarket } = await import('../src/news/market.mjs');
+  const p = JSON.parse(fs.readFileSync('tests/fixtures/article-market-f1-bah26-final.json', 'utf8'));
+  const a = { slug: 'max-verstappen-wins-2026-bahrain-grand-prix-in-malaysia', published_at: '2026-10-04T16:54:02.924Z', market: { contract: 'article-market/1', sport: 'f1', canonical_event_id: '2026-bahrain-grand-prix-in-malaysia-race', focus: ['max-verstappen', 'kimi-antonelli', 'lewis-hamilton', 'george-russell'] } };
+  const fz = freezable(a, p);
+  assert.ok(fz);
+  assert.equal(fz.packet.sha256, p.packet.sha256);
+  assert.equal(fz.packet.packet_state, 'FINAL');
+  assert.deepEqual(fz.live.venues, []); // no time-varying live layer stored
+  // another story / another publication time / not final -> never stored
+  assert.equal(freezable({ ...a, published_at: '2026-10-04T16:55:00Z' }, p), null);
+  assert.equal(freezable(a, { ...p, freeze: 'DO_NOT_FREEZE_YET' }), null);
+  assert.equal(freezable(a, { ...p, packet: { ...p.packet, packet_state: 'PROVISIONAL' } }), null);
+  assert.equal(freezable({ ...a, market: { ...a.market, canonical_event_id: '2026-singapore-grand-prix-race' } }, p), null);
+  const stored = { ...a, market: { ...a.market, frozen: { sha256: p.packet.sha256, embedded_at: '2026-10-04T17:10:00Z', payload: fz } } };
+  const html = articleMarketSlot(stored);
+  assert.match(html, new RegExp(`data-am-frozen="${p.packet.sha256}"`));
+  assert.match(html, /The market result/);
+  assert.match(html, /Settled/);
+  assert.match(html, /Max Verstappen/);
+  assert.doesNotMatch(html, /style="/);
+  assert.deepEqual(Object.keys(indexMarket(stored.market).frozen), ['sha256', 'embedded_at']);
+});

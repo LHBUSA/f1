@@ -36,7 +36,7 @@
 
   function mount(root) {
     const slot = root.querySelector('[data-art-market]');
-    if (!slot) return null;
+    if (!slot || slot.dataset.amFrozen) return null; // FINAL packet rendered from the story's stored copy: never re-read
     const id = slot.dataset.artMarket, publishedAt = slot.dataset.published, focus = slot.dataset.focus || '';
     if (!ID.test(id || '') || !publishedAt) return null;
     let dead = false, stop = () => {}, io = null;

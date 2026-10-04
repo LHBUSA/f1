@@ -24,7 +24,7 @@ import { validateDraft, render, QUALITY_VERSION } from '../src/news/validate.mjs
 import { cardSvg, renderCard, headshotData } from '../src/news/card.mjs';
 import { CLASS_LABEL } from '../src/news/render.mjs';
 import { archiveKind } from '../src/news/temporal.mjs';
-import { marketLink } from '../src/news/market.mjs';
+import { marketLink, articleMarketEvent, freezable, indexMarket, MARKETS_BASE } from '../src/news/market.mjs';
 
 const BASE = process.env.PROPSPORTS_F1_BASE || 'https://propsports.proptechusa.ai/v1/f1';
 const NOW = process.env.F1_NEWS_NOW || new Date().toISOString();
@@ -41,6 +41,16 @@ try {
   const r = await fetch(`${BASE}/news`, { signal: AbortSignal.timeout(20000) });
   if (r.ok) for (const a of (await r.json()).articles || []) live[a.slug] = a;
 } catch { /* first publication or offline: dates start now */ }
+
+// one article-market read (the story's ORIGINAL publication time + its focus drivers); null on any failure
+async function readArticleMarket(a) {
+  try {
+    const id = articleMarketEvent(a);
+    const focus = a.market.focus?.length ? `&focus=${encodeURIComponent(a.market.focus.join(','))}` : '';
+    const r = await fetch(`${MARKETS_BASE}/v1/article-market/f1/${encodeURIComponent(id)}?published_at=${encodeURIComponent(a.published_at)}${focus}`, { signal: AbortSignal.timeout(20000) });
+    return r.ok ? await r.json() : null;
+  } catch { return null; }
+}
 
 // frozen first-publication time of a story (class + event), else this build's time
 const publishedAtFor = (cls, eventId) => Object.values(live).find((a) => a.class === cls && a.event_id === eventId)?.published_at || NOW;
@@ -129,11 +139,32 @@ for (const a of articles.filter((x) => x.status === 'published' || x.status === 
   fs.writeFileSync(stamp, key);
 }
 
+// article-market/1 freeze: once the shared API answers freeze = EMBED_THIS_PACKET (packet FINAL), the packet + sha256 are
+// stored in the story's record (news doc) and the page renders from that stored copy forever; a stored packet is carried
+// forward unchanged from the published doc and never re-read. A failed read just leaves the story live-reading.
+for (const a of articles.filter((x) => x.status === 'published' && articleMarketEvent(x))) {
+  const prevFrozen = live[a.slug]?.market?.frozen;
+  const { frozen: _indexOnly, ...link } = a.market; // the index carries only the sha; the payload lives in the news doc
+  a.market = link;
+  if (prevFrozen?.sha256) {
+    try {
+      const r = await fetch(`${BASE}/news/${a.slug}`, { signal: AbortSignal.timeout(20000) });
+      const doc = r.ok ? await r.json() : null;
+      if (doc?.market?.frozen?.sha256 === prevFrozen.sha256 && doc.market.frozen.payload) { a.market = { ...a.market, frozen: doc.market.frozen }; continue; }
+    } catch { /* fall through: re-read the (immutable) FINAL packet below */ }
+  }
+  const payload = await readArticleMarket(a);
+  const frozen = freezable(a, payload);
+  if (frozen) a.market = { ...a.market, frozen: { sha256: payload.packet.sha256, embedded_at: NOW, payload: frozen } };
+  if (prevFrozen?.sha256 && a.market.frozen?.sha256 !== prevFrozen.sha256) console.warn(`  MARKET ${a.slug}: stored packet ${prevFrozen.sha256.slice(0, 12)} not carried forward this build (read ${a.market.frozen?.sha256?.slice(0, 12) || 'failed'})`);
+  if (a.market.frozen) console.log(`  MARKET FROZEN ${a.slug}: ${a.market.frozen.sha256}`);
+}
+
 // outputs: full records for the site build; public index + per-article documents for the PropSports contract
 fs.writeFileSync(path.join(OUT, 'articles.json'), JSON.stringify(articles));
 fs.writeFileSync(path.join(OUT, 'canary-report.json'), JSON.stringify(report, null, 2));
 const pub = articles.filter((a) => a.status === 'published');
-const index = { generated_at: NOW, gate: QUALITY_VERSION, articles: pub.map((a) => ({ slug: a.slug, class: a.class, topic: a.topic, event_id: a.event_id, status: a.status, archive: a.archive, headline: a.headline, dek: a.dek, published_at: a.published_at, modified_at: a.modified_at, market: a.market || null, packet_hash: a.packet_hash, image: `/news/cards/${a.slug}.jpg`, entities: a.packet.entities.filter((x) => ['driver', 'team', 'circuit', 'race'].includes(x.type)).map((x) => ({ type: x.type, id: x.ref, name: x.name })) })).sort((a, b) => b.published_at.localeCompare(a.published_at) || b.slug.localeCompare(a.slug)) };
+const index = { generated_at: NOW, gate: QUALITY_VERSION, articles: pub.map((a) => ({ slug: a.slug, class: a.class, topic: a.topic, event_id: a.event_id, status: a.status, archive: a.archive, headline: a.headline, dek: a.dek, published_at: a.published_at, modified_at: a.modified_at, market: indexMarket(a.market), packet_hash: a.packet_hash, image: `/news/cards/${a.slug}.jpg`, entities: a.packet.entities.filter((x) => ['driver', 'team', 'circuit', 'race'].includes(x.type)).map((x) => ({ type: x.type, id: x.ref, name: x.name })) })).sort((a, b) => b.published_at.localeCompare(a.published_at) || b.slug.localeCompare(a.slug)) };
 const docs = { 'news-index': index };
 for (const a of pub) docs[`news-${a.slug}`] = { slug: a.slug, class: a.class, status: a.status, archive: a.archive, published_at: a.published_at, modified_at: a.modified_at, market: a.market || null, headline: a.headline, dek: a.dek, packet: a.packet, draft: a.draft, validation: a.validation };
 for (const [n, d] of Object.entries(docs)) fs.writeFileSync(path.join(PROJ, `${n}.json`), JSON.stringify(d));
