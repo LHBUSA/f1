@@ -406,6 +406,12 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .nev-meta{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin:8px 0}.nev-meta div{border:1px solid var(--line);border-radius:6px;padding:6px 8px}.nev-meta dt{font:600 11px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.nev-meta dd{margin:2px 0 0;font-size:13px;word-break:break-word}
 .nev-rows{max-height:360px;overflow:auto;padding-right:6px;font-size:13px}
 .nsec h2+p{margin-top:0}.nsec{scroll-margin-top:80px}
+/* Article Market module (vendored .am component) inside a story: neutralise the site-wide sticky/nowrap/condensed th so the
+   shared table keeps its own layout (names wrap instead of running under the price column at 390px). */
+.nmarket .am__t th{position:static;background:none;white-space:normal}
+.nmarket .am__t th[scope=row]{font:600 14px/1.3 var(--sans);text-transform:none;letter-spacing:0;color:var(--ink2)}
+.nmarket .am__t thead th{font-size:11px;letter-spacing:.04em;line-height:1.25}
+@media(max-width:480px){.nmarket .am__t th[scope=row]{font-size:12px}.nmarket .am__t thead th{font-size:10px;letter-spacing:.02em}}
 @media(max-width:480px){.nsec p{font-size:16px;line-height:1.6}.ntable td,.ntable th{padding:6px 6px;font-size:13px}}
 .nbars ol{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .nbars li{display:grid;grid-template-columns:44px minmax(0,1fr) 64px;align-items:center;gap:10px;font:600 14px var(--display)}
