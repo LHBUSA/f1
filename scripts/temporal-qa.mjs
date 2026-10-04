@@ -64,7 +64,10 @@ if (fs.existsSync('data/news/articles.json')) {
       const hit = own.match(FUTURE);
       if (hit) fail(where, `future/live race language in a story published after its race: "${hit[0]}"`);
     }
-    if (a.archive && LIVE.test(text)) fail(where, 'live language in an archive story');
+    // A preview first published while its race was still ahead keeps its frozen pre-race copy after it expires (the
+    // archive note says it was written before the race); only copy WRITTEN after the session may never sound live.
+    const frozenPreRace = a.archive === 'expired_preview' && tf.race_state === 'upcoming';
+    if (a.archive && !frozenPreRace && LIVE.test(text)) fail(where, 'live language in an archive story');
     if (a.class === 'race_final' && tf.next_race_state === 'started' && /moves on to/.test(text)) fail(where, 'says the season moves on to a round already raced at publication');
     if (a.archive && fs.existsSync(path.join(DIST, "news", a.slug + ".html")) && !fs.readFileSync(path.join(DIST, "news", a.slug + ".html"), 'utf8').includes('Archive · ')) fail(where, 'archive story without an Archive label');
   }

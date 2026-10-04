@@ -2,6 +2,7 @@
 // packet's chart data; text comes from validated token drafts. Nothing here adds a fact.
 import { segments, render as renderPlain, resolveHref } from './validate.mjs';
 import { venueDay } from './temporal.mjs';
+import { articleMarketEvent } from './market.mjs';
 
 // Archive frame shown under the dateline: a story first published after its session (backfill), or a preview whose
 // race has since started. States the publication moment against the event moment; never backdates.
@@ -74,6 +75,16 @@ export function moduleHtml(id, packet, link) {
   return '';
 }
 
+// MARKET (article-market/1): one module with a lifecycle (LIVE MARKET WATCH -> THE MARKET RESULT) after the first
+// editorial section, only on a story first published at/after the activation time and linked to its main race market.
+// The slot is an empty element (no box, no reserved space); src/web/article-market.js fills it client-side from the
+// same-origin markets rewrite. Prices are never baked into the page; nothing observed -> nothing rendered.
+export function articleMarketSlot(a) {
+  const id = articleMarketEvent(a);
+  if (!id) return '';
+  return `<div class="nmarket" data-art-market="${esc(id)}" data-published="${esc(a.published_at)}"${a.market.focus?.length ? ` data-focus="${esc(a.market.focus.join(','))}"` : ''}></div>`;
+}
+
 // article -> page object for layout()
 export function articlePage(a, { linkOk, related = [], site }) {
   const P = a.packet, d = a.draft;
@@ -83,7 +94,8 @@ export function articlePage(a, { linkOk, related = [], site }) {
   const ents = P.entities.filter((x) => CORE.test(x.key) && ['driver', 'team', 'circuit', 'race'].includes(x.type)).filter((x, i, arr) => arr.findIndex((y) => y.ref === x.ref && y.type === x.type) === i);
   const chips = ents.slice(0, 8).map((x) => { const h = resolveHref(x); return linkOk(h) ? `<a class="chip" href="${esc(h)}">${esc(x.name)}</a>` : ''; }).join('');
   const hl = renderPlain(d.headline, P), dk = renderPlain(d.dek, P);
-  const sections = d.sections.map((s) => `<section class="nsec">${s.heading ? `<h2>${esc(s.heading)}</h2>` : ''}${(s.paragraphs || []).map((p) => `<p>${html(p, P, linkOk)}</p>`).join('')}${s.module ? moduleHtml(s.module, P, link) : ''}</section>`).join('');
+  const slot = articleMarketSlot(a);
+  const sections = d.sections.map((s, i) => `<section class="nsec">${s.heading ? `<h2>${esc(s.heading)}</h2>` : ''}${(s.paragraphs || []).map((p) => `<p>${html(p, P, linkOk)}</p>`).join('')}${s.module ? moduleHtml(s.module, P, link) : ''}</section>${i === 0 ? slot : ''}`).join('');
   const used = new Set(a.validation.facts_used);
   const evidence = P.facts.filter((f) => used.has(f.id)).map((f) => `<li><b>${esc(f.label)}</b>: ${esc(f.display)} <span class="muted">(${esc(f.source)})</span></li>`).join('');
   const relatedLinks = [
@@ -119,5 +131,5 @@ export function articlePage(a, { linkOk, related = [], site }) {
     { '@context': 'https://schema.org', '@type': 'NewsArticle', headline: hl.slice(0, 110), description: dk, datePublished: a.published_at, dateModified: a.modified_at || a.published_at, image: [`${site}/news/cards/${a.slug}.jpg`], author: { '@type': 'Organization', name: 'PropBetEdge F1 Desk', url: `${site}/news` }, publisher: { '@type': 'Organization', name: 'PropBetEdge', logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` } }, mainEntityOfPage: `${site}/news/${a.slug}`, articleSection: CLASS_LABEL[a.class], about: race ? { '@type': 'SportsEvent', name: race.name, url: `${site}/races/${race.ref}`, sport: 'Formula 1' } : undefined, mentions },
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [['/', 'Home'], ['/news', 'News'], [`/news/${a.slug}`, hl]].map(([p, n], i) => ({ '@type': 'ListItem', position: i + 1, name: n, item: site + p })) },
   ];
-  return { path: `/news/${a.slug}`, title: renderPlain(d.seo_title, P), description: renderPlain(d.seo_description, P), body, jsonLd, ogType: 'article', ogImage: `${site}/news/cards/${a.slug}.jpg`, ogImageAlt: hl, article: { published: a.published_at, modified: a.modified_at || a.published_at, section: CLASS_LABEL[a.class] }, section: '/news', noindex: a.status !== 'published', bg: 'data' };
+  return { path: `/news/${a.slug}`, title: renderPlain(d.seo_title, P), description: renderPlain(d.seo_description, P), body, jsonLd, ogType: 'article', ogImage: `${site}/news/cards/${a.slug}.jpg`, ogImageAlt: hl, article: { published: a.published_at, modified: a.modified_at || a.published_at, section: CLASS_LABEL[a.class] }, section: '/news', noindex: a.status !== 'published', bg: 'data', articleMarket: !!slot };
 }

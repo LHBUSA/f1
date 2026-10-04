@@ -24,6 +24,7 @@ import { validateDraft, render, QUALITY_VERSION } from '../src/news/validate.mjs
 import { cardSvg, renderCard, headshotData } from '../src/news/card.mjs';
 import { CLASS_LABEL } from '../src/news/render.mjs';
 import { archiveKind } from '../src/news/temporal.mjs';
+import { marketLink } from '../src/news/market.mjs';
 
 const BASE = process.env.PROPSPORTS_F1_BASE || 'https://propsports.proptechusa.ai/v1/f1';
 const NOW = process.env.F1_NEWS_NOW || new Date().toISOString();
@@ -98,9 +99,12 @@ for (const cls of Object.keys(classes).filter((k) => !k.startsWith('_'))) {
     const tf = c.P.context.temporal || {};
     const archive = archiveKind(cls, tf, NOW);
     const modified_at = prev && prev.packet_hash !== c.P.hash ? NOW : prev?.modified_at || published_at;
+    // article-market/1 link (src/news/market.mjs): frozen at first publication, carried forward; outside the packet so
+    // linking never changes a packet hash or a modified_at
+    const market = prev?.market || marketLink(X, c.P.event_id, c.P);
     const headline = render(c.draft.headline, c.P);
     ledger[c.draft.slug] = { topic: c.P.topic, headline };
-    const a = { slug: c.draft.slug, class: cls, topic: c.P.topic, event_id: c.P.event_id, status, published_at, modified_at, archive, headline, dek: render(c.draft.dek, c.P), packet_hash: c.P.hash, packet: c.P, draft: c.draft, validation: { ok: v.ok, reasons: v.reasons, facts_used: v.facts_used, words: v.words, gate: QUALITY_VERSION }, editorial: { ok: ed.ok, reasons: ed.reasons, warnings: ed.warnings, words: ed.words, links: ed.links, version: EDITORIAL_VERSION }, composer: c.draft.composer || null };
+    const a = { slug: c.draft.slug, class: cls, topic: c.P.topic, event_id: c.P.event_id, status, published_at, modified_at, archive, market, headline, dek: render(c.draft.dek, c.P), packet_hash: c.P.hash, packet: c.P, draft: c.draft, validation: { ok: v.ok, reasons: v.reasons, facts_used: v.facts_used, words: v.words, gate: QUALITY_VERSION }, editorial: { ok: ed.ok, reasons: ed.reasons, warnings: ed.warnings, words: ed.words, links: ed.links, version: EDITORIAL_VERSION }, composer: c.draft.composer || null };
     articles.push(a);
     report.stories.push({ slug: a.slug, class: cls, status, words: v.words, facts_used: v.facts_used.length, reasons: [...v.reasons, ...ed.reasons], warnings: ed.warnings, links: ed.links });
   });
@@ -129,9 +133,9 @@ for (const a of articles.filter((x) => x.status === 'published' || x.status === 
 fs.writeFileSync(path.join(OUT, 'articles.json'), JSON.stringify(articles));
 fs.writeFileSync(path.join(OUT, 'canary-report.json'), JSON.stringify(report, null, 2));
 const pub = articles.filter((a) => a.status === 'published');
-const index = { generated_at: NOW, gate: QUALITY_VERSION, articles: pub.map((a) => ({ slug: a.slug, class: a.class, topic: a.topic, event_id: a.event_id, status: a.status, archive: a.archive, headline: a.headline, dek: a.dek, published_at: a.published_at, modified_at: a.modified_at, packet_hash: a.packet_hash, image: `/news/cards/${a.slug}.jpg`, entities: a.packet.entities.filter((x) => ['driver', 'team', 'circuit', 'race'].includes(x.type)).map((x) => ({ type: x.type, id: x.ref, name: x.name })) })).sort((a, b) => b.published_at.localeCompare(a.published_at) || b.slug.localeCompare(a.slug)) };
+const index = { generated_at: NOW, gate: QUALITY_VERSION, articles: pub.map((a) => ({ slug: a.slug, class: a.class, topic: a.topic, event_id: a.event_id, status: a.status, archive: a.archive, headline: a.headline, dek: a.dek, published_at: a.published_at, modified_at: a.modified_at, market: a.market || null, packet_hash: a.packet_hash, image: `/news/cards/${a.slug}.jpg`, entities: a.packet.entities.filter((x) => ['driver', 'team', 'circuit', 'race'].includes(x.type)).map((x) => ({ type: x.type, id: x.ref, name: x.name })) })).sort((a, b) => b.published_at.localeCompare(a.published_at) || b.slug.localeCompare(a.slug)) };
 const docs = { 'news-index': index };
-for (const a of pub) docs[`news-${a.slug}`] = { slug: a.slug, class: a.class, status: a.status, archive: a.archive, published_at: a.published_at, modified_at: a.modified_at, headline: a.headline, dek: a.dek, packet: a.packet, draft: a.draft, validation: a.validation };
+for (const a of pub) docs[`news-${a.slug}`] = { slug: a.slug, class: a.class, status: a.status, archive: a.archive, published_at: a.published_at, modified_at: a.modified_at, market: a.market || null, headline: a.headline, dek: a.dek, packet: a.packet, draft: a.draft, validation: a.validation };
 for (const [n, d] of Object.entries(docs)) fs.writeFileSync(path.join(PROJ, `${n}.json`), JSON.stringify(d));
 // register in the projection manifest; the version covers the news content too
 const mf = JSON.parse(fs.readFileSync(path.join(PROJ, 'manifest.json'), 'utf8'));

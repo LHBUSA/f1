@@ -79,6 +79,8 @@ for (const c of ctx.constructors) for (const v of Object.values(c.colors || {}))
 let css = fs.readFileSync('src/web/styles.css', 'utf8');
 // shared Kalshi component styles, vendored unchanged; F1 token mapping + card frame live in styles.css (.kx)
 css += '\n' + fs.readFileSync('src/vendor/kalshi/kalshi-market-ui.css', 'utf8');
+// shared Article Market module styles (article-market/1), vendored unchanged (propbetedge-workers abaf809)
+css += '\n' + fs.readFileSync('src/vendor/kalshi/article-market-ui.css', 'utf8');
 css += '\n' + [...colors].map((c) => `.tc-${c.replace(/[^0-9a-f]/g, '')}{--tc:#${c}}`).join('');
 css += '\n' + Array.from({ length: 101 }, (_, i) => `.w-${i}{width:${i}%}`).join('');
 const cssHash = crypto.createHash('sha256').update(css).digest('hex').slice(0, 10);
@@ -126,7 +128,19 @@ const kxJs = fs.readFileSync('src/web/kalshi.js', 'utf8').replace("'/assets/kals
 if (!kxJs.includes(kxUi) || !kxJs.includes(kxClient)) throw new Error('build-site: kalshi loader import paths not rewritten');
 const kxHash = crypto.createHash('sha256').update(kxJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/kalshi.${kxHash}.js`), kxJs);
-const assets = { css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
+// Article Market module (news stories only): the vendored shared component (unchanged) written content-hashed with its
+// one relative import pointed at the hashed shared Kalshi UI module; lazily imported by the classic loader
+// src/web/article-market.js. Prices are fetched client-side through the same-origin /api/markets rewrite.
+const amSrc = fs.readFileSync('src/vendor/kalshi/article-market-ui.js', 'utf8');
+const amOut = amSrc.replace("from './kalshi-market-ui.js'", `from '${kxUi}'`);
+if (amOut === amSrc) throw new Error('build-site: article-market-ui import path not rewritten');
+const amUiHash = crypto.createHash('sha256').update(amOut).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/article-market-ui.${amUiHash}.js`), amOut);
+const amJs = fs.readFileSync('src/web/article-market.js', 'utf8').replace("'/assets/article-market-ui.js'", `'/assets/article-market-ui.${amUiHash}.js'`);
+if (!amJs.includes(`article-market-ui.${amUiHash}.js`)) throw new Error('build-site: article-market loader import path not rewritten');
+const amHash = crypto.createHash('sha256').update(amJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/article-market.${amHash}.js`), amJs);
+const assets = { articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];

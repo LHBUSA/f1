@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { kalshiCard, kalshiStrip, marketModule, marketHistoryCard, marketCloseLine, __resetKalshiFlashes } from '../src/vendor/kalshi/kalshi-market-ui.js';
 import { createKalshiClient } from '../src/vendor/kalshi/kalshi-market-client.js';
 import { kalshiRaceMount, kalshiCastMount, kalshiCloseMount, raceMarketId, isRaceMarketId } from '../scripts/site/kalshi.mjs';
@@ -87,8 +88,13 @@ test('kalshi: vendored shared component is unchanged', () => {
   for (const [name, sha] of Object.entries(VENDOR_SHA)) {
     assert.equal(crypto.createHash('sha256').update(lf(path.join('src/vendor/kalshi', name))).digest('hex'), sha, name);
   }
-  const canon = 'D:/Workers/propbetedge-workers/workers/propsports-markets/client';
-  if (fs.existsSync(canon)) for (const name of Object.keys(VENDOR_SHA)) assert.equal(lf(path.join('src/vendor/kalshi', name)), lf(path.join(canon, name)), `${name} matches canonical`);
+  // compare with the canonical repo AT THE PINNED COMMIT (its working tree moves on as other products re-pin)
+  const repo = 'D:/Workers/propbetedge-workers';
+  if (fs.existsSync(repo)) for (const name of Object.keys(VENDOR_SHA)) {
+    let canon = null;
+    try { canon = execFileSync('git', ['-C', repo, 'show', `ad6187a:workers/propsports-markets/client/${name}`], { encoding: 'utf8', maxBuffer: 1 << 24 }).replace(/\r\n/g, '\n'); } catch { continue; }
+    assert.equal(lf(path.join('src/vendor/kalshi', name)), canon, `${name} matches canonical ad6187a`);
+  }
 });
 
 test('kalshi: browser code never calls a Kalshi API host', () => {
