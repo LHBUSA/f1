@@ -52,11 +52,11 @@ test('real payload (Kalshi KXF1RACE-BAH26, settled): THE MARKET RESULT, focus ro
   assert.equal(articleMarketModule({ ...p, eligible: false }), '');
 });
 
-test('vendored Article Market client is byte-identical to propbetedge-workers 8d3b73f', () => {
+test('vendored Article Market client is byte-identical to propbetedge-workers 3f7345e', () => {
   const lf = (f) => fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
   const pin = {
     'article-market-ui.js': '2149e2854142657a554ef119533680c77657f0d2b1ea8406fe4de711e4fbe635',
-    'article-market-ui.css': '60c223f6afbe32059ea272aeaff648759c254f3494106c41822afaf328c7aa4e',
+    'article-market-ui.css': '582c879d9a634caa467f31896c928bf854fc16579a1565091bb5b0093ee0505c',
   };
   for (const [name, sha] of Object.entries(pin)) assert.equal(crypto.createHash('sha256').update(lf(`src/vendor/kalshi/${name}`)).digest('hex'), sha, name);
 });
