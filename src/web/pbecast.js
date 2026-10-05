@@ -281,6 +281,28 @@ function pick(clientX, clientY) {
   return near && near.d < Math.max(14, near.r) ? near.id : null;
 }
 
+// ---------- off-session weekend context ----------
+const fmtSessionTime = (iso) => {
+  if (!iso) return 'Time TBC';
+  const d = new Date(iso);
+  if (!Number.isFinite(d.getTime())) return 'Time TBC';
+  return new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(d);
+};
+function renderWeekendContext() {
+  const box = $('[data-pc-weekend]');
+  if (!box) return;
+  const now = Date.now();
+  const sessions = (D.sessions || []).map((x) => ({ ...x, t: Date.parse(x.start_utc || '') })).filter((x) => Number.isFinite(x.t));
+  const next = sessions.find((x) => x.t > now && x.state !== 'completed');
+  const nextEl = $('[data-pc-next-session]');
+  if (nextEl) nextEl.textContent = next ? `Next: ${next.label} · ${fmtSessionTime(next.start_utc)}` : (D.fallback ? 'Weekend sessions complete · latest classification shown in the timing tower.' : 'Session schedule is not available yet.');
+  document.querySelectorAll('[data-pc-session-row]').forEach((row) => {
+    const t = Date.parse(row.dataset.start || '');
+    row.classList.toggle('is-next', !!next && Number.isFinite(t) && t === next.t);
+    const tm = row.querySelector('[data-pc-session-time]'); if (tm) tm.textContent = Number.isFinite(t) ? fmtSessionTime(row.dataset.start) : 'Time TBC';
+  });
+}
+
 // ---------- tower ----------
 // statuses that mean the car is circulating (on_track = upstream STATUS_ON_TRACK, not mapped by the recorder)
 const RUNNING = new Set(['running', 'classified', 'on_track']);
@@ -314,6 +336,12 @@ function renderTower(T) {
   if (!body) return;
   const f = S.model ? frameAt(S.model, T) : null;
   const rows = f ? [...f.cars].filter((c) => ID.drivers[c.id]).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99)) : S.tower;
+  body.classList.toggle('pc-rows--idle', !rows.length);
+  if (!rows.length) {
+    const msg = S.mode === 'idle' ? 'No live timing yet. The tower activates when a session starts.' : 'Waiting for timing…';
+    if (body.children.length !== 1 || !body.firstElementChild?.classList.contains('pc-empty') || body.firstElementChild.textContent !== msg) body.replaceChildren(el('p', 'pc-empty', msg));
+    return;
+  }
   const want = rows.map((c, i) => {
     const d = ID.drivers[c.id || c.driver_id], t = TEAM(c.id || c.driver_id);
     const out = c.status && !RUNNING.has(c.status);
@@ -643,6 +671,7 @@ $('[data-pc-signin]')?.addEventListener('submit', async (e) => {
 
 // ---------- boot ----------
 (async () => {
+  renderWeekendContext();
   fit(); new ResizeObserver(() => fit()).observe(cv || document.body);
   persistSel();
   await membership();
