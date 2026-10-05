@@ -139,10 +139,19 @@
     }
   }
 
-  // Analytics: the shared PropBetEdge privacy runtime owns GA4 loading and consent.
-  if (!F1.gaStarted && location.hostname === 'f1.propbetedge.ai') {
+  // Analytics: single network GA4 property, production host only.
+  if (!F1.gaStarted && location.hostname === 'f1.propbetedge.ai' && navigator.doNotTrack !== '1') {
     F1.gaStarted = true;
-    window.PBEPrivacy?.initAnalytics?.({ surface: 'f1', analytics: true, sendPageView: true });
+    const GA = 'G-BRS48R8PG9';
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('set', { pbe_surface: 'f1' });
+    window.gtag('config', GA, { cookie_domain: '.propbetedge.ai', cookie_flags: 'SameSite=Lax;Secure' });
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA;
+    document.head.append(s);
   }
 
   // ---------- page module: core behaviour inside <main> ----------
