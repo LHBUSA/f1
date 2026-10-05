@@ -160,7 +160,7 @@ ${article ? `<meta property="article:published_time" content="${esc(article.publ
 <link rel="preload" href="/assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 ${heroPreload}
 <link rel="stylesheet" href="${assets.css}">
-<script src="${assets.js}" defer></script>
+<script src="/privacy-consent-v1.js" data-pbe-surface="f1"></script>\n<script src="${assets.js}" defer></script>
 ${pbecast && assets.pbecast ? `<script type="module" src="${assets.pbecast}"></script>` : ''}${explorer && assets.explorer ? `<script src="${assets.explorer}" defer></script>` : ''}${rail && assets.rail ? `<script src="${assets.rail}" defer></script>` : ''}${!pbecast && assets.nav ? `<script src="${assets.nav}" defer></script>` : ''}${kalshi && assets.kalshi ? `<script src="${assets.kalshi}" defer></script>` : ''}${articleMarket && assets.articleMarket ? `<script src="${assets.articleMarket}" defer></script>` : ''}
 ${ld}
 </head>
