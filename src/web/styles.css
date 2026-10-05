@@ -435,6 +435,16 @@ body[data-pc-tier=all_access] .pc-acct{color:var(--gold);border-color:#ffcf5c66}
 .pc-track canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:pointer}
 .pc-track canvas[data-flag=caution]{box-shadow:inset 0 0 0 2px #ffd23f99}.pc-track canvas[data-flag=red]{box-shadow:inset 0 0 0 3px #ff2d55cc}
 .pc-nogeo{position:absolute;inset:0;display:grid;place-items:center;padding:20px;text-align:center;color:var(--muted)}
+.pc-weekend{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto auto;gap:16px;padding:28px;background:linear-gradient(180deg,rgba(14,17,24,.92),rgba(7,8,12,.98))}
+.pc-weekend-top h2{margin:4px 0 8px;font-size:clamp(24px,3vw,34px);line-height:1.05}.pc-weekend-top p{margin:0;color:var(--ink2)}
+.pc-weekend-next{font-weight:700}
+.pc-weekend-sessions{list-style:none;margin:0;padding:0;display:grid;align-content:start;gap:7px}
+.pc-weekend-sessions li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:#ffffff05;font:600 13px var(--display)}
+.pc-weekend-sessions li span{color:var(--ink)}.pc-weekend-sessions li time{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.pc-weekend-sessions li.is-next{border-color:#ff623f88;background:#ff623f12}.pc-weekend-sessions li.is-next span{color:#fff}.pc-weekend-sessions li.is-next time{color:#ffb09d}
+.pc-weekend-links{display:flex;flex-wrap:wrap;gap:8px}.pc-weekend-links a{display:inline-block;padding:8px 11px;border:1px solid var(--line2);border-radius:6px;color:var(--ink);text-decoration:none;font:700 12px var(--display);letter-spacing:.05em;text-transform:uppercase}.pc-weekend-links a:hover{border-color:var(--accent);color:#fff}
+.pc-weekend-mapnote{margin:0!important;color:var(--faint)!important;font-size:12px!important;line-height:1.5!important}
+@media(max-width:600px){.pc-weekend{padding:18px;gap:12px}.pc-weekend-sessions li{grid-template-columns:1fr}.pc-weekend-sessions li time{text-align:left;font-size:12px}.pc-weekend-links a{flex:1 1 auto;text-align:center}}
 .pc-hud{position:absolute;left:10px;top:10px;right:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-start;pointer-events:none}
 .pc-hud[hidden]{display:none}
 .pc-hud>span{font:700 12px var(--display);letter-spacing:.1em;text-transform:uppercase;font-variant-numeric:tabular-nums;color:var(--ink);background:#0b0d12e0;border:1px solid var(--line2);padding:3px 8px;border-radius:4px;white-space:nowrap}
@@ -853,6 +863,7 @@ body[data-pc-tier=all_access] .pc-row{grid-template-columns:26px 4px 38px 40px 2
 .pc-state .pc-mode{min-width:150px;text-align:center;box-sizing:border-box}.pc-state .pc-acct{min-width:104px;text-align:center;box-sizing:border-box}
 /* PBEcast tower height reserved per grid size (no inline styles: CSP style-src 'self') */
 .pc-rows[data-rows="18"]{min-height:576px}.pc-rows[data-rows="19"]{min-height:608px}.pc-rows[data-rows="20"]{min-height:640px}.pc-rows[data-rows="21"]{min-height:672px}.pc-rows[data-rows="22"]{min-height:704px}.pc-rows[data-rows="23"]{min-height:736px}.pc-rows[data-rows="24"]{min-height:768px}.pc-rows[data-rows="25"]{min-height:800px}.pc-rows[data-rows="26"]{min-height:832px}
+.pc-rows.pc-rows--idle{min-height:0!important}.pc-rows.pc-rows--idle .pc-empty{min-height:120px;display:grid;place-items:center;text-align:center;padding:20px}
 .pc-row>*{pointer-events:none}
 
 /* Kalshi Market Intelligence (shared component, vendored CSS appended by the build). F1 token mapping + card frame;
