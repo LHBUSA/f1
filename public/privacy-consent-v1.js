@@ -10,8 +10,7 @@
   var ROOT_DOMAIN = '.propbetedge.ai';
   var host = String(location.hostname || '').toLowerCase();
   var isNetworkHost = host === 'propbetedge.ai' || host.endsWith('.propbetedge.ai');
-  var isPreview = host.endsWith('.vercel.app') || host.endsWith('.workers.dev') || host.endsWith('.pages.dev') || host === 'localhost' || host === '127.0.0.1';
-  var prod = isNetworkHost && !isPreview;
+  var prod = isNetworkHost;
   var boot = document.currentScript;
 
   var config = {
