@@ -43,3 +43,31 @@ test('public detail templates do not render full DNA or full Circuit Fit boards'
   assert.doesNotMatch(pages, /dnaPanel\(dnaC/);
   assert.match(pages, /Unlock the complete weekend analysis/);
 });
+
+
+test('Race Lab premium UI uses approved F1 identity media without inline handlers', () => {
+  const page = fs.readFileSync('scripts/site/race-lab.mjs','utf8');
+  const client = fs.readFileSync('src/web/race-lab.js','utf8');
+  const build = fs.readFileSync('scripts/build-site.mjs','utf8');
+  assert.match(page, /ctx\.logoFor/);
+  assert.match(page, /ctx\.carPhotoFor/);
+  assert.match(page, /\/media\/cars\//);
+  assert.match(client, /\/pbe\/f1\/media\/headshot\//);
+  assert.match(client, /class="rl-team-card"/);
+  assert.match(client, /class="rl-battle"/);
+  assert.match(client, /class="rl-hero-cars"/);
+  assert.doesNotMatch(client, /\sonerror=/);
+  assert.match(build, /emit\(raceLabPage\(ctx\)\)/);
+});
+
+test('all current constructors have approved 2026 cars available to the premium desk', async () => {
+  const { loadCarPhotos, carPhotoFor } = await import('../src/identity/car-photos.mjs');
+  const teams = Object.keys(JSON.parse(fs.readFileSync('src/identity/teams-2026.json','utf8')).teams);
+  const reg = loadCarPhotos();
+  assert.equal(teams.length, 11);
+  for (const cid of teams) {
+    const p = carPhotoFor(reg, cid, 2026);
+    assert.ok(p, `${cid}: missing approved 2026 car`);
+    assert.ok(p.derivatives?.files?.['640']?.webp, `${cid}: missing Race Lab car derivative`);
+  }
+});
