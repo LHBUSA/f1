@@ -71,3 +71,12 @@ test('all current constructors have approved 2026 cars available to the premium 
     assert.ok(p.derivatives?.files?.['640']?.webp, `${cid}: missing Race Lab car derivative`);
   }
 });
+
+
+test('premium gate titles interpolate entity names instead of leaking template source', () => {
+  const pages = fs.readFileSync('scripts/site/pages.mjs', 'utf8');
+  assert.doesNotMatch(pages, /premiumGate\(['"]Unlock \$\{/);
+  assert.match(pages, /premiumGate\('Unlock ' \+ d\.full_name \+ ' in Race Lab'/);
+  assert.match(pages, /premiumGate\('Unlock ' \+ c\.name \+ ' intelligence'/);
+  assert.match(pages, /premiumGate\('Unlock ' \+ ctx\.circuitName\(c\.id\) \+ ' Circuit DNA'/);
+});
