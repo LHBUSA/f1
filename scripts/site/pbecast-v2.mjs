@@ -5,9 +5,11 @@ import path from 'node:path';
 import { esc, crumbs, jsonLdBreadcrumb, PROPSPORTS_F1 } from './lib.mjs';
 import { buildRegistry } from '../../src/identity/registry.mjs';
 import { kalshiCastMount } from './kalshi.mjs';
+import { ALL_ACCESS_CHECKOUT_URL, LOCAL_ALL_ACCESS_PATH, PRICE } from '../../src/core/all-access.mjs';
 
 const LABEL = { fp1: 'Practice 1', fp2: 'Practice 2', fp3: 'Practice 3', qualifying: 'Qualifying', 'sprint-qualifying': 'Sprint Qualifying', sprint: 'Sprint', race: 'Grand Prix' };
-const AA = { price: '$29/month', url: 'https://propbetedge.ai/pro' };
+// GET ALL ACCESS is a purchase action: the canonical Stripe Payment Link. Informational links open /all-access.
+const AA = { price: PRICE, checkout: ALL_ACCESS_CHECKOUT_URL, learn: LOCAL_ALL_ACCESS_PATH };
 
 function geometryFor(circuitId) {
   const f = path.resolve('geometry', `${circuitId}.json`);
@@ -16,7 +18,7 @@ function geometryFor(circuitId) {
   return { slug: g.slug, length_m: g.length_m, path: g.path.filter((_, i) => i % 2 === 0), pit: g.pit, corners: g.corners, timing_line: g.timing_line, corner_numbering: g.corner_numbering, attribution: g.attribution, licence: g.licence };
 }
 
-const lock = (feature, title, copy) => `<div class="pc-lock" data-pc-locked="${feature}"><span class="kicker">All Access</span><b>${esc(title)}</b><p>${esc(copy)}</p><a class="pc-cta" href="${AA.url}" data-pc-cta="${feature}">Included with PropBetEdge All Access — ${AA.price}</a><p class="fine">One subscription covers PBEcast and intelligence across the PropBetEdge sports network.</p></div>`;
+const lock = (feature, title, copy) => `<div class="pc-lock" data-pc-locked="${feature}"><span class="kicker">All Access</span><b>${esc(title)}</b><p>${esc(copy)}</p><p class="pc-sell"><a class="pc-cta" href="${AA.checkout}" rel="noopener" data-pbe-placement="all_access_checkout" data-pc-cta="${feature}">Get All Access · ${AA.price}</a> <a class="pc-learn" href="${AA.learn}">What&#39;s included</a></p><p class="fine pc-sell">One membership: 10 sports + PropBetEdge Predictions.</p><p class="pc-checknote">Access check temporarily unavailable. Your membership is unchanged. <button type="button" data-acct-retry>Retry verified access</button></p></div>`;
 
 export function pbecastEventPage(X, ev) {
   const circ = X.circuit[ev.circuit_id];
@@ -32,14 +34,14 @@ export function pbecastEventPage(X, ev) {
   const data = { event: { id: ev.id, name: `${ev.season} ${ev.name}`, round: ev.round, circuit_id: ev.circuit_id, circuit_name: circ?.name || null }, sessions: weekendSessions, fallback, laps_total: race?.laps_scheduled || null, session_labels: LABEL, geometry: geo, identity: buildRegistry(X, ev.season), api_public: PROPSPORTS_F1, api_private: '/pbe/f1' };
   const body = `${crumbs([['/', 'Home'], ['/pbecast', 'PBEcast'], [`/pbecast/${ev.id}`, ev.name]])}
 <section class="pc-head wrap"><div><span class="eyebrow">PBEcast · Round ${ev.round} · ${esc(circ?.name || '')}</span><h1>${esc(ev.season)} ${esc(ev.name)}</h1></div>
-<div class="pc-state"><span class="pc-mode" data-pc-mode>Connecting…</span><span class="pc-acct" data-pc-account>Free</span></div></section>
+<div class="pc-state"><span class="pc-mode" data-pc-mode>Connecting…</span><span class="pc-acct" data-pc-account>Account</span></div></section>
 <section class="pc-grid wrap">
   <div class="pc-trackcol">
     <div class="pc-track">${geo ? '<canvas data-pc-canvas aria-label="Track map with each car placed by recorded timing" role="img"></canvas>' : `<section class="pc-weekend" data-pc-weekend aria-labelledby="pc-weekend-title"><div class="pc-weekend-top"><span class="kicker">Race weekend command center</span><h2 id="pc-weekend-title">No session live right now</h2><p class="pc-weekend-next" data-pc-next-session>Loading the next session…</p></div><ol class="pc-weekend-sessions">${weekendSessions.map((s) => `<li data-pc-session-row data-state="${esc(s.state || 'scheduled')}" data-start="${esc(s.start_utc || '')}"><span>${esc(s.label)}</span><time datetime="${esc(s.start_utc || '')}" data-pc-session-time>${esc(s.start_utc || 'Time TBC')}</time></li>`).join('')}</ol><div class="pc-weekend-links"><a href="/races/${esc(ev.id)}">Race intelligence</a><a href="/circuits/${esc(ev.circuit_id)}">Circuit profile</a></div><p class="pc-weekend-mapnote">Track visualization for ${esc(circ?.name || 'this circuit')} is not available yet. PBEcast timing will still activate when the live session begins.</p></section>`}<div class="pc-hud" data-pc-hud hidden aria-live="off"><span class="pc-hud-main" data-pc-hudmain></span><span class="pc-hud-flag" data-pc-hudflag hidden></span><span class="pc-hud-gap" data-pc-gap hidden>Recording gap · cars held</span><span class="pc-hud-off" data-pc-hudoff hidden></span></div>${geo ? '<span class="pc-basis">Timing-derived track position · not GPS</span>' : ''}</div>
     <p class="fine pc-method">${geo ? `<b>Estimated position from recorded timing, not GPS.</b> Observed: each car's line crossings, recorded as they happen (a brief ring marks one). Between crossings the car is an interpolated visualization placed by elapsed time; a dimmed, dashed car is held at its last observed state (recording gap, pit or no lap-time estimate yet). Track ${esc(geo.attribution)} (${esc(geo.licence)}); timing line position estimated.` : '<b>Off-session view.</b> Session schedule and race-weekend context remain available even when there is no live timing feed. No car position is simulated without track geometry.'}</p>
     <div class="pc-driver" data-pc-driver hidden></div>
   </div>
-  <aside class="pc-tower" aria-label="Timing tower"><div class="pc-tower-h"><span>POS</span><span>DRIVER</span><span data-pc-premium hidden class="pc-tower-pro">GAP · INT · PITS · BEST</span><span data-pc-locked="pbecast_tower" class="pc-tower-lock"><a href="${AA.url}" data-pc-cta="pbecast_tower">Gaps &amp; intervals · All Access</a></span></div><p class="pc-towernote" data-pc-towernote>Connecting to timing…</p><div data-pc-tower class="pc-rows${fallback ? '' : ' pc-rows--idle'}" data-rows="${Math.min(26, Math.max(18, fallback?.rows.length || 0, Object.keys(data.identity.drivers).length))}"><p class="pc-empty">${fallback ? 'Loading latest classification…' : 'No live timing yet. The tower activates when a session starts.'}</p></div></aside>
+  <aside class="pc-tower" aria-label="Timing tower"><div class="pc-tower-h"><span>POS</span><span>DRIVER</span><span data-pc-premium hidden class="pc-tower-pro">GAP · INT · PITS · BEST</span><span data-pc-locked="pbecast_tower" class="pc-tower-lock"><a href="${AA.learn}" data-pc-cta="pbecast_tower">Gaps &amp; intervals · All Access</a></span></div><p class="pc-towernote" data-pc-towernote>Connecting to timing…</p><div data-pc-tower class="pc-rows${fallback ? '' : ' pc-rows--idle'}" data-rows="${Math.min(26, Math.max(18, fallback?.rows.length || 0, Object.keys(data.identity.drivers).length))}"><p class="pc-empty">${fallback ? 'Loading latest classification…' : 'No live timing yet. The tower activates when a session starts.'}</p></div></aside>
   ${kalshiMount}
 </section>
 <section class="wrap pc-lower">

@@ -10,6 +10,7 @@ import { loadProjection } from '../src/news/data.mjs';
 import { articlePage } from '../src/news/render.mjs';
 import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
 import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
+import { allAccessPage } from './site/account.mjs';
 import { loadCarPhotos, carPhotoFor, imageObject } from '../src/identity/car-photos.mjs';
 import { loadCarModels, loadLineageNotes, carModelFor, teamCarPhotos, lineageCars } from '../src/identity/history.mjs';
 import { loadPeople, teamPeople, teamMachine } from '../src/identity/people.mjs';
@@ -98,13 +99,22 @@ if (fs.existsSync(BD_SRC)) {
   for (const f of fs.readdirSync(BD_SRC).filter((x) => /\.(avif|webp)$/.test(x))) fs.copyFileSync(path.join(BD_SRC, f), path.join(DIST, 'media/backdrop', f));
 } else console.warn('build-site: no backdrop assets at', BD_SRC);
 // PBEcast V2 bundle: the shared progress model + the client, content-hashed (loaded on PBEcast pages only)
+// Account control (every page): the pure account-view module + the client, content-hashed (src/web/account.js).
+const acv = fs.readFileSync('src/core/account-view.mjs', 'utf8');
+const acvHash = crypto.createHash('sha256').update(acv).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/account-view.${acvHash}.js`), acv);
+const acJs = fs.readFileSync('src/web/account.js', 'utf8').replace("from './account-view.js'", `from './account-view.${acvHash}.js'`);
+if (!acJs.includes(`account-view.${acvHash}.js`)) throw new Error('build-site: account-view import path not rewritten');
+const acHash = crypto.createHash('sha256').update(acJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/account.${acHash}.js`), acJs);
 const prog = fs.readFileSync('src/core/progress.mjs', 'utf8');
 const progHash = crypto.createHash('sha256').update(prog).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/progress.${progHash}.js`), prog);
 const lbl = fs.readFileSync('src/core/track-labels.mjs', 'utf8');
 const lblHash = crypto.createHash('sha256').update(lbl).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/track-labels.${lblHash}.js`), lbl);
-const pc = fs.readFileSync('src/web/pbecast.js', 'utf8').replace("from './progress.js'", `from './progress.${progHash}.js'`).replace("from './track-labels.js'", `from './track-labels.${lblHash}.js'`);
+const pc = fs.readFileSync('src/web/pbecast.js', 'utf8').replace("from './progress.js'", `from './progress.${progHash}.js'`).replace("from './track-labels.js'", `from './track-labels.${lblHash}.js'`).replace("from './account-view.js'", `from './account-view.${acvHash}.js'`);
+if (!pc.includes(`account-view.${acvHash}.js`)) throw new Error('build-site: pbecast account-view import path not rewritten');
 const pcHash = crypto.createHash('sha256').update(pc).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/pbecast.${pcHash}.js`), pc);
 // Car Explorer client (team pages only)
@@ -140,7 +150,7 @@ const amJs = fs.readFileSync('src/web/article-market.js', 'utf8').replace("'/ass
 if (!amJs.includes(`article-market-ui.${amUiHash}.js`)) throw new Error('build-site: article-market loader import path not rewritten');
 const amHash = crypto.createHash('sha256').update(amJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/article-market.${amHash}.js`), amJs);
-const assets = { articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
+const assets = { account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];
@@ -188,6 +198,7 @@ emit(P.matchupsIndex(ctx));
 for (const k of Object.keys(ctx.matchups)) emit(P.matchupPage(ctx, k));
 emit(pbecastHub(X, ctx.nextEvent ? X.event[ctx.nextEvent.slug] : null));
 for (const ev of X.raceEvents(ctx.currentSeason)) emit(pbecastEventPage(X, ev));
+emit(allAccessPage());
 emit(methodology(ctx));
 emit(coveragePage(ctx));
 for (const p of P.intelligencePages(ctx, X, newsPub)) emit(p);

@@ -1,4 +1,5 @@
 // Shared rendering helpers for the static F1 site. Strict CSP: no inline styles or scripts.
+import { accountButton, accountSheet } from './account.mjs';
 export const SITE = 'https://f1.propbetedge.ai';
 export const DISCORD = 'https://discord.gg/kb5zCTHbME';
 export const GA_ID = 'G-BRS48R8PG9';
@@ -103,7 +104,7 @@ const NAV = [
 ];
 const NETWORK = [
   ['https://propbetedge.ai', 'Sports News'],
-  ['https://propbetedge.ai/pro', 'All Access'],
+  ['/all-access', 'All Access'],
   ['https://mlb.propbetedge.ai', 'MLB'],
   ['https://nfl.propbetedge.ai', 'NFL'],
   ['https://nba.propbetedge.ai', 'NBA'],
@@ -161,7 +162,7 @@ ${article ? `<meta property="article:published_time" content="${esc(article.publ
 ${heroPreload}
 <link rel="stylesheet" href="${assets.css}">
 <script src="${assets.js}" defer></script>
-${pbecast && assets.pbecast ? `<script type="module" src="${assets.pbecast}"></script>` : ''}${explorer && assets.explorer ? `<script src="${assets.explorer}" defer></script>` : ''}${rail && assets.rail ? `<script src="${assets.rail}" defer></script>` : ''}${!pbecast && assets.nav ? `<script src="${assets.nav}" defer></script>` : ''}${kalshi && assets.kalshi ? `<script src="${assets.kalshi}" defer></script>` : ''}${articleMarket && assets.articleMarket ? `<script src="${assets.articleMarket}" defer></script>` : ''}
+${assets.account ? `<script type="module" src="${assets.account}"></script>` : ''}${pbecast && assets.pbecast ? `<script type="module" src="${assets.pbecast}"></script>` : ''}${explorer && assets.explorer ? `<script src="${assets.explorer}" defer></script>` : ''}${rail && assets.rail ? `<script src="${assets.rail}" defer></script>` : ''}${!pbecast && assets.nav ? `<script src="${assets.nav}" defer></script>` : ''}${kalshi && assets.kalshi ? `<script src="${assets.kalshi}" defer></script>` : ''}${articleMarket && assets.articleMarket ? `<script src="${assets.articleMarket}" defer></script>` : ''}
 ${ld}
 </head>
 <body data-path="${esc(path)}" class="bg-${bgClass}">
@@ -173,6 +174,7 @@ ${ld}
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="primary-nav" data-menu><span></span><span></span><span></span><span class="sr">Menu</span></button>
   </div>
   <nav class="primary-nav" id="primary-nav" aria-label="Primary"><div class="wrap nav-inner">${nav}</div></nav>
+  <div class="acct-slot">${accountButton()}</div>
 </header>
 <main id="main">
 ${body}
@@ -189,6 +191,7 @@ ${body}
   </div>
   <div class="wrap fine copy">© ${new Date().getUTCFullYear()} PropBetEdge. F1, FORMULA 1 and related marks are trademarks of Formula One Licensing B.V.</div>
 </footer>
+${accountSheet()}
 </body>
 </html>`;
 }

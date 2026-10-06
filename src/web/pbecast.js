@@ -3,6 +3,7 @@
 // entitlement: premium data only arrives from endpoints that verified the network session.
 import { buildModel, progressAt, frameAt, positionHistory, inGap, lapAt } from './progress.js';
 import { layoutLabels, clusters, FAN_MIN } from './track-labels.js';
+import { accountView, ACCOUNT_LABEL } from './account-view.js';
 
 const D = JSON.parse(document.getElementById('pbecast-data').textContent);
 const $ = (s, r = document) => r.querySelector(s);
@@ -555,10 +556,14 @@ async function membership() {
   const r = await getJSON(`${PRIV}/membership`, { priv: true }).catch(() => null);
   S.entitled = r?.status === 200 && r.body?.membership?.entitled === true;
   S.signedIn = r?.body?.signed_in === true;
+  // Presentation of the same verdict (account view): an unanswered/failed/auth-unavailable check shows the access
+  // check in the locks (no sale), members get their designation; never "Free". Data gating stays S.entitled.
+  const view = accountView(r);
   document.body.dataset.pcTier = S.entitled ? 'all_access' : 'free';
-  document.querySelectorAll('[data-pc-locked]').forEach((n) => { n.hidden = S.entitled; if (!S.entitled) ga('premium_teaser_view', { feature: n.dataset.pcLocked }); });
+  document.body.dataset.pcView = view;
+  document.querySelectorAll('[data-pc-locked]').forEach((n) => { n.hidden = S.entitled || (n.dataset.pcLocked === 'pbecast_signin' && view !== 'signed_out'); if (!S.entitled) ga('premium_teaser_view', { feature: n.dataset.pcLocked }); });
   document.querySelectorAll('[data-pc-premium]').forEach((n) => { n.hidden = !S.entitled; });
-  const st = $('[data-pc-account]'); if (st) st.textContent = S.entitled ? 'All Access' : S.signedIn ? 'Signed in · Free' : 'Free';
+  const st = $('[data-pc-account]'); if (st) st.textContent = (ACCOUNT_LABEL[view] || ACCOUNT_LABEL.checking)[0];
 }
 async function loadLive() {
   try {
