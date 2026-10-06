@@ -63,7 +63,7 @@ export function home(ctx) {
     Object.values(ctx.dnaCur)
       .filter((d) => d.dimensions[key]?.percentile != null && ctx.currentGrid.some((g) => g.driver_id === d.driver_id))
       .sort((a, b) => b.dimensions[key].percentile - a.dimensions[key].percentile)
-      .slice(0, 3);
+      .slice(0, 1);
   const spot = (key, label) =>
     `<div class="card"><span class="eyebrow">Driver DNA · ${esc(label)}</span>${dnaTop(key)
       .map((d) => {
@@ -73,7 +73,7 @@ export function home(ctx) {
       .join('')}<p class="fine">Percentile vs ${esc(Object.values(ctx.dnaCur)[0]?.dimensions[key]?.population || 'grid')}.</p></div>`;
 
   // Teammate battles current season
-  const battles = currentBattles(ctx).slice(0, 6);
+  const battles = currentBattles(ctx).slice(0, 2);
 
   const fit = ev ? ctx.fit[ev.id] : null;
   const body = `
@@ -83,8 +83,8 @@ export function home(ctx) {
   ${ctx.newsModule || ''}
   ${stand}
   <section class="section"><div class="wrap"><div class="split">${latest}<div class="grid">${spot('qualifying', 'Qualifying pace vs teammate')}</div></div></div></section>
-  <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Flagship</span><h2>Teammate Battles ${season}</h2></div><a class="more" href="/matchups">All battles</a></div><div class="grid g3">${battles.map((t) => battleCard(ctx, t, season)).join('')}</div></div></section>
-  ${fit ? `<section class="section"><div class="wrap"><div class="split"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit · ${esc(ctx.circuitName(ev.circuit_id))}</span><h2>Who suits ${esc(ev.name.replace(/ Grand Prix.*/, ''))}</h2></div><a class="more" href="${ctx.raceUrl(ev.id)}#fit">Full fit</a></div>${fitList(ctx, fit, 6)}</div><div class="grid">${spot('positions_gained', 'Race gains')}${spot('finishing', 'Finishing vs teammate')}</div></div></div></section>` : ''}
+  <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Intelligence preview</span><h2>Teammate Battles ${season}</h2></div><a class="more" href="/race-lab">Full Race Lab ◆</a></div><div class="grid g3">${battles.map((t) => battleCard(ctx, t, season)).join('')}</div></div></section>
+  ${fit ? `<section class="section"><div class="wrap"><div class="split"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit · ${esc(ctx.circuitName(ev.circuit_id))}</span><h2>Who suits ${esc(ev.name.replace(/ Grand Prix.*/, ''))}</h2></div><a class="more" href="/race-lab">Full Race Lab ◆</a></div>${fitList(ctx, fit, 3)}</div><div class="grid">${spot('positions_gained', 'Race gains')}${spot('finishing', 'Finishing vs teammate')}</div></div></div></section>` : ''}
   <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${season} grid</span><h2>Constructors</h2></div><a class="more" href="/teams">All teams</a></div><div class="grid g4">${teamsByStanding(ctx).map((cid) => teamCard(ctx, cid, season)).join('')}</div></div></section>`;
   return {
     rail: true,
@@ -561,11 +561,9 @@ export function standingsPage(ctx, season) {
   const body = `${crumbs(bc)}
   <section class="hero"><div class="wrap"><span class="eyebrow">FIA Formula One World Championship</span><h1>${season} Standings</h1>${prog?.note ? `<p class="note warn">${esc(prog.note)}</p>` : ''}</div></section>
   <section class="section"><div class="wrap"><div class="split even"><div><div class="section-head"><h2>Drivers</h2></div>${standingsTable(ctx, season, 'driver', 99, { avatar: true })}</div><div id="constructors"><div class="section-head"><h2>Constructors</h2></div>${standingsTable(ctx, season, 'constructor')}</div></div></div></section>
-  ${chart ? `<section class="section"><div class="wrap">${chart}</div></section>` : ''}
-  ${heat ? `<section class="section"><div class="wrap">${heat}</div></section>` : ''}
-  ${teamDeltas ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Teammate points delta</h2></div><div class="table-wrap"><table><thead><tr><th>Team</th><th>Driver A</th><th class="num">Pts</th><th class="num">Pts</th><th>Driver B</th><th class="num">Quali H2H</th></tr></thead><tbody>${teamDeltas}</tbody></table></div></div></section>` : ''}
+  ${isCur && (chart || heat || teamDeltas) ? premiumGate('Unlock championship movement', 'Current standings stay free. All Access Race Lab opens round-by-round trajectory, constructor movement and teammate gap context.') : ''}
   <section class="section"><div class="wrap"><p class="note">Championship probabilities are intentionally not shown: no validated model exists yet.</p><div class="section-head"><h2>All seasons</h2></div><nav class="season-links">${seasons.map((y) => `<a href="${y === ctx.currentSeason ? '/standings' : `/standings/${y}`}"${y === season ? ' aria-current="page"' : ''}>${y}</a>`).join('')}</nav></div></section>`;
-  return { path, title: `F1 ${season} Standings: Drivers' & Constructors' Championship`, description: `${season} Formula 1 drivers' and constructors' championship standings, points progression by round and teammate deltas.`, body, section: '/standings', jsonLd: [jsonLdBreadcrumb(bc)] };
+  return { path, title: `F1 ${season} Standings: Drivers' & Constructors' Championship`, description: `${season} Formula 1 drivers' and constructors' championship standings. Round-by-round movement and teammate analysis are in All Access Race Lab.`, body, section: '/standings', jsonLd: [jsonLdBreadcrumb(bc)] };
 }
 function shade(hex) {
   const n = parseInt(hex, 16);
@@ -580,16 +578,17 @@ export function matchupsIndex(ctx) {
   const season = ctx.currentSeason;
   const cur = currentBattles(ctx);
   const famous = ctx.teammates.filter((t) => t.career.events >= 20).sort((a, b) => b.seasons.at(-1) - a.seasons.at(-1)).slice(0, 60);
+  const pair = (t) => {
+    const u = ctx.matchupUrl(t.a, t.b);
+    const a = ctx.driverById[t.a], b = ctx.driverById[t.b], cid = t.constructors.at(-1);
+    return `<a class="card card-link" href="${u || '/matchups'}"><span class="kicker">${esc(ctx.conById[cid]?.name || 'Shared grid')}</span><h3>${esc(a?.full_name || t.a)} <span class="muted">vs</span> ${esc(b?.full_name || t.b)}</h3><p class="fine">${t.seasons[0]}${t.seasons.length > 1 ? '–' + t.seasons.at(-1) : ''} · ${t.career.events} shared events</p></a>`;
+  };
   const body = `${crumbs([['/', 'Home'], ['/matchups', 'Matchups']])}
-  <section class="hero"><div class="wrap"><span class="eyebrow">Flagship</span><h1>Teammate Battles</h1><p class="sub">Same car, same weekend: the cleanest comparison in Formula 1. Qualifying and race head-to-heads, median qualifying gap, points and finishing record.</p></div></section>
-  <section class="section"><div class="wrap"><div class="section-head"><h2>${season}</h2></div><div class="grid g3">${cur.map((t) => battleCard(ctx, t, season)).join('')}</div></div></section>
-  <section class="section"><div class="wrap"><div class="section-head"><h2>Teammate pairings with 20+ shared races</h2></div><div class="table-wrap"><table><thead><tr><th>Driver A</th><th>Driver B</th><th>Team</th><th>Seasons</th><th class="num">Quali</th><th class="num">Race</th><th></th></tr></thead><tbody>${famous
-    .map((t) => {
-      const u = ctx.matchupUrl(t.a, t.b);
-      return `<tr><td>${driverCell(ctx, t.a, t.constructors.at(-1), t.seasons.at(-1))}</td><td>${driverCell(ctx, t.b, t.constructors.at(-1), t.seasons.at(-1))}</td><td class="list">${t.constructors.map((c) => teamLink(ctx, c)).join(', ')}</td><td>${t.seasons[0]}–${t.seasons.at(-1)}</td><td class="num">${t.career.quali_h2h.join('–')}</td><td class="num">${t.career.race_h2h.join('–')} <span class="fine">/${t.career.race_comparable}</span></td><td>${u ? `<a class="more" href="${u}">Open</a>` : ''}</td></tr>`;
-    })
-    .join('')}</tbody></table></div><p class="fine">Qualifying: official qualifying classification. Race: only races where both drivers were classified (/n = those races); a retirement never counts as a head-to-head win.</p></div></section>`;
-  return { path: '/matchups', title: `F1 Teammate Battles ${season}: Qualifying & Race Head-to-Heads`, description: `Every ${season} Formula 1 teammate battle: qualifying and race head-to-heads, median qualifying gaps, points and DNFs, plus historic pairings.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/matchups', 'Matchups']])] };
+  <section class="hero"><div class="wrap"><span class="eyebrow">Matchup directory</span><h1>Teammate Battles</h1><p class="sub">Find the pairing for free. All Access opens the actual H2H, qualifying-gap history, DNA comparison and next-race fit.</p></div></section>
+  <section class="section"><div class="wrap"><div class="section-head"><h2>${season} pairings</h2></div><div class="grid g3">${cur.map(pair).join('')}</div></div></section>
+  ${premiumGate('Unlock every matchup metric', 'Race Lab opens same-car qualifying and race H2H, median qualifying gaps, recent windows and Driver DNA comparison.')}
+  <section class="section"><div class="wrap"><div class="section-head"><h2>Long-running teammate pairings</h2></div><div class="grid g3">${famous.map(pair).join('')}</div></div></section>`;
+  return { path: '/matchups', title: `F1 Matchups ${season}: Teammate Pairings`, description: `Formula 1 teammate pairing directory. Basic relationship history is free; detailed H2H, qualifying gaps and Driver DNA are in All Access Race Lab.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/matchups', 'Matchups']])] };
 }
 
 // matchup pages live in ./matchup.mjs (shared grid history vs teammate battle)
