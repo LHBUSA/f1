@@ -329,7 +329,7 @@ export function driverPage(ctx, d) {
   </div><p class="fine">Career totals from published race classifications (${ctx.coverage.earliest_season}–${ctx.currentSeason}). Poles use the qualifying classification where published, otherwise grid position 1. ${esc(car?.points_note || '')}</p></div></section>
   ${gridCid && !carFig ? `<section class="section"><div class="wrap">${currentMachineCard(ctx, gridCid, ctx.currentSeason)}</div></section>` : ''}
   ${ctx.driverProfileHtml ? ctx.driverProfileHtml(d) : ''}
-  ${dnaC || dnaK || mateRows ? premiumGate('Unlock ${d.full_name} in Race Lab', 'All Access opens the complete Driver DNA profile, percentile samples and detailed teammate head-to-head analysis. Career totals and race results remain free.') : ''}
+  ${dnaC || dnaK || mateRows ? premiumGate('Unlock ' + d.full_name + ' in Race Lab', 'All Access opens the complete Driver DNA profile, percentile samples and detailed teammate head-to-head analysis. Career totals and race results remain free.') : ''}
   <section class="section"><div class="wrap"><div class="section-head"><h2>Recent races</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Team</th><th class="num">Quali</th><th class="num">Grid</th><th class="num">Finish</th><th class="num">Pts</th></tr></thead><tbody>${recentRows}</tbody></table></div></div></section>
   <section class="section"><div class="wrap"><div class="section-head"><h2>By season</h2></div><div class="table-wrap"><table><thead><tr><th>Year</th><th>Team</th><th class="num">Starts</th><th class="num">W</th><th class="num">Pod</th><th class="num">Poles</th><th class="num">Pts</th><th class="num">Pos</th></tr></thead><tbody>${seasons}</tbody></table></div></div></section>`;
   const jsonLd = [
@@ -458,7 +458,7 @@ export function teamPage(ctx, c, lineageChain) {
   ${powertrainSection(ctx, c, season, c.last_season === season ? ctx.powertrainFor?.(c.id, season) : null)}
   ${xp ? explorerSection(ctx, xp) : ''}
   ${peopleSection(ctx, c, season, people, lineup)}</div>
-  ${dna || pair ? premiumGate('Unlock ${c.name} intelligence', 'All Access opens Constructor DNA, the current teammate battle and deeper derived team analysis in Race Lab. Team history and season results remain free.') : ''}
+  ${dna || pair ? premiumGate('Unlock ' + c.name + ' intelligence', 'All Access opens Constructor DNA, the current teammate battle and deeper derived team analysis in Race Lab. Team history and season results remain free.') : ''}
   <section class="section"><div class="wrap"><div class="section-head"><h2>Season by season</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Drivers</th><th class="num">Pos</th><th class="num">Pts</th><th class="num">Wins</th></tr></thead><tbody>${seasonRows}</tbody></table></div></div></section>`;
   return {
     path: `/teams/${c.id}`,
@@ -515,7 +515,7 @@ export function circuitPage(ctx, c, outline) {
   <section class="hero"><div class="wrap"><span class="eyebrow">${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h1>${esc(ctx.circuitName(c.id))}</h1>
   <div class="hero-meta">${c.length_km ? `<span><b>Latest layout</b>${c.length_km.toFixed(3)} km${c.turns ? `, ${c.turns} turns` : ''}</span>` : ''}${dna?.race_laps ? `<span><b>Race laps</b>${dna.race_laps}</span>` : ''}${dna?.race_distance_km ? `<span><b>Distance</b>${dna.race_distance_km} km</span>` : ''}${c.layout_type ? `<span><b>Layout</b>${esc(c.layout_type)}</span>` : ''}${c.lat != null ? `<span><b>Coordinates</b>${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</span>` : ''}${c.opened ? `<span><b>Opened</b>${c.opened}</span>` : ''}${dna?.races_held ? `<span><b>Grands Prix</b>${dna.races_held} (${dna.first_season}–${dna.last_season})</span>` : ''}</div>
   ${next ? `<p class="section"><a class="more" href="${ctx.raceUrl(next.id)}">${next.season} ${esc(next.name)} hub</a></p>` : ''}</div></section>
-  ${dna ? premiumGate('Unlock ${ctx.circuitName(c.id)} Circuit DNA', 'All Access opens the full circuit profile, pole conversion, grid-to-finish relationship, attrition, pit-load metrics and next-race Circuit Fit. Venue facts and winners remain free.') : ''}
+  ${dna ? premiumGate('Unlock ' + ctx.circuitName(c.id) + ' Circuit DNA', 'All Access opens the full circuit profile, pole conversion, grid-to-finish relationship, attrition, pit-load metrics and next-race Circuit Fit. Venue facts and winners remain free.') : ''}
   ${winRows ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Winners</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Winner</th><th>Team</th><th>Pole</th></tr></thead><tbody>${winRows}</tbody></table></div></div></section>` : ''}`;
   return {
     path: `/circuits/${c.slug}`,
