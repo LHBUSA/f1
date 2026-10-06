@@ -288,6 +288,7 @@ td.num,th.num{text-align:right}
 .footer-grid .fine{margin-top:10px;max-width:640px}
 .footer-grid .fine a{color:var(--ink2);text-decoration:underline}
 .network{display:flex;flex-wrap:wrap;gap:6px 14px;align-content:flex-start;font-family:var(--display);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--ink2)}
+.network-k{flex-basis:100%;font:700 10px/1 var(--mono,ui-monospace,monospace);letter-spacing:.14em;color:var(--gold);margin-top:4px}.network-k+ a{margin-left:0}
 .copy{margin-top:18px}
 .tc-none{--tc:#5d667b}
 .card h3,.dcard .nm{overflow-wrap:anywhere;hyphens:auto}
