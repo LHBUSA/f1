@@ -3,6 +3,8 @@ import { driverCell, teamLink, sessionTable, standingsTable, dnaPanel, battleCar
 import { SESSION_LABEL } from '../../src/core/normalize.mjs';
 import { kalshiRaceMount, kalshiCloseMount } from './kalshi.mjs';
 
+const premiumGate = (title, copy) => `<section class="section"><div class="wrap"><div class="premium-gate"><span class="eyebrow">◆ All Access · Race Lab</span><h2>${esc(title)}</h2><p>${esc(copy)}</p><div class="rl-actions"><a class="pc-cta" href="/race-lab">Open Race Lab ◆</a><a class="more" href="/all-access">What All Access includes</a></div></div></div></section>`;
+
 const age = (dob) => {
   if (!dob) return null;
   const d = new Date(dob);
@@ -61,7 +63,7 @@ export function home(ctx) {
     Object.values(ctx.dnaCur)
       .filter((d) => d.dimensions[key]?.percentile != null && ctx.currentGrid.some((g) => g.driver_id === d.driver_id))
       .sort((a, b) => b.dimensions[key].percentile - a.dimensions[key].percentile)
-      .slice(0, 3);
+      .slice(0, 1);
   const spot = (key, label) =>
     `<div class="card"><span class="eyebrow">Driver DNA · ${esc(label)}</span>${dnaTop(key)
       .map((d) => {
@@ -71,7 +73,7 @@ export function home(ctx) {
       .join('')}<p class="fine">Percentile vs ${esc(Object.values(ctx.dnaCur)[0]?.dimensions[key]?.population || 'grid')}.</p></div>`;
 
   // Teammate battles current season
-  const battles = currentBattles(ctx).slice(0, 6);
+  const battles = currentBattles(ctx).slice(0, 2);
 
   const fit = ev ? ctx.fit[ev.id] : null;
   const body = `
@@ -81,8 +83,8 @@ export function home(ctx) {
   ${ctx.newsModule || ''}
   ${stand}
   <section class="section"><div class="wrap"><div class="split">${latest}<div class="grid">${spot('qualifying', 'Qualifying pace vs teammate')}</div></div></div></section>
-  <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Flagship</span><h2>Teammate Battles ${season}</h2></div><a class="more" href="/matchups">All battles</a></div><div class="grid g3">${battles.map((t) => battleCard(ctx, t, season)).join('')}</div></div></section>
-  ${fit ? `<section class="section"><div class="wrap"><div class="split"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit · ${esc(ctx.circuitName(ev.circuit_id))}</span><h2>Who suits ${esc(ev.name.replace(/ Grand Prix.*/, ''))}</h2></div><a class="more" href="${ctx.raceUrl(ev.id)}#fit">Full fit</a></div>${fitList(ctx, fit, 6)}</div><div class="grid">${spot('positions_gained', 'Race gains')}${spot('finishing', 'Finishing vs teammate')}</div></div></div></section>` : ''}
+  <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Intelligence preview</span><h2>Teammate Battles ${season}</h2></div><a class="more" href="/race-lab">Full Race Lab ◆</a></div><div class="grid g3">${battles.map((t) => battleCard(ctx, t, season)).join('')}</div></div></section>
+  ${fit ? `<section class="section"><div class="wrap"><div class="split"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit · ${esc(ctx.circuitName(ev.circuit_id))}</span><h2>Who suits ${esc(ev.name.replace(/ Grand Prix.*/, ''))}</h2></div><a class="more" href="/race-lab">Full Race Lab ◆</a></div>${fitList(ctx, fit, 3)}</div><div class="grid">${spot('positions_gained', 'Race gains')}${spot('finishing', 'Finishing vs teammate')}</div></div></div></section>` : ''}
   <section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">${season} grid</span><h2>Constructors</h2></div><a class="more" href="/teams">All teams</a></div><div class="grid g4">${teamsByStanding(ctx).map((cid) => teamCard(ctx, cid, season)).join('')}</div></div></section>`;
   return {
     rail: true,
@@ -223,8 +225,8 @@ export function racePage(ctx, ev) {
     ${champ}
   </div></div></div></section>
   ${kalshiMount}
-  ${tm ? `<section class="section" id="teammate-gaps"><div class="wrap"><div class="card"><div class="section-head"><div><span class="eyebrow">Qualifying</span><h2>Teammate qualifying gaps</h2></div></div><div class="tm-head" aria-hidden="true"><span>Team</span><span>Ahead</span><span>Gap</span><span>Behind</span></div><ol class="tm-gaps">${tm}</ol><p class="fine">Gap = slower teammate's time vs the faster one, in the deepest knockout session both drivers set a time in.</p></div></div></section>` : ''}
-  ${fit ? `<section class="section" id="fit"><div class="wrap"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit</span><h2>Driver × circuit profile</h2></div></div>${fitList(ctx, fit, 22)}</div></div></section>` : ''}
+  ${fit ? `<section class="section" id="fit"><div class="wrap"><div class="card"><div class="section-head"><div><span class="eyebrow">Circuit Fit · Preview</span><h2>Driver × circuit profile</h2></div><a class="more" href="/race-lab">Full Race Lab ◆</a></div>${fitList(ctx, fit, 3)}<p class="fine">Top three preview. All Access opens the full driver and constructor ranking plus teammate qualifying-gap analysis.</p></div></div></section>` : ''}
+  ${tm || fit ? premiumGate('Unlock the complete weekend analysis', 'Race Lab opens every Circuit Fit row, teammate qualifying gaps, Driver DNA, form and championship movement for the weekend.') : ''}
   ${history.length ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Recent winners at ${esc(ctx.circuitName(ev.circuit_id))}</h2><a class="more" href="${ctx.circuitUrl(ev.circuit_id)}">Circuit DNA</a></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Winner</th><th>Team</th><th class="num">Grid</th></tr></thead><tbody>${history
     .map((h) => {
       const hw = winnerOf(ctx, h.id);
@@ -271,7 +273,7 @@ export function driversIndex(ctx) {
   <section class="hero"><div class="wrap"><span class="eyebrow">${season} grid</span><h1>Drivers</h1><p class="sub">${ctx.currentGrid.length} drivers on the ${season} grid and ${all.length.toLocaleString()} world championship drivers since ${ctx.coverage.earliest_season}.</p></div></section>
   <section class="section"><div class="wrap"><div class="grid g3">${grid}</div></div></section>
   <section class="section"><div class="wrap"><div class="section-head"><h2>All-time index</h2><input class="search" type="search" placeholder="Filter drivers" aria-label="Filter drivers" data-filter=".alpha a"></div><div class="alpha">${list}</div></div></section>`;
-  return { path: '/drivers', title: `F1 Drivers ${season}: Grid, Profiles & Driver DNA`, description: `Every ${season} Formula 1 driver plus ${all.length.toLocaleString()} championship drivers since ${ctx.coverage.earliest_season}: career records, Driver DNA and teammate battles.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/drivers', 'Drivers']])] };
+  return { path: '/drivers', title: `F1 Drivers ${season}: Grid, Profiles & Driver DNA`, description: `Every ${season} Formula 1 driver plus ${all.length.toLocaleString()} championship drivers since ${ctx.coverage.earliest_season}: career records and results, with Driver DNA and teammate analysis in All Access Race Lab.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/drivers', 'Drivers']])] };
 }
 
 export function driverPage(ctx, d) {
@@ -327,19 +329,14 @@ export function driverPage(ctx, d) {
   </div><p class="fine">Career totals from published race classifications (${ctx.coverage.earliest_season}–${ctx.currentSeason}). Poles use the qualifying classification where published, otherwise grid position 1. ${esc(car?.points_note || '')}</p></div></section>
   ${gridCid && !carFig ? `<section class="section"><div class="wrap">${currentMachineCard(ctx, gridCid, ctx.currentSeason)}</div></section>` : ''}
   ${ctx.driverProfileHtml ? ctx.driverProfileHtml(d) : ''}
-  ${dnaC || dnaK ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Driver DNA</span><h2>Profile</h2></div><a class="more" href="/methodology#driver-dna">Methodology</a></div>
-    <div class="tabs" role="tablist">${dnaC ? `<button class="tab" role="tab" type="button" aria-selected="true" aria-controls="dna-cur" id="dt-cur">${esc(dnaC.window)}</button>` : ''}${dnaK ? `<button class="tab" role="tab" type="button" aria-selected="${dnaC ? 'false' : 'true'}" aria-controls="dna-car" id="dt-car">Career</button>` : ''}</div>
-    ${dnaC ? `<div class="tabpanel" role="tabpanel" id="dna-cur" aria-labelledby="dt-cur">${dnaPanel(dnaC, { color: color || 'ff4d2e' })}</div>` : ''}
-    ${dnaK ? `<div class="tabpanel" role="tabpanel" id="dna-car" aria-labelledby="dt-car"${dnaC ? ' hidden' : ''}>${dnaPanel(dnaK, { color: color || 'ff4d2e', title: 'Career DNA' })}</div>` : ''}
-  </div></section>` : ''}
-  ${mateRows ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Teammate record</h2></div><div class="table-wrap"><table><thead><tr><th>Teammate</th><th>Team</th><th>Seasons</th><th class="num">Quali H2H</th><th class="num">Race H2H</th><th></th></tr></thead><tbody>${mateRows}</tbody></table></div></div></section>` : ''}
+  ${dnaC || dnaK || mateRows ? premiumGate('Unlock ${d.full_name} in Race Lab', 'All Access opens the complete Driver DNA profile, percentile samples and detailed teammate head-to-head analysis. Career totals and race results remain free.') : ''}
   <section class="section"><div class="wrap"><div class="section-head"><h2>Recent races</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Team</th><th class="num">Quali</th><th class="num">Grid</th><th class="num">Finish</th><th class="num">Pts</th></tr></thead><tbody>${recentRows}</tbody></table></div></div></section>
   <section class="section"><div class="wrap"><div class="section-head"><h2>By season</h2></div><div class="table-wrap"><table><thead><tr><th>Year</th><th>Team</th><th class="num">Starts</th><th class="num">W</th><th class="num">Pod</th><th class="num">Poles</th><th class="num">Pts</th><th class="num">Pos</th></tr></thead><tbody>${seasons}</tbody></table></div></div></section>`;
   const jsonLd = [
     { '@context': 'https://schema.org', '@type': 'Person', name: d.full_name, ...(d.date_of_birth ? { birthDate: d.date_of_birth } : {}), ...(d.nationality ? { nationality: d.nationality } : {}), jobTitle: 'Racing driver', url: SITE + `/drivers/${d.slug}`, ...(lt ? { memberOf: { '@type': 'SportsTeam', name: ctx.conById[lt.constructor_id]?.name } } : {}) },
     jsonLdBreadcrumb(bc),
   ];
-  const desc = `${d.full_name} F1 profile: ${car?.starts ?? 0} starts, ${car?.wins ?? 0} wins, ${car?.podiums ?? 0} podiums, ${car?.poles ?? 0} poles${car?.championships.length ? `, ${car.championships.length} world title${car.championships.length > 1 ? 's' : ''}` : ''}. Driver DNA, teammate head-to-heads and every result.`;
+  const desc = `${d.full_name} F1 profile: ${car?.starts ?? 0} starts, ${car?.wins ?? 0} wins, ${car?.podiums ?? 0} podiums, ${car?.poles ?? 0} poles${car?.championships.length ? `, ${car.championships.length} world title${car.championships.length > 1 ? 's' : ''}` : ''}. career statistics and every result, with Driver DNA and teammate analysis in All Access Race Lab.`;
   return { path: `/drivers/${d.slug}`, title: `${d.full_name} – F1 Stats, Driver DNA & Results`, description: desc, body, jsonLd, noindex: thin, section: '/drivers', ogType: 'profile' };
 }
 
@@ -461,8 +458,7 @@ export function teamPage(ctx, c, lineageChain) {
   ${powertrainSection(ctx, c, season, c.last_season === season ? ctx.powertrainFor?.(c.id, season) : null)}
   ${xp ? explorerSection(ctx, xp) : ''}
   ${peopleSection(ctx, c, season, people, lineup)}</div>
-  ${dna ? `<section class="section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Constructor DNA · ${lastSeason}</span><h2>Car profile</h2></div><a class="more" href="/methodology#constructor-dna">Methodology</a></div>${dnaPanel(dna, { color: color || 'ff4d2e', title: 'Constructor DNA', note: 'Driver Pairing Balance isolates the driver effect; the other dimensions describe the car/team.' })}</div></section>` : ''}
-  ${pair ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Teammate battle ${lastSeason}</h2></div><div class="grid g2">${battleCard(ctx, pair, lastSeason)}</div></div></section>` : ''}
+  ${dna || pair ? premiumGate('Unlock ${c.name} intelligence', 'All Access opens Constructor DNA, the current teammate battle and deeper derived team analysis in Race Lab. Team history and season results remain free.') : ''}
   <section class="section"><div class="wrap"><div class="section-head"><h2>Season by season</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Drivers</th><th class="num">Pos</th><th class="num">Pts</th><th class="num">Wins</th></tr></thead><tbody>${seasonRows}</tbody></table></div></div></section>`;
   return {
     path: `/teams/${c.id}`,
@@ -470,7 +466,7 @@ export function teamPage(ctx, c, lineageChain) {
     carImageObject: photo ? { photo, publicPath: `/media/cars/${photo.id}-1920.webp` } : finalCar ? { photo: finalCar, publicPath: `/media/cars/${finalCar.id}-1920.webp` } : null,
     extraImageObjects: gallery.filter((p) => p !== finalCar).map((p) => ({ photo: p, publicPath: `/media/cars/${p.id}-1920.webp` })),
     title: `${c.name} F1 Team – Results, Drivers & Constructor DNA`,
-    description: `${c.name} in Formula 1 (${c.first_season}–${c.last_season}): ${races} Grands Prix, ${wins} wins, ${podiums} podiums, drivers by season${dna ? ', Constructor DNA' : ''} and franchise lineage.`,
+    description: `${c.name} in Formula 1 (${c.first_season}–${c.last_season}): ${races} Grands Prix, ${wins} wins, ${podiums} podiums, drivers by season and franchise lineage, with Constructor DNA in All Access Race Lab.`,
     body,
     jsonLd: [{ '@context': 'https://schema.org', '@type': 'SportsTeam', name: c.name, sport: 'Formula One', url: SITE + `/teams/${c.id}` }, jsonLdBreadcrumb(bc)],
     section: '/teams',
@@ -486,7 +482,7 @@ export function circuitsIndex(ctx) {
   const rest = ctx.circuits.filter((c) => !curIds.has(c.id)).sort((a, b) => (ctx.circuitDna[b.id]?.races_held || 0) - (ctx.circuitDna[a.id]?.races_held || 0));
   const card = (c) => {
     const dna = ctx.circuitDna[c.id];
-    return `<a class="card card-link" href="/circuits/${c.slug}"><span class="kicker">${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h3>${esc(ctx.circuitName(c.id))}</h3><p class="fine">${c.length_km ? c.length_km.toFixed(3) + ' km' : ''}${c.turns ? ` · ${c.turns} turns` : ''}${dna?.races_held ? ` · ${dna.races_held} GPs` : ''}${dna?.speed_class ? ` · ${dna.speed_class}-speed` : ''}${c.layout_type ? ` · ${esc(c.layout_type)}` : ''}</p></a>`;
+    return `<a class="card card-link" href="/circuits/${c.slug}"><span class="kicker">${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h3>${esc(ctx.circuitName(c.id))}</h3><p class="fine">${c.length_km ? c.length_km.toFixed(3) + ' km' : ''}${c.turns ? ` · ${c.turns} turns` : ''}${dna?.races_held ? ` · ${dna.races_held} GPs` : ''}${c.layout_type ? ` · ${esc(c.layout_type)}` : ''}</p></a>`;
   };
   const body = `${crumbs([['/', 'Home'], ['/circuits', 'Circuits']])}
   <section class="hero"><div class="wrap"><span class="eyebrow">Circuit DNA</span><h1>Circuits</h1><p class="sub">${cur.length} venues on the ${season} calendar and ${ctx.circuits.length} championship circuits since ${ctx.coverage.earliest_season}.</p></div></section>
@@ -519,18 +515,12 @@ export function circuitPage(ctx, c, outline) {
   <section class="hero"><div class="wrap"><span class="eyebrow">${esc([c.locality, c.country].filter(Boolean).join(', '))}</span><h1>${esc(ctx.circuitName(c.id))}</h1>
   <div class="hero-meta">${c.length_km ? `<span><b>Latest layout</b>${c.length_km.toFixed(3)} km${c.turns ? `, ${c.turns} turns` : ''}</span>` : ''}${dna?.race_laps ? `<span><b>Race laps</b>${dna.race_laps}</span>` : ''}${dna?.race_distance_km ? `<span><b>Distance</b>${dna.race_distance_km} km</span>` : ''}${c.layout_type ? `<span><b>Layout</b>${esc(c.layout_type)}</span>` : ''}${c.lat != null ? `<span><b>Coordinates</b>${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</span>` : ''}${c.opened ? `<span><b>Opened</b>${c.opened}</span>` : ''}${dna?.races_held ? `<span><b>Grands Prix</b>${dna.races_held} (${dna.first_season}–${dna.last_season})</span>` : ''}</div>
   ${next ? `<p class="section"><a class="more" href="${ctx.raceUrl(next.id)}">${next.season} ${esc(next.name)} hub</a></p>` : ''}</div></section>
-  <section class="section"><div class="wrap"><div class="split">
-    <div class="card"><div class="section-head"><div><span class="eyebrow">Circuit DNA</span><h2>Profile</h2></div><a class="more" href="/methodology#circuit-dna">Methodology</a></div>${dims || '<div class="empty">Not enough recent races to profile.</div>'}</div>
-    <div class="grid">
-      ${outline || ''}
-      ${dna ? `<div class="card"><span class="kicker">Last 10 seasons</span><div class="stats"><div class="stat-box"><span>Pole → win</span><b>${pct(dna.pole_win_rate)}</b></div><div class="stat-box"><span>Front-row wins</span><b>${pct(dna.front_row_win_rate)}</b></div><div class="stat-box"><span>Grid↔finish ρ</span><b>${dna.grid_finish_rho ?? '—'}</b></div><div class="stat-box"><span>Pole lap avg</span><b>${dna.pole_lap_speed_kmh ? Math.round(dna.pole_lap_speed_kmh) : '—'}</b><span>km/h</span></div><div class="stat-box"><span>Attrition</span><b>${pct(dna.attrition_rate)}</b></div><div class="stat-box"><span>Stops / car</span><b>${dna.stops_per_car ?? '—'}</b></div></div></div>` : ''}
-      ${dna?.top_drivers?.length ? `<div class="card"><span class="kicker">Most wins here</span><div class="split even"><ol>${tops(dna.top_drivers, 'd')}</ol><ol>${tops(dna.top_constructors, 'c')}</ol></div></div>` : ''}
-    </div></div></div></section>
+  ${dna ? premiumGate('Unlock ${ctx.circuitName(c.id)} Circuit DNA', 'All Access opens the full circuit profile, pole conversion, grid-to-finish relationship, attrition, pit-load metrics and next-race Circuit Fit. Venue facts and winners remain free.') : ''}
   ${winRows ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Winners</h2></div><div class="table-wrap"><table><thead><tr><th>Season</th><th>Event</th><th>Winner</th><th>Team</th><th>Pole</th></tr></thead><tbody>${winRows}</tbody></table></div></div></section>` : ''}`;
   return {
     path: `/circuits/${c.slug}`,
     title: `${ctx.circuitName(c.id)} – F1 Circuit DNA, Winners & Facts`,
-    description: `${ctx.circuitName(c.id)} (${[c.locality, c.country].filter(Boolean).join(', ')}): ${c.length_km ? c.length_km.toFixed(3) + ' km, ' : ''}${c.turns ? c.turns + ' turns, ' : ''}Circuit DNA, pole conversion, overtaking, winners and Formula 1 history.`,
+    description: `${ctx.circuitName(c.id)} (${[c.locality, c.country].filter(Boolean).join(', ')}): ${c.length_km ? c.length_km.toFixed(3) + ' km, ' : ''}${c.turns ? c.turns + ' turns, ' : ''}venue facts, winners and Formula 1 history, with full Circuit DNA in All Access Race Lab.`,
     body,
     jsonLd: [{ '@context': 'https://schema.org', '@type': 'SportsActivityLocation', name: ctx.circuitName(c.id), address: [c.locality, c.country].filter(Boolean).join(', '), ...(c.lat != null ? { geo: { '@type': 'GeoCoordinates', latitude: c.lat, longitude: c.lon } } : {}), url: SITE + `/circuits/${c.slug}` }, jsonLdBreadcrumb(bc)],
     section: '/circuits',
@@ -571,11 +561,9 @@ export function standingsPage(ctx, season) {
   const body = `${crumbs(bc)}
   <section class="hero"><div class="wrap"><span class="eyebrow">FIA Formula One World Championship</span><h1>${season} Standings</h1>${prog?.note ? `<p class="note warn">${esc(prog.note)}</p>` : ''}</div></section>
   <section class="section"><div class="wrap"><div class="split even"><div><div class="section-head"><h2>Drivers</h2></div>${standingsTable(ctx, season, 'driver', 99, { avatar: true })}</div><div id="constructors"><div class="section-head"><h2>Constructors</h2></div>${standingsTable(ctx, season, 'constructor')}</div></div></div></section>
-  ${chart ? `<section class="section"><div class="wrap">${chart}</div></section>` : ''}
-  ${heat ? `<section class="section"><div class="wrap">${heat}</div></section>` : ''}
-  ${teamDeltas ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Teammate points delta</h2></div><div class="table-wrap"><table><thead><tr><th>Team</th><th>Driver A</th><th class="num">Pts</th><th class="num">Pts</th><th>Driver B</th><th class="num">Quali H2H</th></tr></thead><tbody>${teamDeltas}</tbody></table></div></div></section>` : ''}
+  ${isCur && (chart || heat || teamDeltas) ? premiumGate('Unlock championship movement', 'Current standings stay free. All Access Race Lab opens round-by-round trajectory, constructor movement and teammate gap context.') : ''}
   <section class="section"><div class="wrap"><p class="note">Championship probabilities are intentionally not shown: no validated model exists yet.</p><div class="section-head"><h2>All seasons</h2></div><nav class="season-links">${seasons.map((y) => `<a href="${y === ctx.currentSeason ? '/standings' : `/standings/${y}`}"${y === season ? ' aria-current="page"' : ''}>${y}</a>`).join('')}</nav></div></section>`;
-  return { path, title: `F1 ${season} Standings: Drivers' & Constructors' Championship`, description: `${season} Formula 1 drivers' and constructors' championship standings, points progression by round and teammate deltas.`, body, section: '/standings', jsonLd: [jsonLdBreadcrumb(bc)] };
+  return { path, title: `F1 ${season} Standings: Drivers' & Constructors' Championship`, description: `${season} Formula 1 drivers' and constructors' championship standings. Round-by-round movement and teammate analysis are in All Access Race Lab.`, body, section: '/standings', jsonLd: [jsonLdBreadcrumb(bc)] };
 }
 function shade(hex) {
   const n = parseInt(hex, 16);
@@ -590,16 +578,17 @@ export function matchupsIndex(ctx) {
   const season = ctx.currentSeason;
   const cur = currentBattles(ctx);
   const famous = ctx.teammates.filter((t) => t.career.events >= 20).sort((a, b) => b.seasons.at(-1) - a.seasons.at(-1)).slice(0, 60);
+  const pair = (t) => {
+    const u = ctx.matchupUrl(t.a, t.b);
+    const a = ctx.driverById[t.a], b = ctx.driverById[t.b], cid = t.constructors.at(-1);
+    return `<a class="card card-link" href="${u || '/matchups'}"><span class="kicker">${esc(ctx.conById[cid]?.name || 'Shared grid')}</span><h3>${esc(a?.full_name || t.a)} <span class="muted">vs</span> ${esc(b?.full_name || t.b)}</h3><p class="fine">${t.seasons[0]}${t.seasons.length > 1 ? '–' + t.seasons.at(-1) : ''} · ${t.career.events} shared events</p></a>`;
+  };
   const body = `${crumbs([['/', 'Home'], ['/matchups', 'Matchups']])}
-  <section class="hero"><div class="wrap"><span class="eyebrow">Flagship</span><h1>Teammate Battles</h1><p class="sub">Same car, same weekend: the cleanest comparison in Formula 1. Qualifying and race head-to-heads, median qualifying gap, points and finishing record.</p></div></section>
-  <section class="section"><div class="wrap"><div class="section-head"><h2>${season}</h2></div><div class="grid g3">${cur.map((t) => battleCard(ctx, t, season)).join('')}</div></div></section>
-  <section class="section"><div class="wrap"><div class="section-head"><h2>Teammate pairings with 20+ shared races</h2></div><div class="table-wrap"><table><thead><tr><th>Driver A</th><th>Driver B</th><th>Team</th><th>Seasons</th><th class="num">Quali</th><th class="num">Race</th><th></th></tr></thead><tbody>${famous
-    .map((t) => {
-      const u = ctx.matchupUrl(t.a, t.b);
-      return `<tr><td>${driverCell(ctx, t.a, t.constructors.at(-1), t.seasons.at(-1))}</td><td>${driverCell(ctx, t.b, t.constructors.at(-1), t.seasons.at(-1))}</td><td class="list">${t.constructors.map((c) => teamLink(ctx, c)).join(', ')}</td><td>${t.seasons[0]}–${t.seasons.at(-1)}</td><td class="num">${t.career.quali_h2h.join('–')}</td><td class="num">${t.career.race_h2h.join('–')} <span class="fine">/${t.career.race_comparable}</span></td><td>${u ? `<a class="more" href="${u}">Open</a>` : ''}</td></tr>`;
-    })
-    .join('')}</tbody></table></div><p class="fine">Qualifying: official qualifying classification. Race: only races where both drivers were classified (/n = those races); a retirement never counts as a head-to-head win.</p></div></section>`;
-  return { path: '/matchups', title: `F1 Teammate Battles ${season}: Qualifying & Race Head-to-Heads`, description: `Every ${season} Formula 1 teammate battle: qualifying and race head-to-heads, median qualifying gaps, points and DNFs, plus historic pairings.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/matchups', 'Matchups']])] };
+  <section class="hero"><div class="wrap"><span class="eyebrow">Matchup directory</span><h1>Teammate Battles</h1><p class="sub">Find the pairing for free. All Access opens the actual H2H, qualifying-gap history, DNA comparison and next-race fit.</p></div></section>
+  <section class="section"><div class="wrap"><div class="section-head"><h2>${season} pairings</h2></div><div class="grid g3">${cur.map(pair).join('')}</div></div></section>
+  ${premiumGate('Unlock every matchup metric', 'Race Lab opens same-car qualifying and race H2H, median qualifying gaps, recent windows and Driver DNA comparison.')}
+  <section class="section"><div class="wrap"><div class="section-head"><h2>Long-running teammate pairings</h2></div><div class="grid g3">${famous.map(pair).join('')}</div></div></section>`;
+  return { path: '/matchups', title: `F1 Matchups ${season}: Teammate Pairings`, description: `Formula 1 teammate pairing directory. Basic relationship history is free; detailed H2H, qualifying gaps and Driver DNA are in All Access Race Lab.`, body, jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/matchups', 'Matchups']])] };
 }
 
 // matchup pages live in ./matchup.mjs (shared grid history vs teammate battle)

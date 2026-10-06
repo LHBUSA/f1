@@ -34,8 +34,8 @@ function nextRaceModule(X, nr, { full = false } = {}) {
   const { ev, circuit, cdna, fit } = nr;
   const thin = cdna?.recent_races != null && cdna.recent_races < 5;
   const prof = cdna ? (thin ? `<p class="muted">Circuit DNA rests on ${cdna.recent_races} recent race${cdna.recent_races === 1 ? '' : 's'} here, too few for rates.</p>` : `<dl class="istats"><div><dt>Pole → win</dt><dd>${Math.round((cdna.pole_win_rate ?? 0) * 100)}%</dd></div><div><dt>Grid↔finish ρ</dt><dd>${f1(cdna.grid_finish_rho, 2)}</dd></div><div><dt>Avg places moved</dt><dd>${f1(cdna.mean_abs_position_change)}</dd></div><div><dt>Attrition</dt><dd>${Math.round((cdna.attrition_rate ?? 0) * 100)}%</dd></div><div><dt>Stops / car</dt><dd>${f1(cdna.stops_per_car)}</dd></div></dl><p class="fine">Last ${cdna.recent_races} races here (Circuit DNA ${esc(cdna.version || '')}).</p>`) : '<p class="muted">No Circuit DNA for this circuit.</p>';
-  const rows = (fit?.drivers || []).slice(0, full ? 22 : 6);
-  const crows = (fit?.constructors || []).slice(0, full ? 11 : 5);
+  const rows = (fit?.drivers || []).slice(0, full ? 22 : 3);
+  const crows = (fit?.constructors || []).slice(0, full ? 11 : 2);
   return `<div class="ipanel"><div class="ipanel-h"><span class="eyebrow">Next race intelligence</span><h3><a href="/races/${esc(ev.id)}">${esc(ev.name)}</a></h3><p class="fine">${esc(circuit?.name || '')}${circuit?.latest_layout?.length_km ? ` · ${circuit.latest_layout.length_km} km · ${circuit.latest_layout.turns || '—'} turns` : ''}</p></div>
   <div class="isplit"><div><span class="kicker">Circuit DNA</span>${prof}${history(X, ev, circuit)}</div>
   <div><span class="kicker">Circuit Fit · drivers</span>${rows.length ? `<ol class="ifit">${rows.map((r) => `<li>${who(X, r.driver_id)}<span class="ifit-s">${r.fit_score}</span><span class="ifit-c">${(r.strongest || []).slice(0, 1).map((k) => esc(r.components.find((c) => c.key === k)?.label || '')).join('')}</span></li>`).join('')}</ol>` : '<p class="muted">No fit yet.</p>'}
@@ -45,16 +45,16 @@ function nextRaceModule(X, nr, { full = false } = {}) {
 
 function formModule(X, F, { full = false } = {}) {
   const df = M.driverForm(X, F);
-  const imp = df.filter((x) => x.delta_ppr != null).sort((a, b) => b.delta_ppr - a.delta_ppr).slice(0, full ? 10 : 5);
-  const pts = [...df].sort((a, b) => b.recent.points - a.recent.points).slice(0, full ? 10 : 5);
-  const q = df.filter((x) => x.recent.quali_n >= 3).sort((a, b) => a.recent.avg_quali - b.recent.avg_quali).slice(0, full ? 10 : 5);
-  const r = df.filter((x) => x.recent.avg_finish != null).sort((a, b) => a.recent.avg_finish - b.recent.avg_finish).slice(0, full ? 10 : 5);
+  const imp = df.filter((x) => x.delta_ppr != null).sort((a, b) => b.delta_ppr - a.delta_ppr).slice(0, full ? 10 : 2);
+  const pts = [...df].sort((a, b) => b.recent.points - a.recent.points).slice(0, full ? 10 : 2);
+  const q = df.filter((x) => x.recent.quali_n >= 3).sort((a, b) => a.recent.avg_quali - b.recent.avg_quali).slice(0, full ? 10 : 2);
+  const r = df.filter((x) => x.recent.avg_finish != null).sort((a, b) => a.recent.avg_finish - b.recent.avg_finish).slice(0, full ? 10 : 2);
   const block = (title, list, val, note) => `<div class="card"><span class="kicker">${esc(title)}</span><ol class="irank">${list.map((x) => `<li>${who(X, x.driver_id)}<b>${val(x)}</b>${lastN(x.last)}</li>`).join('')}</ol><p class="fine">${esc(note)}</p></div>`;
   return `<div class="grid g2">${block('Biggest recent improvers', imp, (x) => sgn(x.delta_ppr), `Points per race, last ${M.FORM_WINDOW} vs previous ${M.FORM_WINDOW} races.`)}${block('Points, last five races', pts, (x) => x.recent.points, 'Race points incl. sprint (weekend totals).')}${block('Qualifying form', q, (x) => f1(x.recent.avg_quali), `Average qualifying position, last ${M.FORM_WINDOW} (min 3).`)}${block('Race-result form', r, (x) => f1(x.recent.avg_finish), `Average classified finish, last ${M.FORM_WINDOW}; retirements shown as R.`)}</div>`;
 }
 
 function battlesModule(X, F, { full = false } = {}) {
-  const tb = M.teammateBattles(X, F).slice(0, full ? 11 : 6);
+  const tb = M.teammateBattles(X, F).slice(0, full ? 11 : 2);
   const bar = (a, b) => { const t = a + b || 1; return `<span class="ih2h"><i class="w-${Math.round((a / t) * 100)}"></i></span>`; };
   return `<div class="grid g2 ibattles">${tb.map((t) => `<div class="card ibattle ${teamClass(X.con[t.team_id]?.color)}"><div class="ibattle-h">${teamLink(X, t.team_id)}<a class="more" href="/matchup/${[t.a, t.b].sort().map(esc).join('/')}">Matchup</a></div>
     <div class="ibattle-p">${who(X, t.a, { team: false })}${who(X, t.b, { team: false })}</div>
@@ -89,36 +89,11 @@ function champModule(X, F, { full = false } = {}) {
 }
 
 // ---------- pages ----------
-export function intelligencePages(ctx, X, newsPub = []) {
-  const F = M.seasonFrame(X);
-  const nr = M.nextRace(X);
-  const stories = order(newsPub, X).slice(0, 4);
-  const sub = [['/intelligence/drivers', 'Drivers'], ['/intelligence/constructors', 'Constructors'], ['/intelligence/circuits', 'Circuits'], ['/intelligence/teammates', 'Teammates'], ['/intelligence/form', 'Form'], ['/intelligence/championship', 'Championship']];
-  const tabs = (active) => `<nav class="itabs wrap" aria-label="Intelligence sections"><a href="/intelligence"${active === '/intelligence' ? ' aria-current="page"' : ''}>Overview</a>${sub.map(([h, t]) => `<a href="${h}"${active === h ? ' aria-current="page"' : ''}>${t}</a>`).join('')}</nav>`;
-  const page = (p, title, h1, lede, body, description) => ({
-    path: p, title, description, section: '/intelligence', bg: 'data',
-    body: `${crumbs([['/', 'Home'], ['/intelligence', 'Intelligence'], ...(p === '/intelligence' ? [] : [[p, h1]])])}<section class="hero"><div class="wrap"><span class="eyebrow">F1 Intelligence · ${F.season} · after round ${F.races.length}</span><h1>${esc(h1)}</h1><p class="sub">${esc(lede)}</p></div></section>${tabs(p)}${body}`,
-    jsonLd: [jsonLdBreadcrumb([['/', 'Home'], ['/intelligence', 'Intelligence'], ...(p === '/intelligence' ? [] : [[p, h1]])])],
-  });
-  const S = (inner) => `<section class="section"><div class="wrap">${inner}</div></section>`;
-  const hub = page('/intelligence', `F1 Intelligence ${F.season}: Form, Teammates, Circuit Fit & DNA`, 'F1 intelligence',
-    'Who is fast, who is improving, where the teammate gaps are, which cars fit the next circuit and what changed — computed from every classified session.',
-    S(nextRaceModule(X, nr)) +
-    S(head('Driver form', 'Who is improving', ['/intelligence/form', 'All form']) + formModule(X, F)) +
-    S(head('Teammate battles', 'Same car, measured', ['/intelligence/teammates', 'All teams']) + battlesModule(X, F)) +
-    S(head('Constructor form', 'Who is moving', ['/intelligence/constructors', 'Constructors']) + constructorModule(X, F)) +
-    S(head('Driver DNA leaders', 'Profiles at the top', ['/intelligence/drivers', 'All DNA']) + dnaModule(X, F, 3)) +
-    S(head('Championship movement', 'How the table got here', ['/intelligence/championship', 'Full movement']) + champModule(X, F)) +
-    (stories.length ? S(head('Recent intelligence', 'From the newsroom', ['/news', 'All stories']) + `<div class="ngrid">${stories.map((a) => storyCard(a)).join('')}</div>`) : ''),
-    `F1 ${F.season} intelligence hub: next-race Circuit DNA and Circuit Fit, driver and constructor form, teammate head-to-heads, Driver DNA leaders and championship movement after round ${F.races.length}.`);
-  const circuitsBody = S(nextRaceModule(X, nr, { full: true })) + S(head('Circuit DNA', `${F.season} calendar`) + `<div class="table-wrap"><table class="itable itable--wide"><thead><tr><th>Round</th><th>Circuit</th><th class="num">Recent races</th><th class="num">Pole → win</th><th class="num">ρ grid↔finish</th><th class="num">Places moved</th><th class="num">Attrition</th></tr></thead><tbody>${X.raceEvents(F.season).map((e) => { const c = X.dnaCircuit[e.circuit_id]; const ok = c && c.recent_races >= 5; return `<tr><td>${e.round}</td><td><a href="/circuits/${esc(e.circuit_id)}">${esc(X.circuit[e.circuit_id]?.name || e.circuit_id)}</a></td><td class="num">${c?.recent_races ?? '—'}</td><td class="num">${ok ? Math.round(c.pole_win_rate * 100) + '%' : '—'}</td><td class="num">${ok ? f1(c.grid_finish_rho, 2) : '—'}</td><td class="num">${ok ? f1(c.mean_abs_position_change) : '—'}</td><td class="num">${ok ? Math.round(c.attrition_rate * 100) + '%' : '—'}</td></tr>`; }).join('')}</tbody></table></div><p class="fine">Rates are shown only where Circuit DNA has at least five recent races.</p>`);
-  return [
-    hub,
-    page('/intelligence/drivers', `Driver DNA Leaders ${F.season}`, 'Driver DNA leaders', 'The strongest current-window profiles in every Driver DNA dimension, with the population and basis for each.', S(dnaModule(X, F, 8)), `Formula 1 Driver DNA leaders ${F.season}: qualifying pace, race results vs teammate, positions gained, finishing, consistency and circuit-type profiles.`),
-    page('/intelligence/constructors', `Constructor Form ${F.season}`, 'Constructor form', 'Points, qualifying, finishing and reliability over the last five races, and how each team moved in the championship.', S(constructorModule(X, F)) + S(head('Championship', "Constructors' position by round") + champModule(X, F, { full: true })), `Formula 1 constructor form ${F.season}: recent points, qualifying, reliability and championship movement.`),
-    page('/intelligence/circuits', `Circuit Intelligence ${F.season}`, 'Circuit intelligence', 'Circuit DNA for every round and the full Circuit Fit for the next race.', circuitsBody, `Formula 1 ${F.season} circuit intelligence: Circuit DNA for each round and Circuit Fit for the next Grand Prix.`),
-    page('/intelligence/teammates', `Teammate Battles ${F.season}`, 'Teammate battles', 'Every current pairing: qualifying and race head-to-heads, points, median qualifying gap and Driver DNA.', S(battlesModule(X, F, { full: true })), `Formula 1 ${F.season} teammate battles: qualifying and race head-to-head, points and qualifying gap for every team.`),
-    page('/intelligence/form', `F1 Form Guide ${F.season}`, 'Form guide', `Driver form over the last ${M.FORM_WINDOW} races against the ${M.FORM_WINDOW} before.`, S(formModule(X, F, { full: true })), `Formula 1 form guide ${F.season}: biggest improvers, recent points, qualifying and race-result form.`),
-    page('/intelligence/championship', `Championship Movement ${F.season}`, 'Championship movement', 'Drivers and constructors by round, and the points gap inside each team.', S(champModule(X, F, { full: true })), `Formula 1 ${F.season} championship movement: points and positions by round for drivers and constructors, and teammate gaps.`),
-  ];
+const labGate=(title,copy)=>`<div class="premium-gate"><span class="eyebrow">◆ All Access · Race Lab</span><h2>${esc(title)}</h2><p>${esc(copy)}</p><div class="rl-actions"><a class="pc-cta" href="/race-lab">Open Race Lab ◆</a><a class="more" href="/all-access">What All Access includes</a></div></div>`;
+export function intelligencePages(ctx,X,newsPub=[]){
+  const F=M.seasonFrame(X),nr=M.nextRace(X),stories=order(newsPub,X).slice(0,4),S=(x)=>`<section class="section"><div class="wrap">${x}</div></section>`;
+  const page=(p,t,h,l,b,d)=>({path:p,title:t,description:d,section:'/intelligence',bg:'data',body:`${crumbs([['/','Home'],['/intelligence','Intelligence'],...(p==='/intelligence'?[]:[[p,h]])])}<section class="hero"><div class="wrap"><span class="eyebrow">F1 Intelligence · ${F.season}</span><h1>${esc(h)}</h1><p class="sub">${esc(l)}</p></div></section>${b}`,jsonLd:[jsonLdBreadcrumb([['/','Home'],['/intelligence','Intelligence'],...(p==='/intelligence'?[]:[[p,h]])]) ]});
+  const hub=page('/intelligence',`F1 Intelligence ${F.season}: Free Preview + Race Lab`,'F1 intelligence','A public preview of the proprietary layer. All Access opens the full F1 desk in Race Lab.',S(nextRaceModule(X,nr))+S(head('Driver form preview','Who is improving')+formModule(X,F))+S(head('Teammate preview','Same car, measured')+battlesModule(X,F))+S(head('Driver DNA preview','One leader per dimension')+dnaModule(X,F,1))+S(labGate('Open the complete F1 intelligence desk','Full rankings, DNA, form deltas, teammate gaps and championship movement live in Race Lab.'))+(stories.length?S(head('Recent intelligence','From the newsroom',['/news','All stories'])+`<div class="ngrid">${stories.map(a=>storyCard(a)).join('')}</div>`):''),`F1 ${F.season} intelligence preview; full proprietary analysis is in All Access Race Lab.`);
+  const locked=(p,t,h,l,copy)=>page(p,t,h,l,S(labGate(h,copy)),`${h} preview; full detail is in All Access Race Lab.`);
+  return [hub,locked('/intelligence/drivers',`Driver DNA Leaders ${F.season}`,'Driver DNA leaders','Complete dimensions and ranked populations are an All Access surface.','Open every Driver DNA dimension, percentile and sample in Race Lab.'),locked('/intelligence/constructors',`Constructor Form ${F.season}`,'Constructor form','Recent form is previewed publicly.','Open recent points, qualifying, reliability and movement for every team.'),locked('/intelligence/circuits',`Circuit Intelligence ${F.season}`,'Circuit intelligence','Circuit facts stay public; full DNA and Fit are All Access.','Open complete Circuit DNA and driver/constructor Circuit Fit rankings.'),locked('/intelligence/teammates',`Teammate Battles ${F.season}`,'Teammate battles','Same-car comparison is a core proprietary surface.','Open every pairing, H2H and median qualifying gap.'),locked('/intelligence/form',`F1 Form Guide ${F.season}`,'Form guide','The public view is only a small preview.','Open the full recent-vs-prior form board.'),locked('/intelligence/championship',`Championship Movement ${F.season}`,'Championship movement','Standings stay free; derived trajectory is All Access.','Open five-round movement and teammate gap context.')];
 }

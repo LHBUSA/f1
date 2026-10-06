@@ -11,6 +11,7 @@ import { articlePage } from '../src/news/render.mjs';
 import { newsIndexPage, homeModule, feedXml, newsSitemapXml, order } from '../src/news/pages.mjs';
 import { pbecastHub, pbecastEventPage } from './site/pbecast-v2.mjs';
 import { allAccessPage } from './site/account.mjs';
+import { raceLabPage } from './site/race-lab.mjs';
 import { loadCarPhotos, carPhotoFor, imageObject } from '../src/identity/car-photos.mjs';
 import { loadCarModels, loadLineageNotes, carModelFor, teamCarPhotos, lineageCars } from '../src/identity/history.mjs';
 import { loadPeople, teamPeople, teamMachine } from '../src/identity/people.mjs';
@@ -125,6 +126,9 @@ fs.writeFileSync(path.join(DIST, `assets/explorer.${xpHash}.js`), xpJs);
 const rlJs = fs.readFileSync('src/web/rail.js', 'utf8');
 const rlHash = crypto.createHash('sha256').update(rlJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/rail.${rlHash}.js`), rlJs);
+const raceLabJs = fs.readFileSync('src/web/race-lab.js', 'utf8');
+const raceLabHash = crypto.createHash('sha256').update(raceLabJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/race-lab.${raceLabHash}.js`), raceLabJs);
 // soft-navigation router (every page except PBEcast)
 const nvJs = fs.readFileSync('src/web/nav.js', 'utf8');
 const nvHash = crypto.createHash('sha256').update(nvJs).digest('hex').slice(0, 10);
@@ -150,7 +154,7 @@ const amJs = fs.readFileSync('src/web/article-market.js', 'utf8').replace("'/ass
 if (!amJs.includes(`article-market-ui.${amUiHash}.js`)) throw new Error('build-site: article-market loader import path not rewritten');
 const amHash = crypto.createHash('sha256').update(amJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/article-market.${amHash}.js`), amJs);
-const assets = { account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
+const assets = { account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, raceLab: `/assets/race-lab.${raceLabHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];
@@ -199,6 +203,7 @@ for (const k of Object.keys(ctx.matchups)) emit(P.matchupPage(ctx, k));
 emit(pbecastHub(X, ctx.nextEvent ? X.event[ctx.nextEvent.slug] : null));
 for (const ev of X.raceEvents(ctx.currentSeason)) emit(pbecastEventPage(X, ev));
 emit(allAccessPage());
+emit(raceLabPage());
 emit(methodology(ctx));
 emit(coveragePage(ctx));
 for (const p of P.intelligencePages(ctx, X, newsPub)) emit(p);

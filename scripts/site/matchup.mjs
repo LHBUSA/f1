@@ -211,18 +211,10 @@ export function matchupPage(ctx, key) {
 
   const path = `/matchup/${a.slug}/${b.slug}`;
   const bc = [['/', 'Home'], ['/matchups', 'Matchups'], [path, `${A} vs ${B}`]];
-  const body = `${crumbs(bc)}
-  ${hero}
-  ${t ? battle : ''}
-  ${now}
-  ${shared}
-  ${dna}
-  ${next}
-  ${recent ? `<section class="section"><div class="wrap"><div class="section-head"><h2>Recent shared races</h2></div><ol class="mu-races">${recent}</ol><p class="fine">Q qualifying classification · G starting grid · finishing position · points.</p></div></section>` : ''}
-  ${glossary}`;
-  const title = t ? `${a.full_name} vs ${b.full_name}: F1 Head-to-Head & ${nowMates ? `${conName(grid(m.a).constructor_id)} ` : ''}Teammate Battle` : `${a.full_name} vs ${b.full_name}: F1 Head-to-Head & Shared Grid History`;
-  const description = `${a.full_name} vs ${b.full_name}: ${m.shared_events} shared Formula 1 events (classified-finish H2H ${m.race_ahead[0]}–${m.race_ahead[1]} of ${m.race_comparable_events})${t ? `, ${tTeams} teammate battle (qualifying ${orient(t.career, flip).quali_h2h.join('–')})` : ''}${ca.length && cb.length ? `, ${season} season snapshot` : ''} and Driver DNA comparison.`;
-  // comparison bars take each driver's team colour (CSP: classes only, so the colour classes are stamped here)
-  const painted = body.replaceAll('<span class="ba">', `<span class="ba ${teamClass(colA)}">`).replaceAll('<span class="bb">', `<span class="bb ${teamClass(colB)}">`);
-  return { path, title, description, body: painted, section: '/matchups', jsonLd: [jsonLdBreadcrumb(bc)] };
+  const basic = `<section class="section"><div class="wrap"><div class="card"><span class="eyebrow">Shared F1 record</span><h2>${esc(A)} and ${esc(B)}</h2><div class="stats"><div class="stat-box"><span>Shared events</span><b>${m.shared_events}</b></div><div class="stat-box"><span>First shared season</span><b>${m.first_season}</b></div><div class="stat-box"><span>Latest shared season</span><b>${m.last_season}</b></div><div class="stat-box"><span>Same-team events</span><b>${m.same_team_events || 0}</b></div></div><p class="fine">Basic shared-event history stays public. Detailed head-to-heads, qualifying gaps, Driver DNA and next-race Circuit Fit are part of All Access.</p></div></div></section>`;
+  const gate = `<section class="section"><div class="wrap"><div class="premium-gate"><span class="eyebrow">◆ All Access · Race Lab</span><h2>Unlock the complete ${esc(A)} vs ${esc(B)} analysis</h2><p>Open same-car qualifying and race H2H, median qualifying-gap history, recent windows, Driver DNA comparison and next-race Circuit Fit.</p><div class="rl-actions"><a class="pc-cta" href="/race-lab">Open Race Lab ◆</a><a class="more" href="/all-access">What All Access includes</a></div></div></div></section>`;
+  const body = `${crumbs(bc)}${hero}${basic}${gate}${glossary}`;
+  const title = `${a.full_name} vs ${b.full_name}: F1 Matchup`;
+  const description = `${a.full_name} vs ${b.full_name}: ${m.shared_events} shared Formula 1 events and relationship history. Detailed H2H, qualifying gaps, Driver DNA and Circuit Fit are available in All Access Race Lab.`;
+  return { path, title, description, body, section: '/matchups', jsonLd: [jsonLdBreadcrumb(bc)] };
 }
