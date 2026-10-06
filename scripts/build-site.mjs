@@ -203,7 +203,7 @@ for (const k of Object.keys(ctx.matchups)) emit(P.matchupPage(ctx, k));
 emit(pbecastHub(X, ctx.nextEvent ? X.event[ctx.nextEvent.slug] : null));
 for (const ev of X.raceEvents(ctx.currentSeason)) emit(pbecastEventPage(X, ev));
 emit(allAccessPage());
-emit(raceLabPage());
+emit(raceLabPage(ctx));
 emit(methodology(ctx));
 emit(coveragePage(ctx));
 for (const p of P.intelligencePages(ctx, X, newsPub)) emit(p);
