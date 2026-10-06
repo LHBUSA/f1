@@ -60,6 +60,41 @@ async function sessionFrames(env, upstream, buffer) {
   if (buffer?.session === upstream) for (const f of buffer.frames || []) if (!frames.length || f.t > frames.at(-1).t) frames.push(f);
   return { frames, meta: idx.meta || buffer?.meta || null, recorder: idx.recorder || null };
 }
+
+const rlMean = (xs) => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+const rlDriver = (map, id) => map[id] ? { id, name: map[id].name, team_id: map[id].team_id } : { id, name: id, team_id: null };
+async function raceLabPayload(env) {
+  const meta = await doc(env, 'meta');
+  if (!meta?.current_season) return null;
+  const season = meta.current_season;
+  const [events, drivers, constructors, circuits, standings, dnaDriver, dnaCircuit, fit, matchups] = await Promise.all([
+    doc(env, `events-${season}`), doc(env, 'drivers'), doc(env, 'constructors'), doc(env, 'circuits'),
+    doc(env, `standings-${season}`), doc(env, 'dna-driver'), doc(env, 'dna-circuit'), doc(env, 'fit'), doc(env, 'matchups')
+  ]);
+  const D = Object.fromEntries((drivers || []).map((d) => [d.id, d]));
+  const C = Object.fromEntries((constructors || []).map((x) => [x.id, x]));
+  const grid = (drivers || []).filter((d) => d.team_id && d.career?.last_season >= season);
+  const raceOf = (e) => (e.sessions || []).find((s) => s.type === 'race');
+  const qualiOf = (e) => (e.sessions || []).find((s) => s.type === 'qualifying');
+  const next = (events || []).find((e) => e.status !== 'completed' && e.status !== 'canceled' && Date.parse(raceOf(e)?.start_utc || e.start_utc || 0) > Date.now() - 6 * 3600e3) || null;
+  const completed = (events || []).filter((e) => raceOf(e)?.results?.length).sort((a,b)=>String(raceOf(a)?.start_utc||a.start_utc).localeCompare(String(raceOf(b)?.start_utc||b.start_utc)));
+  const recent = completed.slice(-5), prior = completed.slice(-10,-5);
+  const stat=(id,evs)=>{const rr=evs.map(e=>raceOf(e)?.results?.find(r=>r.driver_id===id)).filter(Boolean);const qq=evs.map(e=>qualiOf(e)?.results?.find(r=>r.driver_id===id)?.position).filter(Boolean);const pts=rr.reduce((s,r)=>s+(r.points||0),0);return {races:rr.length,points:pts,ppr:rr.length?pts/rr.length:null,avg_quali:rlMean(qq)};};
+  const fr=grid.map(d=>{const a=stat(d.id,recent),b=stat(d.id,prior);return {driver:{id:d.id,name:d.name,team_id:d.team_id},recent:a,prior:b,delta_ppr:a.races>=3&&b.races>=3?a.ppr-b.ppr:null};});
+  const improvers=fr.filter(x=>x.delta_ppr!=null).sort((a,b)=>b.delta_ppr-a.delta_ppr).slice(0,8).map(x=>({driver:x.driver,delta_ppr:x.delta_ppr}));
+  const points=[...fr].sort((a,b)=>b.recent.points-a.recent.points).slice(0,8).map(x=>({driver:x.driver,points:x.recent.points,races:x.recent.races}));
+  const dims=[['qualifying','Qualifying pace'],['race_result','Race results vs teammate'],['positions_gained','Positions gained'],['finishing','Finishing'],['consistency','Consistency'],['street','Street circuits'],['high_speed','High-speed circuits'],['low_speed','Low-speed circuits']];
+  const dna_leaders=dims.map(([key,label])=>({key,label,rows:grid.map(d=>({driver:{id:d.id,name:d.name,team_id:d.team_id},dim:dnaDriver?.[d.id]?.current?.dimensions?.[key]})).filter(x=>x.dim?.percentile!=null&&!['low','insufficient'].includes(x.dim.confidence)).sort((a,b)=>b.dim.percentile-a.dim.percentile).slice(0,6).map(x=>({driver:x.driver,percentile:x.dim.percentile,sample_size:x.dim.sample_size,confidence:x.dim.confidence}))}));
+  const byTeam={}; for(const d of grid)(byTeam[d.team_id]??=[]).push(d);
+  const teammates=Object.entries(byTeam).filter(([,ds])=>ds.length>=2).map(([teamId,ds])=>{const key=ds.slice(0,2).map(d=>d.id).sort().join('|');const t=matchups?.[key]?.teammates;const s=t?.by_season?.[season]||t?.last5;if(!t||!s)return null;return {team:C[teamId]?{id:teamId,name:C[teamId].name}:{id:teamId,name:teamId},a:rlDriver(D,t.a),b:rlDriver(D,t.b),quali:s.quali_h2h||null,race:s.race_h2h||null,race_comparable:s.race_comparable??null,median_gap_pct:s.quali_gap_pct_median??null};}).filter(Boolean);
+  const prog=standings?.progression||[],last=prog.at(-1),then=prog.at(-6)||prog[0];
+  const championship=last?Object.entries(last.drivers||{}).sort((a,b)=>a[1].pos-b[1].pos).slice(0,12).map(([id,v])=>({driver:rlDriver(D,id),position:v.pos,points:v.p,movement:then?.drivers?.[id]?.pos!=null?then.drivers[id].pos-v.pos:null})):[];
+  const f=next?fit?.[next.id]:null;
+  const circuit_fit=next&&f?{drivers:(f.drivers||[]).slice().sort((a,b)=>b.fit_score-a.fit_score).map((x,i)=>({rank:i+1,driver:rlDriver(D,x.driver_id),fit_score:x.fit_score,strongest:(x.strongest||[]).slice(0,1).map(k=>x.components?.find(c=>c.key===k)?.label).filter(Boolean).join('')})),constructors:(f.constructors||[]).slice().sort((a,b)=>b.fit_score-a.fit_score).map((x,i)=>({rank:i+1,constructor:C[x.constructor_id]?{id:x.constructor_id,name:C[x.constructor_id].name}:{id:x.constructor_id,name:x.constructor_id},fit_score:x.fit_score}))}:{drivers:[],constructors:[]};
+  const circuit=next?(circuits||[]).find(x=>x.id===next.circuit_id):null;
+  return {tier:'all_access',season,next_event:next?{id:next.id,name:next.name,round:next.round,circuit:circuit?{id:circuit.id,name:circuit.name}:null}:null,circuit_fit,circuit_dna:next?dnaCircuit?.[next.circuit_id]||null:null,dna_window:Object.values(dnaDriver||{}).find(x=>x?.current?.window)?.current?.window||null,dna_leaders,form:{improvers,points},teammates,championship};
+}
+
 const authorized = (req, token) => !!token && (req.headers.get('authorization') || '') === `Bearer ${token}`;
 const err = (req, status, error) => respond(req, { error }, { status, cache: 'no-store' });
 
@@ -103,6 +138,12 @@ async function route(req, env, ctx) {
       if (p === '/membership') {
         const a = await f1Access(req, env);
         return respondPrivate(req, { membership: a.membership, signed_in: a.signed_in === true, verification: a.reason });
+      }
+      if (p === '/race-lab') {
+        const a = await f1Access(req, env);
+        if (!a.granted) return respondPrivate(req, { error: 'all_access_required', feature: 'race_lab', membership: a.membership, signed_in: a.signed_in === true }, 403);
+        const payload = await raceLabPayload(env);
+        return payload ? respondPrivate(req, payload) : respondPrivate(req, { error: 'projection_not_published' }, 503);
       }
       // ---------- PBEcast: All Access (server-enforced; private, never cached) ----------
       if (p === '/live/full' || p.startsWith('/replay/') || p.startsWith('/incidents/')) {
@@ -214,14 +255,13 @@ async function route(req, env, ctx) {
       if ((m = p.match(/^\/drivers\/([a-z0-9-]+)$/))) {
         const d = (await doc(env, 'drivers')).find((x) => x.id === m[1]);
         if (!d) return err(req, 404, 'driver not found');
-        const dna = (await doc(env, 'dna-driver'))[d.id] || null;
-        return respond(req, { ...d, dna });
+        return respond(req, d);
       }
       if (p === '/constructors') return respond(req, await doc(env, 'constructors'));
       if ((m = p.match(/^\/constructors\/([a-z0-9-]+)$/))) {
         const c = (await doc(env, 'constructors')).find((x) => x.id === m[1]);
         if (!c) return err(req, 404, 'constructor not found');
-        return respond(req, { ...c, dna: (await doc(env, 'dna-constructor'))[c.id] || null });
+        return respond(req, c);
       }
       if (p === '/events') {
         const evs = await doc(env, `events-${season(q.get('season'))}`);
@@ -273,30 +313,31 @@ async function route(req, env, ctx) {
       if (p === '/circuits') return respond(req, await doc(env, 'circuits'));
       if ((m = p.match(/^\/circuits\/([a-z0-9-]+)$/))) {
         const c = (await doc(env, 'circuits')).find((x) => x.id === m[1]);
-        return c ? respond(req, { ...c, dna: (await doc(env, 'dna-circuit'))[c.id] || null }) : err(req, 404, 'circuit not found');
+        return c ? respond(req, c) : err(req, 404, 'circuit not found');
       }
       if ((m = p.match(/^\/dna\/driver\/([a-z0-9-]+)$/))) {
-        const d = (await doc(env, 'dna-driver'))[m[1]];
-        return d ? respond(req, { driver_id: m[1], ...d }) : err(req, 404, 'no DNA for this driver');
+        const a = await f1Access(req, env);
+        if (!a.granted) return respondPrivate(req, { error:'all_access_required', feature:'driver_dna', membership:a.membership }, 403);
+        const d=(await doc(env,'dna-driver'))[m[1]];
+        return d ? respondPrivate(req,{ driver_id:m[1], ...d }) : respondPrivate(req,{error:'no DNA for this driver'},404);
       }
       if ((m = p.match(/^\/dna\/constructor\/([a-z0-9-]+)$/))) {
-        const d = (await doc(env, 'dna-constructor'))[m[1]];
-        if (!d) return err(req, 404, 'no DNA for this constructor');
-        const y = q.get('season');
-        return respond(req, { constructor_id: m[1], seasons: y ? { [y]: d[y] || null } : d });
+        const a=await f1Access(req,env); if(!a.granted) return respondPrivate(req,{error:'all_access_required',feature:'constructor_dna',membership:a.membership},403);
+        const d=(await doc(env,'dna-constructor'))[m[1]]; if(!d) return respondPrivate(req,{error:'no DNA for this constructor'},404);
+        const y=q.get('season'); return respondPrivate(req,{constructor_id:m[1],seasons:y?{[y]:d[y]||null}:d});
       }
       if ((m = p.match(/^\/dna\/circuit\/([a-z0-9-]+)$/))) {
-        const d = (await doc(env, 'dna-circuit'))[m[1]];
-        return d ? respond(req, d) : err(req, 404, 'no DNA for this circuit');
+        const a=await f1Access(req,env); if(!a.granted) return respondPrivate(req,{error:'all_access_required',feature:'circuit_dna',membership:a.membership},403);
+        const d=(await doc(env,'dna-circuit'))[m[1]]; return d?respondPrivate(req,d):respondPrivate(req,{error:'no DNA for this circuit'},404);
       }
       if ((m = p.match(/^\/fit\/((\d{4})-[a-z0-9-]+)$/))) {
-        const f = (await doc(env, 'fit'))[m[1]];
-        return f ? respond(req, f) : err(req, 404, 'no Circuit Fit for this event');
+        const a=await f1Access(req,env); if(!a.granted) return respondPrivate(req,{error:'all_access_required',feature:'circuit_fit',membership:a.membership},403);
+        const f=(await doc(env,'fit'))[m[1]]; return f?respondPrivate(req,f):respondPrivate(req,{error:'no Circuit Fit for this event'},404);
       }
       if ((m = p.match(/^\/matchup\/([a-z0-9-]+)\/([a-z0-9-]+)$/))) {
-        const [a, b] = [m[1], m[2]].sort();
-        const x = (await doc(env, 'matchups'))[`${a}|${b}`];
-        return x ? respond(req, x) : err(req, 404, 'no shared races for this pair');
+        const a=await f1Access(req,env); if(!a.granted) return respondPrivate(req,{error:'all_access_required',feature:'matchup_lab',membership:a.membership},403);
+        const [aId,bId]=[m[1],m[2]].sort(); const x=(await doc(env,'matchups'))[`${aId}|${bId}`];
+        return x?respondPrivate(req,x):respondPrivate(req,{error:'no shared races for this pair'},404);
       }
       return err(req, 404, 'not found');
     } catch (e) {
