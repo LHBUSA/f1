@@ -15,7 +15,8 @@
     "qa:browser": "node scripts/qa-browser.mjs",
     "guard": "node scripts/guard-source-brand.mjs",
     "test": "node --test \"tests/*.test.mjs\"",
-    "news:canary": "F1_NEWS_SHADOW=1 node scripts/build-site.mjs && node scripts/news-canary.mjs"
+    "news:canary": "F1_NEWS_SHADOW=1 node scripts/build-site.mjs && node scripts/news-canary.mjs",
+    "verify:race-lab": "npm test && node --check workers/f1-api/src/index.js && node --check scripts/site/pages.mjs && node --check scripts/site/intelligence.mjs && node --check scripts/site/matchup.mjs && node --check scripts/site/race-lab.mjs && node --check src/web/race-lab.js && mkdir -p dist && cp public/favicon.svg dist/favicon.svg"
   },
   "engines": {
     "node": ">=20"
