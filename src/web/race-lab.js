@@ -19,7 +19,7 @@
   const avatar=(d,size='sm')=>{
     if(!d) return '';
     const px=size==='lg'?96:size==='md'?64:42;
-    return `<span class="rl-avatar rl-avatar-${size}"><img src="/pbe/f1/media/headshot/${esc(d.id)}" alt="${esc(d.name)}" width="${px}" height="${px}" loading="lazy" decoding="async" onerror="this.parentElement.textContent='${esc(initials(d.name))}'"></span>`;
+    return `<span class="rl-avatar rl-avatar-${size}"><span class="rl-avatar-fallback" aria-hidden="true">${esc(initials(d.name))}</span><img src="/pbe/f1/media/headshot/${esc(d.id)}" alt="${esc(d.name)}" width="${px}" height="${px}" loading="lazy" decoding="async"></span>`;
   };
   const driver=(d,{image=true,team=true}={})=>d?`<a class="rl-driver" href="/drivers/${esc(d.id)}">${image?avatar(d):''}<span class="rl-driver-copy"><b>${esc(d.name)}</b>${team&&d.team_id?`<small>${mark(d.team_id,'xs')}${esc(teamMedia(d.team_id)?.name||'')}</small>`:''}</span></a>`:'—';
   const team=(t,{car=false}={})=>t?`<a class="rl-team" href="/teams/${esc(t.id)}">${mark(t.id,'sm')}<span><b>${esc(t.name)}</b>${car&&teamMedia(t.id)?.car?.model?`<small>${esc(teamMedia(t.id).car.model)}</small>`:''}</span></a>`:'—';
