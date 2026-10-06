@@ -31,11 +31,13 @@ export const sportName = (s) => (s.key === 'f1' ? s.name : s.label);
 
 /** What All Access adds on F1 today: exactly what f1-api gates server-side. Everything else on the site is free. */
 export const F1_ALL_ACCESS = Object.freeze([
+  { key: 'race_lab', label: 'Race Lab ◆', sub: 'Full Circuit Fit, Driver DNA, form, teammate and championship intelligence' },
+  { key: 'deep_analysis', label: 'Deep driver & matchup analytics', sub: 'Complete DNA dimensions, qualifying-gap history and form deltas' },
   { key: 'tower', label: 'Full timing tower', sub: 'Gaps, intervals, pit stops, best laps' },
   { key: 'feed', label: 'Full live feed', sub: 'Every recorded update in a session' },
   { key: 'replay', label: 'Session replay', sub: 'Scrubber, 0.5×–4×, lap jumps' },
   { key: 'graph', label: 'Position graph', sub: 'Every driver, lap by lap' },
 ]);
-export const F1_FREE = Object.freeze(['Live track map + timing order', 'Race state & incidents', 'Races, standings, drivers, teams', 'Circuits, matchups, Driver DNA', 'Intelligence & news']);
+export const F1_FREE = Object.freeze(['Race calendar, schedules & results', 'Top-level standings', 'Basic driver, team & circuit profiles', 'PBEcast track map + timing order', 'Major incidents', 'News + Intelligence previews']);
 
 export { accountView, ACCOUNT_LABEL } from './account-view.mjs';
