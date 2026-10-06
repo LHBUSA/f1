@@ -43,7 +43,7 @@ export function accountPanels(where = 'sheet') {
   <p class="acct-identity"><i aria-hidden="true"></i>SIGNED IN · PropBetEdge account</p>
   <span class="acct-eyebrow">F1 · Account ready</span>
   <h2 class="acct-head">Your account doesn&#39;t include All Access.</h2>
-  <p class="acct-lede">${esc(PRODUCT)} adds the full PBEcast timing tower, session replay and the position graph on F1, plus every other PropBetEdge sport and ${esc(PREDICTIONS.name)}.</p>
+  <p class="acct-lede">${esc(PRODUCT)} opens Race Lab — full Circuit Fit, Driver DNA, form and teammate intelligence — plus the complete PBEcast timing tower, replay and position history, every other PropBetEdge sport and ${esc(PREDICTIONS.name)}.</p>
   <div class="acct-actions">${checkout()}${inSheet ? learn() : ''}${signout()}</div>
 </div>
 <div class="acct-panel" data-acct-panel="check" hidden>
@@ -59,19 +59,19 @@ export function accountPanels(where = 'sheet') {
   <h2 class="acct-head">Your full F1 desk<br>is unlocked.</h2>
   ${verified('platinum', '◆ PLATINUM', ['PLATINUM ACCESS ACTIVE', PLATINUM_TRUTH])}
   ${capsGrid(true)}
-  <div class="acct-actions"><a class="acct-cta" href="/pbecast">Open PBEcast →</a>${inSheet ? `<a class="acct-btn2" href="${LOCAL_ALL_ACCESS_PATH}">Your network</a>` : ''}<a class="acct-btn2" href="${MANAGE_URL}" target="_blank" rel="noopener noreferrer">Manage membership ↗</a><button type="button" class="acct-btn2" data-acct-retry>Refresh verified access</button>${signout()}</div>
+  <div class="acct-actions"><a class="acct-cta" href="/race-lab">Open Race Lab ◆</a><a class="acct-btn2" href="/pbecast">Open PBEcast →</a>${inSheet ? `<a class="acct-btn2" href="${LOCAL_ALL_ACCESS_PATH}">Your network</a>` : ''}<a class="acct-btn2" href="${MANAGE_URL}" target="_blank" rel="noopener noreferrer">Manage membership ↗</a><button type="button" class="acct-btn2" data-acct-retry>Refresh verified access</button>${signout()}</div>
 </div>
 <div class="acct-panel" data-acct-panel="owner" hidden>
   <span class="acct-eyebrow owner">F1 · Verified owner</span>
   <h2 class="acct-head">Owner access<br>is active.</h2>
   ${verified('owner', 'VERIFIED OWNER', ['Owner access · no subscription required', 'Verified by PropBetEdge'])}
   ${capsGrid(true)}
-  <div class="acct-actions"><a class="acct-cta" href="/pbecast">Open PBEcast →</a>${inSheet ? `<a class="acct-btn2" href="${LOCAL_ALL_ACCESS_PATH}">The network</a>` : ''}<button type="button" class="acct-btn2" data-acct-retry>Refresh verified access</button>${signout()}</div>
+  <div class="acct-actions"><a class="acct-cta" href="/race-lab">Open Race Lab ◆</a><a class="acct-btn2" href="/pbecast">Open PBEcast →</a>${inSheet ? `<a class="acct-btn2" href="${LOCAL_ALL_ACCESS_PATH}">The network</a>` : ''}<button type="button" class="acct-btn2" data-acct-retry>Refresh verified access</button>${signout()}</div>
 </div>
 </div>`;
 }
 
-const story = (h) => `<div class="acct-story"><span class="acct-eyebrow">PropBetEdge F1 Intelligence</span><${h} class="acct-title">Every lap<br><em>leaves a trace.</em></${h}><p>PBEcast places every car from the lap timing we record ourselves. All Access opens the full timing tower, session replay and every driver&#39;s position graph — and the rest of the PropBetEdge network.</p></div>`;
+const story = (h) => `<div class="acct-story"><span class="acct-eyebrow">PropBetEdge F1 Intelligence</span><${h} class="acct-title">Every lap<br><em>leaves a trace.</em></${h}><p>All Access opens Race Lab — full Circuit Fit, Driver DNA, form and teammate intelligence — plus the complete PBEcast timing tower, replay and position history across the PropBetEdge network.</p></div>`;
 
 export function accountSheet() {
   return `<dialog id="acct-sheet" class="acct-sheet" aria-label="PropBetEdge F1 account" data-acct-sheet>
@@ -103,7 +103,7 @@ ${capsGrid(false)}
   return {
     path: LOCAL_ALL_ACCESS_PATH,
     title: 'PropBetEdge All Access on F1 Intelligence — 10 sports + Predictions, $29/month',
-    description: `F1 Intelligence is one desk in the PropBetEdge network. All Access adds the full PBEcast timing tower, session replay and position graph on F1, plus ${SPORTS.filter((s) => s.key !== 'f1').map(sportName).join(', ')} and ${PREDICTIONS.name}, for ${PRICE}.`,
+    description: `F1 Intelligence is one desk in the PropBetEdge network. All Access adds Race Lab, full Driver DNA, Circuit Fit and deep matchup/form analysis plus PBEcast replay and full timing on F1, ${SPORTS.filter((s) => s.key !== 'f1').map(sportName).join(', ')} and ${PREDICTIONS.name}, for ${PRICE}.`,
     body,
     section: LOCAL_ALL_ACCESS_PATH,
     jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebPage', name: 'PropBetEdge All Access on F1 Intelligence', url: `${SITE}${LOCAL_ALL_ACCESS_PATH}` }],
