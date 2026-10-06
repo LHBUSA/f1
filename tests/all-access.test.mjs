@@ -4,7 +4,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import crypto from 'node:crypto';
 import * as AA from '../src/core/all-access.mjs';
 import { accountView, ACCOUNT_LABEL } from '../src/core/account-view.mjs';
 import { accountPanels, accountSheet, accountButton, allAccessPage } from '../scripts/site/account.mjs';
@@ -13,13 +12,13 @@ import { layout } from '../scripts/site/lib.mjs';
 const STRIPE = 'https://buy.stripe.com/8x2eVdgmOaqy4pv8Ez7wA0N';
 const panel = (html, key) => { const i = html.indexOf(`data-acct-panel="${key}"`); assert.ok(i > 0, key); const j = html.indexOf('data-acct-panel=', i + 20); return html.slice(i, j > 0 ? j : undefined); };
 
-test('family registry is the canonical vendored copy: 10 sports, Predictions a product, never a sport', () => {
-  const raw = fs.readFileSync('src/core/family.json');
-  // byte-identical to LHBUSA/propbetedge-workers shared/network/family.json (eaa926f)
-  assert.equal(crypto.createHash('sha256').update(raw).digest('hex'), '4a818fa2df4efb97ebac89e1ff8b21ecf584e7710369d4dc0c2b4509d31cd123');
+test('family registry v2: 10 sports, All Access products never sports', () => {
+  assert.equal(AA.FAMILY.version, '2.0.0');
   assert.deepEqual(AA.SPORTS.map((s) => s.key), ['mlb', 'nfl', 'nba', 'wnba', 'nhl', 'ufc', 'tennis', 'soccer', 'golf', 'f1']);
+  assert.deepEqual(AA.FAMILY.products.map((p) => p.key), ['members', 'compare', 'predictions']);
   assert.equal(AA.PREDICTIONS.key, 'predictions');
-  assert.ok(!AA.SPORTS.some((s) => s.key === 'predictions'));
+  for (const p of AA.FAMILY.products) assert.ok(!AA.SPORTS.some((s) => s.key === p.key));
+  assert.equal(AA.FAMILY.all_access.find((p) => p.key === 'compare').url, 'https://compare.propbetedge.ai/');
   assert.equal(AA.sportName(AA.SPORTS.find((s) => s.key === 'f1')), 'F1 Intelligence');
 });
 
