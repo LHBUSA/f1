@@ -102,9 +102,15 @@ const NAV = [
   ['/intelligence', 'Intelligence'],
   ['/news', 'News'],
 ];
+const ALL_ACCESS_NETWORK = [
+  ['/all-access', 'All Access'],
+  ['https://members.propbetedge.ai/', 'Command Center'],
+  ['https://compare.propbetedge.ai/', 'Compare'],
+  ['https://predictions.propbetedge.ai/', 'Predictions'],
+];
 const NETWORK = [
   ['https://propbetedge.ai', 'Sports News'],
-  ['/all-access', 'All Access'],
+  ['https://learn.propbetedge.ai/', 'Learn'],
   ['https://mlb.propbetedge.ai', 'MLB'],
   ['https://nfl.propbetedge.ai', 'NFL'],
   ['https://nba.propbetedge.ai', 'NBA'],
@@ -187,7 +193,7 @@ ${body}
       <p class="fine"><a href="/methodology">Methodology &amp; sources</a> · <a href="/data-coverage">Data coverage</a></p>
       <p class="fine"><a href="https://propbetedge.ai/about">About PropBetEdge</a> · <a href="https://propbetedge.ai/terms">Terms</a> · <a href="https://propbetedge.ai/legal">Legal</a> · <a href="https://propbetedge.ai/support">Support</a></p>
     </div>
-    <nav aria-label="PropBetEdge network" class="network">${NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}<a href="${DISCORD}" rel="noopener">Discord</a></nav>
+    <nav aria-label="PropBetEdge network" class="network"><span class="network-k">ALL ACCESS</span>${ALL_ACCESS_NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}<span class="network-k">NETWORK</span>${NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}<a href="${DISCORD}" rel="noopener">Discord</a></nav>
   </div>
   <div class="wrap fine copy">© ${new Date().getUTCFullYear()} PropBetEdge. F1, FORMULA 1 and related marks are trademarks of Formula One Licensing B.V.</div>
 </footer>
