@@ -75,20 +75,17 @@ test('qualifying rule: a grid penalty never changes the qualifying comparison (r
   assert.ok(checked > 0, 'the archive contains penalty-reordered grids, and they did not alter the qualifying result');
 });
 
-test('built pages: never-teammates get no teammate battle; current and former teammates are labelled from the teammate graph', { skip: !fs.existsSync('dist/matchup') && 'needs a build' }, () => {
-  const h = fs.readFileSync('dist/matchup/max-verstappen/lando-norris.html', 'utf8');
-  assert.match(h, /Never teammates/);
-  assert.doesNotMatch(h, /teammate battle<\/h2>/i);
-  assert.match(h, /Shared grid history/);
-  const lh = fs.readFileSync('dist/matchup/charles-leclerc/lewis-hamilton.html', 'utf8');
-  assert.match(lh, /Teammates at Ferrari/);
-  assert.match(lh, /150 comparable classified finishes of 189 shared events/);
-  assert.match(lh, /not a same-equipment comparison/);
-  const fr = fs.readFileSync('dist/matchup/george-russell/lewis-hamilton.html', 'utf8');
-  assert.match(fr, /Former teammates · Mercedes/);
+test('built matchup pages expose only the basic relationship preview and sell Race Lab for deep analysis', { skip: !fs.existsSync('dist/matchup') && 'needs a build' }, () => {
+  for (const file of ['max-verstappen/lando-norris.html', 'charles-leclerc/lewis-hamilton.html', 'george-russell/lewis-hamilton.html']) {
+    const h = fs.readFileSync('dist/matchup/' + file, 'utf8');
+    assert.match(h, /Shared F1 record/);
+    assert.match(h, /All Access · Race Lab/);
+    assert.match(h, /Open Race Lab/);
+    assert.doesNotMatch(h, /Median qualifying gap|Profile comparison|Season by season/);
+  }
 });
 
-test('DNA: a missing percentile renders as unavailable (—), never as 0', { skip: !HAVE && 'needs derived data' }, async () => {
+test('DNA values are not baked into the public matchup HTML', { skip: !HAVE && 'needs derived data' }, async () => {
   const { matchupPage } = await import('../scripts/site/matchup.mjs');
   const drv = (id, last) => ({ id, slug: id, full_name: `X ${last}`, first_name: 'X', last_name: last });
   const dims = (p) => ({ window: 'w', dimensions: { qualifying: { label: 'Qualifying Pace', percentile: p, basis: 'b' } } });
@@ -98,7 +95,6 @@ test('DNA: a missing percentile renders as unavailable (—), never as 0', { ski
     dnaCur: { a: dims(null), b: dims(42) }, dnaCareer: {}, driverLog: {}, standingsBy: {}, nextEvent: null, mediaOk: () => false, eventById: {}, sessionsByEvent: {},
   };
   const h = matchupPage(ctx, 'a|b').body;
-  assert.match(h, /<div class="dna-duel"><b class="dv dva">—<\/b>/);
-  assert.match(h, /<b class="dv dvb">42<\/b>/);
-  assert.match(h, /Alpha<\/b>: unavailable/);
+  assert.match(h, /All Access · Race Lab/);
+  assert.doesNotMatch(h, /dna-duel|42nd percentile|Qualifying Pace/);
 });
