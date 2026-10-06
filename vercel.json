@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm test && node --check workers/f1-api/src/index.js && node --check scripts/site/pages.mjs && node --check scripts/site/intelligence.mjs && node --check scripts/site/matchup.mjs && node --check scripts/site/race-lab.mjs && node --check src/web/race-lab.js && mkdir -p dist && cp public/favicon.svg dist/favicon.svg",
+  "buildCommand": "npm run verify:race-lab",
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
