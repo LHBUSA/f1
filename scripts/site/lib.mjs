@@ -1,7 +1,6 @@
 // Shared rendering helpers for the static F1 site. Strict CSP: no inline styles or scripts.
 import { accountButton, accountSheet } from './account.mjs';
 export const SITE = 'https://f1.propbetedge.ai';
-export const DISCORD = 'https://discord.gg/kb5zCTHbME';
 export const GA_ID = 'G-BRS48R8PG9';
 // Every data/media request from the site goes to the PropSports F1 contract.
 export const PROPSPORTS_F1 = 'https://propsports.proptechusa.ai/v1/f1';
@@ -193,7 +192,7 @@ ${body}
       <p class="fine"><a href="/methodology">Methodology &amp; sources</a> · <a href="/data-coverage">Data coverage</a></p>
       <p class="fine"><a href="https://propbetedge.ai/about">About PropBetEdge</a> · <a href="https://propbetedge.ai/terms">Terms</a> · <a href="https://propbetedge.ai/legal">Legal</a> · <a href="https://propbetedge.ai/support">Support</a></p>
     </div>
-    <nav aria-label="PropBetEdge network" class="network"><span class="network-k">ALL ACCESS</span>${ALL_ACCESS_NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}<span class="network-k">NETWORK</span>${NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}<a href="${DISCORD}" rel="noopener">Discord</a></nav>
+    <nav aria-label="PropBetEdge network" class="network"><span class="network-k">ALL ACCESS</span>${ALL_ACCESS_NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}<span class="network-k">NETWORK</span>${NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</nav>
   </div>
   <div class="wrap fine copy">© ${new Date().getUTCFullYear()} PropBetEdge. F1, FORMULA 1 and related marks are trademarks of Formula One Licensing B.V.</div>
 </footer>
