@@ -2,5 +2,7 @@
   "_doc": "Newsroom class modes. off = not generated; shadow = generated + graded, never rendered publicly; canary = the newest `canary` stories published, the rest shadow; published = every eligible story published. Widen only after a clean canary report.",
   "race_final": { "mode": "canary", "canary": 3, "seasons": [2026] },
   "qualifying": { "mode": "canary", "canary": 3, "seasons": [2026] },
-  "preview": { "mode": "canary", "canary": 3, "seasons": [2026] }
+  "preview": { "mode": "canary", "canary": 3, "seasons": [2026] },
+  "championship": { "mode": "canary", "canary": 3, "seasons": [2026] },
+  "market_move": { "mode": "canary", "canary": 3, "seasons": [2026] }
 }

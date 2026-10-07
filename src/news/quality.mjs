@@ -3,11 +3,13 @@
 import { render, segments, resolveHref } from './validate.mjs';
 
 export const EDITORIAL_VERSION = 'f1-editorial@1.0.0';
-export const TARGETS = { preview: [700, 1200], race_final: [800, 1400], qualifying: [600, 1000] };
-const MIN_FULL = { preview: 500, race_final: 500, qualifying: 400 };
+export const TARGETS = { preview: [700, 1200], race_final: [800, 1400], qualifying: [600, 1000], championship: [600, 1100], market_move: [450, 900] };
+const MIN_FULL = { preview: 500, race_final: 500, qualifying: 400, championship: 500, market_move: 400 };
 const STRUCTURAL = new Set(['', 'Follow the weekend', 'Follow the race', 'The result', 'Qualifying classification', 'Grid to finish']);
 const CONTEXT_FACTS = /^(leader|c2_|c3_|c4_|max_left|alive|lead_|con1|con_gap|p1_champ|leader_points|leader_margin|rounds_left)/;
 const EVENT_FACTS = /^(arch_|held|longest_straight|straight_|corner_split|recent_|gw\d|fit\d|fit_|pole_|margin|climber|p1_grid|p2_grid|q1_lap|q2_|cut_|circuit_|track_pos|deep_|most_wins|years_away|retirements|mate_)/;
+// a championship update's event-specific analysis is what THIS round changed in the table (class-scoped; other classes unchanged)
+const EVENT_FACTS_BY_CLASS = { championship: /^(swing_|leader_result|c2_result|mate_|mate2_)/ };
 
 export function editorialGate(packet, draft, { X = null, linkOk = () => true } = {}) {
   const reasons = [], warnings = [];
@@ -40,7 +42,8 @@ export function editorialGate(packet, draft, { X = null, linkOk = () => true } =
   // context and specificity
   const used = Object.keys(uses);
   if (!used.some((id) => CONTEXT_FACTS.test(id))) reasons.push('no_current_season_context');
-  if (used.filter((id) => EVENT_FACTS.test(id)).length < 3) reasons.push('no_event_specific_analysis');
+  const evRe = EVENT_FACTS_BY_CLASS[packet.type] || EVENT_FACTS;
+  if (used.filter((id) => evRe.test(id)).length < 3) reasons.push('no_event_specific_analysis');
   // event identity: the packet's event and circuit must be the canonical event's
   if (X && packet.event_id) {
     const ev = X.event[packet.event_id];

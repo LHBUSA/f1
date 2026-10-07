@@ -8,8 +8,11 @@ export const order = (list, X) => [...list].sort((a, b) => (sessionTime(b, X)).l
 function sessionTime(a, X) {
   const type = a.class === 'qualifying' ? 'qualifying' : 'race';
   const s = X.session(a.event_id, type);
-  // a preview sorts at its own publication, ahead of the race it previews
-  return a.class === 'preview' ? a.published_at : (s?.start_utc || a.published_at);
+  // a preview or a pre-weekend market story sorts at its own publication, ahead of the race it is about; a championship
+  // update sorts just after its round's race final
+  if (a.class === 'preview' || a.class === 'market_move') return a.published_at;
+  if (a.class === 'championship') return s?.start_utc ? new Date(Date.parse(s.start_utc) + 1000).toISOString() : a.published_at;
+  return s?.start_utc || a.published_at;
 }
 
 export function storyCard(a, { lead = false } = {}) {
@@ -22,9 +25,9 @@ export function newsIndexPage(pub, X) {
   const [lead, ...rest] = list.filter((a) => a.archive !== 'expired_preview');
   const byClass = (c) => list.filter((a) => a.class === c);
   const body = `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span class="sep">/</span><span aria-current="page">News</span></nav>
-<section class="hero"><div class="wrap"><span class="eyebrow">PropBetEdge F1 Desk</span><h1>F1 news &amp; intelligence</h1><p class="sub">Race finals, qualifying and previews written from frozen fact packets: every number and name traces to the data, and every story links into Driver DNA, Circuit DNA, the race and PBEcast.</p></div></section>
+<section class="hero"><div class="wrap"><span class="eyebrow">PropBetEdge F1 Desk</span><h1>F1 news &amp; intelligence</h1><p class="sub">Race finals, qualifying, previews, championship updates and market moves written from frozen fact packets: every number and name traces to the data, and every story links into Driver DNA, Circuit DNA, the race and PBEcast.</p></div></section>
 <section class="section"><div class="wrap">${lead ? `<div class="nlead">${storyCard(lead, { lead: true })}<div class="ngrid ngrid--side">${rest.slice(0, 3).map((a) => storyCard(a)).join('')}</div></div>` : '<p class="muted">The first stories publish after the next session.</p>'}</div></section>
-${['race_final', 'qualifying', 'preview'].map((c) => byClass(c).length ? `<section class="section"><div class="wrap"><div class="section-head"><h2>${esc({ race_final: 'Race finals', qualifying: 'Qualifying', preview: 'Previews' }[c])}</h2></div><div class="ngrid">${byClass(c).map((a) => storyCard(a)).join('')}</div></div></section>` : '').join('')}`;
+${['race_final', 'qualifying', 'preview', 'championship', 'market_move'].map((c) => byClass(c).length ? `<section class="section"><div class="wrap"><div class="section-head"><h2>${esc({ race_final: 'Race finals', qualifying: 'Qualifying', preview: 'Previews', championship: 'Championship', market_move: 'Market moves' }[c])}</h2></div><div class="ngrid">${byClass(c).map((a) => storyCard(a)).join('')}</div></div></section>` : '').join('')}`;
   return { path: '/news', title: 'F1 News: Race Finals, Qualifying & Previews', description: 'Data-led Formula 1 news from PropBetEdge: race finals, qualifying recaps and race previews built from verified results, Driver DNA, Circuit DNA and championship data.', body, section: '/news', jsonLd: [{ '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'PropBetEdge F1 News', url: 'https://f1.propbetedge.ai/news' }] };
 }
 

@@ -8,39 +8,50 @@
 // a first publication). A qualifying story first published after its race started, or a race final first published
 // >72h after the race, is an archive backfill: retrospective copy, an archive label, and no Google News entry. A
 // published preview whose race has since started stays at its URL as an archived preview. Never backdated.
+//
+// Off-event lanes (src/news/newsroom.mjs): championship updates after each round and market moves from stored Kalshi
+// observations, both time-boxed and never first-published late. Every run writes a health record (news-health doc,
+// data/news/health.json): last run, candidates, evaluations, last publication, next expected evaluation.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import sharp from 'sharp';
 import { loadProjection } from '../src/news/data.mjs';
-import { raceFinalPacket } from '../src/news/race-final.mjs';
-import { composeRaceFinal, RACE_COMPOSER_VERSION } from '../src/news/compose-race.mjs';
-import { qualifyingPacket } from '../src/news/qualifying.mjs';
-import { composeQualifying, QUALI_COMPOSER_VERSION } from '../src/news/compose-quali.mjs';
-import { previewPacket } from '../src/news/preview.mjs';
-import { composePreview, COMPOSER_VERSION as PREVIEW_COMPOSER_VERSION } from '../src/news/compose-preview.mjs';
-import { editorialGate, EDITORIAL_VERSION } from '../src/news/quality.mjs';
-import { validateDraft, render, QUALITY_VERSION } from '../src/news/validate.mjs';
 import { cardSvg, renderCard, headshotData } from '../src/news/card.mjs';
 import { CLASS_LABEL } from '../src/news/render.mjs';
-import { archiveKind } from '../src/news/temporal.mjs';
-import { marketLink, articleMarketEvent, freezable, indexMarket, MARKETS_BASE } from '../src/news/market.mjs';
+import { articleMarketEvent, freezable, indexMarket, MARKETS_BASE } from '../src/news/market.mjs';
+import { buildCandidates, decide, newsroomHealth } from '../src/news/newsroom.mjs';
+import { QUALITY_VERSION } from '../src/news/validate.mjs';
 
 const BASE = process.env.PROPSPORTS_F1_BASE || 'https://propsports.proptechusa.ai/v1/f1';
 const NOW = process.env.F1_NEWS_NOW || new Date().toISOString();
-const T = (iso) => Date.parse(iso); // compare instants numerically: source ISO strings differ in precision ('11:00Z' vs '11:00:00.000Z')
 const OUT = path.resolve('data/news');
 const PROJ = path.resolve('data/projection');
 fs.mkdirSync(path.join(OUT, 'cards'), { recursive: true });
 const classes = JSON.parse(fs.readFileSync('src/news/classes.json', 'utf8'));
 const X = loadProjection();
+const getJson = async (url, tries = 1) => {
+  for (let i = 1; i <= tries; i++) {
+    try { const r = await fetch(url, { signal: AbortSignal.timeout(20000) }); if (r.ok) return await r.json(); if (r.status === 404) return null; } catch { /* retry */ }
+  }
+  return undefined; // undefined = the read failed (vs null = not found)
+};
 
-// live index (frozen publication dates). A missing index means a first publication, never an error that blocks a build.
+// live index (frozen publication dates). A 404 (no index yet) means a first publication. A FAILED read stops the build:
+// treating an outage as "nothing published" would re-stamp every story's published_at with this build's time.
 let live = {};
-try {
-  const r = await fetch(`${BASE}/news`, { signal: AbortSignal.timeout(20000) });
-  if (r.ok) for (const a of (await r.json()).articles || []) live[a.slug] = a;
-} catch { /* first publication or offline: dates start now */ }
+const idx = await getJson(`${BASE}/news`, 3);
+if (idx === undefined && !process.env.F1_NEWS_OFFLINE) { console.error('build-news: live news index unreadable; refusing to reset frozen publication dates (set F1_NEWS_OFFLINE=1 for a local run)'); process.exit(1); }
+for (const a of idx?.articles || []) live[a.slug] = a;
+// frozen classes are carried forward from their published record; a failed read must fail the build, never rebuild the
+// story from today's data (buildCandidates throws when a published frozen story has no stored record)
+const liveDocs = {};
+for (const a of Object.values(live).filter((x) => x.class === 'market_move')) {
+  const d = await getJson(`${BASE}/news/${a.slug}`, 3);
+  if (d) liveDocs[a.slug] = d;
+}
+// stored Kalshi observations for the market lane (null on failure: the lane reports market_tape_unavailable, others run)
+const tape = classes.market_move && classes.market_move.mode !== 'off' ? (await getJson(`${MARKETS_BASE}/v1/market-tape?sport=f1`, 2)) || null : null;
 
 // one article-market read (the story's ORIGINAL publication time + its focus drivers); null on any failure
 async function readArticleMarket(a) {
@@ -52,74 +63,9 @@ async function readArticleMarket(a) {
   } catch { return null; }
 }
 
-// frozen first-publication time of a story (class + event), else this build's time
-const publishedAtFor = (cls, eventId) => Object.values(live).find((a) => a.class === cls && a.event_id === eventId)?.published_at || NOW;
-
-const SLUG = {
-  race_final: (P) => `${P.entities.find((x) => x.key === 'p1').ref}-wins-${P.event_id}`,
-  qualifying: (P) => `${P.event_id}-qualifying-results`,
-  preview: (P) => `${P.event_id}-preview`,
-};
-const MIN_WORDS = { race_final: 400, qualifying: 300, preview: 400 };
-
-const candidates = [];
-for (const [cls, cfg] of Object.entries(classes)) {
-  if (cls.startsWith('_') || cfg.mode === 'off') continue;
-  for (const season of cfg.seasons) {
-    for (const ev of X.raceEvents(season)) {
-      let r;
-      const publishedAt = publishedAtFor(cls, ev.id);
-      if (cls === 'race_final') r = raceFinalPacket(X, ev.id, { asOf: NOW, publishedAt });
-      else if (cls === 'qualifying') r = qualifyingPacket(X, ev.id, { asOf: NOW, publishedAt });
-      else if (cls === 'preview') {
-        // a preview exists only for the next event that has not started (or one already published before its start)
-        const race = X.session(ev.id, 'race');
-        const already = live[`${ev.id}-preview`];
-        if (!already && (!race?.start_utc || T(race.start_utc) <= T(NOW) || ev.status === 'completed')) continue;
-        const next = X.raceEvents(season).find((e) => T(X.session(e.id, 'race')?.start_utc) > T(NOW) && e.status !== 'completed');
-        if (!already && next?.id !== ev.id) continue;
-        r = previewPacket(X, ev.id, { asOf: NOW, publishedAt });
-      }
-      if (!r?.ok) continue;
-      const P = r.packet;
-      const draft = cls === 'race_final' ? composeRaceFinal(P) : cls === 'qualifying' ? composeQualifying(P) : composePreview(P);
-      draft.slug = SLUG[cls](P);
-      candidates.push({ cls, cfg, ev, P, draft, sortKey: X.session(ev.id, cls === 'qualifying' ? 'qualifying' : 'race')?.start_utc || ev.start_utc });
-    }
-  }
-}
-
-// ledger for duplicate detection: everything live plus everything in this build
-const ledger = Object.fromEntries(Object.values(live).map((a) => [a.slug, { topic: a.topic, headline: a.headline }]));
-const articles = [];
-const report = { gate: QUALITY_VERSION, generated_at: NOW, classes: {}, stories: [] };
-for (const cls of Object.keys(classes).filter((k) => !k.startsWith('_'))) {
-  const list = candidates.filter((c) => c.cls === cls).sort((a, b) => b.sortKey.localeCompare(a.sortKey));
-  const cfg = classes[cls];
-  list.forEach((c, i) => {
-    const v = validateDraft(c.P, c.draft, { ledger, minWords: MIN_WORDS[cls] });
-    // editorial gate runs only on a factually clean draft and never relaxes it
-    const ed = v.ok ? editorialGate(c.P, c.draft, { X }) : { ok: false, reasons: ['factual_gate_failed'], warnings: [], words: v.words, links: 0 };
-    const prev = live[c.draft.slug];
-    const stale = cls === 'preview' && !prev && c.P.context.valid_until && T(c.P.context.valid_until) <= T(NOW);
-    let status = !v.ok || !ed.ok ? 'held' : stale ? 'stale' : cfg.mode === 'published' ? 'published' : cfg.mode === 'canary' ? (i < cfg.canary || prev?.status === 'published' ? 'published' : 'shadow') : 'shadow';
-    const published_at = prev?.published_at || NOW;
-    if (c.P.context.temporal && c.P.context.temporal.as_of !== published_at) throw new Error(`${c.draft.slug}: temporal frame ${c.P.context.temporal.as_of} != published_at ${published_at}`);
-    // archive: backfill at first publication, or a preview whose race has started since (judged at build time; display only)
-    const tf = c.P.context.temporal || {};
-    const archive = archiveKind(cls, tf, NOW);
-    const modified_at = prev && prev.packet_hash !== c.P.hash ? NOW : prev?.modified_at || published_at;
-    // article-market/1 link (src/news/market.mjs): frozen at first publication, carried forward; outside the packet so
-    // linking never changes a packet hash or a modified_at
-    const market = prev?.market || marketLink(X, c.P.event_id, c.P);
-    const headline = render(c.draft.headline, c.P);
-    ledger[c.draft.slug] = { topic: c.P.topic, headline };
-    const a = { slug: c.draft.slug, class: cls, topic: c.P.topic, event_id: c.P.event_id, status, published_at, modified_at, archive, market, headline, dek: render(c.draft.dek, c.P), packet_hash: c.P.hash, packet: c.P, draft: c.draft, validation: { ok: v.ok, reasons: v.reasons, facts_used: v.facts_used, words: v.words, gate: QUALITY_VERSION }, editorial: { ok: ed.ok, reasons: ed.reasons, warnings: ed.warnings, words: ed.words, links: ed.links, version: EDITORIAL_VERSION }, composer: c.draft.composer || null };
-    articles.push(a);
-    report.stories.push({ slug: a.slug, class: cls, status, words: v.words, facts_used: v.facts_used.length, reasons: [...v.reasons, ...ed.reasons], warnings: ed.warnings, links: ed.links });
-  });
-  report.classes[cls] = { mode: cfg.mode, candidates: list.length, published: articles.filter((a) => a.class === cls && a.status === 'published').length, held: articles.filter((a) => a.class === cls && a.status === 'held').length };
-}
+const { candidates, evaluations } = buildCandidates(X, classes, { now: NOW, live, liveDocs, tape });
+const { articles, report } = decide(X, classes, candidates, { now: NOW, live, evaluations });
+const health = newsroomHealth({ now: NOW, articles, report, live });
 
 // cards (published + shadow, so a widened class has its images ready); cached by packet hash
 const cache = path.join(OUT, 'media');
@@ -127,12 +73,12 @@ for (const a of articles.filter((x) => x.status === 'published' || x.status === 
   const key = crypto.createHash('sha256').update(`${a.packet_hash}|${a.headline}|card@2`).digest('hex').slice(0, 12);
   const jpg = path.join(OUT, 'cards', `${a.slug}.jpg`), webp = path.join(OUT, 'cards', `${a.slug}.webp`), stamp = path.join(OUT, 'cards', `${a.slug}.key`);
   if (fs.existsSync(stamp) && fs.readFileSync(stamp, 'utf8') === key && fs.existsSync(jpg)) continue;
-  const lead = a.packet.entities.find((x) => ['p1', 'q1', 'leader'].includes(x.key));
+  const lead = ['mover', 'p1', 'q1', 'leader'].map((k) => a.packet.entities.find((x) => x.key === k)).find(Boolean);
   const teamKey = { p1: 'p1_team', q1: 'q1_team' }[lead?.key];
   const color = X.con[a.packet.entities.find((x) => x.key === teamKey)?.ref]?.color || X.con[X.driver[lead?.ref]?.team_id]?.color || 'ff4d2e';
   const hs = lead ? await headshotData(lead.ref, { base: BASE, cacheDir: cache }) : null;
   const race = a.packet.entities.find((x) => x.key === 'race'), circ = a.packet.entities.find((x) => x.key === 'circuit');
-  const date = a.packet.facts.find((f) => ['race_date', 'quali_date'].includes(f.id))?.display;
+  const date = ['race_date', 'quali_date'].map((id) => a.packet.facts.find((f) => f.id === id)).find(Boolean)?.display;
   const png = renderCard(cardSvg({ label: CLASS_LABEL[a.class], headline: a.headline, sub: [race?.name, circ?.name, date].filter(Boolean).join(' · '), color, headshot: hs }));
   fs.writeFileSync(jpg, await sharp(png).jpeg({ quality: 82, mozjpeg: true }).toBuffer());
   fs.writeFileSync(webp, await sharp(png).resize(960).webp({ quality: 78 }).toBuffer());
@@ -165,7 +111,7 @@ fs.writeFileSync(path.join(OUT, 'articles.json'), JSON.stringify(articles));
 fs.writeFileSync(path.join(OUT, 'canary-report.json'), JSON.stringify(report, null, 2));
 const pub = articles.filter((a) => a.status === 'published');
 const index = { generated_at: NOW, gate: QUALITY_VERSION, articles: pub.map((a) => ({ slug: a.slug, class: a.class, topic: a.topic, event_id: a.event_id, status: a.status, archive: a.archive, headline: a.headline, dek: a.dek, published_at: a.published_at, modified_at: a.modified_at, market: indexMarket(a.market), packet_hash: a.packet_hash, image: `/news/cards/${a.slug}.jpg`, entities: a.packet.entities.filter((x) => ['driver', 'team', 'circuit', 'race'].includes(x.type)).map((x) => ({ type: x.type, id: x.ref, name: x.name })) })).sort((a, b) => b.published_at.localeCompare(a.published_at) || b.slug.localeCompare(a.slug)) };
-const docs = { 'news-index': index };
+const docs = { 'news-index': index, 'news-health': health };
 for (const a of pub) docs[`news-${a.slug}`] = { slug: a.slug, class: a.class, status: a.status, archive: a.archive, published_at: a.published_at, modified_at: a.modified_at, market: a.market || null, headline: a.headline, dek: a.dek, packet: a.packet, draft: a.draft, validation: a.validation };
 for (const [n, d] of Object.entries(docs)) fs.writeFileSync(path.join(PROJ, `${n}.json`), JSON.stringify(d));
 // register in the projection manifest; the version covers the news content too
@@ -174,7 +120,10 @@ mf.files = [...new Set([...mf.files.filter((f) => !f.startsWith('news-')), ...Ob
 mf.version = crypto.createHash('sha256').update(mf.version + JSON.stringify(docs)).digest('hex').slice(0, 16);
 fs.writeFileSync(path.join(PROJ, 'manifest.json'), JSON.stringify(mf));
 const by = (s) => articles.filter((a) => a.status === s).length;
+fs.writeFileSync(path.join(OUT, 'health.json'), JSON.stringify(health, null, 2));
 console.log(`news: ${articles.length} stories (${by('published')} published, ${by('shadow')} shadow, ${by('held')} held, ${by('stale')} stale); projection ${mf.version}`);
 for (const [k, v] of Object.entries(report.classes)) console.log(`  ${k}: ${JSON.stringify(v)}`);
 for (const s of report.stories.filter((x) => x.status === 'held')) console.log(`  HELD ${s.slug}: ${s.reasons.join('; ')}`);
+for (const e of report.evaluations) console.log(`  EVAL ${e.class} ${e.event_id}: ${e.result}`);
+console.log(`  health: ${health.outcome}; ${health.candidates} candidates; last publication ${health.last_publication?.published_at || 'none'} (${health.last_publication?.slug || '-'}); next evaluation by ${health.next_expected_evaluation}`);
 for (const s of report.stories.filter((x) => x.status === 'published')) console.log(`  PUBLISHED ${s.slug}: ${s.words} words, ${s.links} links${s.warnings?.length ? ` (${s.warnings.join('; ')})` : ''}`);

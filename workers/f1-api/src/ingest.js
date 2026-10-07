@@ -69,7 +69,7 @@ export async function ingestCurrent(env, { force = false, trigger = false, reaso
   }
   const liveNow = frag.sessions.some((x) => x.state === 'live');
   const deploy = complete && trigger ? await maybeDeploy(env, { version, newlySessions, reasonOverride, liveNow }) : null;
-  const summary = { at: ingestedAt, season: year, fetched, budget_hit: fetched >= budget, dataset_version: version, events: frag.events.length, sessions: frag.sessions.length, results: frag.results.length, newly_completed: newlySessions.map((s) => s.id), deploy };
+  const summary = { at: ingestedAt, live_now: liveNow, season: year, fetched, budget_hit: fetched >= budget, dataset_version: version, events: frag.events.length, sessions: frag.sessions.length, results: frag.results.length, newly_completed: newlySessions.map((s) => s.id), deploy };
   await put('state/last-ingest.json', summary);
   return summary;
 }

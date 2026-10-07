@@ -9,6 +9,7 @@ import { f1Access } from './access.js';
 import { normalizeFrames, sessionPublicId, coverage, SESSION_TYPE } from './frames.js';
 import { deriveIncidents, INCIDENT_TAXONOMY_VERSION } from '../../../src/core/incidents.mjs';
 import { noTransform } from './transport.js';
+import { newsroomHeartbeat, healthPayload } from './newsroom.js';
 
 export { LiveHub };
 
@@ -299,6 +300,12 @@ async function route(req, env, ctx) {
         const out = evs.filter((e) => !ev || e.id === ev).map((e) => ({ event_id: e.id, round: e.round, name: e.name, session: e.sessions.find((s) => s.type === type) || null })).filter((x) => x.session?.results?.length);
         return respond(req, out);
       }
+      // newsroom health: last run, last evaluation, last publication, next expected evaluation; 503 when stale/failing
+      if (p === '/news/health') {
+        const lo = await env.DATA.get('state/deploy-ledger.json'), li = await env.DATA.get('state/last-ingest.json');
+        const h = healthPayload({ now: new Date().toISOString(), health: await doc(env, 'news-health'), ledger: lo ? await lo.json() : null, liveNow: li ? !!(await li.json()).live_now : false });
+        return respond(req, h, { status: h.stale ? 503 : 200, cache: 'no-store' });
+      }
       // newsroom: published stories only (frozen packets + validated drafts)
       if (p === '/news') {
         const idx = (await doc(env, 'news-index')) || { articles: [] };
@@ -352,7 +359,11 @@ export default {
     return noTransform(await route(req, env, ctx));
   },
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(ingestCurrent(env, { trigger: true }).catch((e) => console.error('ingest failed', e?.message || e)));
+    // ingest (may trigger a rebuild for a completed session), then the newsroom heartbeat/build check — which runs even
+    // when the ingest fails, so an upstream outage can never leave the newsroom unevaluated
+    ctx.waitUntil(ingestCurrent(env, { trigger: true }).catch((e) => console.error('ingest failed', e?.message || e))
+      .then(async () => { const r = await newsroomHeartbeat(env, { health: await doc(env, 'news-health') }); if (r.fired || r.status !== 'ok') console.log('newsroom', JSON.stringify(r)); })
+      .catch((e) => console.error('newsroom heartbeat failed', e?.message || e)));
     ctx.waitUntil(env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/state').catch(() => {}));
   },
 };

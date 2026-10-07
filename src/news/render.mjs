@@ -19,7 +19,7 @@ export function archiveNote(a) {
 }
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-export const CLASS_LABEL = { race_final: 'Race final', qualifying: 'Qualifying', preview: 'Race preview', sprint_final: 'Sprint final', circuit_intel: 'Circuit intelligence', driver_intel: 'Driver intelligence', teammate_battle: 'Teammate battle', championship: 'Championship update' };
+export const CLASS_LABEL = { race_final: 'Race final', qualifying: 'Qualifying', preview: 'Race preview', sprint_final: 'Sprint final', circuit_intel: 'Circuit intelligence', driver_intel: 'Driver intelligence', teammate_battle: 'Teammate battle', championship: 'Championship update', market_move: 'Market move' };
 
 // token text -> HTML with entity links (only to pages that exist; see linkOk)
 export function html(text, packet, linkOk = () => true) {
@@ -96,7 +96,7 @@ export function articlePage(a, { linkOk, related = [], site }) {
   const P = a.packet, d = a.draft;
   const link = (href, text) => (linkOk(href) ? `<a href="${esc(href)}">${esc(text)}</a>` : esc(text));
   // chips: the story's core subjects only (comparison circuits and archive races stay in the prose)
-  const CORE = /^(race|circuit|orig_race|p1|p2|p3|p1_team|q1|q2|q1_team|leader|c2|leader_team|fit1)$/;
+  const CORE = /^(race|circuit|orig_race|p1|p2|p3|p1_team|q1|q2|q1_team|leader|c2|leader_team|fit1|mover|mover_team|con1)$/;
   const ents = P.entities.filter((x) => CORE.test(x.key) && ['driver', 'team', 'circuit', 'race'].includes(x.type)).filter((x, i, arr) => arr.findIndex((y) => y.ref === x.ref && y.type === x.type) === i);
   const chips = ents.slice(0, 8).map((x) => { const h = resolveHref(x); return linkOk(h) ? `<a class="chip" href="${esc(h)}">${esc(x.name)}</a>` : ''; }).join('');
   const hl = renderPlain(d.headline, P), dk = renderPlain(d.dek, P);
@@ -105,7 +105,7 @@ export function articlePage(a, { linkOk, related = [], site }) {
   const used = new Set(a.validation.facts_used);
   const evidence = P.facts.filter((f) => used.has(f.id)).map((f) => `<li><b>${esc(f.label)}</b>: ${esc(f.display)} <span class="muted">(${esc(f.source)})</span></li>`).join('');
   const relatedLinks = [
-    ...P.entities.filter((x) => x.type === 'driver' && /^(p1|p2|p3|q1|q2|leader|fit1)$/.test(x.key)).map((x) => [resolveHref(x), `${x.name}: Driver DNA & career`]),
+    ...P.entities.filter((x) => x.type === 'driver' && /^(p1|p2|p3|q1|q2|leader|c2|fit1|mover)$/.test(x.key)).map((x) => [resolveHref(x), `${x.name}: Driver DNA & career`]),
     ...P.entities.filter((x) => x.type === 'team' && /^(p1_team|q1_team)$/.test(x.key)).map((x) => [resolveHref(x), `${x.name}: Constructor DNA`]),
     ...P.entities.filter((x) => x.type === 'circuit' && x.key === 'circuit').map((x) => [resolveHref(x), `${x.name}: Circuit DNA & history`]),
     ...P.entities.filter((x) => x.type === 'race' && x.key === 'race').map((x) => [resolveHref(x), `${x.name}: sessions & results`]),
