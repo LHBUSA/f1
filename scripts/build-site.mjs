@@ -154,7 +154,15 @@ const amJs = fs.readFileSync('src/web/article-market.js', 'utf8').replace("'/ass
 if (!amJs.includes(`article-market-ui.${amUiHash}.js`)) throw new Error('build-site: article-market loader import path not rewritten');
 const amHash = crypto.createHash('sha256').update(amJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/article-market.${amHash}.js`), amJs);
-const assets = { account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, raceLab: `/assets/race-lab.${raceLabHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
+// Kalshi PERPETUALS partner offer (footer only, every page except PBEcast): the vendored canonical client (unchanged)
+// content-hashed, imported by the footer mount module src/web/kalshi-partner-footer.js.
+const kxoClient = hashOut('src/vendor/kalshi/kalshi-partner.js', 'kalshi-partner');
+const kxoSrc = fs.readFileSync('src/web/kalshi-partner-footer.js', 'utf8');
+const kxoJs = kxoSrc.replace("from './kalshi-partner.js'", `from '${kxoClient}'`);
+if (kxoJs === kxoSrc) throw new Error('build-site: kalshi-partner-footer import path not rewritten');
+const kxoHash = crypto.createHash('sha256').update(kxoJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/kalshi-partner-footer.${kxoHash}.js`), kxoJs);
+const assets = { partner: `/assets/kalshi-partner-footer.${kxoHash}.js`, account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, raceLab: `/assets/race-lab.${raceLabHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];

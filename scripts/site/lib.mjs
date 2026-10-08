@@ -167,7 +167,7 @@ ${article ? `<meta property="article:published_time" content="${esc(article.publ
 ${heroPreload}
 <link rel="stylesheet" href="${assets.css}">
 <script src="${assets.js}" defer></script>
-${assets.account ? `<script type="module" src="${assets.account}"></script>` : ''}${pbecast && assets.pbecast ? `<script type="module" src="${assets.pbecast}"></script>` : ''}${explorer && assets.explorer ? `<script src="${assets.explorer}" defer></script>` : ''}${rail && assets.rail ? `<script src="${assets.rail}" defer></script>` : ''}${raceLab && assets.raceLab ? `<script src="${assets.raceLab}" defer></script>` : ''}${!pbecast && assets.nav ? `<script src="${assets.nav}" defer></script>` : ''}${kalshi && assets.kalshi ? `<script src="${assets.kalshi}" defer></script>` : ''}${articleMarket && assets.articleMarket ? `<script src="${assets.articleMarket}" defer></script>` : ''}
+${assets.account ? `<script type="module" src="${assets.account}"></script>` : ''}${!pbecast && assets.partner ? `<script type="module" src="${assets.partner}"></script>` : ''}${pbecast && assets.pbecast ? `<script type="module" src="${assets.pbecast}"></script>` : ''}${explorer && assets.explorer ? `<script src="${assets.explorer}" defer></script>` : ''}${rail && assets.rail ? `<script src="${assets.rail}" defer></script>` : ''}${raceLab && assets.raceLab ? `<script src="${assets.raceLab}" defer></script>` : ''}${!pbecast && assets.nav ? `<script src="${assets.nav}" defer></script>` : ''}${kalshi && assets.kalshi ? `<script src="${assets.kalshi}" defer></script>` : ''}${articleMarket && assets.articleMarket ? `<script src="${assets.articleMarket}" defer></script>` : ''}
 ${ld}
 </head>
 <body data-path="${esc(path)}" class="bg-${bgClass}">
@@ -194,6 +194,7 @@ ${body}
     </div>
     <nav aria-label="PropBetEdge network" class="network"><span class="network-k">ALL ACCESS</span>${ALL_ACCESS_NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}<span class="network-k">NETWORK</span>${NETWORK.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</nav>
   </div>
+  ${!pbecast && assets.partner ? '<div class="wrap"><div class="kxo-slot" id="f1-kxo" hidden></div></div>' : ''}
   <div class="wrap fine copy">© ${new Date().getUTCFullYear()} PropBetEdge. F1, FORMULA 1 and related marks are trademarks of Formula One Licensing B.V.</div>
 </footer>
 ${accountSheet()}

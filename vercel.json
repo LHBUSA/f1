@@ -54,6 +54,14 @@
     {
       "source": "/api/markets/v1/article-market/f1/:id(\\d{4}-[a-z0-9-]+-race)",
       "destination": "https://propsports-markets.sales-fd3.workers.dev/v1/article-market/f1/:id"
+    },
+    {
+      "source": "/go/kalshi-perps/config",
+      "destination": "https://propsports-markets.sales-fd3.workers.dev/v1/partner/kalshi"
+    },
+    {
+      "source": "/go/kalshi-perps",
+      "destination": "https://propsports-markets.sales-fd3.workers.dev/go/kalshi-perps"
     }
   ]
 }

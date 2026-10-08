@@ -1026,3 +1026,15 @@ body[data-pc-view=all_access] .pc-acct{color:var(--silver);border-color:#c9d1dd6
 @media(min-width:1180px){.rl-constructor-stack{grid-template-columns:repeat(2,minmax(0,1fr))}.rl-dna{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:759px){.rl-command-premium{padding:18px}.rl-hero-cars{min-height:150px}.rl-constructor-stack{grid-template-columns:1fr}.rl-dna{grid-template-columns:1fr}.rl-battle-car{width:58%;opacity:.28}.rl-versus{grid-template-columns:1fr;align-items:start}.rl-versus>span{display:none}.rl-battle-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.rl-champ-stats{display:grid;justify-items:end}.rl-card{padding:14px}.rl-skeleton-grid{grid-template-columns:1fr}.rl-skeleton-grid span{height:60px}}
 @media(prefers-reduced-motion:reduce){.rl-skeleton-line,.rl-skeleton-grid span{animation:none}}
+/* Kalshi PERPETUALS partner offer (kalshi-partner/2) — footer only, one per page. Markup from the vendored canonical
+   client src/vendor/kalshi/kalshi-partner.js partnerOffer(); restrained: muted text, hairline border, outline CTA. */
+.kxo-slot{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);min-width:0}
+.kxo-slot[hidden]{display:none!important}
+.kxo-slot .kxo{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;max-width:100%;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--faint);font-size:12px;line-height:1.5}
+.kxo-slot .kxo>span{max-width:100%;overflow-wrap:anywhere}
+.kxo-slot .kxo__kicker{font:700 10px/1.4 var(--display);letter-spacing:.14em;color:var(--muted)}
+.kxo-slot .kxo__body{flex:1 1 320px;color:var(--muted)}
+.kxo-slot .kxo__cta{display:inline-flex;align-items:center;gap:4px;font:600 11px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;color:var(--ink2);border:1px solid var(--ctl-line);border-radius:6px;padding:6px 9px;background:transparent;text-decoration:none}
+.kxo-slot .kxo__cta:hover,.kxo-slot .kxo__cta:focus-visible{color:var(--ink);border-color:var(--muted)}
+.kxo-slot .kxo__disc,.kxo-slot .kxo__share,.kxo-slot .kxo__note{flex-basis:100%;font-size:11px;line-height:1.5;color:var(--faint)}
+@media(max-width:520px){.kxo-slot .kxo{padding:10px}.kxo-slot .kxo__cta{white-space:normal}}
