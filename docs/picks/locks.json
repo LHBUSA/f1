@@ -1,0 +1,22 @@
+{
+  "note": "Prospective lock evidence only (hash + ids). Payloads live in the private f1-data R2 bucket, never in this public repo.",
+  "base_state": [
+    { "key": "picks/v1/model/base-state-2025.json", "sha256": "3bb2d4de12785bcac8f920d547485926843bc4748bab743e20193debdb6af822", "r2_last_modified": "2026-10-09T11:19:11.068Z", "events": 397 }
+  ],
+  "locks": [
+    {
+      "lock_id": "f1-picks:2026-singapore-grand-prix:pre_qualifying",
+      "key": "picks/v1/locks/2026-singapore-grand-prix/pre_qualifying.json",
+      "model_version": "f1-picks-1.0.0",
+      "status": "SHADOW",
+      "sha256": "f8c054aae8f09af196a505dee305f99b57398af17f1a056778dde20051f5cd16",
+      "r2_etag": "6f767f8b893cb9eb49860f72b45424fa",
+      "locked_at": "2026-10-09T11:19:12.562Z",
+      "r2_last_modified": "2026-10-09T11:19:19.067Z",
+      "deadline_session": "qualifying",
+      "deadline": "2026-10-10T13:00Z",
+      "entrant_source": "session:fp1",
+      "families": ["teammate_quali_h2h", "race_winner", "driver_outlook", "teammate_race_h2h"]
+    }
+  ]
+}
