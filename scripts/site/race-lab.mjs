@@ -49,6 +49,7 @@ export function raceLabPage(ctx = {}) {
       <span class="eyebrow">Verified access</span><h2>Opening your Race Lab…</h2><p class="muted">Checking your PropBetEdge All Access membership.</p>
     </div>
   </div>
+  <div class="rp-mount" data-race-picks aria-live="polite"></div>
 </div></section>`;
   return {
     path: '/race-lab',

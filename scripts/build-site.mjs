@@ -129,6 +129,10 @@ fs.writeFileSync(path.join(DIST, `assets/rail.${rlHash}.js`), rlJs);
 const raceLabJs = fs.readFileSync('src/web/race-lab.js', 'utf8');
 const raceLabHash = crypto.createHash('sha256').update(raceLabJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/race-lab.${raceLabHash}.js`), raceLabJs);
+// Race Picks client (Race Lab page; values only from the server-verified /pbe/f1/picks route)
+const racePicksJs = fs.readFileSync('src/web/race-picks.js', 'utf8');
+const racePicksHash = crypto.createHash('sha256').update(racePicksJs).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/race-picks.${racePicksHash}.js`), racePicksJs);
 // soft-navigation router (every page except PBEcast)
 const nvJs = fs.readFileSync('src/web/nav.js', 'utf8');
 const nvHash = crypto.createHash('sha256').update(nvJs).digest('hex').slice(0, 10);
@@ -162,7 +166,7 @@ const kxoJs = kxoSrc.replace("from './kalshi-partner.js'", `from '${kxoClient}'`
 if (kxoJs === kxoSrc) throw new Error('build-site: kalshi-partner-footer import path not rewritten');
 const kxoHash = crypto.createHash('sha256').update(kxoJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/kalshi-partner-footer.${kxoHash}.js`), kxoJs);
-const assets = { partner: `/assets/kalshi-partner-footer.${kxoHash}.js`, account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, raceLab: `/assets/race-lab.${raceLabHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
+const assets = { partner: `/assets/kalshi-partner-footer.${kxoHash}.js`, account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, raceLab: `/assets/race-lab.${raceLabHash}.js`, racePicks: `/assets/race-picks.${racePicksHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
 
 // ---------- page writer ----------
 const sitemap = [];
