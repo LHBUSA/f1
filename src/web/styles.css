@@ -1101,6 +1101,7 @@ body[data-pc-view=all_access] .pc-acct{color:var(--silver);border-color:#c9d1dd6
 html:lang(ja){--bg:#14110d;--bg2:#1d1914;--panel:#1d1914;--panel2:#2a241c;--panel3:#332b21;--line:rgba(255,245,220,.12);--line2:rgba(255,245,220,.2);--ink:#f5f1eb;--ink2:#e8e1d4;--muted:#b8b3a8;--faint:#a39d92;--ctl-line:#8a7f6c;--cyan:#e7c766;--gold:#d4af37}
 html:lang(ja) body::before{background:radial-gradient(1200px 500px at 80% -10%,#d4af3717,transparent 60%),radial-gradient(900px 600px at -10% 10%,#ff4d2e0f,transparent 60%)}
 html:lang(ja) .site-header{background:#14110deb}
+html:lang(ja) .table-wrap{background:rgba(29,25,20,.92)}
 html:lang(ja) .card{background:linear-gradient(180deg,rgba(42,36,28,.88),rgba(29,25,20,.92))}
 html:lang(ja) :focus-visible{outline-color:var(--gold)}
 html:lang(ja) h1,html:lang(ja) h2,html:lang(ja) h3,html:lang(ja) h4{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Yu Gothic",Meiryo,system-ui,sans-serif;font-weight:800;line-height:1.25}
