@@ -9,13 +9,25 @@ const HAVE = fs.existsSync('data/derived/matchups.json') && fs.existsSync('data/
 const J = (f) => JSON.parse(fs.readFileSync(`data/derived/${f}.json`, 'utf8'));
 const LEC = 'espn-5498', HAM = 'espn-868';
 
-test('shared grid history reconciles: 65 + 85 = 150 comparable of 189 shared (not 189)', { skip: !HAVE && 'needs derived data' }, () => {
+// Totals are recomputed from the per-driver event log (the archive grows every race weekend; the original test pinned
+// the pre-Malaysia snapshot 65 + 85 = 150 of 189). The semantics asserted are unchanged.
+const lecHamShared = () => {
+  const log = J('driver_log');
+  const hb = Object.fromEntries((log[HAM] || []).map((x) => [x.event_id, x]));
+  return (log[LEC] || []).filter((x) => hb[x.event_id]).map((x) => ({ a: x, b: hb[x.event_id] }));
+};
+test('shared grid history reconciles: both-classified comparable races of all shared events (not all shared)', { skip: !HAVE && 'needs derived data' }, () => {
   const m = J('matchups')[[LEC, HAM].sort().join('|')];
-  assert.equal(m.shared_events, 189);
-  assert.equal(m.race_comparable_events, 150);
-  assert.deepEqual(m.race_ahead, [65, 85]);
-  assert.equal(m.race_excluded_events, 39);
-  assert.equal(m.same_team_events, 39);
+  const shared = lecHamShared();
+  const both = shared.filter((s) => s.a.classified && s.b.classified && s.a.finish !== s.b.finish);
+  assert.ok(shared.length >= 189, 'never fewer than the 189 shared events of the 10-03 snapshot');
+  assert.equal(m.shared_events, shared.length);
+  assert.equal(m.race_comparable_events, both.length);
+  assert.deepEqual(m.race_ahead, [both.filter((s) => s.a.finish < s.b.finish).length, both.filter((s) => s.a.finish > s.b.finish).length]);
+  assert.ok(m.race_comparable_events < m.shared_events, 'retirements are excluded from the comparable set');
+  assert.equal(m.race_excluded_events, shared.length - both.length);
+  assert.equal(m.same_team_events, shared.filter((s) => s.a.constructor_id === s.b.constructor_id).length);
+  assert.ok(m.same_team_events >= 39);
 });
 
 test('every matchup: H2H counts sum to their own denominators and the denominators partition the shared events', { skip: !HAVE && 'needs derived data' }, () => {
@@ -53,12 +65,17 @@ test('Leclerc/Hamilton Ferrari battle: denominators are explicit', { skip: !HAVE
   const t = (T.teammates || T).find((x) => [x.a, x.b].sort().join('|') === [LEC, HAM].sort().join('|'));
   assert.deepEqual(t.constructors, ['ferrari']);
   const c = t.a === LEC ? t.career : { ...t.career, quali_h2h: [...t.career.quali_h2h].reverse(), race_h2h: [...t.career.race_h2h].reverse(), sprint_h2h: [...t.career.sprint_h2h].reverse() };
-  assert.equal(c.events, 39);
-  assert.deepEqual(c.quali_h2h, [27, 12]);
-  assert.equal(c.quali_comparable, 39);
+  // recomputed from the event log (the 10-03 snapshot pinned 39 events, 27-12, 11 sprints; the archive keeps growing)
+  const ferrari = lecHamShared().filter((s) => s.a.constructor_id === 'ferrari' && s.b.constructor_id === 'ferrari');
+  const qc = ferrari.filter((s) => s.a.quali_pos && s.b.quali_pos);
+  assert.ok(ferrari.length >= 39);
+  assert.equal(c.events, ferrari.length);
+  assert.deepEqual(c.quali_h2h, [qc.filter((s) => s.a.quali_pos < s.b.quali_pos).length, qc.filter((s) => s.a.quali_pos > s.b.quali_pos).length]);
+  assert.equal(c.quali_comparable, qc.length);
   assert.equal(c.race_h2h[0] + c.race_h2h[1], c.race_comparable);
   assert.ok(c.race_comparable < c.events, 'retirements are excluded, not counted as wins');
-  assert.equal(c.sprint_comparable, 11);
+  assert.equal(c.sprint_comparable, ferrari.filter((s) => s.a.sprint_pos && s.b.sprint_pos).length);
+  assert.ok(c.sprint_comparable >= 11);
 });
 
 test('qualifying rule: a grid penalty never changes the qualifying comparison (row-level fixture)', { skip: !HAVE && 'needs derived data' }, () => {
@@ -77,7 +94,9 @@ test('qualifying rule: a grid penalty never changes the qualifying comparison (r
 
 test('built matchup pages expose only the basic relationship preview and sell Race Lab for deep analysis', { skip: !fs.existsSync('dist/matchup') && 'needs a build' }, () => {
   for (const file of ['max-verstappen/lando-norris.html', 'charles-leclerc/lewis-hamilton.html', 'george-russell/lewis-hamilton.html']) {
-    const h = fs.readFileSync('dist/matchup/' + file, 'utf8');
+    // the static Definitions glossary (<details class="mu-gloss">, added with Race Lab in e2c76b0) names the gap metric
+    // as copy; the test is about premium VALUES/sections, so the glossary is excluded before matching
+    const h = fs.readFileSync('dist/matchup/' + file, 'utf8').replace(/<details class="mu-gloss">[\s\S]*?<\/details>/g, '');
     assert.match(h, /Shared F1 record/);
     assert.match(h, /All Access · Race Lab/);
     assert.match(h, /Open Race Lab/);
