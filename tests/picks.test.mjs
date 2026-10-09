@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PARAMS, MODEL_VERSION, newState, observeEvent, predictEvent, pairProb, postStrength, rankScore } from '../src/picks/model.mjs';
-import { canonicalFromFragment, entrantsFor, stateBefore, buildLock, gradeLock, dueVersion, putOnce, appendSettlement, settleKey, lockKey, recordSummary, sha256Hex, FAMILY_LABELS, HOLDOUT_GATE, PUBLISHED, WINNER_NOTE } from '../src/picks/lane.mjs';
-import { picksTick, picksTeaser, picksPayload, createOnlyProof } from '../workers/f1-api/src/picks.js';
+import { canonicalFromFragment, entrantsFor, stateBefore, buildLock, gradeLock, dueVersion, putOnce, appendSettlement, settleKey, lockKey, recordSummary, sha256Hex, FAMILY_LABELS, HOLDOUT_GATE, PUBLISHED, WINNER_NOTE, verifyLock } from '../src/picks/lane.mjs';
+import { picksTick, picksTeaser, picksPayload, createOnlyProof, picksVerify, picksStatus, LANE_STATUS_KEY, VERIFY_STATUS_KEY, KNOWN_LOCK_SHA256 } from '../workers/f1-api/src/picks.js';
 
 // ---------- fixtures ----------
 const TEAMS = ['Mercedes', 'Ferrari', 'McLaren', 'Red Bull', 'Williams', 'Alpine', 'Haas', 'Aston Martin', 'Audi', 'Racing Bulls'];
@@ -29,6 +29,7 @@ function fragEvent(n, startIso, { quali = true, race = true, raceOverrides = {},
 function fragment(parts) {
   return { season: 2026, events: parts.map((p) => p.event), sessions: parts.flatMap((p) => p.sessions), results: parts.flatMap((p) => p.results), entries: [], standings: [] };
 }
+let CLOCK = null; // test clock for R2 upload times (null = real time)
 function mockBucket() {
   const m = new Map();
   let n = 0;
@@ -38,7 +39,7 @@ function mockBucket() {
     async put(key, body, opts = {}) {
       await new Promise((r) => setTimeout(r, Math.random() * 3)); // interleave concurrent writers
       if (opts.onlyIf?.etagDoesNotMatch === '*' && m.has(key)) return null;
-      const v = { body: typeof body === 'string' ? body : JSON.stringify(body), uploaded: new Date(Date.UTC(2026, 9, 9) + ++n), meta: opts.customMetadata || {}, etag: `e${n}` };
+      const v = { body: typeof body === 'string' ? body : JSON.stringify(body), uploaded: new Date((CLOCK ?? Date.now()) + ++n), meta: opts.customMetadata || {}, etag: `e${n}` };
       m.set(key, v);
       return { etag: v.etag, uploaded: v.uploaded };
     },
@@ -155,6 +156,7 @@ test('cron lane: locks pre-qualifying once inside the window, post-qualifying af
   setFrag([e1, fragEvent(2, '2026-03-08T00:00Z', { quali: false, race: false })]);
   const q2 = Date.parse('2026-03-09T00:00Z');
   const opts = { fetchImpl, baseSha, internalDoc };
+  CLOCK = q2 - 3 * 3600e3;
   const t1 = await picksTick(env, { ...opts, now: q2 - 3 * 3600e3 });
   assert.equal(t1.actions[0].result, 'created');
   const preKey = lockKey('2026-test-2-grand-prix', 'pre_qualifying');
@@ -163,11 +165,13 @@ test('cron lane: locks pre-qualifying once inside the window, post-qualifying af
   assert.equal(lock.status, 'SHADOW');
   assert.ok(Date.parse(lock.locked_at) < Date.parse(lock.deadline));
   assert.equal(lock.data.last_completed_event, 'espn-ev1');
+  CLOCK = q2 - 2 * 3600e3;
   const t2 = await picksTick(env, { ...opts, now: q2 - 2 * 3600e3 });
   assert.equal(t2.actions[0].result, 'exists');
   assert.equal(b.m.get(preKey).body, preBody, 'never replaced');
   // qualifying classified → post-qualifying lock; the pre-qualifying lock stays as it was
   setFrag([e1, fragEvent(2, '2026-03-08T00:00Z', { race: false })]);
+  CLOCK = q2 + 3 * 3600e3;
   const t3 = await picksTick(env, { ...opts, now: q2 + 3 * 3600e3 });
   assert.equal(t3.actions.find((a) => a.lock)?.result, 'created');
   assert.ok(t3.actions.some((a) => a.settle === preKey && a.group === 'quali'), 'quali family settled after qualifying');
@@ -177,6 +181,7 @@ test('cron lane: locks pre-qualifying once inside the window, post-qualifying af
   assert.equal(b.m.get(preKey).body, preBody);
   // race done → race settlements (bounded: two writes per tick)
   setFrag([e1, fragEvent(2, '2026-03-08T00:00Z')]);
+  CLOCK = q2 + 30 * 3600e3;
   const t4 = await picksTick(env, { ...opts, now: q2 + 30 * 3600e3 });
   assert.equal(t4.actions.filter((a) => a.settle).length, 2);
   const payload = await picksPayload(env, { now: q2 + 30 * 3600e3 });
@@ -195,6 +200,50 @@ test('cron lane: locks pre-qualifying once inside the window, post-qualifying af
   assert.ok(payload.record['race_winner|post_qualifying'].n_scored === 1);
   // the internal pre-qualifying lock still exists and was graded (SHADOW research)
   assert.ok(b.m.has(settleKey('2026-test-2-grand-prix', 'pre_qualifying', 'race', 1)));
+  // every tick verified the ledger read-only; all checks pass and the status sits under the picks prefix
+  assert.deepEqual(t4.verify, { ok: true, checked: 2, failures: 0 });
+  const st = await picksStatus(env);
+  assert.equal(st.lane.at, new Date(q2 + 30 * 3600e3).toISOString());
+  assert.ok(st.verify.locks.every((l) => l.checks.sha256 === 'pass' && l.checks.locked_before_session === 'pass' && l.checks.settled_race === 'pass'));
+  assert.equal(st.verify.locks.find((l) => l.key.endsWith('pre_qualifying.json')).checks.settled_quali, 'pass');
+  assert.ok(LANE_STATUS_KEY.startsWith('picks/v1/') && VERIFY_STATUS_KEY.startsWith('picks/v1/'));
+  assert.ok(![...b.m.keys()].some((k) => k.startsWith('state/')), 'nothing written to the recorder/newsroom state/ keys');
+  // tamper with the stored bytes of the post lock (bypassing create-only, as an operator mistake would) → FAIL
+  const postKey = lockKey('2026-test-2-grand-prix', 'post_qualifying');
+  const v0 = b.m.get(postKey);
+  b.m.set(postKey, { ...v0, body: v0.body.replace('"post_qualifying"', '"post_qualifying" ') });
+  const bad = await picksVerify(env, { now: q2 + 30 * 3600e3 });
+  assert.equal(bad.ok, false);
+  assert.deepEqual(bad.failures.map((x) => [x.key, x.checks.sha256]), [[postKey, 'fail']]);
+  assert.ok([...b.m.keys()].some((k) => k.startsWith('picks/v1/verify/fail/')), 'failure record appended');
+  CLOCK = null;
+});
+
+test('verification: pre-session, overdue grading and unanchored locks (first-seen anchor, then compared)', async () => {
+  const lock = { lock_id: 'L', version: 'post_qualifying', locked_at: '2026-03-09T03:00:00Z', deadline: '2026-03-10T00:00Z' };
+  const ev = canonicalFromFragment(fragment([fragEvent(2, '2026-03-08T00:00Z')]))[0];
+  const base = { lock, computedSha: 'x', refSha: 'x', uploaded: '2026-03-09T03:00:01Z', ev, nowMs: Date.parse('2026-03-10T03:00:00Z') };
+  assert.equal(verifyLock({ ...base, settlements: { race: [{ revision: 1, lock_id: 'L', lock_sha256: 'x', settled_at: '2026-03-10T02:00:00Z' }] } }).ok, true);
+  assert.equal(verifyLock({ ...base, settlements: { race: [] }, nowMs: Date.parse('2026-03-10T05:00:00Z') }).checks.settled_race, 'fail', 'classified race not graded within the grace window');
+  assert.equal(verifyLock({ ...base, settlements: { race: [] } }).checks.settled_race, 'pending');
+  assert.equal(verifyLock({ ...base, uploaded: '2026-03-10T00:00:05Z', settlements: {} }).checks.locked_before_session, 'fail', 'R2 upload after the session start');
+  assert.equal(verifyLock({ ...base, lock: { ...lock, locked_at: '2026-03-10T00:01:00Z' }, settlements: {} }).checks.locked_before_session, 'fail');
+  assert.equal(verifyLock({ ...base, settlements: { race: [{ revision: 1, lock_id: 'L', settled_at: '2026-03-09T23:00:00Z' }] } }).checks.settled_race, 'fail', 'graded before the race started');
+  assert.equal(verifyLock({ ...base, settlements: { race: [{ revision: 2, lock_id: 'L', settled_at: '2026-03-10T02:00:00Z' }] } }).checks.settled_race, 'fail', 'revisions must be contiguous');
+  // a lock without metadata or registry hash: anchored on first sight, compared afterwards
+  const b = mockBucket();
+  CLOCK = Date.parse('2026-03-09T03:00:00Z');
+  b.m.set('fragments/season-2026.json', { body: JSON.stringify(fragment([fragEvent(2, '2026-03-08T00:00Z', { race: false })])), uploaded: new Date(), meta: {} });
+  const key = lockKey('2026-test-2-grand-prix', 'post_qualifying');
+  await b.put(key, JSON.stringify(lock)); // no customMetadata (like a manual wrangler put)
+  const r1 = await picksVerify({ DATA: b }, { now: Date.parse('2026-03-09T04:00:00Z') });
+  assert.equal(r1.locks[0].anchor, 'first_seen');
+  assert.equal(r1.locks[0].checks.sha256, 'unanchored');
+  const r2 = await picksVerify({ DATA: b }, { now: Date.parse('2026-03-09T04:10:00Z') });
+  assert.equal(r2.locks[0].checks.sha256, 'pass');
+  assert.equal(r2.ok, true);
+  CLOCK = null;
+  assert.equal(KNOWN_LOCK_SHA256['picks/v1/locks/2026-singapore-grand-prix/pre_qualifying.json'], 'f8c054aae8f09af196a505dee305f99b57398af17f1a056778dde20051f5cd16');
 });
 
 test('free teaser never carries a probability, pick or grade, and never mentions the internal pre-qualifying lock', async () => {

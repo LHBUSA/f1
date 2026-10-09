@@ -10,7 +10,7 @@ import { normalizeFrames, sessionPublicId, coverage, SESSION_TYPE } from './fram
 import { deriveIncidents, INCIDENT_TAXONOMY_VERSION } from '../../../src/core/incidents.mjs';
 import { noTransform } from './transport.js';
 import { newsroomHeartbeat, healthPayload } from './newsroom.js';
-import { picksTick, picksPayload, picksTeaser, createOnlyProof } from './picks.js';
+import { picksTick, picksPayload, picksTeaser, createOnlyProof, picksStatus } from './picks.js';
 
 export { LiveHub };
 
@@ -237,7 +237,7 @@ async function route(req, env, ctx) {
         if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
         if (p === '/admin/picks/tick' && req.method === 'POST') return respond(req, await picksTick(env), { cache: 'no-store' });
         if (p === '/admin/picks/proof' && req.method === 'POST') return respond(req, await createOnlyProof(env), { cache: 'no-store' });
-        if (p === '/admin/picks/status') { const o = await env.DATA.get('state/picks-lane.json'); return respond(req, o ? await o.json() : {}, { cache: 'no-store' }); }
+        if (p === '/admin/picks/status') return respond(req, await picksStatus(env), { cache: 'no-store' });
         return err(req, 404, 'not found');
       }
       if (p === '/admin/deploy-ledger') {

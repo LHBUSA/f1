@@ -253,4 +253,38 @@ export function recordSummary(entries) {
   return Object.fromEntries(Object.entries(fam).map(([k, x]) => [k, { win: x.win, loss: x.loss, void: x.void, pending: x.pending, n_scored: x.n_scored, mean_log_loss: x.n_scored && x.log_loss_sum ? Math.round((x.log_loss_sum / x.n_scored) * 10000) / 10000 : null, top10_brier: x.brier_sum ? Math.round((x.brier_sum / x.n_scored) * 10000) / 10000 : null }]));
 }
 
+// ---------- ledger verification (read-only, every cron tick) ----------
+export const VERIFY_CONTRACT = 'f1-picks-verify/1';
+export const SETTLE_GRACE_MS = 4 * 3600e3; // a session classified this long ago (from its start) must be graded
+const sessionStartOf = (ev, group) => (group === 'quali' ? ev?.quali_start : ev?.race_start);
+/**
+ * Verify one lock from its stored bytes. Inputs are plain data (the caller reads R2):
+ *   computedSha  sha256 of the stored bytes      refSha   expected sha (object metadata, registry or first-seen record)
+ *   uploaded     R2 upload time                    ev       the event from the CURRENT season fragment (or null)
+ *   settlements  { quali: [rec r1..rn], race: [...] }
+ * Returns { checks, ok }. 'pending' / 'unanchored' never fail; 'fail' always does.
+ */
+export function verifyLock({ lock, computedSha, refSha, uploaded, ev, settlements = {}, nowMs }) {
+  const checks = {};
+  checks.sha256 = !refSha ? 'unanchored' : computedSha === refSha ? 'pass' : 'fail';
+  const lockedAt = Date.parse(lock.locked_at), deadline = Date.parse(lock.deadline), up = Date.parse(uploaded || '');
+  const current = Date.parse((lock.version === 'pre_qualifying' ? ev?.quali_start : ev?.race_start) || '');
+  const before = (t) => !Number.isFinite(t) || (lockedAt < t && (!Number.isFinite(up) || up < t));
+  checks.locked_before_session = Number.isFinite(lockedAt) && Number.isFinite(deadline) && before(deadline) && before(current) ? 'pass' : 'fail';
+  for (const g of groupsFor(lock.version)) {
+    const recs = settlements[g] || [];
+    const start = Date.parse(sessionStartOf(ev, g) || '');
+    if (!recs.length) {
+      const overdue = ev && groupReady(ev, g) && Number.isFinite(start) && nowMs - start > SETTLE_GRACE_MS;
+      checks[`settled_${g}`] = overdue ? 'fail' : 'pending';
+      continue;
+    }
+    const contiguous = recs.every((r, i) => r.revision === i + 1 && (i === 0 ? !r.supersedes : r.supersedes === i));
+    const afterSession = recs.every((r) => !Number.isFinite(start) || Date.parse(r.settled_at) > start);
+    const sameLock = recs.every((r) => r.lock_id === lock.lock_id && (!r.lock_sha256 || r.lock_sha256 === computedSha));
+    checks[`settled_${g}`] = contiguous && afterSession && sameLock ? 'pass' : 'fail';
+  }
+  return { checks, ok: !Object.values(checks).includes('fail') };
+}
+
 export { newState };
