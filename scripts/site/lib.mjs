@@ -124,7 +124,7 @@ const NETWORK = [
   ['https://boxing.propbetedge.ai', 'Boxing'],
 ];
 
-export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg, ogImage = null, ogImageAlt = null, article = null, pbecast = false, explorer = false, rail = false, kalshi = false, articleMarket = false, raceLab = false, racePicks = false }) {
+export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg, ogImage = null, ogImageAlt = null, article = null, pbecast = false, explorer = false, rail = false, kalshi = false, articleMarket = false, raceLab = false, racePicks = false, alternates = null, langSwitch = '' }) {
   const canonical = SITE + (path === '/' ? '/' : path.replace(/\/$/, ''));
   const fullTitle = path === '/' ? title : `${title} | PropBetEdge F1`;
   const active = section || '/' + (path.split('/')[1] || '');
@@ -142,7 +142,7 @@ export function layout({ path, title, description, body, jsonLd = [], noindex = 
 <title>${esc(fullTitle)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${canonical}">
-${noindex ? '<meta name="robots" content="noindex,follow">' : '<meta name="robots" content="index,follow,max-image-preview:large">'}
+${alternates ? alternates.map((a) => `<link rel="alternate" hreflang="${a.hreflang}" href="${a.url}">`).join('') : ''}${noindex ? '<meta name="robots" content="noindex,follow">' : '<meta name="robots" content="index,follow,max-image-preview:large">'}
 <meta property="og:type" content="${ogType}">
 <meta property="og:site_name" content="PropBetEdge F1">
 <meta property="og:title" content="${esc(fullTitle)}">
@@ -184,7 +184,7 @@ ${ld}
   <div class="acct-slot">${accountButton()}</div>
 </header>
 <main id="main">
-${body}
+${langSwitch ? `<div class="wrap lang-bar">${langSwitch}</div>` : ''}${body}
 </main>
 <footer class="site-footer">
   <div class="wrap footer-grid">

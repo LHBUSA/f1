@@ -19,6 +19,7 @@ import { loadExplorer, explorerFor } from '../src/identity/explorer.mjs';
 import { powertrainFor } from '../src/identity/powertrain.mjs';
 import { loadOwnership, ownershipForTeam, personProfileV2 } from '../src/identity/people-v2.mjs';
 import { driverProfileHtml } from './site/people.mjs';
+import { jaHome, jaStandings, jaLayout, alternatesFor, langSwitch } from './site/ja.mjs';
 
 const DIST = path.resolve(process.env.F1_DIST || 'dist'); // F1_DIST: build elsewhere (QA beside a served dist)
 const t0 = Date.now();
@@ -83,6 +84,8 @@ let css = fs.readFileSync('src/web/styles.css', 'utf8');
 css += '\n' + fs.readFileSync('src/vendor/kalshi/kalshi-market-ui.css', 'utf8');
 // shared Article Market module styles (article-market/1), vendored unchanged (propbetedge-workers abaf809)
 css += '\n' + fs.readFileSync('src/vendor/kalshi/article-market-ui.css', 'utf8');
+// shared locale typography (pbe-locale/1.0.0, vendored unchanged): :lang(ja) rules only, English pages untouched
+css += '\n' + fs.readFileSync('src/vendor/pbe-locale/pbe-locale.css', 'utf8');
 css += '\n' + [...colors].map((c) => `.tc-${c.replace(/[^0-9a-f]/g, '')}{--tc:#${c}}`).join('');
 css += '\n' + Array.from({ length: 101 }, (_, i) => `.w-${i}{width:${i}%}`).join('');
 const cssHash = crypto.createHash('sha256').update(css).digest('hex').slice(0, 10);
@@ -169,13 +172,19 @@ fs.writeFileSync(path.join(DIST, `assets/kalshi-partner-footer.${kxoHash}.js`), 
 const assets = { partner: `/assets/kalshi-partner-footer.${kxoHash}.js`, account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, raceLab: `/assets/race-lab.${raceLabHash}.js`, racePicks: `/assets/race-picks.${racePicksHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
 
 // ---------- page writer ----------
+// Japanese (ja-JP) pages: only complete pages exist (pbe-locale ready: ['ja']); enPath -> ja path for hreflang.
+const jaPages = [jaHome(ctx), jaStandings(ctx)].filter(Boolean);
+const jaFor = new Map(jaPages.map((p) => [p.enPath, p.path]));
 const sitemap = [];
 const allPaths = new Set();
 let pages = 0;
 function emit(p) {
   if (p.carImageObject) p.jsonLd = [...(p.jsonLd || []), imageObject(p.carImageObject.photo, { site: SITE, publicPath: p.carImageObject.publicPath })];
   if (p.extraImageObjects?.length) p.jsonLd = [...(p.jsonLd || []), ...p.extraImageObjects.map((o) => imageObject(o.photo, { site: SITE, publicPath: o.publicPath }))];
-  const html = layout({ ...p, assets });
+  // Japanese pages (scripts/site/ja.mjs) use their own layout; an English page with a complete Japanese counterpart
+  // gets reciprocal hreflang + the EN / 日本語 switch (nothing else on the English page changes).
+  const ja = !p.lang && jaFor.get(p.path);
+  const html = p.lang === 'ja' ? jaLayout({ ...p, assets }) : layout({ ...p, assets, ...(ja ? { alternates: alternatesFor(p.path), langSwitch: langSwitch(p.path, ja, 'en') } : {}) });
   const rel = p.path === '/' ? 'index.html' : p.path.replace(/^\//, '') + '.html';
   const file = path.join(DIST, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -210,6 +219,7 @@ emit(P.circuitsIndex(ctx));
 for (const c of ctx.circuits) emit(P.circuitPage(ctx, c, ''));
 emit(P.standingsPage(ctx, ctx.currentSeason));
 for (const y of seasons) if (y !== ctx.currentSeason && ctx.standingsBy[`${y}|driver`]) emit(P.standingsPage(ctx, y));
+for (const p of jaPages) emit(p);
 emit(P.matchupsIndex(ctx));
 for (const k of Object.keys(ctx.matchups)) emit(P.matchupPage(ctx, k));
 emit(pbecastHub(X, ctx.nextEvent ? X.event[ctx.nextEvent.slug] : null));

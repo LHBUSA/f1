@@ -1,0 +1,22 @@
+/* PropBetEdge locale contract (pbe-locale/1.0.0): typography for non-Latin locales. Vendored byte-identical with
+   pbe-locale.js. Sites set <html lang> from the locale registry (htmlLang); these rules key off :lang() only, so English
+   and every Latin-script page is untouched. System fonts only (no web-font download, no new vendor). */
+
+:lang(ja) {
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif;
+  line-break: strict;          /* kinsoku: no line may start with 、。」 etc. */
+  word-break: normal;
+  overflow-wrap: anywhere;     /* long unbroken runs (URLs, katakana compounds) never overflow narrow screens */
+}
+:lang(ko) {
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
+  word-break: keep-all;        /* Korean wraps between eojeol (spaces), never inside a word */
+  overflow-wrap: anywhere;
+}
+/* Letter-case and tracking styles designed for Latin capitals are meaningless (or harmful) for CJK scripts. */
+:lang(ja) *, :lang(ko) * { text-transform: none !important; }
+:lang(ja) [class], :lang(ko) [class] { letter-spacing: normal; }
+/* Emphasis: CJK fonts rarely ship italics; synthetic obliques are hard to read. */
+:lang(ja) em, :lang(ja) i, :lang(ko) em, :lang(ko) i { font-style: normal; font-weight: 700; }
+/* Line height: CJK glyphs fill the em box; give body copy a little more air. */
+:lang(ja) p, :lang(ko) p, :lang(ja) li, :lang(ko) li { line-height: 1.75; }
