@@ -1053,3 +1053,21 @@ body[data-pc-view=all_access] .pc-acct{color:var(--silver);border-color:#c9d1dd6
 @media(max-width:900px){.rp-grid{grid-template-columns:1fr}.rp-card.rp-wide{grid-column:auto}}
 @media(max-width:520px){.rp-desk{padding:14px}.rp-winner li{grid-template-columns:minmax(0,1fr) 3.6rem}.rp-winner .rp-bar{grid-column:1/-1;grid-row:2}.rp-mkt{grid-column:1/-1}.rp-table{font-size:12px}.rp-table th,.rp-table td{padding:5px 3px}.rp-table thead th{font-size:10px;letter-spacing:.04em}.rp-table th[scope=row]{white-space:normal;overflow-wrap:anywhere;max-width:8.5rem}}
 .rp-w-0{width:0%}.rp-w-1{width:1%}.rp-w-2{width:2%}.rp-w-3{width:3%}.rp-w-4{width:4%}.rp-w-5{width:5%}.rp-w-6{width:6%}.rp-w-7{width:7%}.rp-w-8{width:8%}.rp-w-9{width:9%}.rp-w-10{width:10%}.rp-w-11{width:11%}.rp-w-12{width:12%}.rp-w-13{width:13%}.rp-w-14{width:14%}.rp-w-15{width:15%}.rp-w-16{width:16%}.rp-w-17{width:17%}.rp-w-18{width:18%}.rp-w-19{width:19%}.rp-w-20{width:20%}.rp-w-21{width:21%}.rp-w-22{width:22%}.rp-w-23{width:23%}.rp-w-24{width:24%}.rp-w-25{width:25%}.rp-w-26{width:26%}.rp-w-27{width:27%}.rp-w-28{width:28%}.rp-w-29{width:29%}.rp-w-30{width:30%}.rp-w-31{width:31%}.rp-w-32{width:32%}.rp-w-33{width:33%}.rp-w-34{width:34%}.rp-w-35{width:35%}.rp-w-36{width:36%}.rp-w-37{width:37%}.rp-w-38{width:38%}.rp-w-39{width:39%}.rp-w-40{width:40%}.rp-w-41{width:41%}.rp-w-42{width:42%}.rp-w-43{width:43%}.rp-w-44{width:44%}.rp-w-45{width:45%}.rp-w-46{width:46%}.rp-w-47{width:47%}.rp-w-48{width:48%}.rp-w-49{width:49%}.rp-w-50{width:50%}.rp-w-51{width:51%}.rp-w-52{width:52%}.rp-w-53{width:53%}.rp-w-54{width:54%}.rp-w-55{width:55%}.rp-w-56{width:56%}.rp-w-57{width:57%}.rp-w-58{width:58%}.rp-w-59{width:59%}.rp-w-60{width:60%}.rp-w-61{width:61%}.rp-w-62{width:62%}.rp-w-63{width:63%}.rp-w-64{width:64%}.rp-w-65{width:65%}.rp-w-66{width:66%}.rp-w-67{width:67%}.rp-w-68{width:68%}.rp-w-69{width:69%}.rp-w-70{width:70%}.rp-w-71{width:71%}.rp-w-72{width:72%}.rp-w-73{width:73%}.rp-w-74{width:74%}.rp-w-75{width:75%}.rp-w-76{width:76%}.rp-w-77{width:77%}.rp-w-78{width:78%}.rp-w-79{width:79%}.rp-w-80{width:80%}.rp-w-81{width:81%}.rp-w-82{width:82%}.rp-w-83{width:83%}.rp-w-84{width:84%}.rp-w-85{width:85%}.rp-w-86{width:86%}.rp-w-87{width:87%}.rp-w-88{width:88%}.rp-w-89{width:89%}.rp-w-90{width:90%}.rp-w-91{width:91%}.rp-w-92{width:92%}.rp-w-93{width:93%}.rp-w-94{width:94%}.rp-w-95{width:95%}.rp-w-96{width:96%}.rp-w-97{width:97%}.rp-w-98{width:98%}.rp-w-99{width:99%}.rp-w-100{width:100%}
+/* mobile header: live state (<1024px). The LIVE pill carries the session label ("LIVE - Sprint Qualifying") and the
+   menu button keeps 116px for the absolutely positioned account button, which overflowed 360-430px screens by ~76px.
+   The pill now shrinks with an ellipsis, the brand word yields while live, and nothing else in the header changes. */
+@media(max-width:1023px){
+  .masthead{min-width:0}.masthead .brand,.masthead .menu-btn{flex-shrink:0}
+  .masthead .live-pill{flex:0 1 auto;min-width:0;overflow:hidden}
+  .masthead .live-pill [data-live-text]{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .masthead:has(.live-pill:not([hidden])) .brand-pbe{display:none}
+}
+/* tablet: the account button sat 4px over the menu button at 768-1023px (wrap padding is 28px there, not 16px) */
+@media(min-width:768px) and (max-width:1023px){.acct-slot{right:74px}}
+/* smallest phones (<360px) and small desktop while live: the full nav + LIVE pill + account button overflowed 1024-1279px by up to 163px.
+   The pill keeps its pulsing dot (session label stays in the accessible name) and the nav gap tightens. */
+@media(max-width:359px),(min-width:1024px) and (max-width:1279px){
+  .masthead .live-pill [data-live-text]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .masthead .live-pill{padding:7px 9px}
+  .masthead:has(.live-pill:not([hidden])) ~ .primary-nav .nav-inner{gap:14px}
+}
