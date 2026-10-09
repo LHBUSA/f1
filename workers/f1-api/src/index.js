@@ -10,6 +10,7 @@ import { normalizeFrames, sessionPublicId, coverage, SESSION_TYPE } from './fram
 import { deriveIncidents, INCIDENT_TAXONOMY_VERSION } from '../../../src/core/incidents.mjs';
 import { noTransform } from './transport.js';
 import { newsroomHeartbeat, healthPayload } from './newsroom.js';
+import { picksTick, picksPayload, picksTeaser, createOnlyProof } from './picks.js';
 
 export { LiveHub };
 
@@ -146,6 +147,12 @@ async function route(req, env, ctx) {
         const payload = await raceLabPayload(env);
         return payload ? respondPrivate(req, payload) : respondPrivate(req, { error: 'projection_not_published' }, 503);
       }
+      // ---------- Race Picks: All Access (server-enforced); free gets a teaser with no values ----------
+      if (p === '/picks') {
+        const a = await f1Access(req, env);
+        if (!a.granted) return respondPrivate(req, { error: 'all_access_required', feature: 'race_picks', membership: a.membership, signed_in: a.signed_in === true, teaser: await picksTeaser(env) }, 403);
+        return respondPrivate(req, await picksPayload(env));
+      }
       // ---------- PBEcast: All Access (server-enforced; private, never cached) ----------
       if (p === '/live/full' || p.startsWith('/replay/') || p.startsWith('/incidents/')) {
         const a = await f1Access(req, env);
@@ -225,6 +232,13 @@ async function route(req, env, ctx) {
         const sid = q.get('session');
         if (!/^\d+$/.test(sid || '')) return err(req, 400, 'bad session');
         return env.LIVE.get(env.LIVE.idFromName('global')).fetch(`https://live/proof?session=${sid}`);
+      }
+      if (p.startsWith('/admin/picks/')) {
+        if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
+        if (p === '/admin/picks/tick' && req.method === 'POST') return respond(req, await picksTick(env), { cache: 'no-store' });
+        if (p === '/admin/picks/proof' && req.method === 'POST') return respond(req, await createOnlyProof(env), { cache: 'no-store' });
+        if (p === '/admin/picks/status') { const o = await env.DATA.get('state/picks-lane.json'); return respond(req, o ? await o.json() : {}, { cache: 'no-store' }); }
+        return err(req, 404, 'not found');
       }
       if (p === '/admin/deploy-ledger') {
         if (!authorized(req, env.ADMIN_TOKEN)) return err(req, 401, 'unauthorized');
@@ -363,7 +377,10 @@ export default {
     // when the ingest fails, so an upstream outage can never leave the newsroom unevaluated
     ctx.waitUntil(ingestCurrent(env, { trigger: true }).catch((e) => console.error('ingest failed', e?.message || e))
       .then(async () => { const r = await newsroomHeartbeat(env, { health: await doc(env, 'news-health') }); if (r.fired || r.status !== 'ok') console.log('newsroom', JSON.stringify(r)); })
-      .catch((e) => console.error('newsroom heartbeat failed', e?.message || e)));
+      .catch((e) => console.error('newsroom heartbeat failed', e?.message || e))
+      // race picks lane: bounded lock/settle step on the SAME proven */10 cron (never a new cron); isolated failure
+      .then(() => picksTick(env)).then((r) => { if (r.actions.length) console.log('picks', JSON.stringify(r)); })
+      .catch((e) => console.error('picks lane failed', e?.message || e)));
     ctx.waitUntil(env.LIVE.get(env.LIVE.idFromName('global')).fetch('https://live/state').catch(() => {}));
   },
 };
