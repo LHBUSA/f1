@@ -99,6 +99,8 @@ const NAV = [
   ['/matchups', 'Matchups'],
   ['/pbecast', 'PBEcast'],
   ['/race-lab', 'Race Lab ◆'],
+  ['/picks', 'Picks'],
+  ['/track-record', 'Track Record'],
   ['/news', 'News'],
 ];
 const ALL_ACCESS_NETWORK = [
@@ -122,7 +124,7 @@ const NETWORK = [
   ['https://boxing.propbetedge.ai', 'Boxing'],
 ];
 
-export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg, ogImage = null, ogImageAlt = null, article = null, pbecast = false, explorer = false, rail = false, kalshi = false, articleMarket = false, raceLab = false }) {
+export function layout({ path, title, description, body, jsonLd = [], noindex = false, ogType = 'website', section, assets, liveBadge = true, bg, ogImage = null, ogImageAlt = null, article = null, pbecast = false, explorer = false, rail = false, kalshi = false, articleMarket = false, raceLab = false, racePicks = false }) {
   const canonical = SITE + (path === '/' ? '/' : path.replace(/\/$/, ''));
   const fullTitle = path === '/' ? title : `${title} | PropBetEdge F1`;
   const active = section || '/' + (path.split('/')[1] || '');
@@ -167,7 +169,7 @@ ${article ? `<meta property="article:published_time" content="${esc(article.publ
 ${heroPreload}
 <link rel="stylesheet" href="${assets.css}">
 <script src="${assets.js}" defer></script>
-${assets.account ? `<script type="module" src="${assets.account}"></script>` : ''}${!pbecast && assets.partner ? `<script type="module" src="${assets.partner}"></script>` : ''}${pbecast && assets.pbecast ? `<script type="module" src="${assets.pbecast}"></script>` : ''}${explorer && assets.explorer ? `<script src="${assets.explorer}" defer></script>` : ''}${rail && assets.rail ? `<script src="${assets.rail}" defer></script>` : ''}${raceLab && assets.raceLab ? `<script src="${assets.raceLab}" defer></script>` : ''}${raceLab && assets.racePicks ? `<script src="${assets.racePicks}" defer></script>` : ''}${!pbecast && assets.nav ? `<script src="${assets.nav}" defer></script>` : ''}${kalshi && assets.kalshi ? `<script src="${assets.kalshi}" defer></script>` : ''}${articleMarket && assets.articleMarket ? `<script src="${assets.articleMarket}" defer></script>` : ''}
+${assets.account ? `<script type="module" src="${assets.account}"></script>` : ''}${!pbecast && assets.partner ? `<script type="module" src="${assets.partner}"></script>` : ''}${pbecast && assets.pbecast ? `<script type="module" src="${assets.pbecast}"></script>` : ''}${explorer && assets.explorer ? `<script src="${assets.explorer}" defer></script>` : ''}${rail && assets.rail ? `<script src="${assets.rail}" defer></script>` : ''}${raceLab && assets.raceLab ? `<script src="${assets.raceLab}" defer></script>` : ''}${(raceLab || racePicks) && assets.racePicks ? `<script src="${assets.racePicks}" defer></script>` : ''}${!pbecast && assets.nav ? `<script src="${assets.nav}" defer></script>` : ''}${kalshi && assets.kalshi ? `<script src="${assets.kalshi}" defer></script>` : ''}${articleMarket && assets.articleMarket ? `<script src="${assets.articleMarket}" defer></script>` : ''}
 ${ld}
 </head>
 <body data-path="${esc(path)}" class="bg-${bgClass}">

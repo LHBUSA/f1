@@ -179,41 +179,111 @@ export async function createOnlyProof(env) {
   return { key, created: [a.created, b.created, c.created], stored_writer: stored.w, pass: [a, b, c].filter((x) => x.created).length === 1 };
 }
 
-/** Member payload: ONLY the published families of published versions (PUBLISHED), with grades and their record. */
-export async function picksPayload(env, { now = Date.now() } = {}) {
-  const year = new Date(now).getUTCFullYear();
-  const listed = await env.DATA.list({ prefix: `${LEDGER_PREFIX}/locks/${year}-` });
+// Published entries (every season — the track record is permanent): ONLY the published families of published versions,
+// with each group's latest settlement revision. Pre-qualifying locks are never read here.
+async function publishedEntries(env) {
+  const listed = await env.DATA.list({ prefix: `${LEDGER_PREFIX}/locks/` });
   const entries = [];
   for (const o of listed.objects || []) {
-    const v = o.key.match(/\/(pre_qualifying|post_qualifying)\.json$/)?.[1];
+    const v = o.key.match(/locks\/[a-z0-9-]+\/(pre_qualifying|post_qualifying)\.json$/)?.[1];
     if (!PUBLISHED[v]) continue; // never read, never served
     const lock = await readLock(env, o.key);
     if (!lock) continue;
     const keep = PUBLISHED[v];
-    lock.families = Object.fromEntries(Object.entries(lock.families).filter(([f]) => keep.includes(f)));
+    lock.families = Object.fromEntries(Object.entries(lock.families || {}).filter(([f]) => keep.includes(f)));
     lock.labels = Object.fromEntries(keep.map((f) => [f, 'RESEARCH']));
     lock.contracts = Object.fromEntries(Object.entries(lock.contracts || {}).filter(([f]) => keep.includes(f)));
     const grades = {};
+    const revisions = {};
     for (const g of groupsFor(lock.version)) {
       let rev = 0, last = null;
       for (;;) { const s = await env.DATA.get(settleKey(lock.event.id, lock.version, g, rev + 1)); if (!s) break; last = await s.json(); rev++; }
+      revisions[g] = rev;
       if (last) grades[g] = { ...last, families: Object.fromEntries(Object.entries(last.families || {}).filter(([f]) => keep.includes(f))) };
     }
-    entries.push({ lock, grades });
+    entries.push({ lock, grades, revisions });
   }
   entries.sort((a, b) => String(b.lock.event.race_start).localeCompare(String(a.lock.event.race_start)) || (a.lock.version < b.lock.version ? 1 : -1));
-  const strip = ({ _sha256, _uploaded, model, ...l }) => ({ ...l, model: { id: model.id, version: model.version, sims: model.sims }, evidence: { sha256: _sha256, r2_uploaded: _uploaded } });
-  return { tier: 'all_access', status: 'SHADOW', label: 'RESEARCH', model_version: MODEL_VERSION, published: PUBLISHED, winner_note: WINNER_NOTE, record: recordSummary(entries), locks: entries.map((e) => ({ ...strip(e.lock), grades: e.grades })) };
+  return entries;
 }
 
-/** Free teaser: what is locked and when — never a probability, pick or grade. */
+// Lock evidence for the public record: identifiers, times and hashes only — never a family, selection or probability.
+const evidenceOf = ({ lock, grades, revisions }) => ({
+  lock_id: lock.lock_id, event: { id: lock.event.id, name: lock.event.name, season: lock.event.season, round: lock.event.round, race_start: lock.event.race_start },
+  version: lock.version, model_version: lock.model?.version || null, status: lock.status || 'SHADOW', locked_at: lock.locked_at, deadline: lock.deadline,
+  sha256: lock._sha256, r2_uploaded: lock._uploaded, settlement: grades.race ? 'graded' : 'pending', revisions: revisions.race || 0, settled_at: grades.race?.settled_at || null,
+});
+
+/**
+ * Public weekend status for the current or next Grand Prix (no values): the post-qualifying publication state from the
+ * real session schedule, the published ledger and the last lane step. Only Grand Prix qualifying opens the window;
+ * sprint qualifying never does (canonicalFromFragment reads session type 'qualifying' only).
+ */
+export function weekendStatus({ evs, entries, lane, now }) {
+  const ev = evs.find((e) => e.race_start && Date.parse(e.race_start) + 6 * 3600e3 > now) || null;
+  if (!ev) return { event: null, state: 'season_complete' };
+  const q = Date.parse(ev.quali_start || ''), r = Date.parse(ev.race_start);
+  const key = lockKey(ev.slug, 'post_qualifying');
+  const locked = entries.find((e) => e.lock.event.id === ev.slug && e.lock.version === 'post_qualifying');
+  const laneAct = (lane?.actions || []).find((a) => a.lock === key);
+  let state;
+  if (locked) state = locked.grades.race ? 'graded' : 'locked';
+  else if (now >= r - LOCK_GUARD) state = 'window_closed';
+  else if (groupReady(ev, 'quali')) state = laneAct?.result === 'held_field_incomplete' ? 'held_field_incomplete' : 'lock_due';
+  else if (!Number.isFinite(q) || now < q) state = 'awaiting_qualifying';
+  else state = 'awaiting_classification';
+  const sess = (ev.weekend || []).map((s) => ({ type: s.type, start_utc: s.start_utc, state: s.state }));
+  return {
+    event: { id: ev.slug, name: ev.name, season: ev.season, round: ev.round, quali_start: ev.quali_start, race_start: ev.race_start, quali_state: ev.quali_state, race_state: ev.race_state },
+    sessions: sess,
+    state,
+    lock_window: { opens_after: 'grand_prix_qualifying_classified', earliest: ev.quali_start, closes: Number.isFinite(r) ? new Date(r - LOCK_GUARD).toISOString() : null },
+    locked_at: locked?.lock.locked_at || null,
+    lane: lane ? { checked_at: lane.at, next_check_by: new Date(Date.parse(lane.at) + 10 * 60e3).toISOString(), ...(laneAct ? { last_action: laneAct.result } : {}) } : null,
+  };
+}
+const LOCK_GUARD = 10 * 60e3;
+
+async function laneAndVerify(env) {
+  const [l, v] = await Promise.all([env.DATA.get(LANE_STATUS_KEY), env.DATA.get(VERIFY_STATUS_KEY)]);
+  const lane = l ? await l.json().catch(() => null) : null;
+  const ver = v ? await v.json().catch(() => null) : null;
+  return { lane, verify: ver ? { ok: ver.ok, at: ver.at } : null }; // no lock count: it would reveal internal locks
+}
+
+/** Member payload: ONLY the published families of published versions (PUBLISHED), with grades and their record. */
+export async function picksPayload(env, { now = Date.now() } = {}) {
+  const entries = await publishedEntries(env);
+  const { evs } = await seasonEvents(env, new Date(now).getUTCFullYear());
+  const { lane, verify } = await laneAndVerify(env);
+  const strip = ({ _sha256, _uploaded, model, ...l }) => ({ ...l, model: { id: model.id, version: model.version, sims: model.sims }, evidence: { sha256: _sha256, r2_uploaded: _uploaded } });
+  return { tier: 'all_access', status: 'SHADOW', label: 'RESEARCH', model_version: MODEL_VERSION, published: PUBLISHED, winner_note: WINNER_NOTE, weekend: weekendStatus({ evs, entries, lane, now }), verify, record: recordSummary(entries), evidence: entries.map(evidenceOf), locks: entries.map((e) => ({ ...strip(e.lock), grades: e.grades })) };
+}
+
+/**
+ * Free teaser: what is locked and when, the weekend publication status and the permanent record (aggregate W/L/VOID/
+ * PENDING and scores of settled locks) — never a selection, probability or per-pick grade; the internal pre-qualifying
+ * lock is never mentioned.
+ */
 export async function picksTeaser(env, { now = Date.now() } = {}) {
   const year = new Date(now).getUTCFullYear();
-  const listed = await env.DATA.list({ prefix: `${LEDGER_PREFIX}/locks/${year}-` });
-  // only published versions exist for the free surface; the pre-qualifying research lock is never mentioned
-  const pub = (listed.objects || []).filter((o) => PUBLISHED[o.key.match(/\/(pre_qualifying|post_qualifying)\.json$/)?.[1]]);
-  const keys = pub.map((o) => o.key.match(/locks\/([a-z0-9-]+)\/(pre_qualifying|post_qualifying)\.json$/)).filter(Boolean);
-  const latestObj = [...pub].sort((a, b) => (a.uploaded < b.uploaded ? 1 : -1))[0];
-  const latest = latestObj ? latestObj.key.match(/locks\/([a-z0-9-]+)\//)?.[1] || null : null;
-  return { tier: 'free', latest_event: latest, versions: keys.filter((m) => m[1] === latest).map((m) => m[2]), families: PUBLISHED.post_qualifying, locks_this_season: keys.length };
+  const entries = await publishedEntries(env);
+  const { evs } = await seasonEvents(env, year);
+  const { lane, verify } = await laneAndVerify(env);
+  const season = entries.filter((e) => String(e.lock.event.id).startsWith(`${year}-`));
+  const latest = [...season].sort((a, b) => String(b.lock._uploaded || '').localeCompare(String(a.lock._uploaded || '')))[0]?.lock.event.id || null;
+  return {
+    tier: 'free', model_version: MODEL_VERSION, families: PUBLISHED.post_qualifying,
+    latest_event: latest, versions: season.filter((e) => e.lock.event.id === latest).map((e) => e.lock.version), locks_this_season: season.length,
+    weekend: weekendStatus({ evs, entries, lane, now }), verify, record: recordSummary(entries), evidence: entries.map(evidenceOf),
+  };
+}
+
+// Guest teaser is identical for every visitor: a 60 s per-isolate memo keeps public page views off the ledger.
+let teaserMemo = null;
+export async function picksTeaserCached(env) {
+  if (teaserMemo && Date.now() - teaserMemo.at < 60e3) return teaserMemo.body;
+  const body = await picksTeaser(env);
+  teaserMemo = { at: Date.now(), body };
+  return body;
 }

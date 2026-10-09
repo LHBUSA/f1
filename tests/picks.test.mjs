@@ -246,19 +246,82 @@ test('verification: pre-session, overdue grading and unanchored locks (first-see
   assert.equal(KNOWN_LOCK_SHA256['picks/v1/locks/2026-singapore-grand-prix/pre_qualifying.json'], 'f8c054aae8f09af196a505dee305f99b57398af17f1a056778dde20051f5cd16');
 });
 
-test('free teaser never carries a probability, pick or grade, and never mentions the internal pre-qualifying lock', async () => {
+test('free teaser: weekend status + permanent record through the whole weekend, never a selection, probability or the internal pre-qualifying lock', async () => {
   const b = mockBucket();
-  await b.put(lockKey('2026-test-2-grand-prix', 'pre_qualifying'), JSON.stringify({ families: { race_winner: { probs: { a: 0.5 } } } }));
-  const t0 = await picksTeaser({ DATA: b }, { now: Date.parse('2026-03-09T00:00Z') });
-  assert.equal(t0.latest_event, null, 'pre-qualifying alone publishes nothing');
-  assert.equal(t0.locks_this_season, 0);
-  await b.put(lockKey('2026-test-2-grand-prix', 'post_qualifying'), JSON.stringify({ families: { race_winner: { probs: { a: 0.5 } } } }));
-  const t = await picksTeaser({ DATA: b }, { now: Date.parse('2026-03-09T00:00Z') });
-  const s = JSON.stringify(t);
+  const base = newState();
+  const baseBody = JSON.stringify(base);
+  await b.put('picks/v1/model/base-state-2025.json', baseBody);
+  const opts = { fetchImpl: async () => ({ ok: false }), baseSha: await sha256Hex(baseBody), internalDoc: { driver_by_upstream: Object.fromEntries(DRIVERS.map((d) => [d.id.replace('espn-', ''), who(d.id)])) } };
+  const env = { DATA: b };
+  const setFrag = (parts) => b.m.set('fragments/season-2026.json', { body: JSON.stringify(fragment(parts)), uploaded: new Date(), meta: {} });
+  const e1 = fragEvent(1, '2026-03-01T00:00Z');
+  // a sprint weekend: sprint qualifying classified is NOT Grand Prix qualifying
+  const sprintWeekend = (o) => { const e = fragEvent(2, '2026-03-08T00:00Z', o); e.sessions.splice(1, 0, { id: 'espn-ev2-sq', event_id: 'espn-ev2', type: 'sprint_qualifying', start_utc: '2026-03-08T12:00Z', state: 'completed' }); return e; };
+  const q2 = Date.parse('2026-03-09T00:00Z'), r2 = Date.parse('2026-03-10T00:00Z');
+  const leak = (t) => { const s = JSON.stringify(t); assert.ok(!/p_|prob|"pick|teammate_quali|pre_qualifying|"families":\{"|drivers"|exp_rank/.test(s.replace('"families":["driver_outlook","teammate_race_h2h","race_winner"]', '')), s); };
+  setFrag([e1, sprintWeekend({ quali: false, race: false })]);
+  CLOCK = q2 - 3 * 3600e3;
+  await picksTick(env, { ...opts, now: q2 - 3 * 3600e3 }); // internal pre-qualifying lock only
+  let t = await picksTeaser(env, { now: q2 - 3 * 3600e3 });
   assert.equal(t.tier, 'free');
+  assert.equal(t.latest_event, null, 'pre-qualifying alone publishes nothing');
+  assert.equal(t.locks_this_season, 0);
+  assert.equal(t.weekend.state, 'awaiting_qualifying', 'sprint qualifying never opens the post-qualifying window');
+  assert.equal(t.weekend.event.id, '2026-test-2-grand-prix');
+  assert.equal(t.weekend.lock_window.opens_after, 'grand_prix_qualifying_classified');
+  assert.equal(t.weekend.lock_window.closes, new Date(r2 - 10 * 60e3).toISOString());
+  assert.ok(t.weekend.sessions.some((s) => s.type === 'sprint_qualifying'));
+  assert.deepEqual(t.record, {});
+  assert.deepEqual(t.evidence, []);
+  leak(t);
+  // qualifying started, not yet classified
+  t = await picksTeaser(env, { now: q2 + 3600e3 });
+  assert.equal(t.weekend.state, 'awaiting_classification');
+  // classified, lane not yet run → lock due on the next tick; a held field is reported from the lane step
+  setFrag([e1, sprintWeekend({ race: false })]);
+  t = await picksTeaser(env, { now: q2 + 2 * 3600e3 });
+  assert.equal(t.weekend.state, 'lock_due');
+  b.m.set('picks/v1/state/lane.json', { body: JSON.stringify({ at: new Date(q2 + 2 * 3600e3).toISOString(), actions: [{ lock: lockKey('2026-test-2-grand-prix', 'post_qualifying'), result: 'held_field_incomplete', entrants: 8 }] }), uploaded: new Date(), meta: {} });
+  t = await picksTeaser(env, { now: q2 + 2 * 3600e3 });
+  assert.equal(t.weekend.state, 'held_field_incomplete');
+  assert.equal(t.weekend.lane.next_check_by, new Date(q2 + 2 * 3600e3 + 10 * 60e3).toISOString());
+  // locked: evidence (ids, times, hash) is public; the selections are not
+  CLOCK = q2 + 3 * 3600e3;
+  await picksTick(env, { ...opts, now: q2 + 3 * 3600e3 });
+  t = await picksTeaser(env, { now: q2 + 3 * 3600e3 });
+  assert.equal(t.weekend.state, 'locked');
+  assert.deepEqual(Object.keys(t.verify || {}).sort(), ['at', 'ok'], 'no lock count (it would reveal the internal pre-qualifying lock)');
   assert.equal(t.latest_event, '2026-test-2-grand-prix');
   assert.deepEqual(t.versions, ['post_qualifying']);
-  assert.ok(!/p_|prob|pick"|result|0\.5|teammate_quali|pre_qualifying/.test(s), s);
+  assert.equal(t.evidence.length, 1);
+  const ev0 = t.evidence[0];
+  assert.equal(ev0.version, 'post_qualifying');
+  assert.equal(ev0.settlement, 'pending');
+  assert.match(ev0.sha256, /^[0-9a-f]{64}$/);
+  assert.equal(ev0.sha256, await sha256Hex(b.m.get(lockKey('2026-test-2-grand-prix', 'post_qualifying')).body));
+  assert.ok(Object.values(t.record).every((r) => r.win === 0 && r.loss === 0 && r.pending > 0));
+  leak(t);
+  // race graded → the record counts settle; still no per-pick values
+  setFrag([e1, sprintWeekend({})]);
+  CLOCK = q2 + 26 * 3600e3;
+  await picksTick(env, { ...opts, now: q2 + 26 * 3600e3 });
+  t = await picksTeaser(env, { now: q2 + 26 * 3600e3 });
+  assert.equal(t.evidence[0].settlement, 'graded');
+  assert.equal(t.weekend.state, 'graded');
+  assert.ok(Object.keys(t.record).every((k) => k.endsWith('|post_qualifying')));
+  assert.equal(t.record['race_winner|post_qualifying'].n_scored, 1);
+  assert.ok(Object.values(t.record).every((r) => r.pending === 0 && r.win + r.loss + r.void > 0));
+  leak(t);
+  // the member payload carries the same status, record and evidence
+  const m = await picksPayload(env, { now: q2 + 26 * 3600e3 });
+  assert.deepEqual(m.record, t.record);
+  assert.deepEqual(m.evidence, t.evidence);
+  assert.equal(m.weekend.state, t.weekend.state);
+  // next weekend: no event left → season complete
+  t = await picksTeaser(env, { now: r2 + 7 * 86400e3 });
+  assert.equal(t.weekend.state, 'season_complete');
+  assert.equal(t.evidence.length, 1, 'the record is permanent');
+  CLOCK = null;
 });
 
 test('labels and publication: every label is RESEARCH; members see only the gate-passing post-qualifying families plus winner model probabilities', () => {

@@ -10,7 +10,7 @@ import { normalizeFrames, sessionPublicId, coverage, SESSION_TYPE } from './fram
 import { deriveIncidents, INCIDENT_TAXONOMY_VERSION } from '../../../src/core/incidents.mjs';
 import { noTransform } from './transport.js';
 import { newsroomHeartbeat, healthPayload } from './newsroom.js';
-import { picksTick, picksPayload, picksTeaser, createOnlyProof, picksStatus } from './picks.js';
+import { picksTick, picksPayload, picksTeaserCached, createOnlyProof, picksStatus } from './picks.js';
 
 export { LiveHub };
 
@@ -150,7 +150,7 @@ async function route(req, env, ctx) {
       // ---------- Race Picks: All Access (server-enforced); free gets a teaser with no values ----------
       if (p === '/picks') {
         const a = await f1Access(req, env);
-        if (!a.granted) return respondPrivate(req, { error: 'all_access_required', feature: 'race_picks', membership: a.membership, signed_in: a.signed_in === true, teaser: await picksTeaser(env) }, 403);
+        if (!a.granted) return respondPrivate(req, { error: 'all_access_required', feature: 'race_picks', membership: a.membership, signed_in: a.signed_in === true, teaser: await picksTeaserCached(env).catch(() => null) }, 403);
         return respondPrivate(req, await picksPayload(env));
       }
       // ---------- PBEcast: All Access (server-enforced; private, never cached) ----------

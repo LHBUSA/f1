@@ -1071,3 +1071,22 @@ body[data-pc-view=all_access] .pc-acct{color:var(--silver);border-color:#c9d1dd6
   .masthead .live-pill{padding:7px 9px}
   .masthead:has(.live-pill:not([hidden])) ~ .primary-nav .nav-inner{gap:14px}
 }
+/* F1 Race Picks: persistent status, record and evidence (/picks, /track-record, Race Lab) — never removed when empty */
+.rp-status{padding:2px 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px}.rp-status-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.rp-status h2{margin:4px 0 6px}
+.rp-status>p{max-width:72ch}.rp-lane{color:var(--muted);overflow-wrap:anywhere}
+.rp-sched{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}.rp-sched div{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--panel);min-width:0}.rp-sched dt{font:700 10px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.rp-sched dd{margin:3px 0 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.rp-state-locked h2{color:var(--gold)}.rp-state-held_field_incomplete h2,.rp-state-window_closed h2,.rp-state-unavailable h2{color:var(--accent2)}
+.rp-teaser{margin:0 0 14px}.rp-past{margin:14px 0;border:1px solid var(--line);border-radius:10px;padding:10px 14px}.rp-past summary{cursor:pointer;font:700 14px var(--display);letter-spacing:.06em;text-transform:uppercase}
+.rp-evidence code{font-size:12px;color:var(--ink2)}.rp-evidence td small{display:block;color:var(--muted)}.rp-evidence th a{color:var(--ink)}
+.rp-retry{background:none;border:1px solid var(--line2);border-radius:8px;padding:8px 12px;color:var(--ink);cursor:pointer;font:inherit}
+.rp-entry{margin-top:14px}.rp-method ul{max-width:80ch}.rp-method li{margin:6px 0}
+@media(max-width:520px){.rp-sched{grid-template-columns:1fr}.rp-status-head{flex-direction:column}}
+.rp-state-graded h2{color:var(--green)}
+/* desktop nav with Picks + Track Record: 12 entries fit 1024-1439px idle and live (LIVE pill + account button) */
+@media(min-width:1024px) and (max-width:1279px){
+  .nav-inner{gap:12px}
+  .primary-nav a{font-size:13px;letter-spacing:.05em}
+  .masthead:has(.live-pill:not([hidden])) ~ .primary-nav .nav-inner{gap:7px}
+}
+@media(min-width:1280px) and (max-width:1439px){.masthead:has(.live-pill:not([hidden])) ~ .primary-nav .nav-inner{gap:11px}}
+@media(min-width:1024px){.primary-nav a{white-space:nowrap}}
