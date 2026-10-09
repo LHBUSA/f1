@@ -1,0 +1,35 @@
+{
+  "stage": "tune",
+  "model_version": "f1-picks-1.0.0",
+  "folds": "tune=2014-2019",
+  "grid_size": 2304,
+  "params": {
+    "aCar": 0.25,
+    "carry": 0.85,
+    "newCar": -0.7,
+    "lD": 0.97,
+    "kD": 2,
+    "mixR": 0.7,
+    "wDq": 1,
+    "wDr": 0.6,
+    "wC": 0.5,
+    "kC": 10,
+    "lR": 0.99,
+    "kR": 10,
+    "betaQ": 1.5,
+    "betaR": 2,
+    "betaRP": 1.2,
+    "wGrid": 0.8,
+    "otherMass": 0.002
+  },
+  "baseline_beta": {
+    "uniform": 1,
+    "constructor_standing": 1.7,
+    "driver_standing": 1.4,
+    "previous_race": 0.8,
+    "grid": 1.7
+  },
+  "qualified_ahead_race_p": 0.6638,
+  "qualified_ahead_n": 821,
+  "generated_at": "2026-10-09T11:12:23.960Z"
+}
