@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PARAMS, MODEL_VERSION, newState, observeEvent, predictEvent, pairProb, postStrength, rankScore } from '../src/picks/model.mjs';
-import { canonicalFromFragment, entrantsFor, stateBefore, buildLock, gradeLock, dueVersion, putOnce, appendSettlement, settleKey, lockKey, recordSummary, sha256Hex, FAMILY_LABELS } from '../src/picks/lane.mjs';
+import { canonicalFromFragment, entrantsFor, stateBefore, buildLock, gradeLock, dueVersion, putOnce, appendSettlement, settleKey, lockKey, recordSummary, sha256Hex, FAMILY_LABELS, HOLDOUT_GATE, PUBLISHED, WINNER_NOTE } from '../src/picks/lane.mjs';
 import { picksTick, picksTeaser, picksPayload, createOnlyProof } from '../workers/f1-api/src/picks.js';
 
 // ---------- fixtures ----------
@@ -180,26 +180,46 @@ test('cron lane: locks pre-qualifying once inside the window, post-qualifying af
   const t4 = await picksTick(env, { ...opts, now: q2 + 30 * 3600e3 });
   assert.equal(t4.actions.filter((a) => a.settle).length, 2);
   const payload = await picksPayload(env, { now: q2 + 30 * 3600e3 });
-  assert.equal(payload.locks.length, 2);
-  assert.ok(payload.locks.every((l) => l.evidence.sha256 && l.grades.race));
+  // publication policy: only the post-qualifying lock, only its gate-passing families + winner model probabilities
+  assert.equal(payload.locks.length, 1);
+  const pl = payload.locks[0];
+  assert.equal(pl.version, 'post_qualifying');
+  assert.deepEqual(Object.keys(pl.families).sort(), ['driver_outlook', 'race_winner', 'teammate_race_h2h']);
+  assert.ok(pl.evidence.sha256 && pl.grades.race);
+  assert.ok(Object.values(pl.labels).every((l) => l === 'RESEARCH'));
+  assert.equal(payload.winner_note, WINNER_NOTE);
+  const ser = JSON.stringify(payload);
+  assert.ok(!ser.includes('pre_qualifying') && !ser.includes('teammate_quali_h2h'), 'pre-qualifying research never served');
+  assert.ok(!/OFFICIAL|VALIDATED|BACKTEST-PASS|\bedge\b/i.test(ser));
+  assert.ok(Object.keys(payload.record).every((k) => k.endsWith('|post_qualifying')));
   assert.ok(payload.record['race_winner|post_qualifying'].n_scored === 1);
+  // the internal pre-qualifying lock still exists and was graded (SHADOW research)
+  assert.ok(b.m.has(settleKey('2026-test-2-grand-prix', 'pre_qualifying', 'race', 1)));
 });
 
-test('free teaser never carries a probability, pick or grade', async () => {
+test('free teaser never carries a probability, pick or grade, and never mentions the internal pre-qualifying lock', async () => {
   const b = mockBucket();
   await b.put(lockKey('2026-test-2-grand-prix', 'pre_qualifying'), JSON.stringify({ families: { race_winner: { probs: { a: 0.5 } } } }));
+  const t0 = await picksTeaser({ DATA: b }, { now: Date.parse('2026-03-09T00:00Z') });
+  assert.equal(t0.latest_event, null, 'pre-qualifying alone publishes nothing');
+  assert.equal(t0.locks_this_season, 0);
+  await b.put(lockKey('2026-test-2-grand-prix', 'post_qualifying'), JSON.stringify({ families: { race_winner: { probs: { a: 0.5 } } } }));
   const t = await picksTeaser({ DATA: b }, { now: Date.parse('2026-03-09T00:00Z') });
   const s = JSON.stringify(t);
   assert.equal(t.tier, 'free');
   assert.equal(t.latest_event, '2026-test-2-grand-prix');
-  assert.ok(!/p_|prob|pick"|result|0\.5/.test(s), s);
+  assert.deepEqual(t.versions, ['post_qualifying']);
+  assert.ok(!/p_|prob|pick"|result|0\.5|teammate_quali|pre_qualifying/.test(s), s);
 });
 
-test('labels: only post-qualifying top-10/podium and teammate race H2H passed the holdout gate; everything is SHADOW', () => {
+test('labels and publication: every label is RESEARCH; members see only the gate-passing post-qualifying families plus winner model probabilities', () => {
   assert.equal(MODEL_VERSION, 'f1-picks-1.0.0');
-  assert.equal(FAMILY_LABELS.post_qualifying.driver_outlook, 'BACKTEST-PASS');
-  assert.equal(FAMILY_LABELS.post_qualifying.teammate_race_h2h, 'BACKTEST-PASS');
-  assert.equal(FAMILY_LABELS.post_qualifying.race_winner, 'RESEARCH');
-  assert.ok(Object.values(FAMILY_LABELS.pre_qualifying).every((v) => v === 'RESEARCH'));
+  for (const v of Object.values(FAMILY_LABELS)) assert.ok(Object.values(v).every((x) => x === 'RESEARCH'));
+  assert.equal(HOLDOUT_GATE.post_qualifying.driver_outlook, 'pass');
+  assert.equal(HOLDOUT_GATE.post_qualifying.teammate_race_h2h, 'pass');
+  assert.equal(HOLDOUT_GATE.post_qualifying.race_winner, 'fail');
+  assert.deepEqual(Object.keys(PUBLISHED), ['post_qualifying']);
+  for (const f of PUBLISHED.post_qualifying) assert.ok(f === 'race_winner' || HOLDOUT_GATE.post_qualifying[f] === 'pass', f);
+  assert.match(WINNER_NOTE, /No winner-prediction advantage/);
   assert.ok(!JSON.stringify(FAMILY_LABELS).includes('VALIDATED') && !JSON.stringify(FAMILY_LABELS).includes('OFFICIAL'));
 });

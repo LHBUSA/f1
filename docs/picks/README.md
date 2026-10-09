@@ -13,16 +13,19 @@
 | Race winner, pre-qualifying | 86 | 1.816 | driver standing 1.791 | RESEARCH |
 | Race winner, post-qualifying | 86 | 1.401 | grid 1.429 (CI crosses 0) | RESEARCH |
 | Top 10, pre-qualifying | 1745 | 0.509 | driver standing 0.525 (CI crosses 0) | RESEARCH |
-| Top 10, post-qualifying | 1745 | 0.459 | grid 0.483 | BACKTEST-PASS |
+| Top 10, post-qualifying | 1745 | 0.459 | grid 0.483 | gate pass |
 | Podium, pre-qualifying | 1745 | 0.272 | driver standing 0.281 (CI crosses 0) | RESEARCH |
-| Podium, post-qualifying | 1745 | 0.229 | grid 0.241 | BACKTEST-PASS |
+| Podium, post-qualifying | 1745 | 0.229 | grid 0.241 | gate pass |
 | Teammate quali H2H | 872 | 0.602 | season record 0.600 | RESEARCH |
 | Teammate race H2H, pre-qualifying | 648 (224 VOID) | 0.636 | season record 0.632 | RESEARCH |
-| Teammate race H2H, post-qualifying | 648 | 0.530 | qualified-ahead 0.590 | BACKTEST-PASS |
+| Teammate race H2H, post-qualifying | 648 | 0.530 | qualified-ahead 0.590 | gate pass |
 
 Winner top-1: model pre 43.0% / post 62.8%; favorite (standings leader) 45.3%; grid 62.8%. Outside the chalk (model
-favorite ≠ standings leader, 41 races) the model's pick won 10, the leader 12 — no evidence of a winner edge.
-BACKTEST-PASS is not "validated": prospective locks stay SHADOW; promotion is an owner decision after a prospective sample.
+favorite ≠ standings leader, 41 races) the model's pick won 10, the leader 12 — no winner-prediction advantage has been established.
+A gate pass is not "validated": every family is labelled RESEARCH and every lock is SHADOW; promotion is an owner decision after a prospective sample.
+
+## Publication policy (owner, 10-09)
+Members see ONLY post-qualifying top 10 / podium and teammate race H2H (the gate-passing families) as RESEARCH predictions, plus race-winner model probabilities beside the market benchmark with the note that no winner-prediction advantage has been established. Pre-qualifying families and teammate qualifying H2H are locked and graded internally as SHADOW research and are never served (`PUBLISHED` in `src/picks/lane.mjs`, enforced server-side in `picksPayload`).
 
 ## Operations
 - Locks: `picks/v1/locks/<event>/<pre_qualifying|post_qualifying>.json` in private R2 `f1-data`, create-only

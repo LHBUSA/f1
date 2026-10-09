@@ -15,11 +15,22 @@ export const LEDGER_PREFIX = 'picks/v1';
 export const LOCK_CONTRACT = 'f1-picks-lock/1';
 export const SETTLE_CONTRACT = 'f1-picks-settlement/1';
 export const VERSIONS = ['pre_qualifying', 'post_qualifying'];
-// Holdout gate (docs/picks/metrics-v1-holdout.json). BACKTEST-PASS is not "validated": every lock is SHADOW.
+// Every family is labelled RESEARCH (never VALIDATED/OFFICIAL); every lock is SHADOW.
 export const FAMILY_LABELS = Object.freeze({
   pre_qualifying: { teammate_quali_h2h: 'RESEARCH', race_winner: 'RESEARCH', driver_outlook: 'RESEARCH', teammate_race_h2h: 'RESEARCH' },
-  post_qualifying: { race_winner: 'RESEARCH', driver_outlook: 'BACKTEST-PASS', teammate_race_h2h: 'BACKTEST-PASS' },
+  post_qualifying: { race_winner: 'RESEARCH', driver_outlook: 'RESEARCH', teammate_race_h2h: 'RESEARCH' },
 });
+// Pre-registered holdout gate result (docs/picks/metrics-v1-holdout.json); internal, not a display label.
+export const HOLDOUT_GATE = Object.freeze({
+  pre_qualifying: { teammate_quali_h2h: 'fail', race_winner: 'fail', driver_outlook: 'fail', teammate_race_h2h: 'fail' },
+  post_qualifying: { race_winner: 'fail', driver_outlook: 'pass', teammate_race_h2h: 'pass' },
+});
+// Owner publication policy (10-09): members see ONLY post-qualifying top 10 / podium and teammate race H2H (the
+// families that passed the gate) as research predictions, plus race-winner MODEL probabilities shown beside the market
+// benchmark with no claimed advantage. Pre-qualifying families and teammate qualifying H2H are locked and graded
+// internally as SHADOW research and never served to members.
+export const PUBLISHED = Object.freeze({ post_qualifying: ['driver_outlook', 'teammate_race_h2h', 'race_winner'] });
+export const WINNER_NOTE = 'Model probabilities shown beside the market benchmark. No winner-prediction advantage over the market or the favourite has been established.';
 // Lock windows (relative to the deciding session's scheduled start). Nothing is locked inside the guard.
 export const PRE_LOCK_OPENS_MS = 6 * 3600e3;
 export const LOCK_GUARD_MS = 10 * 60e3;

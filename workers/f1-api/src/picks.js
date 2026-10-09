@@ -1,6 +1,6 @@
 // F1 Race Picks lane inside the EXISTING */10 cron (no new cron, no new Durable Object, no new bucket).
 // Bounded per tick: at most one lock and two settlement revisions. Every ledger write is create-only (src/picks/lane.mjs).
-import { canonicalFromFragment, entrantsFor, stateBefore, buildLock, marketSnapshot, dueVersion, lockKey, baseStateKey, putOnce, sha256Hex, gradeLock, appendSettlement, groupReady, groupsFor, settleKey, recordSummary, LEDGER_PREFIX, FAMILY_LABELS } from '../../../src/picks/lane.mjs';
+import { canonicalFromFragment, entrantsFor, stateBefore, buildLock, marketSnapshot, dueVersion, lockKey, baseStateKey, putOnce, sha256Hex, gradeLock, appendSettlement, groupReady, groupsFor, settleKey, recordSummary, LEDGER_PREFIX, FAMILY_LABELS, PUBLISHED, WINNER_NOTE } from '../../../src/picks/lane.mjs';
 import { MODEL_VERSION, PARAMS } from '../../../src/picks/model.mjs';
 import { doc } from './projection.js';
 
@@ -103,33 +103,41 @@ export async function createOnlyProof(env) {
   return { key, created: [a.created, b.created, c.created], stored_writer: stored.w, pass: [a, b, c].filter((x) => x.created).length === 1 };
 }
 
-/** Member payload: locks for the season with grades, record summary by family/version. */
+/** Member payload: ONLY the published families of published versions (PUBLISHED), with grades and their record. */
 export async function picksPayload(env, { now = Date.now() } = {}) {
   const year = new Date(now).getUTCFullYear();
   const listed = await env.DATA.list({ prefix: `${LEDGER_PREFIX}/locks/${year}-` });
   const entries = [];
   for (const o of listed.objects || []) {
+    const v = o.key.match(/\/(pre_qualifying|post_qualifying)\.json$/)?.[1];
+    if (!PUBLISHED[v]) continue; // never read, never served
     const lock = await readLock(env, o.key);
     if (!lock) continue;
+    const keep = PUBLISHED[v];
+    lock.families = Object.fromEntries(Object.entries(lock.families).filter(([f]) => keep.includes(f)));
+    lock.labels = Object.fromEntries(keep.map((f) => [f, 'RESEARCH']));
+    lock.contracts = Object.fromEntries(Object.entries(lock.contracts || {}).filter(([f]) => keep.includes(f)));
     const grades = {};
     for (const g of groupsFor(lock.version)) {
       let rev = 0, last = null;
       for (;;) { const s = await env.DATA.get(settleKey(lock.event.id, lock.version, g, rev + 1)); if (!s) break; last = await s.json(); rev++; }
-      if (last) grades[g] = last;
+      if (last) grades[g] = { ...last, families: Object.fromEntries(Object.entries(last.families || {}).filter(([f]) => keep.includes(f))) };
     }
     entries.push({ lock, grades });
   }
   entries.sort((a, b) => String(b.lock.event.race_start).localeCompare(String(a.lock.event.race_start)) || (a.lock.version < b.lock.version ? 1 : -1));
   const strip = ({ _sha256, _uploaded, model, ...l }) => ({ ...l, model: { id: model.id, version: model.version, sims: model.sims }, evidence: { sha256: _sha256, r2_uploaded: _uploaded } });
-  return { tier: 'all_access', status: 'SHADOW', model_version: MODEL_VERSION, labels: FAMILY_LABELS, record: recordSummary(entries), locks: entries.map((e) => ({ ...strip(e.lock), grades: e.grades })) };
+  return { tier: 'all_access', status: 'SHADOW', label: 'RESEARCH', model_version: MODEL_VERSION, published: PUBLISHED, winner_note: WINNER_NOTE, record: recordSummary(entries), locks: entries.map((e) => ({ ...strip(e.lock), grades: e.grades })) };
 }
 
 /** Free teaser: what is locked and when — never a probability, pick or grade. */
 export async function picksTeaser(env, { now = Date.now() } = {}) {
   const year = new Date(now).getUTCFullYear();
   const listed = await env.DATA.list({ prefix: `${LEDGER_PREFIX}/locks/${year}-` });
-  const keys = (listed.objects || []).map((o) => o.key.match(/locks\/([a-z0-9-]+)\/(pre_qualifying|post_qualifying)\.json$/)).filter(Boolean);
-  const latestObj = [...(listed.objects || [])].sort((a, b) => (a.uploaded < b.uploaded ? 1 : -1))[0];
+  // only published versions exist for the free surface; the pre-qualifying research lock is never mentioned
+  const pub = (listed.objects || []).filter((o) => PUBLISHED[o.key.match(/\/(pre_qualifying|post_qualifying)\.json$/)?.[1]]);
+  const keys = pub.map((o) => o.key.match(/locks\/([a-z0-9-]+)\/(pre_qualifying|post_qualifying)\.json$/)).filter(Boolean);
+  const latestObj = [...pub].sort((a, b) => (a.uploaded < b.uploaded ? 1 : -1))[0];
   const latest = latestObj ? latestObj.key.match(/locks\/([a-z0-9-]+)\//)?.[1] || null : null;
-  return { tier: 'free', latest_event: latest, versions: keys.filter((m) => m[1] === latest).map((m) => m[2]), families: ['teammate_quali_h2h', 'teammate_race_h2h', 'driver_outlook', 'race_winner'], locks_this_season: keys.length };
+  return { tier: 'free', latest_event: latest, versions: keys.filter((m) => m[1] === latest).map((m) => m[2]), families: PUBLISHED.post_qualifying, locks_this_season: keys.length };
 }
