@@ -43,11 +43,17 @@ let live = {};
 const idx = await getJson(`${BASE}/news`, 3);
 if (idx === undefined && !process.env.F1_NEWS_OFFLINE) { console.error('build-news: live news index unreadable; refusing to reset frozen publication dates (set F1_NEWS_OFFLINE=1 for a local run)'); process.exit(1); }
 for (const a of idx?.articles || []) live[a.slug] = a;
-// frozen classes are carried forward from their published record; a failed read must fail the build, never rebuild the
-// story from today's data (buildCandidates throws when a published frozen story has no stored record)
+// publication records restored after the 2026-10-10 unpublish (src/news/ledger-recovery.json): only slugs absent from the
+// live index, so their frozen published_at/modified_at come back instead of being re-stamped with this build's time
+const recovery = JSON.parse(fs.readFileSync('src/news/ledger-recovery.json', 'utf8'));
+for (const a of recovery.articles) if (!live[a.slug]) { live[a.slug] = a; console.log(`  RECOVERED ${a.slug}: published_at ${a.published_at}`); }
+// stored records of every published story: frozen classes are carried forward from them (buildCandidates throws when a
+// published frozen story has no stored record), and any published story whose new revision fails a gate keeps its last
+// published revision (newsroom.decide) instead of dropping out of the index
 const liveDocs = {};
-for (const a of Object.values(live).filter((x) => x.class === 'market_move')) {
+for (const a of Object.values(live).filter((x) => x.status === 'published')) {
   const d = await getJson(`${BASE}/news/${a.slug}`, 3);
+  if (d === undefined && !process.env.F1_NEWS_OFFLINE) { console.error(`build-news: stored record ${a.slug} unreadable; refusing to judge a published story without it`); process.exit(1); }
   if (d) liveDocs[a.slug] = d;
 }
 // stored Kalshi observations for the market lane (null on failure: the lane reports market_tape_unavailable, others run)
@@ -64,7 +70,7 @@ async function readArticleMarket(a) {
 }
 
 const { candidates, evaluations } = buildCandidates(X, classes, { now: NOW, live, liveDocs, tape });
-const { articles, report } = decide(X, classes, candidates, { now: NOW, live, evaluations });
+const { articles, report } = decide(X, classes, candidates, { now: NOW, live, liveDocs, evaluations });
 const health = newsroomHealth({ now: NOW, articles, report, live });
 
 // cards (published + shadow, so a widened class has its images ready); cached by packet hash
@@ -125,5 +131,6 @@ console.log(`news: ${articles.length} stories (${by('published')} published, ${b
 for (const [k, v] of Object.entries(report.classes)) console.log(`  ${k}: ${JSON.stringify(v)}`);
 for (const s of report.stories.filter((x) => x.status === 'held')) console.log(`  HELD ${s.slug}: ${s.reasons.join('; ')}`);
 for (const e of report.evaluations) console.log(`  EVAL ${e.class} ${e.event_id}: ${e.result}`);
+for (const al of health.alerts) console.warn(`  ALERT ${al.kind} ${al.slug || ''} ${al.reasons?.join('; ') || (al.held != null ? `${al.held}/${al.candidates} held` : '')}`);
 console.log(`  health: ${health.outcome}; ${health.candidates} candidates; last publication ${health.last_publication?.published_at || 'none'} (${health.last_publication?.slug || '-'}); next evaluation by ${health.next_expected_evaluation}`);
 for (const s of report.stories.filter((x) => x.status === 'published')) console.log(`  PUBLISHED ${s.slug}: ${s.words} words, ${s.links} links${s.warnings?.length ? ` (${s.warnings.join('; ')})` : ''}`);

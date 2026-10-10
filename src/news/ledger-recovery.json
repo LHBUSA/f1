@@ -1,0 +1,298 @@
+{
+ "_doc": "Publication records restored after the 2026-10-10 11:01Z build unpublished 11 stories (LHBUSA/f1#9). Source: news-index of projection d5e278fb84491fa5 (generated 2026-10-10T08:41:30Z, the last index before the sprint-reconciliation failure). Used only for slugs missing from the live index: frozen published_at/modified_at are restored, never re-stamped.",
+ "source_projection": "d5e278fb84491fa5",
+ "source_generated_at": "2026-10-10T08:41:30.389Z",
+ "articles": [
+  {
+   "slug": "2026-singapore-grand-prix-market-move",
+   "class": "market_move",
+   "topic": "market_move:2026-singapore-grand-prix",
+   "event_id": "2026-singapore-grand-prix",
+   "status": "published",
+   "archive": null,
+   "headline": "Kimi Antonelli's 2026 Singapore Grand Prix price rises from 15¢ to 23.5¢",
+   "dek": "The Kalshi contract on Antonelli winning the 2026 Singapore Grand Prix moved 8.5¢ between 6 October at 20:19 UTC and 8 October at 01:07 UTC.",
+   "published_at": "2026-10-08T01:13:29.234Z",
+   "modified_at": "2026-10-08T01:13:29.234Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-singapore-grand-prix-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "kimi-antonelli",
+     "george-russell"
+    ]
+   },
+   "packet_hash": "983c3cfbd8027dbe"
+  },
+  {
+   "slug": "2026-bahrain-grand-prix-in-malaysia-championship-standings",
+   "class": "championship",
+   "topic": "championship:2026-bahrain-grand-prix-in-malaysia",
+   "event_id": "2026-bahrain-grand-prix-in-malaysia",
+   "status": "published",
+   "archive": null,
+   "headline": "Title picture after the 2026 Bahrain Grand Prix in Malaysia: Kimi Antonelli leads by 84 points",
+   "dek": "Antonelli leads George Russell by 84 points in the drivers' championship with 7 rounds left. Mercedes lead the constructors by 151 points.",
+   "published_at": "2026-10-07T19:08:05.357Z",
+   "modified_at": "2026-10-07T19:08:05.357Z",
+   "market": null,
+   "packet_hash": "4f10c7adcfaebf1b"
+  },
+  {
+   "slug": "max-verstappen-wins-2026-bahrain-grand-prix-in-malaysia",
+   "class": "race_final",
+   "topic": "race_final:2026-bahrain-grand-prix-in-malaysia",
+   "event_id": "2026-bahrain-grand-prix-in-malaysia",
+   "status": "published",
+   "archive": null,
+   "headline": "Max Verstappen wins the 2026 Bahrain Grand Prix in Malaysia for Red Bull Racing",
+   "dek": "Verstappen finished ahead of Kimi Antonelli and Lewis Hamilton with a winning margin of 2.307 seconds. Kimi Antonelli still leads the championship by 84 points.",
+   "published_at": "2026-10-04T16:54:02.924Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-bahrain-grand-prix-in-malaysia-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "max-verstappen",
+     "kimi-antonelli",
+     "lewis-hamilton",
+     "george-russell"
+    ],
+    "frozen": {
+     "sha256": "9fa5dbeda8a9876cd73af904a008243faa5973806a7c946b6d0d140a7bac6e22",
+     "embedded_at": "2026-10-04T17:05:06.413Z"
+    }
+   },
+   "packet_hash": "7dadc123affd1838"
+  },
+  {
+   "slug": "2026-singapore-grand-prix-preview",
+   "class": "preview",
+   "topic": "preview:2026-singapore-grand-prix",
+   "event_id": "2026-singapore-grand-prix",
+   "status": "published",
+   "archive": null,
+   "headline": "2026 Singapore Grand Prix preview: the championship heads to Marina Bay Circuit",
+   "dek": "Kimi Antonelli leads by 84 points with 7 rounds left.",
+   "published_at": "2026-10-04T16:54:02.924Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-singapore-grand-prix-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "kimi-antonelli",
+     "george-russell",
+     "max-verstappen"
+    ]
+   },
+   "packet_hash": "55261cdac8fcb646"
+  },
+  {
+   "slug": "2026-bahrain-grand-prix-in-malaysia-qualifying-results",
+   "class": "qualifying",
+   "topic": "qualifying:2026-bahrain-grand-prix-in-malaysia",
+   "event_id": "2026-bahrain-grand-prix-in-malaysia",
+   "status": "published",
+   "archive": null,
+   "headline": "Max Verstappen takes pole for the 2026 Bahrain Grand Prix in Malaysia",
+   "dek": "Verstappen set 1:35.130, 0.298 seconds clear of Lewis Hamilton. Championship leader Kimi Antonelli qualified P4.",
+   "published_at": "2026-10-03T09:32:30.784Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-bahrain-grand-prix-in-malaysia-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "max-verstappen",
+     "lewis-hamilton",
+     "isack-hadjar",
+     "kimi-antonelli",
+     "george-russell"
+    ]
+   },
+   "packet_hash": "8136f10e690ff8f1"
+  },
+  {
+   "slug": "kimi-antonelli-wins-2026-spanish-grand-prix",
+   "class": "race_final",
+   "topic": "race_final:2026-spanish-grand-prix",
+   "event_id": "2026-spanish-grand-prix",
+   "status": "published",
+   "archive": "backfill",
+   "headline": "Kimi Antonelli wins the 2026 Spanish Grand Prix for Mercedes",
+   "dek": "Antonelli finished ahead of Max Verstappen and Lando Norris with a winning margin of 4.351 seconds. Antonelli leads the championship by 81 points.",
+   "published_at": "2026-10-02T15:08:36.785Z",
+   "modified_at": "2026-10-03T01:58:17.126Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-spanish-grand-prix-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "kimi-antonelli",
+     "max-verstappen",
+     "lando-norris",
+     "george-russell"
+    ]
+   },
+   "packet_hash": "42301c6d5e81a767"
+  },
+  {
+   "slug": "kimi-antonelli-wins-2026-italian-grand-prix",
+   "class": "race_final",
+   "topic": "race_final:2026-italian-grand-prix",
+   "event_id": "2026-italian-grand-prix",
+   "status": "published",
+   "archive": "backfill",
+   "headline": "Kimi Antonelli wins the 2026 Italian Grand Prix from P19",
+   "dek": "Antonelli finished ahead of George Russell and Max Verstappen with a winning margin of 3.857 seconds. Antonelli leads the championship by 66 points.",
+   "published_at": "2026-10-02T15:08:36.785Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-italian-grand-prix-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "kimi-antonelli",
+     "george-russell",
+     "max-verstappen",
+     "pierre-gasly"
+    ]
+   },
+   "packet_hash": "44d166e3ecf3f3fe"
+  },
+  {
+   "slug": "george-russell-wins-2026-azerbaijan-grand-prix",
+   "class": "race_final",
+   "topic": "race_final:2026-azerbaijan-grand-prix",
+   "event_id": "2026-azerbaijan-grand-prix",
+   "status": "published",
+   "archive": "backfill",
+   "headline": "George Russell wins the 2026 Azerbaijan Grand Prix by 0.196 seconds",
+   "dek": "Russell finished ahead of Max Verstappen and Isack Hadjar with a winning margin of 0.196 seconds. Kimi Antonelli still leads the championship by 66 points.",
+   "published_at": "2026-10-02T15:08:36.785Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-azerbaijan-grand-prix-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "george-russell",
+     "max-verstappen",
+     "isack-hadjar",
+     "charles-leclerc",
+     "kimi-antonelli"
+    ]
+   },
+   "packet_hash": "65e3da388fdd5f78"
+  },
+  {
+   "slug": "2026-spanish-grand-prix-qualifying-results",
+   "class": "qualifying",
+   "topic": "qualifying:2026-spanish-grand-prix",
+   "event_id": "2026-spanish-grand-prix",
+   "status": "published",
+   "archive": "backfill",
+   "headline": "Lando Norris takes pole for the 2026 Spanish Grand Prix",
+   "dek": "Norris set 1:31.824, 0.011 seconds clear of Kimi Antonelli. Championship leader Kimi Antonelli qualified P2.",
+   "published_at": "2026-10-02T15:08:36.785Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-spanish-grand-prix-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "lando-norris",
+     "kimi-antonelli",
+     "max-verstappen",
+     "george-russell"
+    ]
+   },
+   "packet_hash": "4e0e9e467ef9ca53"
+  },
+  {
+   "slug": "2026-italian-grand-prix-qualifying-results",
+   "class": "qualifying",
+   "topic": "qualifying:2026-italian-grand-prix",
+   "event_id": "2026-italian-grand-prix",
+   "status": "published",
+   "archive": "backfill",
+   "headline": "Pierre Gasly takes pole for the 2026 Italian Grand Prix",
+   "dek": "Gasly set 1:21.786, 0.060 seconds clear of George Russell. Championship leader Kimi Antonelli qualified P7.",
+   "published_at": "2026-10-02T15:08:36.785Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-italian-grand-prix-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "pierre-gasly",
+     "george-russell",
+     "oscar-piastri",
+     "kimi-antonelli"
+    ]
+   },
+   "packet_hash": "c613527c93b58868"
+  },
+  {
+   "slug": "2026-bahrain-grand-prix-in-malaysia-preview",
+   "class": "preview",
+   "topic": "preview:2026-bahrain-grand-prix-in-malaysia",
+   "event_id": "2026-bahrain-grand-prix-in-malaysia",
+   "status": "published",
+   "archive": "expired_preview",
+   "headline": "Bahrain Grand Prix preview: the championship heads to Sepang International Circuit",
+   "dek": "Kimi Antonelli leads by 66 points with 8 rounds left. The championship returns to Sepang International Circuit after 9 years, on one of the straightest layouts of the season and with a race record that favours the front row.",
+   "published_at": "2026-10-02T15:08:36.785Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-bahrain-grand-prix-in-malaysia-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "kimi-antonelli",
+     "george-russell",
+     "lewis-hamilton"
+    ]
+   },
+   "packet_hash": "e3f382d72dc9ecf4"
+  },
+  {
+   "slug": "2026-azerbaijan-grand-prix-qualifying-results",
+   "class": "qualifying",
+   "topic": "qualifying:2026-azerbaijan-grand-prix",
+   "event_id": "2026-azerbaijan-grand-prix",
+   "status": "published",
+   "archive": "backfill",
+   "headline": "George Russell takes 2026 Azerbaijan Grand Prix pole as championship leader Antonelli goes out in Q1",
+   "dek": "Russell set 1:42.526, 0.837 seconds clear of Charles Leclerc. Antonelli qualified P16.",
+   "published_at": "2026-10-02T15:08:36.785Z",
+   "modified_at": "2026-10-04T16:54:02.924Z",
+   "market": {
+    "contract": "article-market/1",
+    "sport": "f1",
+    "canonical_event_id": "2026-azerbaijan-grand-prix-race",
+    "proposition": "driver_wins_race",
+    "focus": [
+     "george-russell",
+     "charles-leclerc",
+     "oscar-piastri",
+     "kimi-antonelli"
+    ]
+   },
+   "packet_hash": "3db5b97258b51712"
+  }
+ ]
+}

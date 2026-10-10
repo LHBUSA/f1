@@ -8,10 +8,12 @@ const css = fs.readFileSync(new URL('../src/web/styles.css', import.meta.url), '
 
 test('off-session PBEcast is a race-weekend command center, not a dead canvas', () => {
   assert.match(page, /Race weekend command center/);
-  assert.match(page, /No session live right now/);
+  // the headline is state-derived on the client (#10): never a hard-coded 'No session live' beside live frames
+  assert.match(page, /data-pc-weekend-title>Checking live timing/);
+  assert.match(client, /'No session live right now'/);
   assert.match(page, /Race intelligence/);
   assert.match(page, /Circuit profile/);
-  assert.match(page, /PBEcast timing will still activate when the live session begins/);
+  assert.match(page, /Live timing still runs in the timing tower/);
   assert.doesNotMatch(page, /The track map for this circuit is not mapped yet/);
 });
 
