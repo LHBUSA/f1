@@ -84,7 +84,9 @@
   }
   async function pillLoop() {
     const s = await live();
-    if (pill && s?.state === 'live') {
+    // upstream keeps state=live after the chequered flag until the classification is final (same rule as PBEcast)
+    const ended = !!s?.session && (s.session.flag === 'CHECKER' || /end of session|final|complete/i.test(s.session.status || ''));
+    if (pill && s?.state === 'live' && !ended) {
       pill.hidden = false;
       $('[data-live-text]', pill).textContent = `LIVE · ${s.session?.label || ''}`;
     } else if (pill) pill.hidden = true;

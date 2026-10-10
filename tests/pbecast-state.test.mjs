@@ -40,3 +40,9 @@ test('a chequered / End of Session upstream is never shown as LIVE (state stays 
   assert.equal(sessionEnded({ flag: 'RED', status: 'Suspended' }), false);
   assert.equal(sessionEnded(null), false);
 });
+
+test('header LIVE pill uses the same ended-session rule as PBEcast', () => {
+  const app = fs.readFileSync('src/web/app.js', 'utf8');
+  assert.match(app, /s\?\.state === 'live' && !ended/);
+  assert.match(app, /flag === 'CHECKER' \|\| \/end of session\|final\|complete\/i/);
+});
