@@ -29,6 +29,7 @@ const T = (iso) => Date.parse(iso); // source ISO strings differ in precision ('
 export const HEALTH_CONTRACT = 'f1-newsroom-health/1';
 // the f1-api Worker rebuilds the site (and so re-runs this evaluation) at least this often, plus after every session
 export const EVALUATION_INTERVAL_HOURS = 6;
+export const HELD_RATIO_ALERT = { ratio: 0.5, min_candidates: 6 };
 
 export const SLUG = {
   race_final: (P) => `${P.entities.find((x) => x.key === 'p1').ref}-wins-${P.event_id}`,
@@ -105,11 +106,22 @@ export function buildCandidates(X, classes, { now, live = {}, liveDocs = {}, tap
 /**
  * Gates + status for every candidate. Statuses: published | shadow (canary overflow) | held (failed a gate) | stale
  * (a time-boxed story whose window closed before its first publication: never first-published late).
+ *
+ * A story already in the live index is never unpublished by a later build. When its new revision fails a gate (or it is
+ * no longer a candidate at all), the last published revision is carried forward unchanged from its stored record
+ * (liveDocs) and the failure is reported as a revision_held alert; only a story with no readable stored record drops
+ * out, and that is reported as an unpublished alert (2026-10-10: one mid-weekend reconciliation failure removed 11).
  */
-export function decide(X, classes, candidates, { now, live = {}, evaluations = [] }) {
+export function decide(X, classes, candidates, { now, live = {}, liveDocs = {}, evaluations = [] }) {
   const ledger = Object.fromEntries(Object.values(live).map((a) => [a.slug, { topic: a.topic, headline: a.headline }]));
   const articles = [];
-  const report = { gate: QUALITY_VERSION, generated_at: now, classes: {}, stories: [], evaluations };
+  const report = { gate: QUALITY_VERSION, generated_at: now, classes: {}, stories: [], evaluations, alerts: [] };
+  const carry = (slug, cls, reasons) => {
+    const prev = live[slug], doc = liveDocs[slug];
+    if (!doc?.packet?.hash || !doc?.draft || !doc.headline) { report.alerts.push({ kind: 'unpublished', slug, class: cls, reasons }); return null; }
+    report.alerts.push({ kind: 'revision_held', slug, class: cls, reasons });
+    return { slug, class: cls, topic: prev.topic ?? doc.packet.topic, event_id: prev.event_id ?? doc.packet.event_id, status: 'published', published_at: prev.published_at, modified_at: prev.modified_at || prev.published_at, archive: archiveKind(cls, doc.packet.context?.temporal || {}, now), market: prev.market || doc.market || null, headline: doc.headline, dek: doc.dek, packet_hash: doc.packet.hash, packet: doc.packet, draft: doc.draft, validation: doc.validation || null, editorial: null, composer: doc.draft.composer || null, revision_held: reasons };
+  };
   for (const cls of Object.keys(classes).filter((k) => !k.startsWith('_'))) {
     const list = candidates.filter((c) => c.cls === cls).sort((a, b) => b.sortKey.localeCompare(a.sortKey));
     const cfg = classes[cls];
@@ -131,10 +143,19 @@ export function decide(X, classes, candidates, { now, live = {}, evaluations = [
       const market = prev?.market || (cls === 'championship' ? null : marketLink(X, c.P.event_id, c.P));
       const headline = render(c.draft.headline, c.P);
       ledger[c.draft.slug] = { topic: c.P.topic, headline };
+      if (status === 'held' && prev?.status === 'published') {
+        const kept = carry(c.draft.slug, cls, [...v.reasons, ...ed.reasons]);
+        if (kept) { articles.push(kept); report.stories.push({ slug: kept.slug, class: cls, status: 'published', words: v.words, facts_used: v.facts_used.length, reasons: [], revision_held: kept.revision_held, warnings: [], links: ed.links }); return; }
+      }
       const a = { slug: c.draft.slug, class: cls, topic: c.P.topic, event_id: c.P.event_id, status, published_at, modified_at, archive, market, headline, dek: render(c.draft.dek, c.P), packet_hash: c.P.hash, packet: c.P, draft: c.draft, validation: { ok: v.ok, reasons: v.reasons, facts_used: v.facts_used, words: v.words, gate: QUALITY_VERSION }, editorial: { ok: ed.ok, reasons: ed.reasons, warnings: ed.warnings, words: ed.words, links: ed.links, version: EDITORIAL_VERSION }, composer: c.draft.composer || null };
       articles.push(a);
       report.stories.push({ slug: a.slug, class: cls, status, words: v.words, facts_used: v.facts_used.length, reasons: [...v.reasons, ...ed.reasons], warnings: ed.warnings, links: ed.links });
     });
+    // published stories that are no longer candidates (a packet that no longer builds) keep their last revision too
+    for (const prev of Object.values(live).filter((x) => x.class === cls && x.status === 'published' && !articles.some((a) => a.slug === x.slug))) {
+      const kept = carry(prev.slug, cls, ['no_longer_a_candidate']);
+      if (kept) { articles.push(kept); report.stories.push({ slug: kept.slug, class: cls, status: 'published', words: null, facts_used: null, reasons: [], revision_held: kept.revision_held, warnings: [], links: null }); }
+    }
     const n = (s) => articles.filter((a) => a.class === cls && a.status === s).length;
     report.classes[cls] = { mode: cfg.mode, candidates: list.length, published: n('published'), held: n('held'), shadow: n('shadow'), stale: n('stale') };
   }
@@ -147,6 +168,11 @@ export function newsroomHealth({ now, articles, report, live = {} }) {
   const fresh = pub.filter((a) => !live[a.slug]);
   const last = pub.slice().sort((a, b) => b.published_at.localeCompare(a.published_at) || b.slug.localeCompare(a.slug))[0] || null;
   const total = Object.values(report.classes).reduce((s, c) => s + c.candidates, 0);
+  // gate failures this run: held candidates plus published stories whose new revision was held back
+  const held = Object.values(report.classes).reduce((s, c) => s + c.held, 0) + (report.alerts || []).length;
+  const alerts = [...(report.alerts || [])];
+  // a legitimately quiet cycle is healthy; most candidates failing a gate is not
+  if (total >= HELD_RATIO_ALERT.min_candidates && held / total > HELD_RATIO_ALERT.ratio) alerts.push({ kind: 'high_held_ratio', held, candidates: total });
   return {
     contract: HEALTH_CONTRACT,
     run_at: now,
@@ -159,6 +185,8 @@ export function newsroomHealth({ now, articles, report, live = {} }) {
     last_publication: last ? { slug: last.slug, class: last.class, published_at: last.published_at } : null,
     classes: report.classes,
     held: report.stories.filter((s) => s.status === 'held').map((s) => ({ slug: s.slug, class: s.class, reasons: s.reasons })),
+    held_ratio: total ? Math.round((held / total) * 1000) / 1000 : 0,
+    alerts,
     evaluations: report.evaluations,
   };
 }

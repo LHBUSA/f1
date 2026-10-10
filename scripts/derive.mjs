@@ -896,17 +896,28 @@ for (const season of [...new Set(completedEvents.map((e) => e.season))]) {
     }
     rounds.push({ event_id: e.id, round: e.round, drivers: Object.fromEntries(rankWithCountback(dPts, dFin)), constructors: Object.fromEntries(rankWithCountback(cPts, cFin)) });
   }
+  // Mid-weekend the official table already carries points from completed sessions of an unfinished event (a sprint
+  // before its Grand Prix); the rounds above stop at the last completed event. Reconcile against the rounds plus those
+  // session points so a sprint Saturday is not read as a source error. The rounds themselves are unchanged.
+  const pending = events.filter((e) => e.season === season && e.status !== 'completed' && e.status !== 'canceled')
+    .flatMap((e) => (sessionsByEvent[e.id] || []).filter((s) => s.type !== 'race' && s.state === 'completed' && (resultsBySession[s.id] || []).some((r) => r.points)).map((s) => ({ event_id: e.id, session: s.type, rows: resultsBySession[s.id] })));
+  const cmpD = { ...dPts }, cmpC = { ...cPts };
+  for (const p of pending) for (const r of p.rows) {
+    cmpD[r.driver_id] = (cmpD[r.driver_id] || 0) + (r.points || 0);
+    if (r.constructor_id) cmpC[r.constructor_id] = (cmpC[r.constructor_id] || 0) + (r.points || 0);
+  }
+  const cmp = pending.length ? { drivers: Object.fromEntries(rankWithCountback(cmpD, dFin)), constructors: Object.fromEntries(rankWithCountback(cmpC, cFin)) } : rounds.at(-1);
   const official = officialBy[`${season}|driver`] || [];
-  const last = rounds.at(-1);
-  const mismatches = official.filter((o) => o.subject_id && last?.drivers[o.subject_id] && Math.abs(last.drivers[o.subject_id].p - o.points) > 0.01).length;
-  // position reconciliation (both tables): rows whose computed last-round position differs from the official one
-  const posMismatch = ['driver', 'constructor'].flatMap((k) => (officialBy[`${season}|${k}`] || []).filter((o) => o.subject_id && last?.[k === 'driver' ? 'drivers' : 'constructors'][o.subject_id] && last[k === 'driver' ? 'drivers' : 'constructors'][o.subject_id].pos !== o.position).map((o) => `${k}:${o.subject_id}`));
+  const mismatches = official.filter((o) => o.subject_id && cmp?.drivers[o.subject_id] && Math.abs(cmp.drivers[o.subject_id].p - o.points) > 0.01).length;
+  // position reconciliation (both tables): rows whose computed position differs from the official one
+  const posMismatch = ['driver', 'constructor'].flatMap((k) => (officialBy[`${season}|${k}`] || []).filter((o) => o.subject_id && cmp?.[k === 'driver' ? 'drivers' : 'constructors'][o.subject_id] && cmp[k === 'driver' ? 'drivers' : 'constructors'][o.subject_id].pos !== o.position).map((o) => `${k}:${o.subject_id}`));
   progression[season] = {
     season,
     rounds,
     matches_official: official.length ? mismatches === 0 : null,
     official_mismatches: mismatches,
     position_mismatches: posMismatch,
+    official_includes_pending: pending.map((p) => ({ event_id: p.event_id, session: p.session })),
     note: mismatches ? 'Race-by-race sums differ from the official table (dropped scores or source corrections); official standings are authoritative.' : null,
   };
 }

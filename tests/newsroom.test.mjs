@@ -186,3 +186,47 @@ test('health: a triggered rebuild that never produced a run is build_failing, re
   assert.equal(newsroomState({ now: '2026-10-04T17:41:00.000Z', health: run0, ledger: retried }).action, 'newsroom_evaluation');
   assert.equal(NEWSROOM.EVAL_MS, 6 * 3600e3);
 });
+
+// ---------- 2026-10-10 publication starvation (LHBUSA/f1#9) ----------
+test('standings progression reconciles on a sprint Saturday: completed sprint points of the unfinished weekend count toward the official table', { skip }, async () => {
+  const X = await load();
+  const st = X.standingsBy[2026];
+  assert.equal(st.progression_note ?? null, null, 'a mid-weekend sprint is not a source error');
+  assert.ok(st.progression?.length, 'progression published');
+});
+
+test('a published story is never unpublished: a failing revision keeps the last published record; a missing record is an alert', { skip }, async () => {
+  const X = await load();
+  const now = '2026-10-07T19:00:00.000Z';
+  const first = run(X, C('championship'), { now, live: {} });
+  const a = first.articles.find((x) => x.slug === `${MAL}-championship-standings`);
+  assert.equal(a.status, 'published');
+  const live = asLive(first.articles);
+  const liveDocs = { [a.slug]: { slug: a.slug, headline: a.headline, dek: a.dek, packet: a.packet, draft: a.draft, validation: a.validation, market: a.market } };
+  // the next build's revision fails a gate (no headline)
+  const later = '2026-10-08T00:00:00.000Z';
+  const { candidates, evaluations } = buildCandidates(X, C('championship'), { now: later, live });
+  const broken = candidates.map((c) => ({ ...c, draft: { ...c.draft, headline: '' } }));
+  const kept = decide(X, C('championship'), broken, { now: later, live, liveDocs, evaluations });
+  const k = kept.articles.find((x) => x.slug === a.slug);
+  assert.equal(k.status, 'published');
+  assert.equal(k.headline, a.headline, 'last published revision carried forward');
+  assert.equal(k.published_at, a.published_at);
+  assert.equal(k.packet_hash, a.packet_hash);
+  assert.deepEqual(kept.report.alerts.map((x) => x.kind), ['revision_held']);
+  assert.ok(newsroomHealth({ now: later, articles: kept.articles, report: kept.report, live }).alerts.some((x) => x.kind === 'revision_held'));
+  // no longer a candidate at all: still carried forward
+  const gone = decide(X, C('championship'), [], { now: later, live, liveDocs, evaluations: [] });
+  assert.equal(gone.articles.find((x) => x.slug === a.slug)?.status, 'published');
+  // without its stored record it drops out, loudly
+  const lost = decide(X, C('championship'), broken, { now: later, live, liveDocs: {}, evaluations });
+  assert.equal(lost.articles.find((x) => x.slug === a.slug)?.status, 'held');
+  assert.deepEqual(lost.report.alerts.map((x) => x.kind), ['unpublished']);
+});
+
+test('health: most candidates held is an alert; a quiet cycle is not', () => {
+  const report = (held, candidates) => ({ classes: { race_final: { mode: 'canary', candidates, published: 0, held, shadow: candidates - held, stale: 0 } }, stories: [], evaluations: [], alerts: [] });
+  assert.deepEqual(newsroomHealth({ now: '2026-10-10T11:00:00.000Z', articles: [], report: report(34, 35) }).alerts.map((x) => x.kind), ['high_held_ratio']);
+  assert.deepEqual(newsroomHealth({ now: '2026-10-10T11:00:00.000Z', articles: [], report: report(0, 0) }).alerts, []);
+  assert.deepEqual(newsroomHealth({ now: '2026-10-10T11:00:00.000Z', articles: [], report: report(3, 36) }).alerts, []);
+});
