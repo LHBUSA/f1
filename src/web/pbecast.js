@@ -341,6 +341,7 @@ function renderContext(T) {
   let state = 'idle', head = '', rest = '';
   if (S.mode === 'replay' && S.model) { state = 'replay'; head = 'Replay'; rest = [sessionLabel(), 'Recorded timing', lap ? `Lap ${lap}` : ''].filter(Boolean).join(' · '); }
   else if (S.mode === 'live') { state = 'live'; head = 'Live'; rest = [sessionLabel(), 'Timing as recorded', lap ? `Lap ${lap}` : ''].filter(Boolean).join(' · '); }
+  else if (S.ended && !S.model) rest = D.fallback ? `${S.ended} ended · awaiting the official classification · latest published: ${D.fallback.label}` : `${S.ended} ended · awaiting the official classification`;
   else if (S.ended && S.model) rest = `${S.ended} ended · final recorded timing (classification follows once published)`;
   else { const why = S.live === 'unavailable' ? 'Live status unavailable · retrying' : S.live === 'unknown' ? 'Checking live timing' : 'No session live'; rest = D.fallback ? `${why} · latest published classification: ${D.fallback.label}` : why; }
   const key = `${state}|${head}|${rest}`;
@@ -586,12 +587,16 @@ async function membership() {
   document.querySelectorAll('[data-pc-premium]').forEach((n) => { n.hidden = !S.entitled; });
   const st = $('[data-pc-account]'); if (st) st.textContent = (ACCOUNT_LABEL[view] || ACCOUNT_LABEL.checking)[0];
 }
+const sessionEnded = (s) => !!s && (s.flag === 'CHECKER' || /end of session|final|complete/i.test(s.status || ''));
 async function loadLive() {
   try {
     const live = await getJSON(`${PUB}/live`);
     if (live.status !== 200 || !live.body) { S.live = 'unavailable'; applyState(); return false; }
     const sameEvent = live.body?.event?.id === D.event.id;
     if (live.body?.state !== 'live' || !sameEvent) { S.live = 'none'; applyState(); return false; }
+    // the upstream keeps state=live after the chequered flag until the classification is final; an ended session is
+    // never shown as LIVE over an empty tower
+    if (sessionEnded(live.body.session)) { S.live = 'none'; S.sessionType = live.body.session?.type || S.sessionType; S.ended = sessionLabel() || 'Session'; applyState(); return false; }
     S.live = 'live'; S.ended = null; S.playing = false; disp.clear(); labelPrev.clear();
     S.mode = 'live'; S.session = live.body.session?.id; S.sessionType = live.body.session?.type || null;
     let frames;
@@ -617,7 +622,12 @@ async function poll() {
         else for (const f of r.body.frames || []) if (!S.frames.length || f.t > S.frames.at(-1).t) S.frames.push(f);
         S.model = buildModel(S.frames); S.lastOk = Date.now(); S.failures = 0;
         applyState();
-        if (++S.polls % 3 === 0) await loadEvents();
+        if (++S.polls % 3 === 0) {
+          await loadEvents();
+          // chequered flag: hand over to the recorded index instead of waiting on an emptying live window
+          const lv = await getJSON(`${PUB}/live`).catch(() => null);
+          if (lv?.status === 200 && sessionEnded(lv.body?.session)) { S.ended = sessionLabel() || 'Session'; S.mode = 'idle'; S.live = 'none'; applyState(); return loadRecorded(); }
+        }
       } else if (r.status === 200 && r.body?.state && r.body.state !== 'live') { S.ended = sessionLabel() || 'Session'; S.mode = 'idle'; S.live = 'none'; applyState(); return loadRecorded(); }
       else S.failures++;
     } catch { S.failures++; }
