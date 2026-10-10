@@ -1097,45 +1097,5 @@ body[data-pc-view=all_access] .pc-acct{color:var(--silver);border-color:#c9d1dd6
 .lang-switch a{color:var(--ink2)}.lang-switch a:hover{color:#fff;border-color:var(--ctl-line)}
 .lang-switch [aria-current]{color:var(--ink);background:var(--panel3);font-weight:700}
 .lang-sep{opacity:.5}
-/* ---- Japanese (ja) acquisition pages (scripts/site/ja.mjs): warm editorial palette, no navy/black slabs ---- */
-html:lang(ja){--bg:#14110d;--bg2:#1d1914;--panel:#1d1914;--panel2:#2a241c;--panel3:#332b21;--line:rgba(255,245,220,.12);--line2:rgba(255,245,220,.2);--ink:#f5f1eb;--ink2:#e8e1d4;--muted:#b8b3a8;--faint:#a39d92;--ctl-line:#8a7f6c;--cyan:#e7c766;--gold:#d4af37}
-html:lang(ja) body::before{background:radial-gradient(1200px 500px at 80% -10%,#d4af3717,transparent 60%),radial-gradient(900px 600px at -10% 10%,#ff4d2e0f,transparent 60%)}
-html:lang(ja) .site-header{background:#14110deb}
-html:lang(ja) .table-wrap{background:rgba(29,25,20,.92)}
-html:lang(ja) .card{background:linear-gradient(180deg,rgba(42,36,28,.88),rgba(29,25,20,.92))}
-html:lang(ja) :focus-visible{outline-color:var(--gold)}
-html:lang(ja) h1,html:lang(ja) h2,html:lang(ja) h3,html:lang(ja) h4{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Yu Gothic",Meiryo,system-ui,sans-serif;font-weight:800;line-height:1.25}
-html:lang(ja) .gp-main h2{font-size:clamp(28px,5vw,48px);line-height:1.15}
-.jp-header .lang-switch{margin-left:auto}
-.jp-header .menu-btn{margin-left:10px}
-@media(max-width:479.98px){.jp-header .brand-pbe{display:none}.jp-header .lang-switch a,.jp-header .lang-switch [aria-current]{padding:6px 8px}}
-@media(min-width:1024px){.jp-header .masthead{flex:1 1 auto}.jp-header .primary-nav{flex:0 0 auto}.jp-header .lang-switch{margin-right:8px}}
-.jp-hero{padding:28px 0 6px}.jp-hero h1{font-size:clamp(30px,7vw,60px)}
-.jp-hero .sub{max-width:820px;font-size:16px}
-.jp-hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:18px}
-.jp-latin{display:block;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--muted)}
-td .jp-latin{display:inline;margin-left:4px}
-.jp-grid .card h3{margin:6px 0 12px;font-size:20px}
-.jp-driver-head{display:flex;align-items:center;gap:12px;margin:8px 0 12px}.jp-driver-head h3{margin:0}
-.jp-driver{border-top:3px solid var(--tc)}
-.jp-stats,.jp-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:0 0 10px}
-.jp-stats div,.jp-facts div{min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:rgba(255,245,220,.03)}
-.jp-stats dt,.jp-facts dt{font-size:12px;color:var(--muted)}
-.jp-stats dd,.jp-facts dd{margin:2px 0 0;font-size:18px;font-weight:700;color:var(--ink)}
-.jp-stats dd small{display:block;font-size:12px;font-weight:500;color:var(--muted)}
-.jp-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
-.jp-list li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding-left:14px;position:relative}
-.jp-list li::before{content:"";position:absolute;left:0;top:.72em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
-.jp-feature h3{font-size:19px;margin-bottom:8px}.jp-feature p{color:var(--ink2);font-size:14px}
-.jp-note p{color:var(--ink2);font-size:14px;margin-top:8px}
-.jp-aa{border-color:#d4af3755;background:linear-gradient(135deg,rgba(212,175,55,.10),rgba(29,25,20,.92) 60%)}
-.jp-aa h2{font-size:clamp(24px,4vw,36px);margin:6px 0 12px}
-.jp-aa h3{font-size:16px;margin-bottom:10px}
-.jp-price{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:16px}
-.jp-price b{font-size:30px;color:var(--gold)}.jp-price span{color:var(--ink2)}
-.jp-aa-grid{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
-@media(min-width:768px){.jp-aa-grid{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}}
-.jp-cta{margin:18px 0 10px}.jp-cta-sm{margin:14px 0 0}
-.jp-cta-btn{white-space:normal;text-align:center;padding:12px 18px}
-.jp-aa-sm p{color:var(--ink2)}
-.jp-legal a{white-space:nowrap}
+/* the "日本語" label of the switch on English pages (Japanese page styles ship separately in src/web/ja.css) */
+.lang-switch [lang="ja"]{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Yu Gothic",Meiryo,system-ui,sans-serif;letter-spacing:normal;text-transform:none}

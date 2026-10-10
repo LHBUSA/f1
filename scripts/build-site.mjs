@@ -19,7 +19,8 @@ import { loadExplorer, explorerFor } from '../src/identity/explorer.mjs';
 import { powertrainFor } from '../src/identity/powertrain.mjs';
 import { loadOwnership, ownershipForTeam, personProfileV2 } from '../src/identity/people-v2.mjs';
 import { driverProfileHtml } from './site/people.mjs';
-import { jaHome, jaStandings, jaLayout, alternatesFor, langSwitch } from './site/ja.mjs';
+import { jaLayout, alternatesFor, langSwitch, jaRouteSet, setJaRoutes, JA_ADAPTER_VERSION } from './site/ja.mjs';
+import { jaPages as buildJaPages } from './site/ja-pages.mjs';
 
 const DIST = path.resolve(process.env.F1_DIST || 'dist'); // F1_DIST: build elsewhere (QA beside a served dist)
 const t0 = Date.now();
@@ -84,12 +85,15 @@ let css = fs.readFileSync('src/web/styles.css', 'utf8');
 css += '\n' + fs.readFileSync('src/vendor/kalshi/kalshi-market-ui.css', 'utf8');
 // shared Article Market module styles (article-market/1), vendored unchanged (propbetedge-workers abaf809)
 css += '\n' + fs.readFileSync('src/vendor/kalshi/article-market-ui.css', 'utf8');
-// shared locale typography (pbe-locale/1.0.0, vendored unchanged): :lang(ja) rules only, English pages untouched
-css += '\n' + fs.readFileSync('src/vendor/pbe-locale/pbe-locale.css', 'utf8');
 css += '\n' + [...colors].map((c) => `.tc-${c.replace(/[^0-9a-f]/g, '')}{--tc:#${c}}`).join('');
 css += '\n' + Array.from({ length: 101 }, (_, i) => `.w-${i}{width:${i}%}`).join('');
 const cssHash = crypto.createHash('sha256').update(css).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/app.${cssHash}.css`), css);
+// Japanese pages only: src/web/ja.css + the shared locale typography (pbe-locale/1.0.0, vendored unchanged), one
+// content-hashed stylesheet that only the Japanese layout links (English pages never download it).
+const jaCss = fs.readFileSync('src/web/ja.css', 'utf8') + '\n' + fs.readFileSync('src/vendor/pbe-locale/pbe-locale.css', 'utf8');
+const jaCssHash = crypto.createHash('sha256').update(jaCss).digest('hex').slice(0, 10);
+fs.writeFileSync(path.join(DIST, `assets/ja.${jaCssHash}.css`), jaCss);
 const js = fs.readFileSync('src/web/app.js', 'utf8');
 const jsHash = crypto.createHash('sha256').update(js).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/app.${jsHash}.js`), js);
@@ -169,12 +173,18 @@ const kxoJs = kxoSrc.replace("from './kalshi-partner.js'", `from '${kxoClient}'`
 if (kxoJs === kxoSrc) throw new Error('build-site: kalshi-partner-footer import path not rewritten');
 const kxoHash = crypto.createHash('sha256').update(kxoJs).digest('hex').slice(0, 10);
 fs.writeFileSync(path.join(DIST, `assets/kalshi-partner-footer.${kxoHash}.js`), kxoJs);
-const assets = { partner: `/assets/kalshi-partner-footer.${kxoHash}.js`, account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, raceLab: `/assets/race-lab.${raceLabHash}.js`, racePicks: `/assets/race-picks.${racePicksHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
+const assets = { partner: `/assets/kalshi-partner-footer.${kxoHash}.js`, account: `/assets/account.${acHash}.js`, articleMarket: `/assets/article-market.${amHash}.js`, css: `/assets/app.${cssHash}.css`, jaCss: `/assets/ja.${jaCssHash}.css`, js: `/assets/app.${jsHash}.js`, pbecast: `/assets/pbecast.${pcHash}.js`, explorer: `/assets/explorer.${xpHash}.js`, rail: `/assets/rail.${rlHash}.js`, raceLab: `/assets/race-lab.${raceLabHash}.js`, racePicks: `/assets/race-picks.${racePicksHash}.js`, nav: `/assets/nav.${nvHash}.js`, kalshi: `/assets/kalshi.${kxHash}.js` };
 
 // ---------- page writer ----------
-// Japanese (ja-JP) pages: only complete pages exist (pbe-locale ready: ['ja']); enPath -> ja path for hreflang.
-const jaPages = [jaHome(ctx), jaStandings(ctx)].filter(Boolean);
-const jaFor = new Map(jaPages.map((p) => [p.enPath, p.path]));
+// Japanese (ja-JP) pages: only complete pages exist (pbe-locale ready: ['ja']; route matrix docs/global/f1-ja-route-matrix.md).
+// The route set is decided first so every Japanese link resolves; then every Japanese page is rendered and the two must agree.
+const jaRoutes = jaRouteSet(ctx);
+setJaRoutes(jaRoutes);
+const jaPages = buildJaPages(ctx, { lineageChain, teamOrder: P.teamsByStanding(ctx) });
+const jaFor = new Map(jaPages.map((p) => [p.enPath, p]));
+{ const missing = [...jaRoutes].filter((r) => !jaFor.has(r)); if (missing.length || jaFor.size !== jaRoutes.size) throw new Error(`build-site: ja route set and rendered ja pages disagree (${missing.slice(0, 5).join(', ')})`); }
+const jaNoindexMismatch = [];
+const sitemapJa = [];
 const sitemap = [];
 const allPaths = new Set();
 let pages = 0;
@@ -183,15 +193,17 @@ function emit(p) {
   if (p.extraImageObjects?.length) p.jsonLd = [...(p.jsonLd || []), ...p.extraImageObjects.map((o) => imageObject(o.photo, { site: SITE, publicPath: o.publicPath }))];
   // Japanese pages (scripts/site/ja.mjs) use their own layout; an English page with a complete Japanese counterpart
   // gets reciprocal hreflang + the EN / 日本語 switch (nothing else on the English page changes).
+  // hreflang only between two indexable pages; the switch is offered whenever a Japanese page exists. robots must match.
   const ja = !p.lang && jaFor.get(p.path);
-  const html = p.lang === 'ja' ? jaLayout({ ...p, assets }) : layout({ ...p, assets, ...(ja ? { alternates: alternatesFor(p.path), langSwitch: langSwitch(p.path, ja, 'en') } : {}) });
+  if (ja && !!ja.noindex !== !!p.noindex) jaNoindexMismatch.push(p.path);
+  const html = p.lang === 'ja' ? jaLayout({ ...p, assets }) : layout({ ...p, assets, ...(ja ? { ...(p.noindex ? {} : { alternates: alternatesFor(p.path) }), langSwitch: langSwitch(p.path, ja.path, 'en') } : {}) });
   const rel = p.path === '/' ? 'index.html' : p.path.replace(/^\//, '') + '.html';
   const file = path.join(DIST, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, html);
   pages++;
   allPaths.add(p.path);
-  if (!p.noindex) sitemap.push({ path: p.path, lastmod: p.article?.modified?.slice(0, 10) });
+  if (!p.noindex) (p.lang === 'ja' ? sitemapJa : sitemap).push({ path: p.path, enPath: p.enPath, lastmod: p.article?.modified?.slice(0, 10) });
 }
 
 emit(P.home(ctx));
@@ -253,8 +265,12 @@ fs.writeFileSync(path.join(DIST, '404.html'), nf);
 
 // sitemap + robots
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `<url><loc>${SITE}${p.path === '/' ? '/' : p.path}</loc>${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`);
-fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\nSitemap: ${SITE}/news-sitemap.xml\n`);
-console.log(`built ${pages} pages (${sitemap.length} indexable) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+if (jaNoindexMismatch.length) throw new Error(`build-site: ja/en robots disagree on ${jaNoindexMismatch.slice(0, 5).join(', ')}`);
+// Japanese sitemap: indexable Japanese pages with their reciprocal en/ja/x-default alternates
+const xa = (enPath) => alternatesFor(enPath).map((a) => `<xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${a.url}"/>`).join('');
+fs.writeFileSync(path.join(DIST, 'sitemap-ja.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${sitemapJa.map((p) => `<url><loc>${SITE}${p.path}</loc>${xa(p.enPath)}</url>`).join('\n')}\n</urlset>\n`);
+fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE}/sitemap.xml\nSitemap: ${SITE}/sitemap-ja.xml\nSitemap: ${SITE}/news-sitemap.xml\n`);
+console.log(`built ${pages} pages (${sitemap.length} indexable English; ${jaPages.length} Japanese, ${sitemapJa.length} indexable, ${JA_ADAPTER_VERSION}) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
 if (ctx.staleSessions.length) console.log(`source-state diagnostic: ${ctx.staleSessions.length} session(s) past their start but not completed (never shown as next/upcoming): ${ctx.staleSessions.slice(0, 8).join(", ")}`);
 
 // ---------- static content pages ----------
