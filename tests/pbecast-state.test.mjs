@@ -28,3 +28,15 @@ test('server HTML asserts no session state: no "No session live" headline, no "O
     assert.doesNotMatch(body, /<h2[^>]*>No session live right now<\/h2>/);
   }
 });
+
+test('a chequered / End of Session upstream is never shown as LIVE (state stays live until the classification is final)', () => {
+  const client = fs.readFileSync('src/web/pbecast.js', 'utf8');
+  const def = client.match(/const sessionEnded = (\(s\) => [^;]+);/);
+  assert.ok(def, 'sessionEnded helper');
+  const sessionEnded = eval(def[1]);
+  assert.equal(sessionEnded({ flag: 'CHECKER', status: 'End of Session' }), true);
+  assert.equal(sessionEnded({ flag: 'GREEN', status: 'End of Session' }), true);
+  assert.equal(sessionEnded({ flag: 'GREEN', status: 'In Progress' }), false);
+  assert.equal(sessionEnded({ flag: 'RED', status: 'Suspended' }), false);
+  assert.equal(sessionEnded(null), false);
+});
