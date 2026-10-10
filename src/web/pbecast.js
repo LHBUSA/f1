@@ -447,7 +447,7 @@ function renderHud(T, f, flag) {
   if (!hud) return;
   const on = (S.mode === 'replay' || S.mode === 'live') && !!S.model;
   const gap = on && inGap(S.model, T);
-  const main = on ? [sessionLabel(), f?.lap ? `Lap ${f.lap}${S.mode === 'live' && D.laps_total && S.sessionType === 'race' ? `/${D.laps_total}` : ''}` : '', S.model.start != null ? fmtElapsed(T - S.model.start) : ''].filter(Boolean).join(' · ') : '';
+  const main = on ? [sessionLabel(), f?.lap ? `Lap ${f.lap}${S.mode === 'live' && D.laps_total && S.sessionType === 'race' ? `/${D.laps_total}` : ''}` : '', S.mode === 'replay' && S.model.start != null ? fmtElapsed(T - S.model.start) : ''].filter(Boolean).join(' · ') : '';
   const fl = on && flag ? flag : '';
   const off = on && S.offTrack.length ? `${S.offTrack.length} not on track · pit / garage` : '';
   const key = `${on}|${S.mode}|${main}|${fl}|${gap}|${off}`;
