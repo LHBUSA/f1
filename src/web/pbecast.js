@@ -10,7 +10,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const ID = D.identity, TEAM = (id) => ID.teams[ID.drivers[id]?.team] || null;
 const track = D.geometry;
-const S = { mode: 'idle', frames: [], model: null, T: 0, playing: false, speed: 1, selected: new URLSearchParams(location.search).get('driver'), hover: null, focusAt: 0, sessionType: null, offTrack: [], entitled: false, signedIn: false, session: null, tower: [], events: [], lastOk: 0, failures: 0, polls: 0 };
+const S = { mode: 'idle', frames: [], model: null, T: 0, playing: false, speed: 1, selected: new URLSearchParams(location.search).get('driver'), hover: null, focusAt: 0, sessionType: null, offTrack: [], entitled: false, signedIn: false, session: null, tower: [], events: [], lastOk: 0, failures: 0, polls: 0, live: 'unknown', polling: false, recorded: null };
 const ga = (name, params) => { try { window.gtag?.('event', name, { sport: 'f1', ...params }); } catch {} };
 
 // ---------- network ----------
@@ -289,6 +289,23 @@ const fmtSessionTime = (iso) => {
   if (!Number.isFinite(d.getTime())) return 'Time TBC';
   return new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(d);
 };
+// The page's single source of state: S.mode (live | replay | idle) plus S.live, what the live status endpoint last said
+// (unknown | live | none | unavailable). Every banner derives from these, so the circuit panel can never say "no
+// session live" beside live frames, and an unreachable source is never presented as "no session".
+function applyState() {
+  const title = $('[data-pc-weekend-title]');
+  const head = S.mode === 'live' ? `${sessionLabel() || 'Session'} is live` : S.live === 'unavailable' ? 'Live status unavailable · retrying' : S.live === 'unknown' ? 'Checking live timing…' : 'No session live right now';
+  if (title && title.textContent !== head) title.textContent = head;
+  const rec = $('[data-pc-recorded]');
+  if (rec) {
+    const txt = S.mode === 'live' ? `Recording live · ${S.frames.length} timing frame${S.frames.length === 1 ? '' : 's'} received${S.frames.at(-1)?.t ? ` · latest frame ${new Date(S.frames.at(-1).t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit' })}` : ''}`
+      : S.recorded === 'unavailable' ? 'Recording status unavailable right now · retrying'
+      : S.recorded == null ? 'Checking recordings…'
+      : S.recorded ? `${S.recorded} recorded session${S.recorded > 1 ? 's' : ''} this weekend` : 'No verified recording for this weekend yet.';
+    if (rec.textContent !== txt) rec.textContent = txt;
+  }
+  renderWeekendContext();
+}
 function renderWeekendContext() {
   const box = $('[data-pc-weekend]');
   if (!box) return;
@@ -296,7 +313,10 @@ function renderWeekendContext() {
   const sessions = (D.sessions || []).map((x) => ({ ...x, t: Date.parse(x.start_utc || '') })).filter((x) => Number.isFinite(x.t));
   const next = sessions.find((x) => x.t > now && x.state !== 'completed');
   const nextEl = $('[data-pc-next-session]');
-  if (nextEl) nextEl.textContent = next ? `Next: ${next.label} · ${fmtSessionTime(next.start_utc)}` : (D.fallback ? 'Weekend sessions complete · latest classification shown in the timing tower.' : 'Session schedule is not available yet.');
+  const liveRow = S.mode === 'live' ? sessions.find((x) => S.sessionType && (x.type === S.sessionType || x.type === S.sessionType.replace('-', '_'))) : null;
+  document.querySelectorAll('[data-pc-session-row]').forEach((row) => row.classList.toggle('is-live', !!liveRow && Date.parse(row.dataset.start || '') === liveRow.t));
+  if (nextEl && liveRow) { nextEl.textContent = `Live now: ${liveRow.label}${next ? ` · next: ${next.label} · ${fmtSessionTime(next.start_utc)}` : ''}`; }
+  else if (nextEl) nextEl.textContent = next ? `Next: ${next.label} · ${fmtSessionTime(next.start_utc)}` : (D.fallback ? 'Weekend sessions complete · latest classification shown in the timing tower.' : 'Session schedule is not available yet.');
   document.querySelectorAll('[data-pc-session-row]').forEach((row) => {
     const t = Date.parse(row.dataset.start || '');
     row.classList.toggle('is-next', !!next && Number.isFinite(t) && t === next.t);
@@ -321,7 +341,8 @@ function renderContext(T) {
   let state = 'idle', head = '', rest = '';
   if (S.mode === 'replay' && S.model) { state = 'replay'; head = 'Replay'; rest = [sessionLabel(), 'Recorded timing', lap ? `Lap ${lap}` : ''].filter(Boolean).join(' · '); }
   else if (S.mode === 'live') { state = 'live'; head = 'Live'; rest = [sessionLabel(), 'Timing as recorded', lap ? `Lap ${lap}` : ''].filter(Boolean).join(' · '); }
-  else rest = D.fallback ? `No session live · latest published classification: ${D.fallback.label}` : 'No session live';
+  else if (S.ended && S.model) rest = `${S.ended} ended · final recorded timing (classification follows once published)`;
+  else { const why = S.live === 'unavailable' ? 'Live status unavailable · retrying' : S.live === 'unknown' ? 'Checking live timing' : 'No session live'; rest = D.fallback ? `${why} · latest published classification: ${D.fallback.label}` : why; }
   const key = `${state}|${head}|${rest}`;
   if (n.dataset.key === key) return;
   n.dataset.key = key; n.dataset.state = state;
@@ -414,7 +435,7 @@ function renderHeader(T) {
   const f = S.model ? frameAt(S.model, T) : null;
   const flag = f?.flag ? String(f.flag).toUpperCase().replace(/_/g, ' ') : '';
   const stale = S.mode === 'live' && S.lastOk && Date.now() - S.lastOk > 45000;
-  const mode = S.mode === 'live' ? (stale ? 'LIVE · TIMING DELAYED' : 'LIVE') : S.mode === 'replay' ? `REPLAY · ${S.speed}×` : 'NO SESSION LIVE';
+  const mode = S.mode === 'live' ? (stale ? 'LIVE · TIMING DELAYED' : 'LIVE') : S.mode === 'replay' ? `REPLAY · ${S.speed}×` : S.live === 'unavailable' ? 'LIVE STATUS UNAVAILABLE' : S.live === 'unknown' ? 'CONNECTING…' : 'NO SESSION LIVE';
   const mp = $('[data-pc-mode]'); if (mp.textContent !== mode) mp.textContent = mode; mp.dataset.state = stale ? 'stale' : S.mode;
   renderHud(T, f, flag);
 }
@@ -568,19 +589,26 @@ async function membership() {
 async function loadLive() {
   try {
     const live = await getJSON(`${PUB}/live`);
+    if (live.status !== 200 || !live.body) { S.live = 'unavailable'; applyState(); return false; }
     const sameEvent = live.body?.event?.id === D.event.id;
-    if (live.body?.state !== 'live' || !sameEvent) return false;
+    if (live.body?.state !== 'live' || !sameEvent) { S.live = 'none'; applyState(); return false; }
+    S.live = 'live'; S.ended = null; S.playing = false; disp.clear(); labelPrev.clear();
     S.mode = 'live'; S.session = live.body.session?.id; S.sessionType = live.body.session?.type || null;
     let frames;
     if (S.entitled) { const rep = await getJSON(`${PRIV}/replay/${S.session}`, { priv: true }); frames = rep.status === 200 ? rep.body.frames : null; }
     if (!frames) frames = (await getJSON(`${PUB}/live/frames`)).body?.frames || [];
-    S.frames = frames; S.model = buildModel(frames); S.lastOk = Date.now();
+    S.frames = frames; S.model = buildModel(frames); S.lastOk = Date.now(); S.failures = 0;
+    applyState();
     await loadEvents(); poll();
     return true;
-  } catch { return false; }
+  } catch { S.live = 'unavailable'; applyState(); return false; }
 }
 async function poll() {
+  if (S.polling) return;
+  S.polling = true;
   setTimeout(async () => {
+    S.polling = false;
+    if (S.mode !== 'live') return;
     try {
       const since = S.frames.at(-1)?.t || '';
       const r = await getJSON(`${PUB}/live/frames?since=${encodeURIComponent(since)}`);
@@ -588,8 +616,10 @@ async function poll() {
         if (S.entitled) { const full = await getJSON(`${PRIV}/replay/${S.session}`, { priv: true }); if (full.status === 200) S.frames = full.body.frames; }
         else for (const f of r.body.frames || []) if (!S.frames.length || f.t > S.frames.at(-1).t) S.frames.push(f);
         S.model = buildModel(S.frames); S.lastOk = Date.now(); S.failures = 0;
+        applyState();
         if (++S.polls % 3 === 0) await loadEvents();
-      } else if (r.body?.state && r.body.state !== 'live') { S.mode = 'idle'; return loadRecorded(); }
+      } else if (r.status === 200 && r.body?.state && r.body.state !== 'live') { S.ended = sessionLabel() || 'Session'; S.mode = 'idle'; S.live = 'none'; applyState(); return loadRecorded(); }
+      else S.failures++;
     } catch { S.failures++; }
     poll();
   }, Math.min(30000, 10000 * (1 + S.failures)));
@@ -606,10 +636,13 @@ function showFallback() {
 }
 async function loadRecorded() {
   if (!S.model) showFallback();
-  const idx = (await getJSON(`${PUB}/replay`)).body?.sessions?.filter((s) => s.event_id === D.event.id) || [];
+  let r = null;
+  try { r = await getJSON(`${PUB}/replay`); } catch { r = null; }
+  if (r?.status !== 200 || !Array.isArray(r.body?.sessions)) { S.recorded = 'unavailable'; applyState(); return; }
+  const idx = r.body.sessions.filter((s) => s.event_id === D.event.id);
   const sel = $('[data-pc-sessions]');
   if (sel) sel.replaceChildren(...idx.map((s) => Object.assign(el('option', null, `${D.session_labels[s.type] || s.type} · ${s.frames} frames`), { value: s.id })));
-  $('[data-pc-recorded]').textContent = idx.length ? `${idx.length} recorded session${idx.length > 1 ? 's' : ''} this weekend` : 'No session recorded for this weekend yet.';
+  S.recorded = idx.length; applyState();
   S.sessionTypes = Object.fromEntries(idx.map((s) => [s.id, s.type]));
   if (!idx.length) return;
   const asked = new URLSearchParams(location.search).get('session');
@@ -617,7 +650,7 @@ async function loadRecorded() {
   if (sel) sel.value = S.session;
   if (!S.entitled) { await loadEvents(); return; }
   await openReplay(S.session);
-  sel?.addEventListener('change', () => openReplay(sel.value));
+  if (sel && !sel.dataset.bound) { sel.dataset.bound = '1'; sel.addEventListener('change', () => openReplay(sel.value)); }
 }
 async function openReplay(id) {
   const r = await getJSON(`${PRIV}/replay/${id}`, { priv: true });
@@ -681,6 +714,13 @@ $('[data-pc-signin]')?.addEventListener('submit', async (e) => {
   persistSel();
   await membership();
   bindReplay();
+  requestAnimationFrame(tick); // banners render from state at once, never wait on the network
   if (!(await loadLive())) await loadRecorded();
-  requestAnimationFrame(tick);
+  setInterval(async () => {
+    if (document.hidden || S.mode === 'live' || S.playing || watch.busy) return;
+    watch.busy = true;
+    try { if (!(await loadLive()) && S.recorded === 'unavailable') await loadRecorded(); } finally { watch.busy = false; }
+  }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) renderWeekendContext(); });
 })();
+const watch = { busy: false };
