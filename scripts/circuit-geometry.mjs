@@ -6,6 +6,14 @@
 // handling and short/long layouts. The loop is oriented in the race direction from oneway tags. A way named "pit lane"
 // is attached as the pit lane. Nothing is drawn by hand; a circuit with no matching loop gets no geometry.
 //
+// Street circuits whose racing line runs over ordinary public roads (only fragments are tagged highway=raceway) use the
+// OSM circuit relation (type=circuit) instead: its member ways are the lap, role=pitlane is the pit lane and the
+// start/finish member nodes place the timing line. Race direction still comes only from highway=raceway oneway tags; a
+// public road's oneway tag is its traffic direction, not the race direction, and is dropped. The same loop and length
+// checks apply. Relation roles (forward/backward) are not trusted for direction (they are often inconsistent).
+//
+// LAYOUTS pins the current configuration where the ingested circuit row (length/turns) describes an older layout.
+//
 // Output (data/geometry/<slug>.json, gitignored; published through the projection):
 //   { slug, source, osm_way_ids, length_m, target_m, length_delta_pct, direction_basis, path: [[x,y]...] (metres, local
 //     equirectangular, y up), pit: [[x,y]...]|null, timing_line: { s, basis }, corners: [{ s, x, y, n|null }], built_at }
@@ -23,13 +31,20 @@ const ONLY = (opt('only', '') || '').split(',').filter(Boolean);
 const ENDPOINT = opt('endpoint', 'https://overpass.private.coffee/api/interpreter');
 const UA = 'PropSports-F1/1.0 (+https://propsports.proptechusa.ai)';
 const OUT = path.resolve('geometry'); // committed: ODbL derivative database (see geometry/README.md)
-fs.mkdirSync(OUT, { recursive: true });
 
-const circuits = JSON.parse(fs.readFileSync('data/derived/circuits.json', 'utf8'));
-// the projection's per-edition circuit attribution (Wikidata P276, ESPN venue only as fallback) picks the season's circuits
-const events = JSON.parse(fs.readFileSync(`data/projection/events-${SEASON}.json`, 'utf8'));
-const want = new Set(events.map((e) => e.circuit_id));
-const todo = circuits.filter((c) => c.lat != null && (ONLY.length ? ONLY.includes(c.slug) : want.has(c.slug)));
+// OSM circuit relations (type=circuit) for street circuits mapped over public roads. Verify the relation is the current
+// layout before adding one here: the loop must still pass the length check below.
+export const CIRCUIT_RELATIONS = {
+  'marina-bay-circuit': 421263, // "Marina Bay Street Circuit", wikidata Q171390
+};
+// Current-configuration overrides where the ingested circuit row is an older layout (ESPN venue 247 still reports the
+// 2018-2022 5.063 km / 23-turn lap).
+export const LAYOUTS = {
+  'marina-bay-circuit': {
+    length_km: 4.927, turns: 19,
+    basis: 'current layout since 2023: Raffles Avenue straight replaces the Float section (old turns 16-19); 4.927 km / 19 turns per en.wikipedia "Marina Bay Street Circuit" (2025-present); formula1.com 2023 race page lists 4.940 km; 2018-2022 layout was 5.063 km / 23 turns',
+  },
+};
 
 const R = 6371008.8;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -77,6 +92,38 @@ async function osmBoxOnce(b) {
   } finally { clearTimeout(timer); }
 }
 
+// One OSM API call: /relation/<id>/full returns the relation, every member way and every node.
+async function osmRelation(id) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 90000);
+  try {
+    const r = await fetch(`https://api.openstreetmap.org/api/0.6/relation/${id}/full`, { headers: { 'user-agent': UA }, signal: ctl.signal });
+    if (!r.ok) throw new Error(`osm api ${r.status}`);
+    return relationWays(await r.text(), id);
+  } finally { clearTimeout(timer); }
+}
+// Parse a relation/full XML document into Overpass-shaped ways for buildLoop, plus the start/finish nodes.
+export function relationWays(xml, id) {
+  const nodes = new Map();
+  for (const m of xml.matchAll(/<node id="(\d+)"[^>]*?lat="([-\d.]+)" lon="([-\d.]+)"/g)) nodes.set(m[1], { lat: +m[2], lon: +m[3] });
+  const rel = [...xml.matchAll(/<relation id="(\d+)"[^>]*>([\s\S]*?)<\/relation>/g)].find((m) => m[1] === String(id))?.slice(1);
+  if (!rel) throw new Error(`relation ${id} missing`);
+  const members = [...rel[1].matchAll(/<member type="(\w+)" ref="(\d+)" role="([^"]*)"\/>/g)].map((m) => ({ type: m[1], ref: m[2], role: m[3] }));
+  const roleOf = new Map(members.filter((m) => m.type === 'way').map((m) => [m.ref, m.role]));
+  const ways = [];
+  for (const m of xml.matchAll(/<way id="(\d+)"[^>]*>([\s\S]*?)<\/way>/g)) {
+    if (!roleOf.has(m[1])) continue;
+    const tags = Object.fromEntries([...m[2].matchAll(/<tag k="([^"]+)" v="([^"]*)"/g)].map((t) => [t[1], t[2].replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")]));
+    if (roleOf.get(m[1]) === 'pitlane') tags.raceway = 'pitlane'; // isPit() keys on this
+    else if (tags.highway !== 'raceway') delete tags.oneway; // road traffic direction is not the race direction
+    const refs = [...m[2].matchAll(/<nd ref="(\d+)"/g)].map((x) => x[1]);
+    if (refs.some((x) => !nodes.has(x))) throw new Error(`relation ${id}: way ${m[1]} incomplete`);
+    ways.push({ id: Number(m[1]), tags, nodes: refs.map(Number), geometry: refs.map((x) => nodes.get(x)) });
+  }
+  const node = (role) => { const m = members.find((x) => x.type === 'node' && x.role === role); return m && nodes.has(m.ref) ? { id: Number(m.ref), ...nodes.get(m.ref) } : null; };
+  return { ways, start: node('start'), finish: node('finish') };
+}
+
 // hard deadline per request (body included); endpoints rotate on failure
 async function overpass(lat, lon, radius) {
   const q = `[out:json][timeout:90];way(around:${radius},${lat},${lon})[highway=raceway];out body geom;`;
@@ -96,9 +143,11 @@ async function overpass(lat, lon, radius) {
   throw new Error('overpass unavailable');
 }
 
+// local equirectangular projection in metres around the circuit's coordinates (y up)
+export const projector = ([lat0, lon0]) => (la, lo) => [((lo - lon0) * Math.PI / 180) * R * Math.cos(lat0 * Math.PI / 180), ((la - lat0) * Math.PI / 180) * R];
+
 export function buildLoop(ways, targetM, origin) {
-  const [lat0, lon0] = origin;
-  const proj = (la, lo) => [((lo - lon0) * Math.PI / 180) * R * Math.cos(lat0 * Math.PI / 180), ((la - lat0) * Math.PI / 180) * R];
+  const proj = projector(origin);
   const isPit = (w) => /pit/i.test(`${w.tags?.name || ''} ${w.tags?.['name:en'] || ''} ${w.tags?.raceway || ''} ${w.tags?.service || ''}`);
   const excluded = (w) => w.tags?.sport === 'karting' || /kart|drift|handling|skid|test track|paddock|go-?kart/i.test(`${w.tags?.name || ''} ${w.tags?.['name:en'] || ''}`) || w.tags?.area === 'yes';
   const coord = new Map();
@@ -137,30 +186,35 @@ export function buildLoop(ways, targetM, origin) {
   const lo = targetM * 0.94, hi = targetM * 1.06;
   let budget = 400000;
   for (let start = 0; start < edges.length && budget > 0; start++) {
-    const startNode = edges[start].nodes[0];
-    const used = new Set([start]);
-    const seenNodes = new Set([startNode]);
-    const stack = [];
-    const dfs = (node, total) => {
-      if (--budget <= 0 || total > hi) return;
-      for (const [ei, dir] of adj.get(node) || []) {
-        if (used.has(ei) || ei < start) continue;
-        const e = edges[ei];
-        if (e.oneway && dir === -1) continue; // against a oneway in this traversal
-        const next = dir === 1 ? e.nodes.at(-1) : e.nodes[0];
-        const t = total + e.len;
-        if (next === startNode) {
-          if (t >= lo && t <= hi && (!best || Math.abs(t - targetM) < Math.abs(best.total - targetM))) best = { total: t, chain: [[start, 1], ...stack, [ei, dir]] };
-          continue;
-        }
-        if (seenNodes.has(next)) continue;
-        used.add(ei); seenNodes.add(next); stack.push([ei, dir]);
-        dfs(next, t);
-        used.delete(ei); seenNodes.delete(next); stack.pop();
-      }
-    };
     const s0 = edges[start];
-    if (s0.oneway || true) { used.add(start); seenNodes.add(s0.nodes.at(-1)); dfs(s0.nodes.at(-1), s0.len); }
+    // a two-way start edge is tried in both directions; otherwise a loop whose oneway segments run against the start
+    // edge's drawing direction would never be found
+    for (const sdir of s0.oneway ? [1] : [1, -1]) {
+      const startNode = sdir === 1 ? s0.nodes[0] : s0.nodes.at(-1);
+      const first = sdir === 1 ? s0.nodes.at(-1) : s0.nodes[0];
+      const used = new Set([start]);
+      const seenNodes = new Set([startNode, first]);
+      const stack = [];
+      const dfs = (node, total) => {
+        if (--budget <= 0 || total > hi) return;
+        for (const [ei, dir] of adj.get(node) || []) {
+          if (used.has(ei) || ei < start) continue;
+          const e = edges[ei];
+          if (e.oneway && dir === -1) continue; // against a oneway in this traversal
+          const next = dir === 1 ? e.nodes.at(-1) : e.nodes[0];
+          const t = total + e.len;
+          if (next === startNode) {
+            if (t >= lo && t <= hi && (!best || Math.abs(t - targetM) < Math.abs(best.total - targetM))) best = { total: t, chain: [[start, sdir], ...stack, [ei, dir]] };
+            continue;
+          }
+          if (seenNodes.has(next)) continue;
+          used.add(ei); seenNodes.add(next); stack.push([ei, dir]);
+          dfs(next, t);
+          used.delete(ei); seenNodes.delete(next); stack.pop();
+        }
+      };
+      dfs(first, s0.len);
+    }
   }
   if (!best) return null;
   const nodes = [];
@@ -196,10 +250,14 @@ export function resample(pts, step = 10) {
 // timing line: OSM rarely maps it. Basis = the point on the loop nearest the middle of the pit lane (the pit straight),
 // declared as an estimate. Corners: curvature peaks (turning > 25° within 60 m), numbered only when our count equals the
 // circuit's official turn count.
-export function annotate(loop, turns) {
+export function annotate(loop, turns, timing = null) {
   const P = resample(loop.path, 10);
   let s0 = 0, basis = 'estimate: path start (no pit lane mapped)';
-  if (loop.pit) {
+  if (timing) { // mapped finish line (OSM circuit relation): nearest resampled loop point, within 10 m spacing
+    let bi = 0, bd = Infinity;
+    P.forEach((p, i) => { const d = Math.hypot(p[0] - timing.xy[0], p[1] - timing.xy[1]); if (d < bd) { bd = d; bi = i; } });
+    s0 = bi; basis = `${timing.basis} (${Math.round(bd)} m from the loop)`;
+  } else if (loop.pit) {
     const mid = loop.pit[Math.floor(loop.pit.length / 2)];
     let bi = 0, bd = Infinity;
     P.forEach((p, i) => { const d = Math.hypot(p[0] - mid[0], p[1] - mid[1]); if (d < bd) { bd = d; bi = i; } });
@@ -231,13 +289,27 @@ export function annotate(loop, turns) {
 }
 
 async function main() {
+  const circuits = JSON.parse(fs.readFileSync('data/derived/circuits.json', 'utf8'));
+  // the projection's per-edition circuit attribution (Wikidata P276, ESPN venue only as fallback) picks the season's circuits
+  const events = JSON.parse(fs.readFileSync(`data/projection/events-${SEASON}.json`, 'utf8'));
+  const want = new Set(events.map((e) => e.circuit_id));
+  const todo = circuits.filter((c) => c.lat != null && (ONLY.length ? ONLY.includes(c.slug) : want.has(c.slug)))
+    .map((c) => (LAYOUTS[c.slug] ? { ...c, ...LAYOUTS[c.slug], layout_basis: LAYOUTS[c.slug].basis } : c));
+  fs.mkdirSync(OUT, { recursive: true });
   const report = [];
   for (const c of todo) {
     console.error(`[${new Date().toISOString().slice(11, 19)}] ${c.slug}`);
     const target = c.length_km ? c.length_km * 1000 : null;
     if (!target) { report.push({ slug: c.slug, ok: false, reason: 'no published lap length' }); continue; }
-    let loop = null, ways = [];
-    for (const radius of [2500, 4000]) {
+    let loop = null, ways = [], finish = null;
+    const relId = CIRCUIT_RELATIONS[c.slug];
+    if (relId) {
+      const rel = await osmRelation(relId).catch((e) => { report.push({ slug: c.slug, ok: false, reason: `relation ${relId}: ${e.message}` }); return null; });
+      if (!rel) continue;
+      ways = rel.ways; finish = rel.finish;
+      loop = buildLoop(ways, target, [c.lat, c.lon]);
+    }
+    for (const radius of relId ? [] : [2500, 4000]) {
       ways = await osmMap(c.lat, c.lon, radius).catch((e) => { console.error(`  ${e.message}; falling back to Overpass`); return overpass(c.lat, c.lon, radius); }).catch((e) => { report.push({ slug: c.slug, ok: false, reason: e.message }); return null; });
       if (!ways) break;
       loop = buildLoop(ways, target, [c.lat, c.lon]);
@@ -246,9 +318,11 @@ async function main() {
     }
     if (!ways) continue;
     if (!loop) { report.push({ slug: c.slug, ok: false, reason: `no closed raceway loop within ±6% of ${target} m (${ways.length} ways)` }); await sleep(10000); continue; }
-    const a = annotate(loop, c.turns);
+    const proj = projector([c.lat, c.lon]);
+    const a = annotate(loop, c.turns, finish ? { xy: proj(finish.lat, finish.lon), basis: `OSM circuit relation ${relId} finish node ${finish.id}` } : null);
     const doc = {
       slug: c.slug, name: c.name, source: 'openstreetmap', licence: 'ODbL 1.0', attribution: '© OpenStreetMap contributors',
+      ...(relId ? { osm_relation_id: relId } : {}), ...(c.layout_basis ? { layout_basis: c.layout_basis } : {}),
       osm_way_ids: loop.osm_way_ids, bridges_m: loop.bridges_m, pit_way_id: loop.pit_way, length_m: Math.round(loop.length_m), target_m: target,
       length_delta_pct: Math.round(((loop.length_m - target) / target) * 1000) / 10, direction_basis: loop.direction_basis,
       ...a, pit: loop.pit ? loop.pit.map(([x, y]) => [Math.round(x), Math.round(y)]) : null, built_at: new Date().toISOString(), builder: 'f1-circuit-geometry@1',
